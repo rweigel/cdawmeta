@@ -1,4 +1,9 @@
 ```
+# Create ../data/tables/hapi.table.{body,header}.json
+python table-hapi.py 
+```
+
+```
 git clone https://github.com/rweigel/table-ui
 cd table-ui
 ln -s ../../data/tables cdaweb
