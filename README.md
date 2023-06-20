@@ -2,7 +2,7 @@
 
 ```
 python all.py     # creates data/all.json
-python hapi-bw.py # creates data/hapi-bw.json
+python hapi-bw.py # creates data/hapi-bw.json using data/all.json
 python hapi-nl.py # creates data/hapi-nl.json
 ```
 
