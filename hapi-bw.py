@@ -1,13 +1,32 @@
 def omit(id):
-  if not id.startswith('A'):
+  if not id.startswith('AC'):
     return True
   return False
 
 import os
+import json
+
 base_dir = os.path.dirname(__file__)
 all_file = os.path.join(base_dir, 'data/all.json')
 tmp_file = os.path.join(base_dir, 'data/hapi-bw.tmp.json')
 out_file = os.path.join(base_dir, 'data/hapi-bw.json')
+
+def cdf2hapitype(cdf_type):
+
+  if cdf_type in ['CDF_CHAR', 'CDF_UCHAR']:
+    return 'string'
+
+  if cdf_type.startswith('CDF_EPOCH') or cdf_type.startswith('CDF_TIME'):
+    return 'isotime'
+
+  if cdf_type.startswith('CDF_INT') or cdf_type.startswith('CDF_UINT') or cdf_type.startswith('CDF_BYTE'):
+    return 'integer'
+
+  if cdf_type in ['CDF_FLOAT', 'CDF_DOUBLE', 'CDF_REAL4', 'CDF_REAL8']:
+    return 'double'
+
+  print("Unhandled CDF type: " + cdf_type)
+  exit(1)
 
 def add_variables(datasets):
 
@@ -103,11 +122,10 @@ def add_depend_0s(datasets):
 
       if 'VIRTUAL' in variable_meta['VarAttributes']:
         if variable_meta['VarAttributes']['VIRTUAL'].lower() == 'true':
-          print("  Dropping VIRTUAL variable: " + name)
-          continue
+          print("  VIRTUAL variable: " + name)
 
       if 'DEPEND_0' in variable_meta['VarAttributes']:
-        depend_0 = variable_meta['VarAttributes']['DEPEND_0']        
+        depend_0 = variable_meta['VarAttributes']['DEPEND_0']
         if depend_0 not in depend_0s:
           depend_0s[depend_0] = {}
         depend_0s[depend_0][name] = variable_meta
@@ -120,6 +138,8 @@ def add_depend_0s(datasets):
 
 def parameters(variables):
 
+  # TODO: Determine if length can be obtained based on DEPEND_0 type.
+  # Here I set it to 30, which assumes server will always return to ns precision.
   parameters = [{'name': 'Time',
                  'type': 'isotime',
                  'units': 'UTC',
@@ -128,12 +148,21 @@ def parameters(variables):
 
   for key, variable in variables.items():
 
-    type = variable['VarDescription']['DataType']
+    type = cdf2hapitype(variable['VarDescription']['DataType'])
 
     parameter = {
       "name": key,
       "type": type
     }
+
+    if 'VIRTUAL' in variable['VarAttributes']:
+      parameter['_VIRTUAL'] = variable['VarAttributes']['VIRTUAL']
+
+    if 'DimSizes' in variable['VarDescription']:
+      size = variable['VarDescription']['DimSizes']
+      if len(size) == 1:
+        size = size[0]
+      parameter['size'] = size
 
     description = ""
     if 'CATDESC' in variable['VarAttributes']:
@@ -149,7 +178,7 @@ def parameters(variables):
     units = None
     if 'UNITS' in variable['VarAttributes']:
       _units = variable['VarAttributes']['UNITS']
-      if _units.strip() == '':
+      if _units.strip() != '':
         units = _units
     if units is not None:
       parameter['units'] = units
@@ -177,7 +206,6 @@ def subset(datasets):
 
   return datasets_new
 
-import json
 with open(all_file, 'r', encoding='utf-8') as f:
   datasets = json.load(f)
 
@@ -199,12 +227,10 @@ add_depend_0s(datasets)
 
 datasets_subsetted = subset(datasets)
 
-import json
 with open(out_file, 'w', encoding='utf-8') as f:
   json.dump(datasets_subsetted, f, indent=2)
 print(f'Wrote: {out_file}')
 
-import json
 with open(tmp_file, 'w', encoding='utf-8') as f:
   json.dump(datasets, f, indent=2)
 print(f'Wrote: {tmp_file}')

@@ -1,6 +1,19 @@
+# AIM_CIPS_SCI_3A has large master cdf.
 omitids = ['AIM_CIPS_SCI_3A']
 
 import os
+import json
+
+try:
+  # TODO: Create and use setup.py
+  import requests_cache
+  import xmltodict
+except:
+  print(os.popen('pip requests_cache').read())
+
+import requests_cache
+import xmltodict
+
 base_dir = os.path.dirname(__file__)
 all_file = os.path.join(base_dir, 'data/all.json')
 os.makedirs(os.path.join(base_dir, 'data'), exist_ok=True)
@@ -9,9 +22,7 @@ allxml = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
 max_workers = 5
 
 def CachedSession(cdir):
-  import os
   from datetime import timedelta
-  import requests_cache
   # https://requests-cache.readthedocs.io/en/stable/#settings
   # https://requests-cache.readthedocs.io/en/stable/user_guide/headers.html
   
@@ -28,14 +39,12 @@ def CachedSession(cdir):
 
 def create_datasets(allxml):
 
-  import os
   cdir = os.path.join(os.path.dirname(__file__), 'data/cache/all')
   session = CachedSession(cdir)
 
   resp = session.get(allxml)
   allxml_text = resp.text
 
-  import xmltodict
   all_dict = xmltodict.parse(allxml_text);
 
   datasets = []
@@ -60,7 +69,7 @@ def create_datasets(allxml):
                 'info': {
                     'startDate': startDate,
                     'stopDate': stopDate,
-                    'resourceURL': 'https://cdaweb.gsfc.nasa.gov/misc/Notes.html#' + id,
+                    'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{id[0]}.html#' + id,
                     'contact': contact
                 },
                 '_allxml': dataset_allxml
@@ -94,7 +103,6 @@ def add_master(datasets):
       print("Aborting. Expected only one file key in _master object for " + dataset['id'])
       exit(1)
 
-  import os
   cdir = os.path.join(os.path.dirname(__file__), 'data/cache/masters')
   session = CachedSession(cdir)
 
@@ -135,7 +143,6 @@ def add_spase(datasets):
     print(f'Read: (from cache={r.from_cache}) {url}')
     dataset['_spase'] = r.json()['Spase']
 
-  import os
   cdir = os.path.join(os.path.dirname(__file__), 'data/cache/spase')
   session = CachedSession(cdir)
 
@@ -154,7 +161,6 @@ add_spase(datasets)
 
 print(f'# of datasets: {len(datasets)}')
 
-import json
 with open(all_file, 'w', encoding='utf-8') as f:
   json.dump(datasets, f, indent=2)
 print(f'Wrote {all_file}')

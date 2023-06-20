@@ -4,6 +4,13 @@ def omit(id):
   return False
 
 import os
+import json
+try:
+  import requests_cache
+except:
+  print(os.popen('pip requests_cache').read())
+  import requests_cache
+
 base_dir = os.path.dirname(__file__)
 out_file = os.path.join(base_dir, 'data/hapi-nl.json')
 os.makedirs(os.path.dirname(out_file), exist_ok=True)
@@ -11,7 +18,6 @@ os.makedirs(os.path.dirname(out_file), exist_ok=True)
 def CachedSession():
   import os
   from datetime import timedelta
-  import requests_cache
   # https://requests-cache.readthedocs.io/en/stable/#settings
   # https://requests-cache.readthedocs.io/en/stable/user_guide/headers.html
   
@@ -37,6 +43,7 @@ for idx, dataset in enumerate(datasets):
   id = dataset['id']
   if omit(id):
     print(f'Omitting {id}')
+    datasets[idx] = None
     continue
 
   url = 'https://cdaweb.gsfc.nasa.gov/hapi/info?id=' + id
@@ -51,7 +58,6 @@ for idx, dataset in enumerate(datasets):
 
 datasets = [i for i in datasets if i is not None]
 
-import json
 with open(out_file, 'w', encoding='utf-8') as f:
   json.dump(datasets, f, indent=2)
 print(f'Wrote: {out_file}')
