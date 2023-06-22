@@ -8,9 +8,14 @@ file_header = os.path.join(base_dir, 'tables/hapi.table.header.json')
 def uniq_keys(datasets, ukeys=None):
 
   if ukeys is None:
-    ukeys = {}
-    ukeys['info'] = {}
-    ukeys['info']['parameters'] = {}
+    # Some required keys are added manually so their position in
+    # the list of keys is fixed (assumes Python 3.6+; should check).
+    ukeys = {'id': None}
+    ukeys['info'] = {
+                      'startDate': None,
+                      'stopDate': None
+                    }
+    ukeys['info']['parameters'] = {'name': None}
     ukeys['info']['parameters']['bins'] = {}
 
   for dataset in datasets:
@@ -34,17 +39,22 @@ def uniq_keys(datasets, ukeys=None):
           for key in parameter['bins'][i].keys():
             if not key.startswith('x_'):
               ukeys['info']['parameters']['bins'][key] = None
+
   return ukeys
 
 def table(datasets, ukeys, prefix):
 
   rows = [];
   for didx, dataset in enumerate(datasets):
-    if didx == 0: heado = ['version']
+
+    if didx == 0:
+      heado = ['version']
+
     rowo = [prefix]
     for dkey in ukeys.keys():
       if dkey != 'info':
-        if didx == 0: heado.append(dkey)
+        if didx == 0:
+          heado.append(dkey)
         if dkey in dataset:
           rowo.append(dataset[dkey])
         else:
@@ -52,7 +62,8 @@ def table(datasets, ukeys, prefix):
 
     for ikey in ukeys['info'].keys():
       if ikey != 'parameters':
-        if didx == 0: heado.append(ikey)
+        if didx == 0:
+          heado.append(ikey)
         if ikey in dataset['info']:
           rowo.append(dataset['info'][ikey])
         else:
@@ -60,22 +71,32 @@ def table(datasets, ukeys, prefix):
 
     for pidx, parameter in enumerate(dataset['info']['parameters']):
       row = [pidx]
-      if didx == 0 and pidx == 0: head = ['index']
+      if didx == 0 and pidx == 0:
+        head = ['index']
       for pkey in ukeys['info']['parameters'].keys():
         if pkey != 'bins':
-          if didx == 0 and pidx == 0: head.append(pkey)
+          if didx == 0 and pidx == 0:
+            head.append(pkey)
           if pkey in parameter:
             row.append(parameter[pkey])
           else:
             row.append(None)
 
-      if 'bins' in parameter:
+      if False and 'bins' in parameter:
         for bkey in ukeys['info']['parameters']['bins'].keys():
           print(bkey)
 
-      rows.append([*rowo, *row])
+      # Change id value to to id/name
+      rowoc = rowo.copy()
+      rowoc[1] = rowoc[1] + "/" + row[1]
 
-  return [*heado, *head], rows
+      #rows.append([*rowoc, *row]) # Default order
+      rows.append([*rowoc[0:4], *row, *rowoc[4:]])
+
+  heado[1] = 'id/name'
+  # head = [*heado, *head] Default order
+  head = [*heado[0:4], *head, *heado[4:]]
+  return head, rows
 
 import json
 with open(all_input_bw, 'r', encoding='utf-8') as f:

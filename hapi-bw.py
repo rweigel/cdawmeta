@@ -103,7 +103,7 @@ def add_variables_split(datasets):
   for dataset in datasets:
 
     depend_0s = {}
-    print(dataset['id'])
+    print(dataset['id'] + ": building HAPI /info")
     names = dataset['_variables'].keys()
     for name in names:
 
@@ -212,10 +212,12 @@ def subset_and_transform(datasets):
 
   return datasets_new
 
+print(f'Reading: {all_file}')
 with open(all_file, 'r', encoding='utf-8') as f:
   datasets = json.load(f)
 
 for idx, dataset in enumerate(datasets):
+
   if '_master' not in dataset:
     print(f'No _master in {dataset["id"]}. Omitting dataset.')
     datasets[idx] = None
