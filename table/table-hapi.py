@@ -68,6 +68,11 @@ def table(datasets, ukeys, prefix):
             row.append(parameter[pkey])
           else:
             row.append(None)
+
+      if 'bins' in parameter:
+        for bkey in ukeys['info']['parameters']['bins'].keys():
+          print(bkey)
+
       rows.append([*rowo, *row])
 
   return [*heado, *head], rows

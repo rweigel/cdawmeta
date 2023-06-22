@@ -1,5 +1,5 @@
 def omit(id):
-  if not id.startswith('AC'):
+  if not id.startswith('AMPTECCE_H0_MEPA'):
     return True
   return False
 

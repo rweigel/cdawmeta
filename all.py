@@ -25,7 +25,7 @@ def CachedSession(cdir):
   from datetime import timedelta
   # https://requests-cache.readthedocs.io/en/stable/#settings
   # https://requests-cache.readthedocs.io/en/stable/user_guide/headers.html
-  
+
   # Cache dir
   copts = {
     "use_cache_dir": True,                # Save files in the default user cache dir

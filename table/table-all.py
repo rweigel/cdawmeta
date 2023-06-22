@@ -1,3 +1,11 @@
+# Put links in header to, e.g., 
+# https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html#FILLVAL
+
+def omit(id):
+  if not id.startswith('A'):
+    return True
+  return False
+
 import os
 base_dir = os.path.join(os.path.dirname(__file__), '../data')
 all_input   = os.path.join(base_dir, 'hapi-bw.tmp.json')
@@ -20,7 +28,7 @@ def all_attribute_table(datasets):
 
   attributes = all_attributes(datasets)
 
-  header = ['datasetID', 'variableName']
+  header = ['datasetID/varName']
   for attribute in attributes['VarDescription']:
     header.append(attribute)
   for attribute in attributes['VarAttributes']:
@@ -28,12 +36,17 @@ def all_attribute_table(datasets):
 
   table = []
   for dataset in datasets:
+    if omit(dataset['id']) == True:
+      continue
     for name, variable in dataset['_variables'].items():
-      row = [dataset['id'], name]
+      row = [dataset['id'] + "/" + name]
       for attribute_type in ['VarDescription', 'VarAttributes']:
         for attribute in attributes[attribute_type]:
           if attribute in variable[attribute_type]:
-            row.append(variable[attribute_type][attribute])
+            val = variable[attribute_type][attribute]
+            if isinstance(val,str):
+              val = val.replace(' ', '⎵')
+            row.append(val)
           else:
             row.append("")
 

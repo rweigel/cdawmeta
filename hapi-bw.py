@@ -1,5 +1,5 @@
 def omit(id):
-  if not id.startswith('AC'):
+  if not id.startswith('A'):
     return True
   return False
 
@@ -98,9 +98,10 @@ def add_variables(datasets):
 
     dataset['_variables'] = variables_new
 
-def add_depend_0s(datasets):
+def add_variables_split(datasets):
 
   for dataset in datasets:
+
     depend_0s = {}
     print(dataset['id'])
     names = dataset['_variables'].keys()
@@ -134,9 +135,9 @@ def add_depend_0s(datasets):
     if len(depend_0_names) > 1:
       print(f'  {len(depend_0_names)} DEPEND_0s')
 
-    dataset['_depend_0s'] = depend_0s
+    dataset['_variables_split'] = depend_0s
 
-def parameters(variables):
+def variables2parameters(variables):
 
   # TODO: Determine if length can be obtained based on DEPEND_0 type.
   # Here I set it to 30, which assumes server will always return to ns precision.
@@ -146,6 +147,7 @@ def parameters(variables):
                  'length': 30,
                  'fill': None}]
 
+  #print(json.dumps(variables, indent=2))
   for key, variable in variables.items():
 
     type = cdf2hapitype(variable['VarDescription']['DataType'])
@@ -187,20 +189,24 @@ def parameters(variables):
 
   return parameters
 
-def subset(datasets):
+def subset_and_transform(datasets):
+
   datasets_new = []
   for dataset in datasets:
     n = 0
-    depend_0s = dataset['_depend_0s'].items()
-    for _, variables in dataset['_depend_0s'].items():
+    depend_0s = dataset['_variables_split'].items()
+    for depend_0_name, variables in depend_0s:
+      #print(depend_0_name)
       subset = ''
       if len(depend_0s) > 1:
         subset = '@' + str(n)
       dataset_new = {
         'id': dataset['id'] + subset,
-        'info': dataset['info'],
+        'info': {
+          **dataset['info'],
+          'parameters': variables2parameters(variables)
+        }
       }
-      dataset_new['info']['parameters'] = parameters(variables)
       datasets_new.append(dataset_new)
       n = n + 1
 
@@ -222,15 +228,19 @@ for idx, dataset in enumerate(datasets):
 
 datasets = [i for i in datasets if i is not None]
 
+# Add _variables element to each dataset
 add_variables(datasets)
-add_depend_0s(datasets)
+# Add _variables_split element to each dataset
+add_variables_split(datasets)
 
-datasets_subsetted = subset(datasets)
+# Split datasets into HAPI datasets using _variables_split element.
+datasets_hapi = subset_and_transform(datasets)
 
 with open(out_file, 'w', encoding='utf-8') as f:
-  json.dump(datasets_subsetted, f, indent=2)
+  json.dump(datasets_hapi, f, indent=2)
 print(f'Wrote: {out_file}')
 
+# For debugging, save result passed to subset_and_transform().
 with open(tmp_file, 'w', encoding='utf-8') as f:
   json.dump(datasets, f, indent=2)
 print(f'Wrote: {tmp_file}')
