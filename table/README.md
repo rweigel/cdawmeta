@@ -1,5 +1,5 @@
 ```
-python table-hapi.py creates ../data/tables/hapi.table.{body,header}.json
+python table-hapi.py # creates ../data/tables/hapi.table.{body,header}.json
 
 git clone https://github.com/rweigel/table-ui
 cd table-ui/ajax
