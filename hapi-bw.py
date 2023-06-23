@@ -11,6 +11,7 @@ all_file = os.path.join(base_dir, 'data/all.json')
 tmp_file = os.path.join(base_dir, 'data/hapi-bw.tmp.json')
 out_file = os.path.join(base_dir, 'data/hapi-bw.json')
 
+
 def cdf2hapitype(cdf_type):
 
   if cdf_type in ['CDF_CHAR', 'CDF_UCHAR']:
@@ -75,7 +76,6 @@ def add_variables(datasets):
     variables = dataset['_master'][file]['CDFVariables']
     variables_new = {}
 
-    depend_0s = {}
     for variable in variables:
 
       variable_keys = list(variable.keys())
@@ -118,7 +118,7 @@ def add_variables_split(datasets):
         continue
 
       VAR_TYPE = variable_meta['VarAttributes']['VAR_TYPE']
-      if VAR_TYPE == 'support_data':
+      if VAR_TYPE != 'data':
         continue
 
       if 'VIRTUAL' in variable_meta['VarAttributes']:
@@ -137,20 +137,43 @@ def add_variables_split(datasets):
 
     dataset['_variables_split'] = depend_0s
 
-def variables2parameters(variables):
+def cdftimelen(cdf_type):
 
-  # TODO: Determine if length can be obtained based on DEPEND_0 type.
-  # Here I set it to 30, which assumes server will always return to ns precision.
+  # Based on table at https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html
+  # Could also get from PadValue or FillValue, but they are not always present (!).
+  if cdf_type == 'CDF_EPOCH':
+    return len('0000-01-01:00:00:00.000Z')
+  if cdf_type == 'CDF_TIME_TT2000':
+    return len('0000-01-01:00:00:00.000000000Z')
+  if cdf_type == 'CDF_EPOCH16':
+    return len('0000-01-01:00:00:00.000000000000Z')
+
+  print("Aborting: Unhandled CDF time type: " + cdf_type)
+  exit(1)
+
+def variables2parameters(variables, depend_0):
+
+  length = cdftimelen(depend_0['VarDescription']['DataType'])
+  #print(depend_0['VarDescription']['DataType'])
+  #print(length)
   parameters = [{'name': 'Time',
                  'type': 'isotime',
                  'units': 'UTC',
-                 'length': 30,
+                 'length': length,
                  'fill': None}]
 
   #print(json.dumps(variables, indent=2))
   for key, variable in variables.items():
 
     type = cdf2hapitype(variable['VarDescription']['DataType'])
+
+    if type == 'string':
+      # Would need to determine string length and need to handle
+      # case where PadValue and FillValue are not present, so length
+      # cannot be determined. (PadValue and FillValue are not always
+      # present for DEPEND_0 variables; see note in cdftimelen()).
+      print(f'Dropping {key} because string parameter not supported.')
+      continue
 
     parameter = {
       "name": key,
@@ -196,7 +219,7 @@ def subset_and_transform(datasets):
     n = 0
     depend_0s = dataset['_variables_split'].items()
     for depend_0_name, variables in depend_0s:
-      #print(depend_0_name)
+      depend_0 = dataset['_variables'][depend_0_name]
       subset = ''
       if len(depend_0s) > 1:
         subset = '@' + str(n)
@@ -204,7 +227,7 @@ def subset_and_transform(datasets):
         'id': dataset['id'] + subset,
         'info': {
           **dataset['info'],
-          'parameters': variables2parameters(variables)
+          'parameters': variables2parameters(variables, depend_0)
         }
       }
       datasets_new.append(dataset_new)

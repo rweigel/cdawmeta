@@ -8,15 +8,20 @@ file_header = os.path.join(base_dir, 'tables/hapi.table.header.json')
 def uniq_keys(datasets, ukeys=None):
 
   if ukeys is None:
+
     # Some required keys are added manually so their position in
     # the list of keys is fixed (assumes Python 3.6+; should check).
-    ukeys = {'id': None}
-    ukeys['info'] = {
+    ukeys = {
+              'id': None,
+              'info': {
+                      'parameters': {
+                        'name': None,
+                        'bins': {}
+                      },
                       'startDate': None,
-                      'stopDate': None
+                      'stopDate': None,
                     }
-    ukeys['info']['parameters'] = {'name': None}
-    ukeys['info']['parameters']['bins'] = {}
+            }
 
   for dataset in datasets:
     dkeys = list(dataset.keys())
@@ -88,14 +93,14 @@ def table(datasets, ukeys, prefix):
 
       # Change id value to to id/name
       rowoc = rowo.copy()
-      rowoc[1] = rowoc[1] + "/" + row[1]
+      #rowoc[1] = rowoc[1] + "/" + row[1]
 
       #rows.append([*rowoc, *row]) # Default order
-      rows.append([*rowoc[0:4], *row, *rowoc[4:]])
+      rows.append([rowoc[1], rowo[0], *row, *rowoc[2:]])
 
-  heado[1] = 'id/name'
+  heado[1] = 'id'
   # head = [*heado, *head] Default order
-  head = [*heado[0:4], *head, *heado[4:]]
+  head = [heado[1], heado[0], *head, *heado[2:]]
   return head, rows
 
 import json
