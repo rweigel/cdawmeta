@@ -2,6 +2,7 @@
 # https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html#FILLVAL
 
 def omit(id):
+  return False
   if not id.startswith('A'):
     return True
   return False
@@ -15,20 +16,23 @@ file_header = os.path.join(base_dir, 'tables/all.table.header.json')
 def all_attribute_table(datasets):
 
   def all_attributes(datasets):
-    attributes = {
-      'VarDescription': set(),
-      'VarAttributes': set()
-    }
+
+    attributes = {'VarDescription': set(), 'VarAttributes': set()}
+
     for dataset in datasets:
       for name, variable in dataset['_variables'].items():
         for attribute_type in ['VarDescription', 'VarAttributes']:
+          if not attribute_type in variable:
+            print("Missing " + attribute_type + " in " + name + " in " + dataset['id'])
+            continue
           for attribute in variable[attribute_type]:
             attributes[attribute_type].add(attribute)
+
     return attributes
 
   attributes = all_attributes(datasets)
 
-  header = ['datasetID/varName']
+  header = ['datasetID','varName']
   for attribute in attributes['VarDescription']:
     header.append(attribute)
   for attribute in attributes['VarAttributes']:
@@ -36,16 +40,20 @@ def all_attribute_table(datasets):
 
   table = []
   for dataset in datasets:
+    print(dataset['id'])
     if omit(dataset['id']) == True:
       continue
     for name, variable in dataset['_variables'].items():
-      row = [dataset['id'] + "/" + name]
+      row = [dataset['id'], name]
       for attribute_type in ['VarDescription', 'VarAttributes']:
+        if not attribute_type in variable:
+          for attribute in attributes[attribute_type]:
+            row.append("?") # No VarDescription or VarAttributes
+          continue
         for attribute in attributes[attribute_type]:
           if attribute in variable[attribute_type]:
             val = variable[attribute_type][attribute]
-            if isinstance(val,str):
-              val = val.replace(' ', '⎵')
+            #if isinstance(val,str): val = val.replace(' ', '⎵')
             row.append(val)
           else:
             row.append("")

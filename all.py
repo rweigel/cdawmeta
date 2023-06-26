@@ -9,13 +9,13 @@ try:
   import requests_cache
   import xmltodict
 except:
-  print(os.popen('pip requests_cache').read())
+  print(os.popen('pip install xmltodict requests_cache').read())
 
 import requests_cache
 import xmltodict
 
 base_dir = os.path.dirname(__file__)
-all_file = os.path.join(base_dir, 'data/all.json')
+all_file = os.path.join(base_dir, 'data/all-resolved.json')
 os.makedirs(os.path.join(base_dir, 'data'), exist_ok=True)
 
 allxml = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
@@ -161,6 +161,7 @@ add_spase(datasets)
 
 print(f'# of datasets: {len(datasets)}')
 
+print(f'Writing {all_file}')
 with open(all_file, 'w', encoding='utf-8') as f:
   json.dump(datasets, f, indent=2)
 print(f'Wrote {all_file}')

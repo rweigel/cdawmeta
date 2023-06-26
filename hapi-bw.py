@@ -1,5 +1,8 @@
 def omit(id):
-  if not id.startswith('A'):
+  if id.startswith('GOLD_'):
+    # GOLD_L2_NMAX has CHAR DEPEND_0
+    return True
+  if id.startswith('ICON_L2-7_IVM-A'):
     return True
   return False
 
@@ -7,11 +10,9 @@ import os
 import json
 
 base_dir = os.path.dirname(__file__)
-all_file = os.path.join(base_dir, 'data/all.json')
+all_file = os.path.join(base_dir, 'data/all-resolved.json')
 tmp_file = os.path.join(base_dir, 'data/hapi-bw.tmp.json')
 out_file = os.path.join(base_dir, 'data/hapi-bw.json')
-
-
 def cdf2hapitype(cdf_type):
 
   if cdf_type in ['CDF_CHAR', 'CDF_UCHAR']:
@@ -103,7 +104,7 @@ def add_variables_split(datasets):
   for dataset in datasets:
 
     depend_0s = {}
-    print(dataset['id'] + ": building HAPI /info")
+    print(dataset['id'] + ": building _variables_split")
     names = dataset['_variables'].keys()
     for name in names:
 
@@ -148,7 +149,7 @@ def cdftimelen(cdf_type):
   if cdf_type == 'CDF_EPOCH16':
     return len('0000-01-01:00:00:00.000000000000Z')
 
-  print("Aborting: Unhandled CDF time type: " + cdf_type)
+  print("Aborting: Unhandled depend_0 type: " + cdf_type)
   exit(1)
 
 def variables2parameters(variables, depend_0):
@@ -168,6 +169,8 @@ def variables2parameters(variables, depend_0):
     type = cdf2hapitype(variable['VarDescription']['DataType'])
 
     if type == 'string':
+      #print(variable['VarDescription']['PadValue'])
+      #print(variable['VarAttributes']['FILLVAL'])
       # Would need to determine string length and need to handle
       # case where PadValue and FillValue are not present, so length
       # cannot be determined. (PadValue and FillValue are not always
@@ -216,6 +219,7 @@ def subset_and_transform(datasets):
 
   datasets_new = []
   for dataset in datasets:
+    print(dataset['id'] + ": subsetting and creating /info")
     n = 0
     depend_0s = dataset['_variables_split'].items()
     for depend_0_name, variables in depend_0s:
@@ -234,6 +238,12 @@ def subset_and_transform(datasets):
       n = n + 1
 
   return datasets_new
+
+def write_json(file, data):
+  print(f'Writing: {file}')
+  with open(file, 'w', encoding='utf-8') as f:
+    json.dump(data, f, indent=2)
+  print(f'Wrote: {file}')
 
 print(f'Reading: {all_file}')
 with open(all_file, 'r', encoding='utf-8') as f:
@@ -255,17 +265,18 @@ datasets = [i for i in datasets if i is not None]
 
 # Add _variables element to each dataset
 add_variables(datasets)
+
+# Save result to tmp file; _variables is used by table-all.py
+write_json(tmp_file, datasets)
+
 # Add _variables_split element to each dataset
 add_variables_split(datasets)
 
 # Split datasets into HAPI datasets using _variables_split element.
 datasets_hapi = subset_and_transform(datasets)
 
+print(f'Writing: {out_file}')
 with open(out_file, 'w', encoding='utf-8') as f:
   json.dump(datasets_hapi, f, indent=2)
 print(f'Wrote: {out_file}')
 
-# For debugging, save result passed to subset_and_transform().
-with open(tmp_file, 'w', encoding='utf-8') as f:
-  json.dump(datasets, f, indent=2)
-print(f'Wrote: {tmp_file}')

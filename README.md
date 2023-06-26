@@ -3,8 +3,8 @@
 ```
 git clone https://github.com/rweigel/cdaweb-hapi.git
 cd cdaweb-hapi
-python all.py     # creates data/all.json containing master CDF and SPASE (if available) as JSON
-python hapi-bw.py # creates data/hapi-bw.json using data/all.json
+python all.py     # creates data/all-resolved.json containing master CDF and SPASE (if available) as JSON
+python hapi-bw.py # creates data/hapi-bw.json using data/all-resolved.json
 python hapi-nl.py # creates data/hapi-nl.json using https://cdaweb.gsfc.nasa.gov/hapi/{catalog,info}
 ```
 
