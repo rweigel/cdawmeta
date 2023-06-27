@@ -28,34 +28,28 @@ def split_variables(datasets):
 
   for dataset in datasets:
 
+
     depend_0s = {}
-    print(dataset['id'] + ": building _variables_split")
     names = dataset['_variables'].keys()
     for name in names:
 
       variable_meta = dataset['_variables'][name]
 
       if 'VarAttributes' not in variable_meta:
-        print(f'  variable "{name}" has no VarAttributes')
+        print(dataset['id'])
+        print(f'  Error: Dropping dataset b/c variable "{name}" has no VarAttributes')
         continue
 
       if 'VAR_TYPE' not in variable_meta['VarAttributes']:
-        print(f'  variable "{name}" has no VAR_TYPE')
+        print(dataset['id'])
+        print(f'  Error: Dropping dataset b/c variable "{name}" has no VAR_TYPE')
         continue
-
-      if 'VIRTUAL' in variable_meta['VarAttributes']:
-        if variable_meta['VarAttributes']['VIRTUAL'].lower() == 'true':
-          print("  VIRTUAL variable: " + name)
 
       if 'DEPEND_0' in variable_meta['VarAttributes']:
         depend_0 = variable_meta['VarAttributes']['DEPEND_0']
         if depend_0 not in depend_0s:
           depend_0s[depend_0] = {}
         depend_0s[depend_0][name] = variable_meta
-
-    depend_0_names = list(depend_0s.keys())
-    if len(depend_0_names) > 1:
-      print(f'  {len(depend_0_names)} DEPEND_0s')
 
     dataset['_variables_split'] = depend_0s
 
@@ -109,7 +103,7 @@ def variables2parameters(depend_0_variable, depend_0_variables, all_variables):
       # case where PadValue and FillValue are not present, so length
       # cannot be determined. (PadValue and FillValue are not always
       # present for DEPEND_0 variables; see note in cdftimelen()).
-      print(f'  Dropping {name} because string parameter not supported.')
+      print(f"  Dropping {name} because string parameter with VAR_TYPE='data' is not supported.")
       continue
 
     parameter = {
@@ -182,7 +176,7 @@ def variables2parameters(depend_0_variable, depend_0_variables, all_variables):
             }]
             parameter["bins"] = bins
           else:
-            print("  Not including centers because no VarData for " + DEPEND_1_NAME + " (probably VIRTUAL)")
+            print(f"  Not including bin centers for {DEPEND_1_NAME} no VarData (probably VIRTUAL)")
       else:
         # TODO: Use for labels
         pass
@@ -199,17 +193,21 @@ def subset_and_transform(datasets):
     print(dataset['id'] + ": subsetting and creating /info")
     n = 0
     depend_0s = dataset['_variables_split'].items()
+    print(f"  {len(depend_0s)} DEPEND_0s")
     for depend_0_name, depend_0_variables in depend_0s:
 
       if depend_0_name not in dataset['_variables']:
-        print(f"  Error: DEPEND_0 '{depend_0_name}' is referenced by a variable, but it is not a variable.")
+        print(f"  Error: DEPEND_0 '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting.")
         continue
 
       depend_0_variable = dataset['_variables'][depend_0_name]
 
       parameters = variables2parameters(depend_0_variable, depend_0_variables, dataset['_variables'])
       if parameters == None:
-        print("  Due to last error, omitting dataset with DEPEND_0 = " + depend_0_name)
+        if len(depend_0s) == 1:
+          print("  Due to last error, omitting dataset with DEPEND_0 = " + depend_0_name)
+        else:
+          print("  Due to last error, omitting sub-dataset with DEPEND_0 = " + depend_0_name)
         continue
 
       subset = ''
