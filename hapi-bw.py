@@ -113,6 +113,8 @@ def variables2parameters(depend_0_variable, depend_0_variables, all_variables):
 
     if 'VIRTUAL' in variable['VarAttributes']:
       parameter['_VIRTUAL'] = variable['VarAttributes']['VIRTUAL']
+    if 'DEPEND_0' in variable['VarAttributes']:
+      parameter['_DEPEND_0'] = variable['VarAttributes']['DEPEND_0']
 
     if 'DimSizes' in variable['VarDescription']:
       size = variable['VarDescription']['DimSizes']
