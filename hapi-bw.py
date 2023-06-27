@@ -109,7 +109,7 @@ def variables2parameters(depend_0_variable, depend_0_variables, all_variables):
       # case where PadValue and FillValue are not present, so length
       # cannot be determined. (PadValue and FillValue are not always
       # present for DEPEND_0 variables; see note in cdftimelen()).
-      print(f'Dropping {name} because string parameter not supported.')
+      print(f'  Dropping {name} because string parameter not supported.')
       continue
 
     parameter = {
@@ -182,7 +182,7 @@ def variables2parameters(depend_0_variable, depend_0_variables, all_variables):
             }]
             parameter["bins"] = bins
           else:
-            print("  No VarData for " + DEPEND_1_NAME + " (VIRTUAL?)")
+            print("  Not including centers because no VarData for " + DEPEND_1_NAME + " (probably VIRTUAL)")
       else:
         # TODO: Use for labels
         pass
@@ -209,7 +209,7 @@ def subset_and_transform(datasets):
 
       parameters = variables2parameters(depend_0_variable, depend_0_variables, dataset['_variables'])
       if parameters == None:
-        print("  Omitting dataset with DEPEND_0 = " + depend_0_name)
+        print("  Due to last error, omitting dataset with DEPEND_0 = " + depend_0_name)
         continue
 
       subset = ''

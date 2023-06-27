@@ -8,9 +8,9 @@ all:
 	make tables
 
 compare:
-	make compare.log
+	make log/compare.log
 
-compare.log: data/hapi-bw.json data/hapi-nl.json compare.py
+log/compare.log: data/hapi-bw.json data/hapi-nl.json compare.py
 	python compare.py > compare.log
 
 data/all-resolved.json: all.py
@@ -21,7 +21,7 @@ data/all-resolved.restructured.json: all-restructure.py
 
 
 data/hapi-bw.json: data/all-resolved.json hapi-bw.py
-	python hapi-bw.py
+	python hapi-bw.py | tee log/hapi-bw.log
 
 hapi-bw:
 	make data/hapi-bw.json
