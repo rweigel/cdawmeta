@@ -1028,20 +1028,30 @@ C1_JP_PSE: subsetting and creating /info
   1 DEPEND_0s
   Dropping event_code__C1_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
   Dropping event_sub_code__C1_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
+  Dropping event_code__C1_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
+  Dropping event_sub_code__C1_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
 C2_JP_PSE: subsetting and creating /info
   1 DEPEND_0s
+  Dropping event_code__C2_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
+  Dropping event_sub_code__C2_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
   Dropping event_code__C2_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
   Dropping event_sub_code__C2_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
 C3_JP_PSE: subsetting and creating /info
   1 DEPEND_0s
   Dropping event_code__C3_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
   Dropping event_sub_code__C3_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
+  Dropping event_code__C3_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
+  Dropping event_sub_code__C3_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
 C4_JP_PSE: subsetting and creating /info
   1 DEPEND_0s
   Dropping event_code__C4_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
   Dropping event_sub_code__C4_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
+  Dropping event_code__C4_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
+  Dropping event_sub_code__C4_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
 CT_JP_PSE: subsetting and creating /info
   1 DEPEND_0s
+  Dropping event_code__CT_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
+  Dropping event_sub_code__CT_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
   Dropping event_code__CT_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
   Dropping event_sub_code__CT_JP_PSE because string parameter with VAR_TYPE='data' is not supported.
 CL_JP_PCY: subsetting and creating /info
@@ -1090,10 +1100,18 @@ DE1_PWI_LFC-SPECTRA: subsetting and creating /info
   Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
   Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
   Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
+  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
+  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
+  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
+  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
 DE1_PWI_OR-AT: subsetting and creating /info
   1 DEPEND_0s
 DE1_PWI_SFC-SPECTRA: subsetting and creating /info
   1 DEPEND_0s
+  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
+  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
+  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
+  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
   Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
   Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
   Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
@@ -1206,6 +1224,8 @@ ERG_LEPE_L2_OMNIFLUX: subsetting and creating /info
   1 DEPEND_0s
   Not including bin centers for FEDO_Energy_MEAN no VarData (probably VIRTUAL)
   Not including bin centers for FEDO_Energy_MEAN no VarData (probably VIRTUAL)
+  Not including bin centers for FEDO_Energy_MEAN no VarData (probably VIRTUAL)
+  Not including bin centers for FEDO_Energy_MEAN no VarData (probably VIRTUAL)
 ERG_LEPI_L2_OMNIFLUX: subsetting and creating /info
   1 DEPEND_0s
 ERG_MGF_L2_8SEC: subsetting and creating /info
@@ -1224,6 +1244,9 @@ ERG_PWE_HFA_L2_SPEC_MONIT: subsetting and creating /info
   1 DEPEND_0s
 ERG_XEP_L2_OMNIFLUX: subsetting and creating /info
   1 DEPEND_0s
+  Not including bin centers for FEDO_SSD_Energy_MEAN no VarData (probably VIRTUAL)
+  Not including bin centers for FEDO_SSD_Energy_MEAN no VarData (probably VIRTUAL)
+  Not including bin centers for FEDO_GSO_Energy_MEAN no VarData (probably VIRTUAL)
   Not including bin centers for FEDO_SSD_Energy_MEAN no VarData (probably VIRTUAL)
   Not including bin centers for FEDO_SSD_Energy_MEAN no VarData (probably VIRTUAL)
   Not including bin centers for FEDO_GSO_Energy_MEAN no VarData (probably VIRTUAL)
@@ -1255,7 +1278,7 @@ FAST_OR_SSC: subsetting and creating /info
   1 DEPEND_0s
 FAST_TEAMS_PA_L2: subsetting and creating /info
   3 DEPEND_0s
-  Error: DEPEND_0 'Epoch_helium' is referenced by a variable, but it is not a variable. Omitting.
+  Error: DEPEND_0 'Epoch_helium' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.
 FA_K0_ACF: subsetting and creating /info
   1 DEPEND_0s
 FA_K0_TMS: subsetting and creating /info
@@ -1273,8 +1296,10 @@ GE_EDB3SEC_MGF: subsetting and creating /info
 GE_EDA12SEC_LEP: subsetting and creating /info
   1 DEPEND_0s
   Dropping Sensor because string parameter with VAR_TYPE='data' is not supported.
+  Dropping Sensor because string parameter with VAR_TYPE='data' is not supported.
 GE_EDB12SEC_LEP: subsetting and creating /info
   1 DEPEND_0s
+  Dropping Sensor because string parameter with VAR_TYPE='data' is not supported.
   Dropping Sensor because string parameter with VAR_TYPE='data' is not supported.
 GE_1MIN_MAG_PLASMA_SW_ONLY: subsetting and creating /info
   1 DEPEND_0s
@@ -1488,6 +1513,8 @@ ALOUETTE2_AV_SOL: subsetting and creating /info
   1 DEPEND_0s
 ISS_DOSANL_TEPC: subsetting and creating /info
   1 DEPEND_0s
+  Dropping FLAG because string parameter with VAR_TYPE='data' is not supported.
+  Dropping LOCATION because string parameter with VAR_TYPE='data' is not supported.
   Dropping FLAG because string parameter with VAR_TYPE='data' is not supported.
   Dropping LOCATION because string parameter with VAR_TYPE='data' is not supported.
 ISS_SP_FPMU: subsetting and creating /info
@@ -1920,7 +1947,7 @@ ICON_L2-4_FUV_DAY: subsetting and creating /info
   Due to last error, omitting sub-dataset with DEPEND_0 = Epoch_cdf
   Unhandled DEPEND_0 type: CDF_INT8
   Due to last error, omitting sub-dataset with DEPEND_0 = Epoch
-  Error: DEPEND_0 'Flag' is referenced by a variable, but it is not a variable. Omitting.
+  Error: DEPEND_0 'Flag' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.
 ICON_L2-5_FUV_NIGHT: subsetting and creating /info
   1 DEPEND_0s
 ICON_L2-6_EUV: subsetting and creating /info
@@ -2052,8 +2079,13 @@ MSL_HELIO1DAY_POSITION: subsetting and creating /info
 MSL_RAD_OBS-L2: subsetting and creating /info
   1 DEPEND_0s
   Dropping FLAGGED_DATA because string parameter with VAR_TYPE='data' is not supported.
+  Dropping FLAGGED_DATA because string parameter with VAR_TYPE='data' is not supported.
 MSL_RAD_OBS-L1: subsetting and creating /info
   1 DEPEND_0s
+  Dropping BEGIN_UTC because string parameter with VAR_TYPE='data' is not supported.
+  Dropping END_UTC because string parameter with VAR_TYPE='data' is not supported.
+  Dropping BEGIN_MARS because string parameter with VAR_TYPE='data' is not supported.
+  Dropping END_MARS because string parameter with VAR_TYPE='data' is not supported.
   Dropping BEGIN_UTC because string parameter with VAR_TYPE='data' is not supported.
   Dropping END_UTC because string parameter with VAR_TYPE='data' is not supported.
   Dropping BEGIN_MARS because string parameter with VAR_TYPE='data' is not supported.
@@ -2062,6 +2094,22 @@ MVN_MAG_L2-SUNSTATE-1SEC: subsetting and creating /info
   1 DEPEND_0s
 MVN_INSITU_KP-4SEC: subsetting and creating /info
   1 DEPEND_0s
+  Dropping NGIMS_He_density_data_quality because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_O_density_data_quality because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_CO_density_data_quality because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_N2_density_data_quality because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_NO_density_data_quality because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_Ar_density_data_quality because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_CO2_density_data_quality because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_Ion_density_data_quality_32plus because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_Ion_density_data_quality_44plus because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_Ion_density_data_quality_30plus because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_Ion_density_data_quality_16plus because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_Ion_density_data_quality_28plus because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_Ion_density_data_quality_12plus because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_Ion_density_data_quality_17plus because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NGIMS_Ion_density_data_quality_14plus because string parameter with VAR_TYPE='data' is not supported.
+  Dropping Inbound_Outbound_Flag because string parameter with VAR_TYPE='data' is not supported.
   Dropping NGIMS_He_density_data_quality because string parameter with VAR_TYPE='data' is not supported.
   Dropping NGIMS_O_density_data_quality because string parameter with VAR_TYPE='data' is not supported.
   Dropping NGIMS_CO_density_data_quality because string parameter with VAR_TYPE='data' is not supported.
@@ -2555,6 +2603,7 @@ MMS4_MEC_SRVY_L2_EPHTS04D: subsetting and creating /info
 MMS1_SCM_SRVY_L2_SCSRVY: subsetting and creating /info
   1 DEPEND_0s
   Dropping mms1_scm_qf_scm123_scsrvy_srvy_l2 because string parameter with VAR_TYPE='data' is not supported.
+  Dropping mms1_scm_qf_scm123_scsrvy_srvy_l2 because string parameter with VAR_TYPE='data' is not supported.
 MMS2_SCM_SRVY_L2_SCSRVY: subsetting and creating /info
   1 DEPEND_0s
 MMS3_SCM_SRVY_L2_SCSRVY: subsetting and creating /info
@@ -2564,14 +2613,18 @@ MMS4_SCM_SRVY_L2_SCSRVY: subsetting and creating /info
 MMS1_SCM_BRST_L2_SCB: subsetting and creating /info
   1 DEPEND_0s
   Dropping mms1_scm_qf_scm123_scb_brst_l2 because string parameter with VAR_TYPE='data' is not supported.
+  Dropping mms1_scm_qf_scm123_scb_brst_l2 because string parameter with VAR_TYPE='data' is not supported.
 MMS2_SCM_BRST_L2_SCB: subsetting and creating /info
   1 DEPEND_0s
+  Dropping mms2_scm_qf_scm123_scb_brst_l2 because string parameter with VAR_TYPE='data' is not supported.
   Dropping mms2_scm_qf_scm123_scb_brst_l2 because string parameter with VAR_TYPE='data' is not supported.
 MMS3_SCM_BRST_L2_SCB: subsetting and creating /info
   1 DEPEND_0s
   Dropping mms3_scm_qf_scm123_scb_brst_l2 because string parameter with VAR_TYPE='data' is not supported.
+  Dropping mms3_scm_qf_scm123_scb_brst_l2 because string parameter with VAR_TYPE='data' is not supported.
 MMS4_SCM_BRST_L2_SCB: subsetting and creating /info
   1 DEPEND_0s
+  Dropping mms4_scm_qf_scm123_scb_brst_l2 because string parameter with VAR_TYPE='data' is not supported.
   Dropping mms4_scm_qf_scm123_scb_brst_l2 because string parameter with VAR_TYPE='data' is not supported.
 MMS1_SCM_BRST_L2_SCHB: subsetting and creating /info
   1 DEPEND_0s
@@ -2701,10 +2754,10 @@ PO_H0_TIM: subsetting and creating /info
   4 DEPEND_0s
 PO_H2_TIM: subsetting and creating /info
   8 DEPEND_0s
-  Error: DEPEND_0 'H_epoch' is referenced by a variable, but it is not a variable. Omitting.
-  Error: DEPEND_0 'O_epoch' is referenced by a variable, but it is not a variable. Omitting.
-  Error: DEPEND_0 'He1_epoch' is referenced by a variable, but it is not a variable. Omitting.
-  Error: DEPEND_0 'He2_epoch' is referenced by a variable, but it is not a variable. Omitting.
+  Error: DEPEND_0 'H_epoch' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.
+  Error: DEPEND_0 'O_epoch' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.
+  Error: DEPEND_0 'He1_epoch' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.
+  Error: DEPEND_0 'He2_epoch' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.
 PO_K1_TIM: subsetting and creating /info
   1 DEPEND_0s
 PO_H0_UVI: subsetting and creating /info
@@ -2803,6 +2856,8 @@ PSP_FLD_L2_RFS_LFR: subsetting and creating /info
   254 DEPEND_0s
 PSP_FLD_L2_TDS_WF: subsetting and creating /info
   2 DEPEND_0s
+  Dropping PSP_FLD_L2_TDS_WF_Burst_Quality_Algorithm_Name because string parameter with VAR_TYPE='data' is not supported.
+  Dropping PSP_FLD_L2_TDS_WF_Burst_Type_Name because string parameter with VAR_TYPE='data' is not supported.
   Dropping PSP_FLD_L2_TDS_WF_Burst_Quality_Algorithm_Name because string parameter with VAR_TYPE='data' is not supported.
   Dropping PSP_FLD_L2_TDS_WF_Burst_Type_Name because string parameter with VAR_TYPE='data' is not supported.
 PSP_FLD_L2_F2_100BPS: subsetting and creating /info
@@ -2919,6 +2974,29 @@ PSP_ISOIS-EPIHI_L2-LET2-RATES3600: subsetting and creating /info
   1 DEPEND_0s
 PSP_ISOIS-EPILO_L2-IC: subsetting and creating /info
   5 DEPEND_0s
+  Not including bin centers for He3_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for Fe_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for O_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for Mg_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for C_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for Si_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for N_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for Ne_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
+  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for He3_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
@@ -3169,8 +3247,10 @@ RBSPB_EFW-L2_VSVY-HIRES: subsetting and creating /info
 RBSP-A_DENSITY_EMFISIS-L4: subsetting and creating /info
   1 DEPEND_0s
   Dropping digi_type because string parameter with VAR_TYPE='data' is not supported.
+  Dropping digi_type because string parameter with VAR_TYPE='data' is not supported.
 RBSP-B_DENSITY_EMFISIS-L4: subsetting and creating /info
   1 DEPEND_0s
+  Dropping digi_type because string parameter with VAR_TYPE='data' is not supported.
   Dropping digi_type because string parameter with VAR_TYPE='data' is not supported.
 RBSP-A_MAGNETOMETER_4SEC-GEI_EMFISIS-L3: subsetting and creating /info
   1 DEPEND_0s
@@ -3434,6 +3514,14 @@ SOLO_L2_RPW-LFR-SURV-BP1: subsetting and creating /info
   6 DEPEND_0s
 SOLO_L2_RPW-LFR-SURV-BP2: subsetting and creating /info
   6 DEPEND_0s
+  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
+  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
+  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
+  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
+  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
+  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
+  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
+  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
   Not including bin centers for B_F0 no VarData (probably VIRTUAL)
   Not including bin centers for B_F0 no VarData (probably VIRTUAL)
   Not including bin centers for B_F0 no VarData (probably VIRTUAL)
@@ -4179,6 +4267,7 @@ TIMED_L2A_SABER: subsetting and creating /info
 TIMED_L3A_SEE: subsetting and creating /info
   1 DEPEND_0s
   Dropping NAME_LINE because string parameter with VAR_TYPE='data' is not supported.
+  Dropping NAME_LINE because string parameter with VAR_TYPE='data' is not supported.
 TIMED_WINDVECTORSNCAR_TIDI: subsetting and creating /info
   5 DEPEND_0s
 TIMED_EDP_GUVI: subsetting and creating /info
@@ -4584,8 +4673,10 @@ TWINS2_TISTORM_IMAGER: subsetting and creating /info
 TWINS1_L1_IMAGER: subsetting and creating /info
   1 DEPEND_0s
   Dropping title because string parameter with VAR_TYPE='data' is not supported.
+  Dropping title because string parameter with VAR_TYPE='data' is not supported.
 TWINS2_L1_IMAGER: subsetting and creating /info
   1 DEPEND_0s
+  Dropping title because string parameter with VAR_TYPE='data' is not supported.
   Dropping title because string parameter with VAR_TYPE='data' is not supported.
 TWINS1_L1_LAD: subsetting and creating /info
   1 DEPEND_0s

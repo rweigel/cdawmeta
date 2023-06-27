@@ -11,7 +11,7 @@ compare:
 	make log/compare.log
 
 log/compare.log: data/hapi-bw.json data/hapi-nl.json compare.py
-	python compare.py > compare.log
+	python compare.py | tee log/compare.log
 
 data/all-resolved.json: all.py
 	python all.py

@@ -190,28 +190,41 @@ def subset_and_transform(datasets):
 
   datasets_new = []
   for dataset in datasets:
+
     print(dataset['id'] + ": subsetting and creating /info")
     n = 0
     depend_0s = dataset['_variables_split'].items()
     print(f"  {len(depend_0s)} DEPEND_0s")
+
+    # First pass - drop DEPEND_0 datasets with problems
+    depend_0_names = []
     for depend_0_name, depend_0_variables in depend_0s:
 
       if depend_0_name not in dataset['_variables']:
-        print(f"  Error: DEPEND_0 '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting.")
+        print(f"  Error: DEPEND_0 '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.")
         continue
 
       depend_0_variable = dataset['_variables'][depend_0_name]
-
       parameters = variables2parameters(depend_0_variable, depend_0_variables, dataset['_variables'])
       if parameters == None:
+        dataset['_variables_split'][depend_0_name] = None
         if len(depend_0s) == 1:
           print("  Due to last error, omitting dataset with DEPEND_0 = " + depend_0_name)
         else:
           print("  Due to last error, omitting sub-dataset with DEPEND_0 = " + depend_0_name)
         continue
 
+      depend_0_names.append(depend_0_name)
+
+    for depend_0_name in depend_0_names:
+
+      depend_0_variable = dataset['_variables'][depend_0_name]
+      depend_0_variables = dataset['_variables_split'][depend_0_name]
+
+      parameters = variables2parameters(depend_0_variable, depend_0_variables, dataset['_variables'])
+
       subset = ''
-      if len(depend_0s) > 1:
+      if len(depend_0_names) > 1:
         subset = '@' + str(n)
 
       dataset_new = {
