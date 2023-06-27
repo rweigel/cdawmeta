@@ -6,10 +6,15 @@ all_input_bw = os.path.join(base_dir, 'hapi-bw.json')
 all_input_nl = os.path.join(base_dir, 'hapi-nl.json')
 
 import json
+print(f"Reading: {all_input_bw}")
 with open(all_input_bw, 'r', encoding='utf-8') as f:
   datasets_bw = json.load(f)
+print(f"Read: {all_input_bw}")
+
+print(f"Reading: {all_input_nl}")
 with open(all_input_nl, 'r', encoding='utf-8') as f:
   datasets_nl = json.load(f)
+print(f"Read: {all_input_nl}")
 
 def restructure(datasets):
   datasetsr = {}

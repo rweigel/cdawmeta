@@ -7,6 +7,12 @@ all:
 	make hapi-nl
 	make tables
 
+compare:
+	make compare.log
+
+compare.log: data/hapi-bw.json data/hapi-nl.json compare.py
+	python compare.py > compare.log
+
 data/all-resolved.json: all.py
 	python all.py
 

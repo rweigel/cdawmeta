@@ -1,8 +1,5 @@
 def omit(id):
   return False
-  if not id.startswith('A'):
-    return True
-  return False
 
 import os
 import json
