@@ -1,31 +1,35 @@
-all:
-	make table-hapi
-	make table-all
+HAPIHEAD=../data/tables/hapi.table.head.json
+HAPIBODY=../data/tables/hapi.table.body.json
 
-table-all: table-all.py
-	make table-ui/ajax/cdaweb/all.table.head.json
+ALLHEAD=../data/tables/all.table.head.json
+ALLBODY=../data/tables/all.table.body.json
 
-table-ui/ajax/cdaweb/all.table.head.json: ../data/all-resolved.restructured.json
-	python table-all.py
+tables:
+	cd ../; make tables
 
-serve-all: table-ui/ajax/cdaweb/all.table.head.json
+table-ui:
 	@- git clone https://github.com/rweigel/table-ui
-	@- cd table-ui/ajax; ln -s ../../../data/tables cdaweb
-	cd table-ui/ajax; python server.py 8051 cdaweb/all.table.head.json cdaweb/all.table.body.json cdaweb/all.table.conf.json
 
+serve-all:
+	make tables
+	make table-ui
+	cd table-ui/ajax; python server.py 8051 $(ALLHEAD) $(ALLBODY)
 
-table-hapi: table-hapi.py
-	make table-ui/ajax/cdaweb/hapi.table.head.json
+serve-hapi:
+	make tables
+	make table-ui
+	python table-ui/ajax/server.py 8052 $(HAPIHEAD) $(HAPIBODY)
 
-table-ui/ajax/cdaweb/hapi.table.head.json: ../data/hapi-bw.json ../data/hapi-nl.json
-	python table-hapi.py
+serve-hapi-sql:
+	make tables
+	make hapi-sql
+	python table-ui/ajax/server.py 8052 $(HAPIHEAD) $(HAPIBODY).sql
 
-serve-hapi: table-ui/ajax/cdaweb/hapi.table.head.json
-	@- git clone https://github.com/rweigel/table-ui
-	@- cd table-ui/ajax; ln -s ../../../data/tables cdaweb
-	cd table-ui/ajax; python server.py 8052 cdaweb/hapi.table.head.json cdaweb/hapi.table.body.json cdaweb/hapi.table.conf.json
+hapi-sql:
+	make tables
+	make table-ui
+	make $(HAPIBODY).sql
 
-serve-hapi-sql: table-ui/ajax/cdaweb/hapi.table.head.json
-	@- git clone https://github.com/rweigel/table-ui
-	@- cd table-ui/ajax; ln -s ../../../data/tables cdaweb
-	cd table-ui/ajax; python server.py 8052 cdaweb/hapi.table.head.json cdaweb/hapi.table.body.json.sql cdaweb/hapi.table.conf.json
+$(HAPIBODY).sql: table-ui/ajax/sql/sql.py
+	python table-ui/ajax/sql/sql.py $(HAPIHEAD) $(HAPIBODY)
+

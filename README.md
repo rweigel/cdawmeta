@@ -3,7 +3,7 @@
 ```
 git clone https://github.com/rweigel/cdaweb-hapi.git
 cd cdaweb-hapi
-make all-bw
+make hapi-bw
 ```
 
 # Notes
