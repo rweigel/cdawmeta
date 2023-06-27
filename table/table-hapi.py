@@ -3,7 +3,7 @@ base_dir = os.path.join(os.path.dirname(__file__), '../data')
 all_input_bw = os.path.join(base_dir, 'hapi-bw.json')
 all_input_nl = os.path.join(base_dir, 'hapi-nl.json')
 file_body   = os.path.join(base_dir, 'tables/hapi.table.body.json')
-file_header = os.path.join(base_dir, 'tables/hapi.table.header.json')
+file_header = os.path.join(base_dir, 'tables/hapi.table.head.json')
 
 def uniq_keys(datasets, ukeys=None):
 
@@ -75,9 +75,11 @@ def table(datasets, ukeys, prefix):
           rowo.append(None)
 
     for pidx, parameter in enumerate(dataset['info']['parameters']):
+
       row = [pidx]
       if didx == 0 and pidx == 0:
         head = ['index']
+
       for pkey in ukeys['info']['parameters'].keys():
         if pkey != 'bins':
           if didx == 0 and pidx == 0:
@@ -87,9 +89,16 @@ def table(datasets, ukeys, prefix):
           else:
             row.append(None)
 
-      if False and 'bins' in parameter:
-        for bkey in ukeys['info']['parameters']['bins'].keys():
-          print(bkey)
+      for bkey in ukeys['info']['parameters']['bins'].keys():
+        if didx == 0 and pidx == 0:
+          head.append(f"bins[0][{bkey}]")
+        if 'bins' in parameter:
+          if bkey in parameter['bins'][0]:
+            row.append(parameter['bins'][0][bkey])
+          else:
+            row.append(None)
+        else:
+          row.append(None)
 
       # Change id value to to id/name
       rowoc = rowo.copy()
@@ -104,10 +113,16 @@ def table(datasets, ukeys, prefix):
   return head, rows
 
 import json
+
+print(f'Reading: {all_input_bw}')
 with open(all_input_bw, 'r', encoding='utf-8') as f:
   datasets_bw = json.load(f)
+print(f'Read: {all_input_bw}')
+
+print(f'Reading: {all_input_nl}')
 with open(all_input_nl, 'r', encoding='utf-8') as f:
   datasets_nl = json.load(f)
+print(f'Read: {all_input_nl}')
 
 ukeys = uniq_keys(datasets_bw)
 ukeys = uniq_keys(datasets_nl, ukeys=ukeys)
@@ -117,11 +132,13 @@ _, rows_nl = table(datasets_nl, ukeys, 'nl')
 rows = [*rows_bw, *rows_nl]
 
 os.makedirs(os.path.dirname(file_header), exist_ok=True)
+print(f'Writing: {file_header}')
 with open(file_header, 'w', encoding='utf-8') as f:
   json.dump(head, f, indent=2)
   print(f'Wrote: {file_header}')
 
 os.makedirs(os.path.dirname(file_body), exist_ok=True)
+print(f'Writing: {file_body}')
 with open(file_body, 'w', encoding='utf-8') as f:
   json.dump(rows, f, indent=2)
   print(f'Wrote: {file_body}')

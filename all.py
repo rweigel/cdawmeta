@@ -1,5 +1,13 @@
+def omit(id):
+  return False
+  if id.startswith("A"):
+    return False
+  return True
+
 # AIM_CIPS_SCI_3A has large master cdf.
 omitids = ['AIM_CIPS_SCI_3A']
+allxml  = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
+max_workers = 5
 
 import os
 import json
@@ -17,9 +25,6 @@ import xmltodict
 base_dir = os.path.dirname(__file__)
 all_file = os.path.join(base_dir, 'data/all-resolved.json')
 os.makedirs(os.path.join(base_dir, 'data'), exist_ok=True)
-
-allxml = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
-max_workers = 5
 
 def CachedSession(cdir):
   from datetime import timedelta
@@ -39,6 +44,11 @@ def CachedSession(cdir):
 
 def create_datasets(allxml):
 
+  """
+  Create a list of datasets; each element has content of dataset node in
+  all.xml. An info and id node is also added.
+  """
+
   cdir = os.path.join(os.path.dirname(__file__), 'data/cache/all')
   session = CachedSession(cdir)
 
@@ -52,7 +62,8 @@ def create_datasets(allxml):
 
     id = dataset_allxml['@serviceprovider_ID']
 
-    if id in omitids: continue
+    if id in omitids or omit(id):
+      continue
 
     startDate = dataset_allxml['@timerange_start'].replace(' ', 'T') + 'Z';
     stopDate = dataset_allxml['@timerange_stop'].replace(' ', 'T') + 'Z';
@@ -89,6 +100,10 @@ def create_datasets(allxml):
 
 def add_master(datasets):
 
+  """
+  Add a _master key to each dataset containing JSON from master CDF
+  """
+
   def get_master(dataset):
 
     mastercdf = dataset['_allxml']['mastercdf']['@ID']
@@ -116,7 +131,11 @@ def add_master(datasets):
 
 def add_spase(datasets):
 
-  def get_spase_url(dataset):
+  """
+  Add a _spase key to each dataset containing JSON from master CDF
+  """
+
+  def spase_url(dataset):
 
     if '_master' not in dataset:
       return None
@@ -134,7 +153,7 @@ def add_spase(datasets):
 
   def get_spase(dataset):
 
-    url = get_spase_url(dataset)
+    url = spase_url(dataset)
     if url is None:
       dataset['_spase'] = None
       return
