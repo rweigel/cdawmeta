@@ -15,6 +15,20 @@ serve-all:
 	make table-ui
 	cd table-ui/ajax; python server.py 8051 $(ALLHEAD) $(ALLBODY)
 
+serve-all-sql:
+	make tables
+	make all-sql
+	python table-ui/ajax/server.py 8051 $(ALLHEAD) $(ALLBODY).sql
+
+all-sql:
+	make tables
+	make table-ui
+	make $(ALLBODY).sql
+
+$(ALLBODY).sql: table-ui/ajax/sql/sql.py $(ALLHEAD) $(ALLBODY)
+	python table-ui/ajax/sql/sql.py $(ALLHEAD) $(ALLBODY)
+
+
 serve-hapi:
 	make tables
 	make table-ui
@@ -30,6 +44,6 @@ hapi-sql:
 	make table-ui
 	make $(HAPIBODY).sql
 
-$(HAPIBODY).sql: table-ui/ajax/sql/sql.py
+$(HAPIBODY).sql: table-ui/ajax/sql/sql.py $(HAPIHEAD) $(HAPIBODY)
 	python table-ui/ajax/sql/sql.py $(HAPIHEAD) $(HAPIBODY)
 

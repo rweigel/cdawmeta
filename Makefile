@@ -13,12 +13,11 @@ compare:
 log/compare.log: data/hapi-bw.json data/hapi-nl.json compare.py
 	python compare.py | tee log/compare.log
 
-data/all-resolved.json: all.py
+data/all-resolved.json:
 	python all.py
 
-data/all-resolved.restructured.json: data/all-resolved.json all-restructure.py
+data/all-resolved.restructured.json: all.py data/all-resolved.json all-restructure.py
 	python all-restructure.py
-
 
 data/hapi-bw.json: data/all-resolved.json hapi-bw.py
 	python hapi-bw.py | tee log/hapi-bw.log
@@ -33,21 +32,20 @@ hapi-nl:
 	make data/hapi-nl.json
 
 
-
-tables: data/hapi-bw.json data/hapi-nl.json data/all-resolved.restructured.json
+tables:
 	make table-hapi
 	make table-all
 
-table-hapi: table/table-hapi.py
+table-hapi:
 	make data/tables/hapi.table.head.json
 
-data/tables/hapi.table.head.json: data/hapi-bw.json data/hapi-nl.json
+data/tables/hapi.table.head.json: table/table-hapi.py data/hapi-bw.json data/hapi-nl.json
 	python table/table-hapi.py
 
-table-all: table/table-all.py
+table-all:
 	make data/tables/all.table.head.json
 
-data/tables/all.table.head.json: data/all-resolved.restructured.json
+data/tables/all.table.head.json: table/table-all.py data/all-resolved.restructured.json
 	python table/table-all.py
 
 clean:
