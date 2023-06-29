@@ -28,8 +28,8 @@ def split_variables(datasets):
 
   for dataset in datasets:
 
+    depend_0_dict = {}
 
-    depend_0s = {}
     names = dataset['_variables'].keys()
     for name in names:
 
@@ -46,12 +46,18 @@ def split_variables(datasets):
         continue
 
       if 'DEPEND_0' in variable_meta['VarAttributes']:
-        depend_0 = variable_meta['VarAttributes']['DEPEND_0']
-        if depend_0 not in depend_0s:
-          depend_0s[depend_0] = {}
-        depend_0s[depend_0][name] = variable_meta
+        depend_0_name = variable_meta['VarAttributes']['DEPEND_0']
 
-    dataset['_variables_split'] = depend_0s
+        if depend_0_name not in dataset['_variables']:
+          print(dataset['id'])
+          print(f'  Error: Dropping variable "{name}" because it has a DEPEND_0 "{depend_0_name}" that is not in dataset')
+          continue
+
+        if depend_0_name not in depend_0_dict:
+          depend_0_dict[depend_0_name] = {}
+        depend_0_dict[depend_0_name][name] = variable_meta
+
+    dataset['_variables_split'] = depend_0_dict
 
 def cdftimelen(cdf_type):
 
@@ -70,7 +76,7 @@ def variables2parameters(depend_0_variable, depend_0_variables, all_variables):
 
   cdf_type = depend_0_variable['VarDescription']['DataType']
   length = cdftimelen(cdf_type)
-  
+
   if length == None:
     print("  Unhandled DEPEND_0 type: " + cdf_type)
     return None
@@ -146,8 +152,8 @@ def variables2parameters(depend_0_variable, depend_0_variables, all_variables):
       DEPEND_1_NAME = variable['VarAttributes']['DEPEND_1']
       if not DEPEND_1_NAME in all_variables:
         # Could just drop variable
-        print(f"  Error: DEPEND_1 '{DEPEND_1_NAME}' for variable '{name}' is not a variable.")
-        return None
+        print(f"  Error: DEPEND_1 '{DEPEND_1_NAME}' for variable '{name}' is not a variable. Omitting {name}.")
+        continue
 
       DEPEND_1 = all_variables[DEPEND_1_NAME]
       hapitype = cdf2hapitype(DEPEND_1['VarDescription']['DataType'])
@@ -203,7 +209,25 @@ def subset_and_transform(datasets):
     for depend_0_name, depend_0_variables in depend_0s:
 
       if depend_0_name not in dataset['_variables']:
-        print(f"  Error: DEPEND_0 '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.")
+        # Already handled
+        print(f"  Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.")
+        continue
+
+      DEPEND_0_VAR_TYPE = dataset['_variables'][depend_0_name]['VarAttributes']['VAR_TYPE']
+
+      VAR_TYPES = []
+      for depend_0_variable in depend_0_variables.values():
+        VAR_TYPES.append(depend_0_variable['VarAttributes']['VAR_TYPE'])
+      VAR_TYPES = set(VAR_TYPES)
+
+      print(f"  DEPEND_0 ID/VAR_TYPE: '{depend_0_name}'/'{DEPEND_0_VAR_TYPE}'; dependent VARY_TYPES {VAR_TYPES}")
+
+      if DEPEND_0_VAR_TYPE == 'ignore_data':
+        print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
+        continue
+
+      if 'data' not in VAR_TYPES:
+        print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
         continue
 
       depend_0_variable = dataset['_variables'][depend_0_name]
@@ -211,9 +235,9 @@ def subset_and_transform(datasets):
       if parameters == None:
         dataset['_variables_split'][depend_0_name] = None
         if len(depend_0s) == 1:
-          print("  Due to last error, omitting dataset with DEPEND_0 = " + depend_0_name)
+          print(f"  Due to last error, omitting dataset with DEPEND_0 = {depend_0_name}")
         else:
-          print("  Due to last error, omitting sub-dataset with DEPEND_0 = " + depend_0_name)
+          print(f"  Due to last error, omitting sub-dataset with DEPEND_0 = {depend_0_name}")
         continue
 
       depend_0_names.append(depend_0_name)
