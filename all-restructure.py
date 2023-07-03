@@ -68,6 +68,31 @@ def add_variables(datasets):
 
     dataset['_variables'] = variables_new
 
+    break
+
+def add_globals(datasets):
+
+  for dataset in datasets:
+
+    file = list(dataset['_master'].keys())[0]
+
+    globals = dataset['_master'][file]['CDFglobalAttributes']
+    globals_new = {}
+
+    for _global in globals:
+      gkey = list(_global.keys())
+      if len(gkey) > 1:
+        print("Expected only one key in _global object.")
+        exit()
+      gvals = _global[gkey[0]]
+      text = []
+      for gval in gvals:
+        text.append(gval[list(gval.keys())[0]])
+      print("\n".join(text))
+      globals_new[gkey[0]] = "\n".join(text)
+
+    dataset['_globals'] = globals_new
+
 print(f'Reading: {all_file}')
 with open(all_file, 'r', encoding='utf-8') as f:
   datasets = json.load(f)
@@ -80,15 +105,19 @@ for idx, dataset in enumerate(datasets):
     datasets[idx] = None
     continue
 
+  if not dataset['id'].startswith('ELA_L1_STATE_PRED'):
+    datasets[idx] = None
+    continue
+
 datasets = [i for i in datasets if i is not None]
 
 # Add _variables element to each dataset
 add_variables(datasets)
-
-for idx, dataset in enumerate(datasets):
-  del datasets[idx]["_master"]
-  if "_spase" in dataset:
-    del datasets[idx]["_spase"]
+add_globals(datasets)
+#for idx, dataset in enumerate(datasets):
+  #del datasets[idx]["_master"]
+  #if "_spase" in dataset:
+  #  del datasets[idx]["_spase"]
 
 # Save result to all_file_restructured; _variables node is used by hapi-bw.py
 # and table-all.py.

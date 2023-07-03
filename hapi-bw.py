@@ -165,7 +165,8 @@ def variables2parameters(depend_0_variable, depend_0_variables, all_variables):
 
       if hapitype == 'integer' or hapitype == 'double':
         if RecVariance == "VARY":
-          pass # Nand does not create bins for this case
+          # Nand does not create bins for this case
+          continue
         else:
           # TODO: Check for multi-dimensional
           units = ""
@@ -208,8 +209,7 @@ def subset_and_transform(datasets):
     depend_0_names = []
     for depend_0_name, depend_0_variables in depend_0s:
 
-      if depend_0_name not in dataset['_variables']:
-        # Already handled
+      if depend_0_name not in dataset['_variables'].keys():
         print(f"  Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.")
         continue
 
@@ -220,7 +220,7 @@ def subset_and_transform(datasets):
         VAR_TYPES.append(depend_0_variable['VarAttributes']['VAR_TYPE'])
       VAR_TYPES = set(VAR_TYPES)
 
-      print(f"  DEPEND_0 ID/VAR_TYPE: '{depend_0_name}'/'{DEPEND_0_VAR_TYPE}'; dependent VARY_TYPES {VAR_TYPES}")
+      print(f"  DEPEND_0 ID/VAR_TYPE: '{depend_0_name}'/'{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
 
       if DEPEND_0_VAR_TYPE == 'ignore_data':
         print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
