@@ -63,7 +63,7 @@ def table(datasets, ukeys, prefix):
         if dkey in dataset:
           rowo.append(dataset[dkey])
         else:
-          rowo.append(None)
+          rowo.append("")
 
     for ikey in ukeys['info'].keys():
       if ikey != 'parameters':
@@ -72,7 +72,7 @@ def table(datasets, ukeys, prefix):
         if ikey in dataset['info']:
           rowo.append(dataset['info'][ikey])
         else:
-          rowo.append(None)
+          rowo.append("")
 
     for pidx, parameter in enumerate(dataset['info']['parameters']):
 
@@ -87,7 +87,7 @@ def table(datasets, ukeys, prefix):
           if pkey in parameter:
             row.append(parameter[pkey])
           else:
-            row.append(None)
+            row.append("")
 
       for bkey in ukeys['info']['parameters']['bins'].keys():
         if didx == 0 and pidx == 0:
@@ -96,9 +96,9 @@ def table(datasets, ukeys, prefix):
           if bkey in parameter['bins'][0]:
             row.append(parameter['bins'][0][bkey])
           else:
-            row.append(None)
+            row.append("")
         else:
-          row.append(None)
+          row.append("")
 
       # Change id value to to id/name
       rowoc = rowo.copy()

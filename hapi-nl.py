@@ -6,7 +6,7 @@ import json
 try:
   import requests_cache
 except:
-  print(os.popen('pip requests_cache').read())
+  print(os.popen('pip install requests_cache').read())
   import requests_cache
 
 base_dir = os.path.dirname(__file__)

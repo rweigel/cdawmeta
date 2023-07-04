@@ -7,6 +7,7 @@ import json
 base_dir = os.path.dirname(__file__)
 all_file_restructured = os.path.join(base_dir, 'data/all-resolved.restructured.json')
 out_file = os.path.join(base_dir, 'data/hapi-bw.json')
+nand_drops = os.path.join(base_dir, 'log/hapi-nl-drops.txt')
 
 def cdf2hapitype(cdf_type):
 
@@ -209,6 +210,14 @@ def subset_and_transform(datasets):
     depend_0_names = []
     for depend_0_name, depend_0_variables in depend_0s:
 
+      if dataset['id'] in nand_omits.keys():
+        if nand_omits[dataset['id']] is None:
+          print(f"  Omitting dataset {dataset['id']} because it is in nand_omits")
+          continue
+        if depend_0_name == nand_omits[dataset['id']]:
+          print(f"  Omitting subdataset associated with DEPEND_0 = '{depend_0_name}' because it is in nand_omits")
+          continue
+
       if depend_0_name not in dataset['_variables'].keys():
         print(f"  Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.")
         continue
@@ -264,6 +273,23 @@ def subset_and_transform(datasets):
       n = n + 1
 
   return datasets_new
+
+
+import csv
+print(f'Reading: {nand_drops}')
+with open(nand_drops, newline='') as csvfile:
+    nand_omits = {}
+    lines = csv.reader(csvfile, delimiter=',')
+    for line in lines:
+      if len(line) == 0:
+        continue
+      if line[0].strip().startswith("#"):
+        continue
+      if len(line) > 1:
+        nand_omits[line[0].strip()] = line[1].strip()
+      else:
+        nand_omits[line[0].strip()] = None
+print(f'Read: {nand_drops}')
 
 print(f'Reading: {all_file_restructured}')
 with open(all_file_restructured, 'r', encoding='utf-8') as f:

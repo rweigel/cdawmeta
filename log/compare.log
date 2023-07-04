@@ -2,13 +2,6 @@ Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-bw.json
 Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-bw.json
 Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
 Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
-AEROCUBE-6-A_DOSIMETER_L2 not in bw
-AEROCUBE-6-B_DOSIMETER_L2 not in bw
-ELA_L1_STATE_PRED not in bw
-ELB_L1_STATE_PRED not in bw
-FA_ESA_L2_EEB not in bw
-FA_ESA_L2_EES not in bw
-FA_ESA_L2_IEB not in bw
 FA_ESA_L2_IES not in bw
 IBEX_H3_ENA_LO_R06_STATE_VECTORS not in bw
 PO_LEVEL1_UVI not in bw
@@ -19,10 +12,6 @@ RBSPB_EFW-L2_E-SPINFIT-MGSE@0 not in bw
 RBSPB_EFW-L2_E-SPINFIT-MGSE@1 not in bw
 VOYAGER1_2S_MAG not in bw
 VOYAGER2_2S_MAG not in bw
-AEROCUBE-6-A_DOSIMETER_L2@0 not in nl
-AEROCUBE-6-A_DOSIMETER_L2@1 not in nl
-AEROCUBE-6-B_DOSIMETER_L2@0 not in nl
-AEROCUBE-6-B_DOSIMETER_L2@1 not in nl
 APOLLO12_SWS_1HR not in nl
 APOLLO12_SWS_28S not in nl
 APOLLO15_SWS_1HR not in nl
@@ -34,19 +23,9 @@ C2_WAVEFORM_WBD_BM2 not in nl
 C3_WAVEFORM_WBD_BM2 not in nl
 C4_WAVEFORM_WBD_BM2 not in nl
 CL_SP_AUX not in nl
-ELA_L1_STATE_PRED@0 not in nl
-ELA_L1_STATE_PRED@1 not in nl
-ELB_L1_STATE_PRED@0 not in nl
-ELB_L1_STATE_PRED@1 not in nl
 ERG_LEPE_L2_OMNIFLUX not in nl
 ERG_PWE_EFD_L2_E_SPIN@0 not in nl
 ERG_PWE_EFD_L2_E_SPIN@1 not in nl
-FA_ESA_L2_EEB@0 not in nl
-FA_ESA_L2_EEB@1 not in nl
-FA_ESA_L2_EES@0 not in nl
-FA_ESA_L2_EES@1 not in nl
-FA_ESA_L2_IEB@0 not in nl
-FA_ESA_L2_IEB@1 not in nl
 FA_ESA_L2_IES@0 not in nl
 FA_ESA_L2_IES@1 not in nl
 FAST_OR_SSC not in nl
@@ -79,18 +58,6 @@ I2_AV_RES not in nl
 I2_AV_SNT not in nl
 I2_AV_SYO not in nl
 ICON_L2-1_MIGHTI-A_LOS-WIND-GREEN not in nl
-ICON_L2-1_MIGHTI-B_LOS-WIND-GREEN not in nl
-ICON_L2-1_MIGHTI-A_LOS-WIND-RED not in nl
-ICON_L2-1_MIGHTI-B_LOS-WIND-RED not in nl
-ICON_L2-2_MIGHTI_VECTOR-WIND-GREEN not in nl
-ICON_L2-2_MIGHTI_VECTOR-WIND-RED not in nl
-ICON_L2-3_MIGHTI-A_TEMPERATURE not in nl
-ICON_L2-3_MIGHTI-B_TEMPERATURE not in nl
-ICON_L2-4_FUV_DAY not in nl
-ICON_L2-5_FUV_NIGHT not in nl
-ICON_L2-6_EUV not in nl
-ICON_L2-7_IVM-A not in nl
-ICON_L2-7_IVM-B not in nl
 MSL_RAD_OBS-L2 not in nl
 MSL_RAD_OBS-L1 not in nl
 MVN_STA_L2_DA-1R64E not in nl

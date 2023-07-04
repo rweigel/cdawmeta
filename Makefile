@@ -7,23 +7,27 @@ all:
 	make hapi-nl
 	make tables
 
+
 compare:
 	make log/compare.log
 
 log/compare.log: data/hapi-bw.json data/hapi-nl.json compare.py
 	python compare.py | tee log/compare.log
 
-data/all-resolved.json:
+
+data/all-resolved.json: all.py 
 	python all.py
 
-data/all-resolved.restructured.json: all.py data/all-resolved.json all-restructure.py
+data/all-resolved.restructured.json: data/all-resolved.json all-restructure.py
 	python all-restructure.py
 
-data/hapi-bw.json: data/all-resolved.json hapi-bw.py
+
+data/hapi-bw.json: data/all-resolved.restructured.json hapi-bw.py
 	python hapi-bw.py | tee log/hapi-bw.log
 
-hapi-bw: data/all-resolved.restructured.json
+hapi-bw: 
 	make data/hapi-bw.json
+
 
 data/hapi-nl.json: hapi-nl.py
 	python hapi-nl.py
@@ -47,6 +51,7 @@ table-all:
 
 data/tables/all.table.head.json: table/table-all.py data/all-resolved.restructured.json
 	python table/table-all.py
+
 
 clean:
 	rm -f data/*

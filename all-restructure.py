@@ -68,7 +68,6 @@ def add_variables(datasets):
 
     dataset['_variables'] = variables_new
 
-    break
 
 def add_globals(datasets):
 
@@ -87,8 +86,9 @@ def add_globals(datasets):
       gvals = _global[gkey[0]]
       text = []
       for gval in gvals:
-        text.append(gval[list(gval.keys())[0]])
-      print("\n".join(text))
+        line = gval[list(gval.keys())[0]];
+        text.append(str(line))
+
       globals_new[gkey[0]] = "\n".join(text)
 
     dataset['_globals'] = globals_new
@@ -105,19 +105,18 @@ for idx, dataset in enumerate(datasets):
     datasets[idx] = None
     continue
 
-  if not dataset['id'].startswith('ELA_L1_STATE_PRED'):
-    datasets[idx] = None
-    continue
-
 datasets = [i for i in datasets if i is not None]
 
 # Add _variables element to each dataset
 add_variables(datasets)
-add_globals(datasets)
-#for idx, dataset in enumerate(datasets):
-  #del datasets[idx]["_master"]
-  #if "_spase" in dataset:
-  #  del datasets[idx]["_spase"]
+
+# Add _globals element to each dataset
+#add_globals(datasets)
+
+for idx, dataset in enumerate(datasets):
+  del datasets[idx]["_master"]
+  if "_spase" in dataset:
+    del datasets[idx]["_spase"]
 
 # Save result to all_file_restructured; _variables node is used by hapi-bw.py
 # and table-all.py.
