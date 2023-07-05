@@ -210,7 +210,7 @@ def subset_and_transform(datasets):
     depend_0_names = []
     for depend_0_name, depend_0_variables in depend_0s:
 
-      if dataset['id'] in nand_omits.keys():
+      if False and dataset['id'] in nand_omits.keys():
         if nand_omits[dataset['id']] is None:
           print(f"  Omitting dataset {dataset['id']} because it is in nand_omits")
           continue
@@ -275,21 +275,22 @@ def subset_and_transform(datasets):
   return datasets_new
 
 
-import csv
-print(f'Reading: {nand_drops}')
-with open(nand_drops, newline='') as csvfile:
-    nand_omits = {}
-    lines = csv.reader(csvfile, delimiter=',')
-    for line in lines:
-      if len(line) == 0:
-        continue
-      if line[0].strip().startswith("#"):
-        continue
-      if len(line) > 1:
-        nand_omits[line[0].strip()] = line[1].strip()
-      else:
-        nand_omits[line[0].strip()] = None
-print(f'Read: {nand_drops}')
+if False:
+  import csv
+  print(f'Reading: {nand_drops}')
+  with open(nand_drops, newline='') as csvfile:
+      nand_omits = {}
+      lines = csv.reader(csvfile, delimiter=',')
+      for line in lines:
+        if len(line) == 0:
+          continue
+        if line[0].strip().startswith("#"):
+          continue
+        if len(line) > 1:
+          nand_omits[line[0].strip()] = line[1].strip()
+        else:
+          nand_omits[line[0].strip()] = None
+  print(f'Read: {nand_drops}')
 
 print(f'Reading: {all_file_restructured}')
 with open(all_file_restructured, 'r', encoding='utf-8') as f:

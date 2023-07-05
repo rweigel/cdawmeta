@@ -1,5 +1,3 @@
-Reading: /Users/weigel/git/hapi/cdaweb-hapi/log/hapi-nl-drops.txt
-Read: /Users/weigel/git/hapi/cdaweb-hapi/log/hapi-nl-drops.txt
 Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/all-resolved.restructured.json
 Read: /Users/weigel/git/hapi/cdaweb-hapi/data/all-resolved.restructured.json
 DE2_WIND2S_WATS
@@ -197,11 +195,11 @@ AC_H2_ULE: subsetting and creating /info
 AEROCUBE-6-A_DOSIMETER_L2: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  Omitting subdataset associated with DEPEND_0 = 'Epoch_10Hz' because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_10Hz'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 AEROCUBE-6-B_DOSIMETER_L2: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  Omitting subdataset associated with DEPEND_0 = 'Epoch_10Hz' because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_10Hz'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 AMPTECCE_H0_MEPA: subsetting and creating /info
   5 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -1741,11 +1739,11 @@ DSCOVR_H1_FC: subsetting and creating /info
 ELA_L1_STATE_PRED: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'ela_state_time'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  Omitting subdataset associated with DEPEND_0 = 'ela_att_time' because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'ela_att_time'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 ELB_L1_STATE_PRED: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'elb_state_time'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  Omitting subdataset associated with DEPEND_0 = 'elb_att_time' because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'elb_att_time'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 ELA_L1_STATE_DEFN: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'ela_state_time'/'support_data'; dependent VAR_TYPES {'data'}
@@ -1871,15 +1869,15 @@ EQ_PP_AUX: subsetting and creating /info
 FA_ESA_L2_EEB: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  Omitting subdataset associated with DEPEND_0 = 'orbit_number_epoch' because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'orbit_number_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 FA_ESA_L2_EES: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  Omitting subdataset associated with DEPEND_0 = 'orbit_number_epoch' because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'orbit_number_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 FA_ESA_L2_IEB: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  Omitting subdataset associated with DEPEND_0 = 'orbit_number_epoch' because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'orbit_number_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 FA_ESA_L2_IES: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -2151,7 +2149,7 @@ GOES8_EPHEMERIS_SSC: subsetting and creating /info
   DEPEND_0 ID/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 GOLD_L2_NMAX: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 ID/VAR_TYPE: 'nscans'/'support_data'; dependent VAR_TYPES {'support data', 'metadata'}
+  DEPEND_0 ID/VAR_TYPE: 'nscans'/'support_data'; dependent VAR_TYPES {'metadata', 'support data'}
   Not creating dataset for DEPEND_0 = 'nscans' because none of its variables have VAR_TYPE='data'.
   DEPEND_0 ID/VAR_TYPE: 'nmask'/'support_data'; dependent VAR_TYPES {'support data'}
   Not creating dataset for DEPEND_0 = 'nmask' because none of its variables have VAR_TYPE='data'.
@@ -2169,7 +2167,7 @@ GOLD_L2_O2DEN: subsetting and creating /info
   Not creating dataset for DEPEND_0 = 'nzdat' because none of its variables have VAR_TYPE='data'.
 GOLD_L2_ON2: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 ID/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'support data', 'metadata', 'data', 'support_data'}
+  DEPEND_0 ID/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'metadata', 'data', 'support_data', 'support data'}
   Unhandled DEPEND_0 type: CDF_CHAR
   Due to last error, omitting sub-dataset with DEPEND_0 = time_utc
   DEPEND_0 ID/VAR_TYPE: 'nmask'/'support_data'; dependent VAR_TYPES {'support data'}
@@ -2872,43 +2870,79 @@ ICON_L2-1_MIGHTI-A_LOS-WIND-GREEN: subsetting and creating /info
   Error: DEPEND_1 'Row' for variable 'ICON_L21_Zero_Wind_Phase' is not a variable. Omitting ICON_L21_Zero_Wind_Phase.
 ICON_L2-1_MIGHTI-B_LOS-WIND-GREEN: subsetting and creating /info
   1 DEPEND_0s
-  Omitting dataset ICON_L2-1_MIGHTI-B_LOS-WIND-GREEN because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'ignore_data', 'metadata', 'data', 'support_data'}
+  Error: DEPEND_1 'Row' for variable 'ICON_L21_Zero_Wind_Phase' is not a variable. Omitting ICON_L21_Zero_Wind_Phase.
+  Error: DEPEND_1 'Row' for variable 'ICON_L21_Zero_Wind_Phase' is not a variable. Omitting ICON_L21_Zero_Wind_Phase.
 ICON_L2-1_MIGHTI-A_LOS-WIND-RED: subsetting and creating /info
   1 DEPEND_0s
-  Omitting dataset ICON_L2-1_MIGHTI-A_LOS-WIND-RED because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'ignore_data', 'metadata', 'data', 'support_data'}
 ICON_L2-1_MIGHTI-B_LOS-WIND-RED: subsetting and creating /info
   1 DEPEND_0s
-  Omitting dataset ICON_L2-1_MIGHTI-B_LOS-WIND-RED because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'ignore_data', 'metadata', 'data', 'support_data'}
+  Error: DEPEND_1 'Row' for variable 'ICON_L21_Zero_Wind_Phase' is not a variable. Omitting ICON_L21_Zero_Wind_Phase.
+  Error: DEPEND_1 'Row' for variable 'ICON_L21_Zero_Wind_Phase' is not a variable. Omitting ICON_L21_Zero_Wind_Phase.
 ICON_L2-2_MIGHTI_VECTOR-WIND-GREEN: subsetting and creating /info
   1 DEPEND_0s
-  Omitting dataset ICON_L2-2_MIGHTI_VECTOR-WIND-GREEN because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'metadata', 'data', 'support_data'}
 ICON_L2-2_MIGHTI_VECTOR-WIND-RED: subsetting and creating /info
   2 DEPEND_0s
-  Omitting dataset ICON_L2-2_MIGHTI_VECTOR-WIND-RED because it is in nand_omits
-  Omitting dataset ICON_L2-2_MIGHTI_VECTOR-WIND-RED because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data'}
+  Not creating dataset for DEPEND_0 = 'Epoch' because none of its variables have VAR_TYPE='data'.
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'metadata', 'data', 'support_data'}
 ICON_L2-3_MIGHTI-A_TEMPERATURE: subsetting and creating /info
   1 DEPEND_0s
-  Omitting dataset ICON_L2-3_MIGHTI-A_TEMPERATURE because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'Support_Data', 'data', 'support_data'}
 ICON_L2-3_MIGHTI-B_TEMPERATURE: subsetting and creating /info
   1 DEPEND_0s
-  Omitting dataset ICON_L2-3_MIGHTI-B_TEMPERATURE because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'Support_Data', 'data', 'support_data'}
 ICON_L2-4_FUV_DAY: subsetting and creating /info
   2 DEPEND_0s
-  Omitting dataset ICON_L2-4_FUV_DAY because it is in nand_omits
-  Omitting dataset ICON_L2-4_FUV_DAY because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data', 'support_data'}
+  Error: DEPEND_1 'Flag' for variable 'ICON_L24_Disk_Retrieval_Flags' is not a variable. Omitting ICON_L24_Disk_Retrieval_Flags.
+  Error: DEPEND_1 'Flag' for variable 'ICON_L24_Limb_Retrieval_Flags' is not a variable. Omitting ICON_L24_Limb_Retrieval_Flags.
+  Error: DEPEND_1 'Model0' for variable 'ICON_L24_Model_Covariance' is not a variable. Omitting ICON_L24_Model_Covariance.
+  Error: DEPEND_1 'Flag' for variable 'ICON_L24_Model_Disk_Flags' is not a variable. Omitting ICON_L24_Model_Disk_Flags.
+  Error: DEPEND_1 'Model' for variable 'ICON_L24_Model_Lower_Limit' is not a variable. Omitting ICON_L24_Model_Lower_Limit.
+  Error: DEPEND_1 'Model' for variable 'ICON_L24_Model_Upper_Limit' is not a variable. Omitting ICON_L24_Model_Upper_Limit.
+  DEPEND_0 ID/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data'}
+  Not creating dataset for DEPEND_0 = 'Epoch' because none of its variables have VAR_TYPE='data'.
+  Error: DEPEND_1 'Flag' for variable 'ICON_L24_Disk_Retrieval_Flags' is not a variable. Omitting ICON_L24_Disk_Retrieval_Flags.
+  Error: DEPEND_1 'Flag' for variable 'ICON_L24_Limb_Retrieval_Flags' is not a variable. Omitting ICON_L24_Limb_Retrieval_Flags.
+  Error: DEPEND_1 'Model0' for variable 'ICON_L24_Model_Covariance' is not a variable. Omitting ICON_L24_Model_Covariance.
+  Error: DEPEND_1 'Flag' for variable 'ICON_L24_Model_Disk_Flags' is not a variable. Omitting ICON_L24_Model_Disk_Flags.
+  Error: DEPEND_1 'Model' for variable 'ICON_L24_Model_Lower_Limit' is not a variable. Omitting ICON_L24_Model_Lower_Limit.
+  Error: DEPEND_1 'Model' for variable 'ICON_L24_Model_Upper_Limit' is not a variable. Omitting ICON_L24_Model_Upper_Limit.
 ICON_L2-5_FUV_NIGHT: subsetting and creating /info
   1 DEPEND_0s
-  Omitting dataset ICON_L2-5_FUV_NIGHT because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 ICON_L2-6_EUV: subsetting and creating /info
   1 DEPEND_0s
-  Omitting dataset ICON_L2-6_EUV because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data', 'support_data'}
+  Error: DEPEND_1 'altitude' for variable 'ICON_L26_Altitude' is not a variable. Omitting ICON_L26_Altitude.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Input_Altitude' is not a variable. Omitting ICON_L26_Input_Altitude.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Input_Covariance_617' is not a variable. Omitting ICON_L26_Input_Covariance_617.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Input_Covariance_834' is not a variable. Omitting ICON_L26_Input_Covariance_834.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Input_Radiance_617' is not a variable. Omitting ICON_L26_Input_Radiance_617.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Input_Radiance_834' is not a variable. Omitting ICON_L26_Input_Radiance_834.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Radiance_617' is not a variable. Omitting ICON_L26_Radiance_617.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Radiance_834' is not a variable. Omitting ICON_L26_Radiance_834.
+  Error: DEPEND_1 'altitude' for variable 'ICON_L26_Altitude' is not a variable. Omitting ICON_L26_Altitude.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Input_Altitude' is not a variable. Omitting ICON_L26_Input_Altitude.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Input_Covariance_617' is not a variable. Omitting ICON_L26_Input_Covariance_617.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Input_Covariance_834' is not a variable. Omitting ICON_L26_Input_Covariance_834.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Input_Radiance_617' is not a variable. Omitting ICON_L26_Input_Radiance_617.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Input_Radiance_834' is not a variable. Omitting ICON_L26_Input_Radiance_834.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Radiance_617' is not a variable. Omitting ICON_L26_Radiance_617.
+  Error: DEPEND_1 'Data' for variable 'ICON_L26_Radiance_834' is not a variable. Omitting ICON_L26_Radiance_834.
 ICON_L2-7_IVM-A: subsetting and creating /info
   2 DEPEND_0s
-  Omitting dataset ICON_L2-7_IVM-A because it is in nand_omits
-  Omitting dataset ICON_L2-7_IVM-A because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  DEPEND_0 ID/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Unhandled DEPEND_0 type: CDF_INT8
+  Due to last error, omitting sub-dataset with DEPEND_0 = Epoch
 ICON_L2-7_IVM-B: subsetting and creating /info
   1 DEPEND_0s
-  Omitting dataset ICON_L2-7_IVM-B because it is in nand_omits
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 IG_K0_PCI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -3178,7 +3212,7 @@ MVN_SWE_L2_ARCPAD: subsetting and creating /info
   DEPEND_0 ID/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data', 'support_data'}
 MVN_SWE_L2_SVYPAD: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 ID/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'suppport_data', 'data', 'support_data'}
+  DEPEND_0 ID/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'suppport_data', 'ignore_data', 'data', 'support_data'}
 MVN_SEP_L2_S1-CAL-SVY-FULL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 ID/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -5797,30 +5831,30 @@ PSP_ISOIS-EPIHI_L2-LET2-RATES3600: subsetting and creating /info
   DEPEND_0 ID/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 PSP_ISOIS-EPILO_L2-IC: subsetting and creating /info
   5 DEPEND_0s
-  DEPEND_0 ID/VAR_TYPE: 'Epoch_ChanC'/'support_data'; dependent VAR_TYPES {'additional_data', 'support_data', 'data', 'additonal_data', 'metadata'}
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_ChanC'/'support_data'; dependent VAR_TYPES {'support_data', 'additional_data', 'data', 'metadata', 'additonal_data'}
   Not including bin centers for He3_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for Fe_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for O_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  DEPEND_0 ID/VAR_TYPE: 'Epoch_ChanD'/'support_data'; dependent VAR_TYPES {'additional_data', 'data', 'metadata', 'support_data'}
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_ChanD'/'support_data'; dependent VAR_TYPES {'additional_data', 'metadata', 'data', 'support_data'}
   Not including bin centers for Mg_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for C_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for Si_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for N_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for Ne_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
-  DEPEND_0 ID/VAR_TYPE: 'Epoch_ChanP'/'support_data'; dependent VAR_TYPES {'additional_data', 'data', 'metadata', 'support_data'}
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_ChanP'/'support_data'; dependent VAR_TYPES {'additional_data', 'metadata', 'data', 'support_data'}
   Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
-  DEPEND_0 ID/VAR_TYPE: 'Epoch_ChanR'/'support_data'; dependent VAR_TYPES {'additional_data', 'data', 'metadata', 'support_data'}
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_ChanR'/'support_data'; dependent VAR_TYPES {'additional_data', 'metadata', 'data', 'support_data'}
   Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
-  DEPEND_0 ID/VAR_TYPE: 'Epoch_ChanT'/'support_data'; dependent VAR_TYPES {'additional_data', 'data', 'metadata', 'support_data'}
+  DEPEND_0 ID/VAR_TYPE: 'Epoch_ChanT'/'support_data'; dependent VAR_TYPES {'additional_data', 'metadata', 'data', 'support_data'}
   Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
   Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
