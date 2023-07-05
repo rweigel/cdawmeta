@@ -1,4 +1,6 @@
 def omit(id):
+  if False and id != 'BAR_4A_L2_USPC':
+    return True
   return False
 
 import os
@@ -7,7 +9,6 @@ import json
 base_dir = os.path.dirname(__file__)
 all_file_restructured = os.path.join(base_dir, 'data/all-resolved.restructured.json')
 out_file = os.path.join(base_dir, 'data/hapi-bw.json')
-nand_drops = os.path.join(base_dir, 'log/hapi-nl-drops.txt')
 
 def cdf2hapitype(cdf_type):
 
@@ -42,8 +43,7 @@ def split_variables(datasets):
         continue
 
       if 'VAR_TYPE' not in variable_meta['VarAttributes']:
-        print(dataset['id'])
-        print(f'  Error: Dropping dataset b/c variable "{name}" has no VAR_TYPE')
+        print(f'  Error: Dropping variable "{name}" b/c it has no has no VAR_TYPE')
         continue
 
       if 'DEPEND_0' in variable_meta['VarAttributes']:
@@ -104,19 +104,35 @@ def variables2parameters(depend_0_variable, depend_0_variables, all_variables):
       return None
 
     if VAR_TYPE == 'data' and type == 'string':
-      #print(variable['VarDescription']['PadValue'])
-      #print(variable['VarAttributes']['FILLVAL'])
-      # Would need to determine string length and need to handle
-      # case where PadValue and FillValue are not present, so length
-      # cannot be determined. (PadValue and FillValue are not always
-      # present for DEPEND_0 variables; see note in cdftimelen()).
-      print(f"  Dropping {name} because string parameter with VAR_TYPE='data' is not supported.")
-      continue
+      length = None
+
+      PadValue = None
+      if 'PadValue' in variable['VarDescription']:
+        PadValue = variable['VarDescription']['PadValue']
+
+      FillValue = None
+      if 'FillValue' in variable['VarDescription']:
+        FillValue = variable['VarDescription']['FillValue']
+
+      if PadValue is None and FillValue is None:
+        print(f"  Dropping {name} because string parameter and no PadValue or FillValue given to allow length to be determined.")
+        continue
+
+      if PadValue != None and FillValue != None and PadValue != FillValue:
+        print(f"  Dropping {name} because PadValue and FillValue lengths differ.")
+        continue
+
+      if PadValue != None:
+        length = len(PadValue)
+      if FillValue != None:
+        length = len(FillValue)
 
     parameter = {
       "name": name,
       "type": type
     }
+    if length is not None:
+      parameter['length'] = length
 
     if 'VIRTUAL' in variable['VarAttributes']:
       parameter['_VIRTUAL'] = variable['VarAttributes']['VIRTUAL']
@@ -167,7 +183,7 @@ def variables2parameters(depend_0_variable, depend_0_variables, all_variables):
       if hapitype == 'integer' or hapitype == 'double':
         if RecVariance == "VARY":
           # Nand does not create bins for this case
-          continue
+          pass
         else:
           # TODO: Check for multi-dimensional
           units = ""
@@ -201,22 +217,16 @@ def subset_and_transform(datasets):
   datasets_new = []
   for dataset in datasets:
 
+    if omit(dataset['id']): continue
+
     print(dataset['id'] + ": subsetting and creating /info")
     n = 0
     depend_0s = dataset['_variables_split'].items()
     print(f"  {len(depend_0s)} DEPEND_0s")
 
-    # First pass - drop DEPEND_0 datasets with problems
+    # First pass - drop datasets with problems
     depend_0_names = []
     for depend_0_name, depend_0_variables in depend_0s:
-
-      if False and dataset['id'] in nand_omits.keys():
-        if nand_omits[dataset['id']] is None:
-          print(f"  Omitting dataset {dataset['id']} because it is in nand_omits")
-          continue
-        if depend_0_name == nand_omits[dataset['id']]:
-          print(f"  Omitting subdataset associated with DEPEND_0 = '{depend_0_name}' because it is in nand_omits")
-          continue
 
       if depend_0_name not in dataset['_variables'].keys():
         print(f"  Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.")
@@ -225,17 +235,18 @@ def subset_and_transform(datasets):
       DEPEND_0_VAR_TYPE = dataset['_variables'][depend_0_name]['VarAttributes']['VAR_TYPE']
 
       VAR_TYPES = []
-      for depend_0_variable in depend_0_variables.values():
-        VAR_TYPES.append(depend_0_variable['VarAttributes']['VAR_TYPE'])
+      for name, variable in depend_0_variables.items():
+        VAR_TYPES.append(variable['VarAttributes']['VAR_TYPE'])
       VAR_TYPES = set(VAR_TYPES)
 
-      print(f"  DEPEND_0 ID/VAR_TYPE: '{depend_0_name}'/'{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
+      print(f"  DEPEND_0 Name/VAR_TYPE: '{depend_0_name}'/'{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
 
       if DEPEND_0_VAR_TYPE == 'ignore_data':
         print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
         continue
 
       if 'data' not in VAR_TYPES:
+        # In general, Nand drops these, but not always
         print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
         continue
 
@@ -274,23 +285,6 @@ def subset_and_transform(datasets):
 
   return datasets_new
 
-
-if False:
-  import csv
-  print(f'Reading: {nand_drops}')
-  with open(nand_drops, newline='') as csvfile:
-      nand_omits = {}
-      lines = csv.reader(csvfile, delimiter=',')
-      for line in lines:
-        if len(line) == 0:
-          continue
-        if line[0].strip().startswith("#"):
-          continue
-        if len(line) > 1:
-          nand_omits[line[0].strip()] = line[1].strip()
-        else:
-          nand_omits[line[0].strip()] = None
-  print(f'Read: {nand_drops}')
 
 print(f'Reading: {all_file_restructured}')
 with open(all_file_restructured, 'r', encoding='utf-8') as f:

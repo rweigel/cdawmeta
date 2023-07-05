@@ -4,24 +4,21 @@ HAPIBODY=../data/tables/hapi.table.body.json
 ALLHEAD=../data/tables/all.table.head.json
 ALLBODY=../data/tables/all.table.body.json
 
-tables:
-	cd ../; make tables
-
 table-ui:
 	@- git clone https://github.com/rweigel/table-ui
 
 serve-all:
-	make tables
+	cd ../; make table-all
 	make table-ui
 	cd table-ui/ajax; python server.py 8051 $(ALLHEAD) $(ALLBODY)
 
 serve-all-sql:
-	make tables
+	cd ../; make table-all
 	make all-sql
 	python table-ui/ajax/server.py 8051 $(ALLHEAD) $(ALLBODY).sql
 
 all-sql:
-	make tables
+	cd ../; make table-all
 	make table-ui
 	make $(ALLBODY).sql
 
@@ -30,17 +27,17 @@ $(ALLBODY).sql: table-ui/ajax/sql/sql.py $(ALLHEAD) $(ALLBODY)
 
 
 serve-hapi:
-	make tables
+	cd ../; make table-hapi
 	make table-ui
 	python table-ui/ajax/server.py 8052 $(HAPIHEAD) $(HAPIBODY)
 
 serve-hapi-sql:
-	make tables
+	cd ../; make table-hapi
 	make hapi-sql
 	python table-ui/ajax/server.py 8052 $(HAPIHEAD) $(HAPIBODY).sql
 
 hapi-sql:
-	make tables
+	cd ../; make table-hapi
 	make table-ui
 	make $(HAPIBODY).sql
 
