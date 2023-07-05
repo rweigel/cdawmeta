@@ -34,15 +34,15 @@ for dsid in datasets_nl.keys():
   if not dsid in datasets_bw:
     print(f"{dsid} not in bw")
     dsid0 = dsid + "@0"
-    if dsid0 in list(datasets_bw.keys()):
-      print(f"  But {dsid}@0 in bw")
+    if dsid[-2] != "@" and dsid0 in list(datasets_bw.keys()):
+      print(f"  But {dsid0} in bw")
 
 for dsid in datasets_bw.keys():
   if not dsid in datasets_nl:
     print(f"{dsid} not in nl")
     dsid0 = dsid + "@0"
-    if dsid0 in list(datasets_nl.keys()):
-      print(f"  But {dsid}@0 in nl")
+    if dsid[-2] != "@" and dsid0 in list(datasets_nl.keys()):
+      print(f"  But {dsid0} in nl")
   else:
     knl = datasets_nl[dsid]["info"]["_parameters"].keys()
     kbw = datasets_bw[dsid]["info"]["_parameters"].keys()

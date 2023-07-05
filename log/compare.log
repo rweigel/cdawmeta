@@ -2,67 +2,24 @@ Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-bw.json
 Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-bw.json
 Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
 Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
-AEROCUBE-6-A_DOSIMETER_L2 not in bw
-  But AEROCUBE-6-A_DOSIMETER_L2@0 in bw
-AEROCUBE-6-B_DOSIMETER_L2 not in bw
-  But AEROCUBE-6-B_DOSIMETER_L2@0 in bw
-ELA_L1_STATE_PRED not in bw
-  But ELA_L1_STATE_PRED@0 in bw
-ELB_L1_STATE_PRED not in bw
-  But ELB_L1_STATE_PRED@0 in bw
-FA_ESA_L2_EEB not in bw
-  But FA_ESA_L2_EEB@0 in bw
-FA_ESA_L2_EES not in bw
-  But FA_ESA_L2_EES@0 in bw
-FA_ESA_L2_IEB not in bw
-  But FA_ESA_L2_IEB@0 in bw
-FA_ESA_L2_IES not in bw
-  But FA_ESA_L2_IES@0 in bw
 IBEX_H3_ENA_LO_R06_STATE_VECTORS not in bw
-PO_LEVEL1_UVI not in bw
-  But PO_LEVEL1_UVI@0 in bw
-PSP_FLD_L2_DFB_DBM_SCM not in bw
-  But PSP_FLD_L2_DFB_DBM_SCM@0 in bw
-RBSPA_EFW-L2_E-SPINFIT-MGSE@0 not in bw
-RBSPA_EFW-L2_E-SPINFIT-MGSE@1 not in bw
-RBSPB_EFW-L2_E-SPINFIT-MGSE@0 not in bw
-RBSPB_EFW-L2_E-SPINFIT-MGSE@1 not in bw
-VOYAGER1_2S_MAG not in bw
-  But VOYAGER1_2S_MAG@0 in bw
-VOYAGER2_2S_MAG not in bw
-  But VOYAGER2_2S_MAG@0 in bw
 AC_OR_SSC
   Order differs
-AEROCUBE-6-A_DOSIMETER_L2@0 not in nl
-AEROCUBE-6-A_DOSIMETER_L2@1 not in nl
-AEROCUBE-6-B_DOSIMETER_L2@0 not in nl
-AEROCUBE-6-B_DOSIMETER_L2@1 not in nl
 AMPTECCE_H0_MEPA@0
   nnl = 20 != nbw = 15
-  {'TOF_iron_Edrift', 'HIRES_ION_protons_Edrift', 'TOF_helium_Edrift', 'TOF_oxygen_Edrift', 'TOF_protons_Edrift'}
+  {'TOF_iron_Edrift', 'TOF_protons_Edrift', 'TOF_oxygen_Edrift', 'HIRES_ION_protons_Edrift', 'TOF_helium_Edrift'}
 AMPTECCE_H0_MEPA@1
   nnl = 29 != nbw = 33
-  {'TOF_iron_Edrift', 'TOF_helium_Edrift', 'TOF_oxygen_Edrift', 'TOF_protons_Edrift'}
+  {'TOF_iron_Edrift', 'TOF_protons_Edrift', 'TOF_oxygen_Edrift', 'TOF_helium_Edrift'}
 AMPTECCE_H0_MEPA@3
   nnl = 7 != nbw = 8
   {'HIRES_ION_protons_Edrift'}
-APOLLO12_SWS_1HR not in nl
-APOLLO12_SWS_28S not in nl
-APOLLO15_SWS_1HR not in nl
-APOLLO15_SWS_28S not in nl
 BAR_2L_L2_HKPG
   nnl = 45 != nbw = 2
-  {'V5_Modem', 'T6_Modem', 'I6_NEG_XRayDet', 'I2_Solar1', 'V7_NEG_DPU', 'T5_DPU', 'termStatus', 'T9_Solar2', 'T10_Solar3', 'V4_POS_XRayDet', 'V0_VoltAtLoad', 'V8_Mag', 'I7_NEG_DPU', 'V1_Battery', 'I0_TotalLoad', 'cmdCounter', 'I5_Modem', 'V10_Solar3', 'V3_POS_DPU', 'T2_ChargeCont', 'V2_Solar1', 'T1_Mag', 'numOfSats', 'I1_TotalSolar', 'T4_PowerConv', 'V9_Solar2', 'I3_POS_DPU', 'T7_Structure', 'I4_POS_XRayDet', 'T13_TermBatt', 'V11_Solar4', 'T14_TermCap', 'T3_Battery', 'T12_TermTemp', 'weeks', 'T0_Scint', 'T11_Solar4', 'T15_CCStat', 'timeOffset', 'T8_Solar1', 'modemCounter', 'dcdCounter', 'V6_NEG_XRayDet'}
-C2_PP_EFW not in nl
-C3_PP_EFW not in nl
-C4_PP_EFW not in nl
-C2_WAVEFORM_WBD_BM2 not in nl
-C3_WAVEFORM_WBD_BM2 not in nl
-C4_WAVEFORM_WBD_BM2 not in nl
-CL_SP_AUX not in nl
+  {'V2_Solar1', 'numOfSats', 'T15_CCStat', 'V5_Modem', 'V8_Mag', 'I1_TotalSolar', 'V6_NEG_XRayDet', 'timeOffset', 'cmdCounter', 'modemCounter', 'T9_Solar2', 'T11_Solar4', 'termStatus', 'T3_Battery', 'I5_Modem', 'T0_Scint', 'I7_NEG_DPU', 'T14_TermCap', 'T8_Solar1', 'weeks', 'V11_Solar4', 'I0_TotalLoad', 'V0_VoltAtLoad', 'V10_Solar3', 'V1_Battery', 'I2_Solar1', 'V3_POS_DPU', 'dcdCounter', 'T12_TermTemp', 'T1_Mag', 'V4_POS_XRayDet', 'T5_DPU', 'T7_Structure', 'T10_Solar3', 'V9_Solar2', 'T6_Modem', 'T4_PowerConv', 'T13_TermBatt', 'I4_POS_XRayDet', 'I3_POS_DPU', 'V7_NEG_DPU', 'T2_ChargeCont', 'I6_NEG_XRayDet'}
 DE2_DUCT16MS_RPA@1
   nnl = 2 != nbw = 6
-  {'glon', 'glat', 'wb1', 'ilat', 'alt', 'mlt'}
+  {'glon', 'alt', 'glat', 'ilat', 'mlt', 'wb1'}
 DE2_DUCT16MS_RPA@2
   Order differs
 DE2_DUCT16MS_RPA@3
@@ -75,78 +32,61 @@ DE2_DUCT16MS_RPA@6
   Order differs
 DE2_DUCT16MS_RPA@7
   nnl = 6 != nbw = 2
-  {'glon', 'ilat', 'wb6', 'glat', 'alt', 'mlt'}
+  {'wb6', 'glon', 'alt', 'glat', 'ilat', 'mlt'}
 DMSP-F16_SSIES-3_THERMAL-PLASMA
   nnl = 31 != nbw = 54
-  {'densqual', 'sza', 'mlat', 'frachqual', 'idmqual', 'vyqual', 'rpainfo', 'vxqual', 'glat_tt', 'sza_tt', 'mlat_tt', 'corrpaqual', 'fracoqual', 'frachequal', 'alt', 'mlt', 'glon_tt', 'glon', 'glat', 'mlt_tt', 'tempqual', 'alt_tt', 'vzqual'}
+  {'glon_tt', 'glon', 'alt', 'densqual', 'vxqual', 'mlt', 'fracoqual', 'alt_tt', 'tempqual', 'idmqual', 'frachequal', 'frachqual', 'rpainfo', 'sza', 'vzqual', 'vyqual', 'glat_tt', 'glat', 'mlat_tt', 'sza_tt', 'corrpaqual', 'mlt_tt', 'mlat'}
 DMSP-F17_SSIES-3_THERMAL-PLASMA
   nnl = 31 != nbw = 54
-  {'densqual', 'sza', 'mlat', 'frachqual', 'idmqual', 'vyqual', 'rpainfo', 'vxqual', 'glat_tt', 'sza_tt', 'mlat_tt', 'corrpaqual', 'fracoqual', 'frachequal', 'alt', 'mlt', 'glon_tt', 'glon', 'glat', 'mlt_tt', 'tempqual', 'alt_tt', 'vzqual'}
+  {'glon_tt', 'glon', 'alt', 'densqual', 'vxqual', 'mlt', 'fracoqual', 'alt_tt', 'tempqual', 'idmqual', 'frachequal', 'frachqual', 'rpainfo', 'sza', 'vzqual', 'vyqual', 'glat_tt', 'glat', 'mlat_tt', 'sza_tt', 'corrpaqual', 'mlt_tt', 'mlat'}
 DMSP-F18_SSIES-3_THERMAL-PLASMA
   nnl = 31 != nbw = 54
-  {'densqual', 'sza', 'mlat', 'frachqual', 'idmqual', 'vyqual', 'rpainfo', 'vxqual', 'glat_tt', 'sza_tt', 'mlat_tt', 'corrpaqual', 'fracoqual', 'frachequal', 'alt', 'mlt', 'glon_tt', 'glon', 'glat', 'mlt_tt', 'tempqual', 'alt_tt', 'vzqual'}
-ELA_L1_STATE_PRED@0 not in nl
-ELA_L1_STATE_PRED@1 not in nl
-ELB_L1_STATE_PRED@0 not in nl
-ELB_L1_STATE_PRED@1 not in nl
+  {'glon_tt', 'glon', 'alt', 'densqual', 'vxqual', 'mlt', 'fracoqual', 'alt_tt', 'tempqual', 'idmqual', 'frachequal', 'frachqual', 'rpainfo', 'sza', 'vzqual', 'vyqual', 'glat_tt', 'glat', 'mlat_tt', 'sza_tt', 'corrpaqual', 'mlt_tt', 'mlat'}
 ELA_L1_STATE_DEFN@1
   nnl = 2 != nbw = 5
-  {'ela_att_solution_date', 'ela_spin_orbnorm_angle', 'ela_spin_sun_angle'}
+  {'ela_spin_orbnorm_angle', 'ela_att_solution_date', 'ela_spin_sun_angle'}
 ELB_L1_STATE_DEFN@1
   nnl = 2 != nbw = 5
-  {'elb_spin_sun_angle', 'elb_att_solution_date', 'elb_spin_orbnorm_angle'}
+  {'elb_att_solution_date', 'elb_spin_orbnorm_angle', 'elb_spin_sun_angle'}
 ELA_L1_EPDEF
   nnl = 7 != nbw = 9
-  {'ela_pef', 'ela_pef_sectnum'}
+  {'ela_pef_sectnum', 'ela_pef'}
 ELA_L1_EPDIF
   nnl = 6 != nbw = 8
-  {'ela_pif_sectnum', 'ela_pif'}
-ERG_LEPE_L2_OMNIFLUX not in nl
-ERG_PWE_EFD_L2_E_SPIN@0 not in nl
-ERG_PWE_EFD_L2_E_SPIN@1 not in nl
+  {'ela_pif', 'ela_pif_sectnum'}
 ERG_PWE_OFA_L2_SPEC@0
   nnl = 2 != nbw = 14
-  {'ti_original_e132', 'lpf_e132', 'main_amp_gain_e132', 'cal_table_id_e132', 'ti_corrected_e132', 'cmp_e132', 'wpt_ac_gain_e132', 'ch_e132', 'obs_cal_e132', 'sampling_rate_e132', 'quality_flag_e132', 'swpia_cnt_e132'}
+  {'ch_e132', 'swpia_cnt_e132', 'sampling_rate_e132', 'obs_cal_e132', 'main_amp_gain_e132', 'ti_corrected_e132', 'lpf_e132', 'ti_original_e132', 'cmp_e132', 'wpt_ac_gain_e132', 'cal_table_id_e132', 'quality_flag_e132'}
 ERG_PWE_OFA_L2_SPEC@1
   nnl = 2 != nbw = 14
-  {'sampling_rate_b132', 'ti_corrected_b132', 'lpf_b132', 'ti_original_b132', 'cmp_b132', 'swpia_cnt_b132', 'main_amp_gain_b132', 'quality_flag_b132', 'mscpa_gain_b132', 'ch_b132', 'cal_table_id_b132', 'obs_cal_b132'}
+  {'ti_corrected_b132', 'sampling_rate_b132', 'swpia_cnt_b132', 'quality_flag_b132', 'cal_table_id_b132', 'cmp_b132', 'ti_original_b132', 'lpf_b132', 'mscpa_gain_b132', 'ch_b132', 'main_amp_gain_b132', 'obs_cal_b132'}
 ERG_PWE_HFA_L2_SPEC_HIGH
   nnl = 2 != nbw = 29
-  {'spectra_er', 'e_mix_content', 'spectra_e_ar', 'spectra_ev', 'spectra_el', 'spectra_eu_ev_d1', 'spectra_ev_bg_d2', 'ch2_gain', 'ch2_in', 'spectra_esum', 'spectra_eu_ev', 'ch1_in', 'spectra_bgamma', 'spectra_e_mix', 'spectra_eu_bg_d1', 'spectra_ev_bg_d1', 'wav_stat', 'spectra_eu_bg', 'spectra_eu_ev_d2', 'mscpa_gain', 'wpt_ac_gain', 'ave_stat', 'spectra_eu_bg_d2', 'obs_stat', 'spectra_eu', 'spectra_ev_bg', 'ch1_gain'}
+  {'mscpa_gain', 'spectra_el', 'spectra_eu_bg_d1', 'spectra_ev', 'spectra_eu_bg_d2', 'spectra_er', 'spectra_e_mix', 'spectra_eu_ev_d1', 'ch2_gain', 'ave_stat', 'spectra_eu_ev_d2', 'ch1_gain', 'spectra_eu_bg', 'ch2_in', 'spectra_bgamma', 'spectra_eu', 'e_mix_content', 'wpt_ac_gain', 'spectra_esum', 'obs_stat', 'ch1_in', 'spectra_eu_ev', 'wav_stat', 'spectra_ev_bg', 'spectra_e_ar', 'spectra_ev_bg_d1', 'spectra_ev_bg_d2'}
 ERG_PWE_HFA_L2_SPEC_LOW
   nnl = 2 != nbw = 29
-  {'spectra_er', 'e_mix_content', 'spectra_e_ar', 'spectra_ev', 'spectra_el', 'spectra_eu_ev_d1', 'spectra_ev_bg_d2', 'ch2_gain', 'ch2_in', 'spectra_esum', 'spectra_eu_ev', 'ch1_in', 'spectra_bgamma', 'spectra_e_mix', 'spectra_eu_bg_d1', 'spectra_ev_bg_d1', 'wav_stat', 'spectra_eu_bg', 'spectra_eu_ev_d2', 'mscpa_gain', 'wpt_ac_gain', 'ave_stat', 'spectra_eu_bg_d2', 'obs_stat', 'spectra_eu', 'spectra_ev_bg', 'ch1_gain'}
+  {'mscpa_gain', 'spectra_el', 'spectra_eu_bg_d1', 'spectra_ev', 'spectra_eu_bg_d2', 'spectra_er', 'spectra_e_mix', 'spectra_eu_ev_d1', 'ch2_gain', 'ave_stat', 'spectra_eu_ev_d2', 'ch1_gain', 'spectra_eu_bg', 'ch2_in', 'spectra_bgamma', 'spectra_eu', 'e_mix_content', 'wpt_ac_gain', 'spectra_esum', 'obs_stat', 'ch1_in', 'spectra_eu_ev', 'wav_stat', 'spectra_ev_bg', 'spectra_e_ar', 'spectra_ev_bg_d1', 'spectra_ev_bg_d2'}
 ERG_PWE_HFA_L2_SPEC_MONIT
   nnl = 2 != nbw = 28
-  {'spectra_er', 'e_mix_content', 'spectra_e_ar', 'spectra_ev', 'spectra_el', 'spectra_eu_ev_d1', 'spectra_ev_bg_d2', 'ch2_in', 'spectra_esum', 'spectra_eu_ev', 'ch1_in', 'spectra_bgamma', 'spectra_e_mix', 'spectra_eu_bg_d1', 'spectra_ev_bg_d1', 'wav_stat', 'spectra_eu_bg', 'spectra_eu_ev_d2', 'mscpa_gain', 'wpt_ac_gain', 'ave_stat', 'spectra_eu_bg_d2', 'obs_stat', 'spectra_eu', 'spectra_ev_bg', 'ch1_gain'}
-FA_ESA_L2_EEB@0 not in nl
-FA_ESA_L2_EEB@1 not in nl
-FA_ESA_L2_EES@0 not in nl
-FA_ESA_L2_EES@1 not in nl
-FA_ESA_L2_IEB@0 not in nl
-FA_ESA_L2_IEB@1 not in nl
-FA_ESA_L2_IES@0 not in nl
-FA_ESA_L2_IES@1 not in nl
-FAST_OR_SSC not in nl
-FAST_TEAMS_PA_L2@0 not in nl
-FAST_TEAMS_PA_L2@1 not in nl
-FORMOSAT5_AIP_IDN not in nl
+  {'mscpa_gain', 'spectra_el', 'spectra_eu_bg_d1', 'spectra_ev', 'spectra_eu_bg_d2', 'spectra_er', 'spectra_e_mix', 'spectra_eu_ev_d1', 'ave_stat', 'spectra_eu_ev_d2', 'ch1_gain', 'spectra_eu_bg', 'ch2_in', 'spectra_bgamma', 'spectra_eu', 'e_mix_content', 'wpt_ac_gain', 'spectra_esum', 'obs_stat', 'ch1_in', 'spectra_eu_ev', 'wav_stat', 'spectra_ev_bg', 'spectra_e_ar', 'spectra_ev_bg_d1', 'spectra_ev_bg_d2'}
+FA_ESA_L2_EEB
+  nnl = 14 != nbw = 24
+  {'denergy_full', 'nbins', 'domega', 'nenergy', 'gf_ind', 'valid', 'data_quality', 'mode_ind', 'geom_factor', 'energy_full'}
+FA_ESA_L2_EES
+  nnl = 14 != nbw = 24
+  {'denergy_full', 'nbins', 'domega', 'nenergy', 'gf_ind', 'valid', 'data_quality', 'mode_ind', 'geom_factor', 'energy_full'}
+FA_ESA_L2_IEB
+  nnl = 14 != nbw = 25
+  {'denergy_full', 'nbins', 'data_audio', 'domega', 'nenergy', 'gf_ind', 'valid', 'data_quality', 'mode_ind', 'geom_factor', 'energy_full'}
+FA_ESA_L2_IES
+  nnl = 14 != nbw = 24
+  {'denergy_full', 'nbins', 'domega', 'nenergy', 'gf_ind', 'valid', 'data_quality', 'mode_ind', 'geom_factor', 'energy_full'}
 GE_EDA12SEC_LEP
   nnl = 10 != nbw = 11
   {'scan_code'}
 GE_EDB12SEC_LEP
   Order differs
 GE_K0_LEP not in nl
-DN_MAGN-L2-HIRES_G17 not in nl
-DN_MAGN-L2-HIRES_G16 not in nl
-DN_MAGN-L2-HIRES_G15 not in nl
-DN_MAGN-L2-HIRES_G14 not in nl
-DN_MAGN-L2-HIRES_G13 not in nl
-DN_MAGN-L2-HIRES_G12 not in nl
-DN_MAGN-L2-HIRES_G11 not in nl
-DN_MAGN-L2-HIRES_G10 not in nl
-DN_MAGN-L2-HIRES_G09 not in nl
-DN_MAGN-L2-HIRES_G08 not in nl
 GOES18_EPHEMERIS_SSC
   Order differs
 GOES17_EPHEMERIS_SSC
@@ -165,29 +105,16 @@ GOES11_EPHEMERIS_SSC
   Order differs
 GOES10_EPHEMERIS_SSC
   Order differs
-GOES9_EPHEMERIS_SSC not in nl
-GOES8_EPHEMERIS_SSC not in nl
 GPS_RF_LANL-VTEC-1HR not in nl
 ALOUETTE2_NEPROF_TOPS
   nnl = 15 != nbw = 16
   {'numDataPoints'}
-ALOUETTE2_AV_QUI not in nl
 ISS_DOSANL_TEPC
   nnl = 7 != nbw = 9
   {'LOCATION', 'FLAG'}
-I1_AV2_OTT not in nl
-I1_AV2_ULA not in nl
-I1_AV_ODG not in nl
-I1_AV_ORR not in nl
-I1_AV_RES not in nl
-I1_AV_ULA not in nl
 I1_NEPROF_TOPS
   nnl = 15 != nbw = 16
   {'numDataPoints'}
-I2_AV_ODG not in nl
-I2_AV_RES not in nl
-I2_AV_SNT not in nl
-I2_AV_SYO not in nl
 I2_NEPROF_TOPS
   nnl = 15 != nbw = 16
   {'numDataPoints'}
@@ -195,31 +122,11 @@ I8_OR_SSC
   Order differs
 IBEX_H3_ENA_LO_R17_CG_SP_RAM_1YR
   nnl = 73 != nbw = 138
-  {'Fvar1', 'Fsnr5', 'Ffsn2', 'Flux5', 'Numb6', 'Fexp6', 'Fexp4', 'Cnts4', 'Fsnr3', 'Fsnr6', 'Numb1', 'Flux7', 'Cnts8', 'Numb3', 'Fvar8', 'Ffsn8', 'Ffsn7', 'Numb7', 'Fsnr7', 'Ener2', 'Fvar7', 'Numb5', 'Fexp7', 'Cnts1', 'Cnts6', 'Fexp2', 'Ffsn3', 'Ffsn6', 'Ener4', 'Flux1', 'Fvar3', 'Fvar4', 'Ffsn4', 'Cnts3', 'Numb4', 'Fsnr2', 'Fvar6', 'Numb8', 'Flux2', 'Fvar5', 'Fexp5', 'Ffsn5', 'Ffsn1', 'Fexp3', 'Ener8', 'Fvar2', 'mapnum', 'Ener5', 'Flux4', 'Fexp1', 'Ener6', 'Ener3', 'Flux6', 'Flux3', 'Fexp8', 'Numb2', 'Fsnr4', 'Flux8', 'Cnts7', 'Cnts5', 'Ener1', 'Cnts2', 'Fsnr8', 'Ener7', 'Fsnr1'}
+  {'Flux1', 'Fexp3', 'Flux7', 'Fvar3', 'Numb1', 'Fvar1', 'Numb3', 'Ffsn5', 'Flux5', 'Flux8', 'Fvar5', 'Ener7', 'Ffsn7', 'Fvar4', 'Ffsn3', 'Ener4', 'Numb2', 'Numb6', 'Ener3', 'Ener5', 'Cnts1', 'Numb4', 'Cnts6', 'Fsnr3', 'Fvar6', 'Ener1', 'Ffsn4', 'Fvar8', 'Fsnr1', 'Flux2', 'Fexp6', 'Fsnr8', 'Flux6', 'Numb7', 'Fexp1', 'Fexp7', 'Cnts4', 'Numb8', 'Fsnr4', 'Cnts7', 'Fsnr7', 'Fexp4', 'Ffsn2', 'Ener2', 'Cnts3', 'Fvar7', 'Fexp8', 'Numb5', 'Cnts8', 'Ffsn8', 'Ener6', 'mapnum', 'Fsnr5', 'Flux4', 'Cnts5', 'Ener8', 'Fexp5', 'Fexp2', 'Ffsn1', 'Fvar2', 'Cnts2', 'Fsnr2', 'Fsnr6', 'Ffsn6', 'Flux3'}
 ICON_L2-1_MIGHTI-A_LOS-WIND-GREEN not in nl
-ICON_L2-1_MIGHTI-B_LOS-WIND-GREEN not in nl
-ICON_L2-1_MIGHTI-A_LOS-WIND-RED not in nl
-ICON_L2-1_MIGHTI-B_LOS-WIND-RED not in nl
-ICON_L2-2_MIGHTI_VECTOR-WIND-GREEN not in nl
-ICON_L2-2_MIGHTI_VECTOR-WIND-RED not in nl
-ICON_L2-3_MIGHTI-A_TEMPERATURE not in nl
-ICON_L2-3_MIGHTI-B_TEMPERATURE not in nl
-ICON_L2-4_FUV_DAY not in nl
-ICON_L2-5_FUV_NIGHT not in nl
-ICON_L2-6_EUV not in nl
-ICON_L2-7_IVM-A not in nl
-ICON_L2-7_IVM-B not in nl
-MSL_RAD_OBS-L2 not in nl
-MSL_RAD_OBS-L1 not in nl
 MVN_INSITU_KP-4SEC
   nnl = 159 != nbw = 175
-  {'NGIMS_Ar_density_data_quality', 'NGIMS_He_density_data_quality', 'NGIMS_NO_density_data_quality', 'NGIMS_CO_density_data_quality', 'NGIMS_O_density_data_quality', 'NGIMS_Ion_density_data_quality_30plus', 'NGIMS_Ion_density_data_quality_17plus', 'NGIMS_CO2_density_data_quality', 'NGIMS_Ion_density_data_quality_14plus', 'Inbound_Outbound_Flag', 'NGIMS_Ion_density_data_quality_44plus', 'NGIMS_Ion_density_data_quality_32plus', 'NGIMS_N2_density_data_quality', 'NGIMS_Ion_density_data_quality_16plus', 'NGIMS_Ion_density_data_quality_12plus', 'NGIMS_Ion_density_data_quality_28plus'}
-MVN_STA_L2_DA-1R64E not in nl
-MMS4_EDI_BRST_L2_AMB@0 not in nl
-MMS4_EDI_BRST_L2_AMB@1 not in nl
-MMS4_FPI_BRST_L2_DES-MOMS not in nl
-MMS4_FPI_BRST_L2_DES-PARTMOMS not in nl
-PMC-TURBO_L1_BOLIDE_VBC not in nl
+  {'NGIMS_CO2_density_data_quality', 'NGIMS_Ion_density_data_quality_44plus', 'NGIMS_Ion_density_data_quality_14plus', 'NGIMS_N2_density_data_quality', 'NGIMS_Ion_density_data_quality_30plus', 'NGIMS_Ar_density_data_quality', 'NGIMS_CO_density_data_quality', 'NGIMS_Ion_density_data_quality_16plus', 'NGIMS_Ion_density_data_quality_28plus', 'NGIMS_O_density_data_quality', 'NGIMS_Ion_density_data_quality_32plus', 'NGIMS_Ion_density_data_quality_12plus', 'NGIMS_Ion_density_data_quality_17plus', 'Inbound_Outbound_Flag', 'NGIMS_NO_density_data_quality', 'NGIMS_He_density_data_quality'}
 PO_K0_EFI
   nnl = 11 != nbw = 13
   {'GSE_ANGLE_Z', 'GSE_ANGLE_XY'}
@@ -227,78 +134,77 @@ PO_H0_PWI@0
   Order differs
 PO_H1_PWI@0
   nnl = 9 != nbw = 8
-  {'SFR4B', 'SFRA_Antenna', 'SFR5B', 'SFR4A', 'SFRB_Antenna', 'SFR1_Corr', 'SFR_Mode', 'SFR5Phase', 'SFR5A', 'SFR4_Corr', 'SFR4Phase', 'SFR1A', 'SFR1B', 'SFR1Phase', 'SFR5_Corr'}
+  {'SFR_Mode', 'SFR5B', 'SFR4_Corr', 'SFR1B', 'SFR1_Corr', 'SFR1A', 'SFR1Phase', 'SFR4A', 'SFRA_Antenna', 'SFR4Phase', 'SFR5_Corr', 'SFR4B', 'SFR5A', 'SFR5Phase', 'SFRB_Antenna'}
 PO_H1_PWI@1
   nnl = 5 != nbw = 9
-  {'SFR3Phase', 'SFR3A', 'SFR5B', 'SFR5A', 'SFR4Phase', 'SFR3_Corr', 'SFR5_Corr', 'SFR4B', 'SFR4A', 'SFR3B', 'SFR5Phase', 'SFR4_Corr'}
+  {'SFR3A', 'SFR5B', 'SFR4B', 'SFR3Phase', 'SFR4A', 'SFR5A', 'SFR5Phase', 'SFR4Phase', 'SFR5_Corr', 'SFR3B', 'SFR4_Corr', 'SFR3_Corr'}
 PO_H1_PWI@2
   Order differs
 PO_H1_PWI@3
   nnl = 8 != nbw = 5
-  {'SFR2B', 'SFRA_Antenna', 'SFR2_Corr', 'SFRB_Antenna', 'SFR2Phase', 'SFR1_Corr', 'SFR_Mode', 'SFR2A', 'SFR1A', 'SFR1B', 'SFR1Phase'}
+  {'SFR1_Corr', 'SFR1B', 'SFRB_Antenna', 'SFR2B', 'SFR2Phase', 'SFR1Phase', 'SFR2_Corr', 'SFRA_Antenna', 'SFR2A', 'SFR_Mode', 'SFR1A'}
 PO_H1_PWI@5 not in nl
 PO_H4_PWI@0
   nnl = 6 != nbw = 8
-  {'Gain2', 'HFWR_Ez2K', 'HFWR_Ey2K', 'HFWR_Ex2K', 'MGain', 'HFWR_Bx2K', 'HFWR_Bz2K', 'Gain1', 'HFWR_By2K', 'Gain3'}
+  {'Gain2', 'HFWR_Bz2K', 'Gain3', 'HFWR_Bx2K', 'HFWR_Ey2K', 'MGain', 'HFWR_By2K', 'Gain1', 'HFWR_Ez2K', 'HFWR_Ex2K'}
 PO_H4_PWI@1
   nnl = 7 != nbw = 5
-  {'Gain2', 'HFWR_Ez2K', 'HFWR_Ey2K', 'HFWR_Ex2K', 'MGain', 'HFWR_Bx2K', 'HFWR_Bz2K', 'Gain1', 'HFWR_By2K', 'Gain3'}
+  {'Gain2', 'HFWR_Bz2K', 'Gain3', 'HFWR_Bx2K', 'HFWR_Ey2K', 'MGain', 'HFWR_By2K', 'Gain1', 'HFWR_Ez2K', 'HFWR_Ex2K'}
 PO_H8_PWI
   nnl = 18 != nbw = 20
   {'MGain', 'Gain1'}
 PO_H9_PWI
   nnl = 11 != nbw = 12
   {'WBR_Mag'}
-PO_H2_TIM@0 not in nl
-PO_H2_TIM@1 not in nl
-PO_H2_TIM@2 not in nl
-PO_H2_TIM@3 not in nl
-PO_LEVEL1_UVI@0 not in nl
-PO_LEVEL1_UVI@1 not in nl
+PO_LEVEL1_UVI
+  nnl = 4 != nbw = 8
+  {'DOORPOS    ', 'INT_IMAGE_LF51', 'INT_IMAGE_51', 'GAIN       ', 'SYSTEM     ', 'FILTER     ', 'FRAMERATE  ', 'OBSEQNUM   ', 'INT_IMAGE_Movie51', 'UVIMODE    '}
 PSP_FLD_L2_TDS_WF@1
   nnl = 60 != nbw = 62
-  {'PSP_FLD_L2_TDS_WF_Burst_Quality_Algorithm_Name', 'PSP_FLD_L2_TDS_WF_Burst_Type_Name'}
-PSP_FLD_L2_DFB_DBM_SCM@0 not in nl
-PSP_FLD_L2_DFB_DBM_SCM@1 not in nl
+  {'PSP_FLD_L2_TDS_WF_Burst_Type_Name', 'PSP_FLD_L2_TDS_WF_Burst_Quality_Algorithm_Name'}
 PSP_ISOIS-EPILO_L2-IC@0
   nnl = 32 != nbw = 41
-  {'HCI_R_ChanC', 'HCI_Lat_ChanC', 'RTN_ChanC_L22', 'RTN_ChanP_L55', 'He4_Counts_ChanC', 'RTN_ChanC_L33', 'RTN_ChanC', 'HCI_Lat_ChanP', 'H_CountRate_ChanP', 'He4_CountRate_ChanC', 'HCI_ChanC_L22', 'He4_Flux_ChanC', 'RTN_ChanP_L77', 'HCI_ChanC_L11', 'PA_ChanP', 'HGC_Lon_ChanC', 'RTN_ChanP', 'RTN_ChanP_L66', 'HCI_ChanC_L44', 'HCI_ChanP_L00', 'HCI_ChanP_L11', 'RTN_ChanP_L11', 'RTN_ChanC_L11', 'HCI_ChanP_L33', 'HGC_Lat_ChanC', 'HCI_ChanP_L77', 'HCI_ChanC', 'PA_ChanC', 'HCI_ChanC_L55', 'He3_CountRate_ChanC_avg', 'H_Flux_ChanP', 'HGC_R_ChanP', 'HCI_ChanP_L55', 'He4_Flux_ChanC_avg', 'He3_CountRate_ChanC', 'He3_Counts_ChanC', 'Fe_CountRate_ChanC', 'Fe_CountRate_ChanC_avg', 'HGC_Lon_ChanP', 'RTN_ChanP_L00', 'HCI_ChanC_L66', 'HCI_Lon_ChanP', 'RTN_ChanC_L44', 'RTN_ChanC_L00', 'H_Counts_ChanP', 'HCI_Lon_ChanC', 'SA_ChanC', 'RTN_ChanC_L55', 'Fe_Counts_ChanC', 'HCI_ChanC_L33', 'RTN_ChanP_L22', 'HCI_ChanC_L77', 'HCI_ChanC_L00', 'RTN_ChanP_L33', 'SA_ChanP', 'HCI_ChanP_L44', 'HGC_Lat_ChanP', 'He4_CountRate_ChanC_avg', 'O_CountRate_ChanC', 'RTN_ChanC_L77', 'HCI_R_ChanP', 'H_Flux_ChanP_avg', 'HGC_R_ChanC', 'RTN_ChanP_L44', 'HCI_ChanP', 'O_CountRate_ChanC_avg', 'HCI_ChanP_L22', 'O_Counts_ChanC', 'H_CountRate_ChanP_avg', 'HCI_ChanP_L66', 'RTN_ChanC_L66'}
+  {'HCI_Lon_ChanP', 'O_CountRate_ChanC', 'RTN_ChanC_L66', 'HCI_ChanP_L22', 'He4_Flux_ChanC', 'HGC_R_ChanP', 'RTN_ChanP_L33', 'HGC_Lon_ChanC', 'He4_Counts_ChanC', 'HGC_Lat_ChanP', 'He3_CountRate_ChanC_avg', 'SA_ChanP', 'HCI_Lon_ChanC', 'RTN_ChanC_L22', 'RTN_ChanC_L77', 'PA_ChanP', 'HCI_ChanC', 'PA_ChanC', 'HCI_ChanP_L77', 'HCI_ChanP_L66', 'RTN_ChanC_L33', 'HCI_ChanP_L55', 'RTN_ChanP_L55', 'HCI_ChanC_L44', 'RTN_ChanC_L44', 'He3_Counts_ChanC', 'HCI_ChanC_L55', 'RTN_ChanC_L00', 'RTN_ChanP', 'HCI_ChanP_L33', 'HCI_ChanC_L00', 'HCI_ChanC_L66', 'HCI_ChanP', 'RTN_ChanC_L11', 'HCI_ChanC_L11', 'HCI_ChanC_L33', 'RTN_ChanP_L11', 'RTN_ChanC', 'O_CountRate_ChanC_avg', 'Fe_CountRate_ChanC', 'H_CountRate_ChanP_avg', 'Fe_Counts_ChanC', 'HCI_ChanC_L77', 'HCI_ChanP_L11', 'He4_Flux_ChanC_avg', 'RTN_ChanP_L44', 'H_Flux_ChanP_avg', 'H_Flux_ChanP', 'HGC_R_ChanC', 'He3_CountRate_ChanC', 'HCI_ChanP_L44', 'O_Counts_ChanC', 'HCI_ChanP_L00', 'H_CountRate_ChanP', 'RTN_ChanP_L66', 'RTN_ChanP_L77', 'He4_CountRate_ChanC_avg', 'HCI_Lat_ChanP', 'HGC_Lat_ChanC', 'HGC_Lon_ChanP', 'HCI_R_ChanC', 'H_Counts_ChanP', 'RTN_ChanP_L00', 'RTN_ChanP_L22', 'HCI_R_ChanP', 'He4_CountRate_ChanC', 'HCI_ChanC_L22', 'HCI_Lat_ChanC', 'Fe_CountRate_ChanC_avg', 'RTN_ChanC_L55', 'SA_ChanC'}
 PSP_ISOIS-EPILO_L2-IC@1
   nnl = 32 != nbw = 42
-  {'HCI_ChanD_L33', 'RTN_ChanD_L66', 'RTN_ChanD_L77', 'HCI_ChanD', 'HCI_ChanR_L77', 'RTN_ChanR_L44', 'HCI_ChanD_L44', 'HGC_R_ChanD', 'RTN_ChanD_L22', 'H_Flux_ChanR', 'HCI_R_ChanR', 'RTN_ChanD_L00', 'H_Flux_ChanR_avg', 'HCI_ChanR_L55', 'PA_ChanR', 'C_Counts_ChanD', 'Mg_CountRate_ChanD', 'H_CountRate_ChanR', 'RTN_ChanD_L33', 'HCI_ChanR_L44', 'N_CountRate_ChanD', 'HCI_ChanD_L22', 'SA_ChanR', 'Mg_CountRate_ChanD_avg', 'HCI_Lon_ChanD', 'HCI_Lon_ChanR', 'HCI_ChanD_L00', 'RTN_ChanR', 'Si_CountRate_ChanD_avg', 'RTN_ChanR_L11', 'HCI_ChanD_L11', 'C_CountRate_ChanD', 'RTN_ChanR_L33', 'HCI_ChanD_L77', 'HGC_Lat_ChanD', 'RTN_ChanR_L22', 'HCI_R_ChanD', 'HCI_ChanR_L11', 'RTN_ChanD_L44', 'RTN_ChanD_L55', 'HCI_ChanR_L00', 'HCI_ChanR', 'HCI_Lat_ChanR', 'RTN_ChanR_L00', 'HCI_Lat_ChanD', 'RTN_ChanR_L66', 'Si_Counts_ChanD', 'HGC_Lon_ChanR', 'N_CountRate_ChanD_avg', 'RTN_ChanD_L11', 'HGC_R_ChanR', 'Mg_Counts_ChanD', 'N_Counts_ChanD', 'HCI_ChanD_L66', 'H_CountRate_ChanR_avg', 'RTN_ChanD', 'H_Counts_ChanR', 'Si_CountRate_ChanD', 'PA_ChanD', 'SA_ChanD', 'HCI_ChanR_L33', 'Ne_Counts_ChanD', 'HCI_ChanR_L66', 'HGC_Lat_ChanR', 'C_CountRate_ChanD_avg', 'RTN_ChanR_L55', 'HGC_Lon_ChanD', 'Ne_CountRate_ChanD', 'HCI_ChanR_L22', 'HCI_ChanD_L55', 'RTN_ChanR_L77', 'Ne_CountRate_ChanD_avg'}
+  {'HGC_R_ChanD', 'HCI_R_ChanR', 'HCI_ChanD_L22', 'C_Counts_ChanD', 'H_Flux_ChanR_avg', 'RTN_ChanR_L11', 'RTN_ChanD_L22', 'C_CountRate_ChanD_avg', 'Ne_CountRate_ChanD_avg', 'H_CountRate_ChanR_avg', 'RTN_ChanR_L77', 'Mg_CountRate_ChanD_avg', 'HGC_Lat_ChanR', 'HCI_ChanR_L33', 'HCI_ChanR_L22', 'H_Counts_ChanR', 'RTN_ChanD_L33', 'Mg_CountRate_ChanD', 'HCI_R_ChanD', 'Ne_Counts_ChanD', 'HCI_ChanD_L55', 'RTN_ChanD_L00', 'H_Flux_ChanR', 'RTN_ChanD_L55', 'Si_CountRate_ChanD', 'RTN_ChanR_L22', 'HCI_Lon_ChanD', 'HCI_Lon_ChanR', 'PA_ChanR', 'RTN_ChanD_L66', 'HCI_Lat_ChanD', 'C_CountRate_ChanD', 'SA_ChanR', 'HCI_ChanR_L77', 'HCI_ChanD_L11', 'PA_ChanD', 'H_CountRate_ChanR', 'Ne_CountRate_ChanD', 'Mg_Counts_ChanD', 'HGC_Lat_ChanD', 'HCI_ChanD_L33', 'HCI_ChanR_L44', 'HCI_Lat_ChanR', 'HCI_ChanR', 'HGC_Lon_ChanD', 'RTN_ChanR_L44', 'HCI_ChanD_L00', 'RTN_ChanR_L55', 'RTN_ChanD_L44', 'HCI_ChanD_L44', 'HCI_ChanD_L66', 'Si_Counts_ChanD', 'HCI_ChanD_L77', 'RTN_ChanD_L11', 'RTN_ChanR_L66', 'RTN_ChanD_L77', 'SA_ChanD', 'HCI_ChanR_L55', 'RTN_ChanR', 'N_CountRate_ChanD_avg', 'Si_CountRate_ChanD_avg', 'HCI_ChanR_L00', 'RTN_ChanR_L00', 'HGC_R_ChanR', 'HCI_ChanD', 'RTN_ChanR_L33', 'RTN_ChanD', 'N_Counts_ChanD', 'HCI_ChanR_L66', 'HGC_Lon_ChanR', 'N_CountRate_ChanD', 'HCI_ChanR_L11'}
 PSP_ISOIS-EPILO_L2-IC@2
   Order differs
 PSP_ISOIS-EPILO_L2-IC@3
   nnl = 41 != nbw = 32
-  {'HCI_R_ChanC', 'HCI_Lat_ChanC', 'RTN_ChanC_L22', 'HCI_ChanR_L77', 'RTN_ChanR_L44', 'He4_Counts_ChanC', 'RTN_ChanC_L33', 'H_Flux_ChanR', 'RTN_ChanC', 'HCI_R_ChanR', 'He4_CountRate_ChanC', 'HCI_ChanC_L22', 'He4_Flux_ChanC', 'H_Flux_ChanR_avg', 'HCI_ChanC_L11', 'HCI_ChanR_L55', 'PA_ChanR', 'HGC_Lon_ChanC', 'HCI_ChanC_L44', 'H_CountRate_ChanR', 'RTN_ChanC_L11', 'HCI_ChanR_L44', 'HGC_Lat_ChanC', 'HCI_ChanC', 'PA_ChanC', 'HCI_ChanC_L55', 'RTN_ChanC_L66', 'SA_ChanR', 'He3_CountRate_ChanC_avg', 'HCI_Lon_ChanR', 'RTN_ChanR', 'RTN_ChanR_L11', 'He4_Flux_ChanC_avg', 'He3_CountRate_ChanC', 'RTN_ChanR_L33', 'He3_Counts_ChanC', 'Fe_CountRate_ChanC', 'Fe_CountRate_ChanC_avg', 'HCI_ChanC_L66', 'RTN_ChanR_L22', 'HCI_ChanR_L11', 'HCI_ChanR_L00', 'RTN_ChanC_L44', 'HCI_ChanR', 'HCI_Lat_ChanR', 'RTN_ChanC_L00', 'RTN_ChanR_L00', 'HCI_Lon_ChanC', 'SA_ChanC', 'RTN_ChanC_L55', 'RTN_ChanR_L66', 'HGC_Lon_ChanR', 'HCI_ChanC_L33', 'HCI_ChanC_L77', 'HGC_R_ChanR', 'HCI_ChanC_L00', 'He4_CountRate_ChanC_avg', 'H_CountRate_ChanR_avg', 'O_CountRate_ChanC', 'RTN_ChanC_L77', 'H_Counts_ChanR', 'HGC_R_ChanC', 'HCI_ChanR_L33', 'HCI_ChanR_L66', 'HGC_Lat_ChanR', 'O_CountRate_ChanC_avg', 'O_Counts_ChanC', 'RTN_ChanR_L55', 'HCI_ChanR_L22', 'RTN_ChanR_L77', 'Fe_Counts_ChanC'}
+  {'O_CountRate_ChanC', 'RTN_ChanC_L66', 'He4_Flux_ChanC', 'HCI_R_ChanR', 'HGC_Lon_ChanC', 'H_Flux_ChanR_avg', 'RTN_ChanR_L11', 'He4_Counts_ChanC', 'He3_CountRate_ChanC_avg', 'H_CountRate_ChanR_avg', 'HCI_Lon_ChanC', 'RTN_ChanR_L77', 'RTN_ChanC_L22', 'RTN_ChanC_L77', 'HGC_Lat_ChanR', 'HCI_ChanR_L33', 'HCI_ChanC', 'PA_ChanC', 'HCI_ChanR_L22', 'H_Counts_ChanR', 'RTN_ChanC_L33', 'H_Flux_ChanR', 'HCI_ChanC_L44', 'RTN_ChanR_L22', 'RTN_ChanC_L44', 'HCI_Lon_ChanR', 'PA_ChanR', 'He3_Counts_ChanC', 'HCI_ChanC_L55', 'RTN_ChanC_L00', 'SA_ChanR', 'HCI_ChanR_L77', 'H_CountRate_ChanR', 'HCI_ChanC_L00', 'HCI_ChanC_L66', 'RTN_ChanC_L11', 'HCI_ChanC_L11', 'HCI_ChanC_L33', 'HCI_ChanR_L44', 'HCI_Lat_ChanR', 'HCI_ChanR', 'RTN_ChanC', 'O_CountRate_ChanC_avg', 'Fe_CountRate_ChanC', 'Fe_Counts_ChanC', 'HCI_ChanC_L77', 'RTN_ChanR_L44', 'He4_Flux_ChanC_avg', 'RTN_ChanR_L55', 'HGC_R_ChanC', 'He3_CountRate_ChanC', 'RTN_ChanR_L66', 'O_Counts_ChanC', 'HCI_ChanR_L55', 'HCI_ChanR_L11', 'RTN_ChanR', 'HCI_ChanR_L00', 'RTN_ChanR_L00', 'HGC_R_ChanR', 'RTN_ChanR_L33', 'He4_CountRate_ChanC_avg', 'HCI_ChanR_L66', 'HGC_Lat_ChanC', 'HCI_R_ChanC', 'He4_CountRate_ChanC', 'HCI_ChanC_L22', 'HCI_Lat_ChanC', 'HGC_Lon_ChanR', 'Fe_CountRate_ChanC_avg', 'RTN_ChanC_L55', 'SA_ChanC'}
 PSP_ISOIS-EPILO_L2-IC@4
   nnl = 42 != nbw = 32
-  {'HCI_ChanD_L33', 'RTN_ChanT_L22', 'RTN_ChanD_L66', 'RTN_ChanD_L77', 'HGC_Lon_ChanT', 'HCI_ChanD', 'HCI_ChanT_L22', 'HGC_R_ChanT', 'HCI_ChanD_L44', 'HGC_R_ChanD', 'RTN_ChanD_L22', 'H_Counts_ChanT', 'RTN_ChanD_L00', 'HCI_ChanT_L55', 'HCI_ChanT_L66', 'SA_ChanT', 'HCI_ChanT_L44', 'HCI_Lat_ChanT', 'C_Counts_ChanD', 'Mg_CountRate_ChanD', 'RTN_ChanD_L33', 'N_CountRate_ChanD', 'H_CountRate_ChanT_avg', 'PA_ChanT', 'RTN_ChanT_L55', 'Mg_CountRate_ChanD_avg', 'HCI_Lon_ChanD', 'HCI_ChanD_L00', 'Si_CountRate_ChanD_avg', 'HCI_ChanD_L11', 'HCI_ChanT', 'C_CountRate_ChanD', 'RTN_ChanT_L77', 'HCI_ChanD_L77', 'RTN_ChanT_L66', 'HGC_Lat_ChanD', 'HCI_R_ChanD', 'RTN_ChanD_L44', 'RTN_ChanD_L55', 'HCI_Lat_ChanD', 'H_Flux_ChanT', 'Si_Counts_ChanD', 'RTN_ChanT', 'HCI_ChanT_L11', 'HCI_ChanT_L33', 'RTN_ChanT_L33', 'HCI_R_ChanT', 'HGC_Lat_ChanT', 'RTN_ChanT_L00', 'N_CountRate_ChanD_avg', 'RTN_ChanD_L11', 'RTN_ChanT_L44', 'Mg_Counts_ChanD', 'N_Counts_ChanD', 'HCI_ChanD_L66', 'RTN_ChanD', 'HCI_ChanT_L00', 'Si_CountRate_ChanD', 'PA_ChanD', 'SA_ChanD', 'Ne_Counts_ChanD', 'RTN_ChanT_L11', 'H_Flux_ChanT_avg', 'HCI_ChanT_L77', 'C_CountRate_ChanD_avg', 'HGC_Lon_ChanD', 'Ne_CountRate_ChanD', 'HCI_ChanD_L55', 'HCI_ChanD_L22', 'H_CountRate_ChanT', 'Ne_CountRate_ChanD_avg', 'HCI_Lon_ChanT'}
+  {'HCI_ChanT_L44', 'HCI_ChanT', 'HGC_R_ChanD', 'HCI_ChanD_L22', 'C_Counts_ChanD', 'RTN_ChanD_L22', 'C_CountRate_ChanD_avg', 'RTN_ChanT_L77', 'Ne_CountRate_ChanD_avg', 'Mg_CountRate_ChanD_avg', 'H_Flux_ChanT_avg', 'HCI_ChanT_L66', 'HCI_R_ChanT', 'RTN_ChanT_L22', 'RTN_ChanT_L33', 'HCI_ChanT_L11', 'RTN_ChanD_L33', 'H_CountRate_ChanT', 'RTN_ChanT_L44', 'Mg_CountRate_ChanD', 'HCI_R_ChanD', 'Ne_Counts_ChanD', 'HCI_ChanD_L55', 'RTN_ChanD_L00', 'RTN_ChanD_L55', 'HCI_ChanT_L33', 'Si_CountRate_ChanD', 'HCI_Lon_ChanD', 'RTN_ChanD_L66', 'RTN_ChanT_L11', 'HCI_Lat_ChanD', 'C_CountRate_ChanD', 'HCI_ChanD_L11', 'PA_ChanD', 'H_Counts_ChanT', 'RTN_ChanT_L66', 'HCI_Lat_ChanT', 'Ne_CountRate_ChanD', 'H_CountRate_ChanT_avg', 'HCI_Lon_ChanT', 'Mg_Counts_ChanD', 'HCI_ChanT_L22', 'HGC_Lat_ChanD', 'HCI_ChanD_L33', 'RTN_ChanT_L55', 'RTN_ChanT', 'HGC_Lon_ChanD', 'H_Flux_ChanT', 'HGC_Lon_ChanT', 'HCI_ChanD_L00', 'RTN_ChanT_L00', 'RTN_ChanD_L44', 'HCI_ChanD_L44', 'HCI_ChanD_L66', 'Si_Counts_ChanD', 'HCI_ChanD_L77', 'RTN_ChanD_L11', 'RTN_ChanD_L77', 'SA_ChanD', 'HCI_ChanT_L77', 'PA_ChanT', 'N_CountRate_ChanD_avg', 'Si_CountRate_ChanD_avg', 'SA_ChanT', 'HCI_ChanD', 'RTN_ChanD', 'N_Counts_ChanD', 'HCI_ChanT_L55', 'HCI_ChanT_L00', 'HGC_Lat_ChanT', 'N_CountRate_ChanD', 'HGC_R_ChanT'}
 RBSPA_REL04_ECT-MAGEIS-L3@0
   nnl = 28 != nbw = 29
   {'LstarVsAlpha_Alpha'}
 RBSPB_REL04_ECT-MAGEIS-L3@0
   nnl = 28 != nbw = 29
   {'LstarVsAlpha_Alpha'}
-RBSP-A-RBSPICE_LEV-3-PAP_TOFXEHE not in nl
-RBSP-B-RBSPICE_LEV-3-PAP_TOFXEHE not in nl
-RBSP-A-RBSPICE_LEV-3-PAP_TOFXEO not in nl
-RBSP-B-RBSPICE_LEV-3-PAP_TOFXEO not in nl
-RBSPA_EFW-L2_E-SPINFIT-MGSE not in nl
-  But RBSPA_EFW-L2_E-SPINFIT-MGSE@0 in nl
-RBSPB_EFW-L2_E-SPINFIT-MGSE not in nl
-  But RBSPB_EFW-L2_E-SPINFIT-MGSE@0 in nl
+RBSPA_EFW-L2_E-SPINFIT-MGSE@0
+  nnl = 20 != nbw = 21
+  {'e_spinfit_mgse_efw_qual'}
+RBSPA_EFW-L2_E-SPINFIT-MGSE@1
+  nnl = 2 != nbw = 1
+  {'e_spinfit_mgse_efw_qual'}
+RBSPB_EFW-L2_E-SPINFIT-MGSE@0
+  nnl = 20 != nbw = 21
+  {'e_spinfit_mgse_efw_qual'}
+RBSPB_EFW-L2_E-SPINFIT-MGSE@1
+  nnl = 2 != nbw = 1
+  {'e_spinfit_mgse_efw_qual'}
 RBSPA_EFW-L2_ESVY_DESPUN@0
   Order differs
 RBSPA_EFW-L2_ESVY_DESPUN@1
   nnl = 13 != nbw = 2
-  {'pos_gse', 'efw_qual', 'spinaxis_gse', 'orbit_num', 'diagEx2', 'vel_gse', 'bias_current', 'diagBratio', 'lshell', 'mlat', 'flags_charging_bias_eclipse', 'mlt', 'diagEx1'}
+  {'spinaxis_gse', 'lshell', 'diagBratio', 'pos_gse', 'bias_current', 'diagEx1', 'efw_qual', 'mlt', 'vel_gse', 'orbit_num', 'diagEx2', 'flags_charging_bias_eclipse', 'mlat'}
 RBSPA_EFW-L2_ESVY_DESPUN@2 not in nl
 RBSPB_EFW-L2_ESVY_DESPUN@0
   Order differs
 RBSPB_EFW-L2_ESVY_DESPUN@1
   nnl = 13 != nbw = 2
-  {'pos_gse', 'efw_qual', 'spinaxis_gse', 'orbit_num', 'diagEx2', 'vel_gse', 'bias_current', 'diagBratio', 'lshell', 'mlat', 'flags_charging_bias_eclipse', 'mlt', 'diagEx1'}
+  {'spinaxis_gse', 'lshell', 'diagBratio', 'pos_gse', 'bias_current', 'diagEx1', 'efw_qual', 'mlt', 'vel_gse', 'orbit_num', 'diagEx2', 'flags_charging_bias_eclipse', 'mlat'}
 RBSPB_EFW-L2_ESVY_DESPUN@2 not in nl
 RBSP-A_DENSITY_EMFISIS-L4
   nnl = 8 != nbw = 9
@@ -306,19 +212,6 @@ RBSP-A_DENSITY_EMFISIS-L4
 RBSP-B_DENSITY_EMFISIS-L4
   nnl = 8 != nbw = 9
   {'digi_type'}
-RBSP-A_MAGNETOMETER_HIRES-GEI_EMFISIS-L3 not in nl
-RBSP-B_MAGNETOMETER_HIRES-GEI_EMFISIS-L3 not in nl
-RBSP-A_MAGNETOMETER_HIRES-GEO_EMFISIS-L3 not in nl
-RBSP-B_MAGNETOMETER_HIRES-GEO_EMFISIS-L3 not in nl
-RBSP-A_MAGNETOMETER_HIRES-GSE_EMFISIS-L3 not in nl
-RBSP-B_MAGNETOMETER_HIRES-GSE_EMFISIS-L3 not in nl
-RBSP-A_MAGNETOMETER_HIRES-GSM_EMFISIS-L3 not in nl
-RBSP-B_MAGNETOMETER_HIRES-GSM_EMFISIS-L3 not in nl
-RBSP-A_MAGNETOMETER_HIRES-SM_EMFISIS-L3 not in nl
-RBSP-B_MAGNETOMETER_HIRES-SM_EMFISIS-L3 not in nl
-RBSP-A_MAGNETOMETER_UVW_EMFISIS-L2 not in nl
-RBSP-B_MAGNETOMETER_UVW_EMFISIS-L2 not in nl
-RBSP-A_HFR-SPECTRA-MERGED_EMFISIS-L2 not in nl
 SNOE_L3_GEO
   nnl = 10 != nbw = 12
   {'latitude', 'localTime'}
@@ -331,77 +224,74 @@ SOLO_L2_SWA-PAS-EFLUX
 SOLO_L2_SWA-PAS-VDF
   nnl = 30 != nbw = 31
   {'vdf'}
-SOLO_L2_SWA-EAS1-SS-PSD not in nl
-SOLO_L2_SWA-EAS1-SS-DNF not in nl
-SOLO_L2_SWA-EAS1-SS-DEF not in nl
 SOLO_L2_RPW-LFR-SURV-BP1@0
   nnl = 11 != nbw = 2
-  {'DOP_N_F0', 'VPHI_ARG_N_F0', 'VPHI_REA_N_F0', 'SURVEY_MODE', 'SX_ARG_N_F0', 'NVEC_N_F0_SRF', 'PE_N_F0', 'SX_REA_N_F0', 'NVEC_N_F0', 'ELLIP_N_F0', 'PB_N_F0'}
+  {'NVEC_N_F0', 'NVEC_N_F0_SRF', 'DOP_N_F0', 'SX_REA_N_F0', 'VPHI_ARG_N_F0', 'SX_ARG_N_F0', 'ELLIP_N_F0', 'VPHI_REA_N_F0', 'SURVEY_MODE', 'PE_N_F0', 'PB_N_F0'}
 SOLO_L2_RPW-LFR-SURV-BP1@1
   Order differs
 SOLO_L2_RPW-LFR-SURV-BP1@2
   Order differs
 SOLO_L2_RPW-LFR-SURV-BP1@3
   nnl = 2 != nbw = 11
-  {'PE_N_F2', 'SX_REA_N_F2', 'PB_N_F2', 'SURVEY_MODE', 'ELLIP_N_F2', 'NVEC_N_F2_SRF', 'VPHI_ARG_N_F2', 'SX_ARG_N_F2', 'NVEC_N_F2', 'VPHI_REA_N_F2', 'DOP_N_F2'}
+  {'VPHI_ARG_N_F2', 'SX_ARG_N_F2', 'DOP_N_F2', 'PB_N_F2', 'PE_N_F2', 'ELLIP_N_F2', 'VPHI_REA_N_F2', 'SURVEY_MODE', 'NVEC_N_F2_SRF', 'SX_REA_N_F2', 'NVEC_N_F2'}
 SOLO_L2_RPW-LFR-SURV-BP1@4 not in nl
 SOLO_L2_RPW-LFR-SURV-BP1@5 not in nl
 SOLO_L2_RPW-LFR-SURV-BP2@3
   nnl = 2 != nbw = 5
-  {'SURVEY_MODE', 'BP2_RE_B_F0', 'BP2_RE_B_F0_SRF', 'BP2_IM_B_F0_SRF', 'BP2_IM_B_F0'}
+  {'BP2_RE_B_F0_SRF', 'BP2_IM_B_F0_SRF', 'BP2_RE_B_F0', 'BP2_IM_B_F0', 'SURVEY_MODE'}
 SOLO_L2_RPW-LFR-SURV-BP2@4 not in nl
 SOLO_L2_RPW-LFR-SURV-BP2@5 not in nl
 SOLO_L2_EPD-HET-ASUN-RATES@1
   nnl = 3 != nbw = 4
-  {'He4_Flux', 'He3_Flux', 'Electron_Flux', 'H_HCad_Flux', 'Elec_HE_Flux'}
+  {'He4_Flux', 'He3_Flux', 'H_HCad_Flux', 'Electron_Flux', 'Elec_HE_Flux'}
 SOLO_L2_EPD-HET-ASUN-RATES@2
   Order differs
 SOLO_L2_EPD-HET-ASUN-RATES@3
   nnl = 4 != nbw = 2
-  {'C_Flux', 'N_Flux', 'O_Flux', 'Fe_Flux'}
+  {'Fe_Flux', 'C_Flux', 'N_Flux', 'O_Flux'}
 SOLO_L2_EPD-HET-ASUN-RATES@4
   nnl = 2 != nbw = 3
-  {'Electron_Flux', 'Fe_Flux', 'H_HCad_Flux'}
+  {'Fe_Flux', 'H_HCad_Flux', 'Electron_Flux'}
 SOLO_L2_EPD-HET-SUN-RATES@1
   nnl = 3 != nbw = 4
-  {'He4_Flux', 'He3_Flux', 'Electron_Flux', 'H_HCad_Flux', 'Elec_HE_Flux'}
+  {'He4_Flux', 'He3_Flux', 'H_HCad_Flux', 'Electron_Flux', 'Elec_HE_Flux'}
 SOLO_L2_EPD-HET-SUN-RATES@2
   Order differs
 SOLO_L2_EPD-HET-SUN-RATES@3
   nnl = 4 != nbw = 2
-  {'C_Flux', 'N_Flux', 'O_Flux', 'Fe_Flux'}
+  {'Fe_Flux', 'C_Flux', 'N_Flux', 'O_Flux'}
 SOLO_L2_EPD-HET-SUN-RATES@4
   nnl = 2 != nbw = 3
-  {'Electron_Flux', 'Fe_Flux', 'H_HCad_Flux'}
+  {'Fe_Flux', 'H_HCad_Flux', 'Electron_Flux'}
 SOLO_L2_EPD-HET-NORTH-RATES@1
   nnl = 3 != nbw = 4
-  {'He4_Flux', 'He3_Flux', 'Electron_Flux', 'H_HCad_Flux', 'Elec_HE_Flux'}
+  {'He4_Flux', 'He3_Flux', 'H_HCad_Flux', 'Electron_Flux', 'Elec_HE_Flux'}
 SOLO_L2_EPD-HET-NORTH-RATES@2
   Order differs
 SOLO_L2_EPD-HET-NORTH-RATES@3
   nnl = 4 != nbw = 2
-  {'C_Flux', 'N_Flux', 'O_Flux', 'Fe_Flux'}
+  {'Fe_Flux', 'C_Flux', 'N_Flux', 'O_Flux'}
 SOLO_L2_EPD-HET-NORTH-RATES@4
   nnl = 2 != nbw = 3
-  {'Electron_Flux', 'Fe_Flux', 'H_HCad_Flux'}
+  {'Fe_Flux', 'H_HCad_Flux', 'Electron_Flux'}
 SOLO_L2_EPD-HET-SOUTH-RATES@1
   nnl = 3 != nbw = 4
-  {'He4_Flux', 'He3_Flux', 'Electron_Flux', 'H_HCad_Flux', 'Elec_HE_Flux'}
+  {'He4_Flux', 'He3_Flux', 'H_HCad_Flux', 'Electron_Flux', 'Elec_HE_Flux'}
 SOLO_L2_EPD-HET-SOUTH-RATES@2
   Order differs
 SOLO_L2_EPD-HET-SOUTH-RATES@3
   nnl = 4 != nbw = 2
-  {'C_Flux', 'N_Flux', 'O_Flux', 'Fe_Flux'}
+  {'Fe_Flux', 'C_Flux', 'N_Flux', 'O_Flux'}
 SOLO_L2_EPD-HET-SOUTH-RATES@4
   nnl = 2 != nbw = 3
-  {'Electron_Flux', 'Fe_Flux', 'H_HCad_Flux'}
+  {'Fe_Flux', 'H_HCad_Flux', 'Electron_Flux'}
 THA_L2_FFT@1
   Order differs
 THA_L2_FFT@2
   Order differs
 THA_L2_FFT@3
   nnl = 12 != nbw = 20
-  {'tha_ffp_32_v3', 'tha_ffp_16_v6', 'tha_ffp_32_eperp', 'tha_ffp_16_edc34', 'tha_ffp_16_eac34', 'tha_ffp_16_v2', 'tha_ffp_32_v5', 'tha_ffp_16_edc12', 'tha_ffp_16_v5', 'tha_ffp_16_scm3', 'tha_ffp_32_v2', 'tha_ffp_16_scm1', 'tha_ffp_16_scm2', 'tha_ffp_16_v3', 'tha_ffp_32_scm2', 'tha_ffp_16_eperp', 'tha_ffp_16_v1', 'tha_ffp_16_edc56', 'tha_ffp_32_scm3', 'tha_ffp_16_eac56', 'tha_ffp_16_dbpara', 'tha_ffp_16_epara', 'tha_ffp_16_v4', 'tha_ffp_32_v4', 'tha_ffp_16_dbperp', 'tha_ffp_32_v6', 'tha_ffp_16_eac12', 'tha_ffp_32_v1', 'tha_ffp_32_scm1', 'tha_ffp_32_epara'}
+  {'tha_ffp_16_v4', 'tha_ffp_16_eperp', 'tha_ffp_32_scm1', 'tha_ffp_16_edc34', 'tha_ffp_32_v4', 'tha_ffp_16_v1', 'tha_ffp_16_edc12', 'tha_ffp_16_eac34', 'tha_ffp_16_edc56', 'tha_ffp_32_scm3', 'tha_ffp_16_eac12', 'tha_ffp_16_scm2', 'tha_ffp_32_eperp', 'tha_ffp_32_v2', 'tha_ffp_16_epara', 'tha_ffp_16_v6', 'tha_ffp_16_eac56', 'tha_ffp_16_scm3', 'tha_ffp_16_dbperp', 'tha_ffp_32_v1', 'tha_ffp_16_dbpara', 'tha_ffp_32_scm2', 'tha_ffp_32_v5', 'tha_ffp_16_v5', 'tha_ffp_16_scm1', 'tha_ffp_16_v3', 'tha_ffp_16_v2', 'tha_ffp_32_v6', 'tha_ffp_32_epara', 'tha_ffp_32_v3'}
 THA_L2_FFT@4
   Order differs
 THA_L2_FFT@5
@@ -458,17 +348,13 @@ THG_L1_ASK@23 not in nl
 THG_L2_MAG_PANG not in nl
 TIMED_L3A_SEE
   nnl = 17 != nbw = 19
-  {'WAVE_LINE', 'LOGT_LINE'}
-TIMED_WINDVECTORSNCAR_TIDI@0 not in nl
-TIMED_WINDVECTORSNCAR_TIDI@1 not in nl
-TIMED_WINDVECTORSNCAR_TIDI@2 not in nl
-TIMED_WINDVECTORSNCAR_TIDI@3 not in nl
+  {'LOGT_LINE', 'WAVE_LINE'}
 TIMED_EDP_GUVI
   nnl = 29 != nbw = 36
-  {'k_nonpar_W1C', 'k_nonpar_W0', 'k_par_W1', 'k_nonpar_W0C', 'k_nonpar_W1', 'Orbit', 'k_par_W0'}
+  {'k_par_W1', 'k_nonpar_W1C', 'k_nonpar_W0C', 'k_par_W0', 'k_nonpar_W0', 'Orbit', 'k_nonpar_W1'}
 TIMED_L1CDISK_GUVI@0
   nnl = 90 != nbw = 94
-  {'DQI', 'DataRegion', 'PiercePointAlt', 'SolarZenithAngle'}
+  {'DQI', 'DataRegion', 'SolarZenithAngle', 'PiercePointAlt'}
 TIMED_L1CDISK_GUVI@1
   nnl = 24 != nbw = 26
   {'Slit', 'Detector'}
@@ -486,10 +372,10 @@ TSS-1R_M1_SHAE@6
   Order differs
 TSS-1R_M1_SHSA@0
   nnl = 7 != nbw = 47
-  {'X_Gyro_Chkout', 'Data_Quality_Y_Gyro_Warmup', 'Gyro_Status', 'Data_Quality_Sun_Sen', 'Yaw_1_Flag', 'Data_Quality_EL_2_OK', 'Data_Quality_Z_Gyro_Warmup', 'Earth_Sen', 'EL_2_OK', 'Z_Gyro_Chkout', 'Data_Quality_S_Gyro_Chkout', 'Data_Quality_ES_1_OK', 'Data_Quality_Z_Gyro_Cmd', 'Data_Quality_Z_Gyro_Chkout', 'Y_Gyro_Chkout', 'Data_Quality_X_Gyro_Cmd', 'Data_Quality_ES_1_Hd_Flg', 'Data_Quality_Yaw_1_Cmd_Flag', 'ES_2_Served', 'S_Gyro_Warmup', 'Y_Gyro_Warmup', 'Data_Quality_Yaw_2_Cmd_Flag', 'ES_1_Hd_Flg', 'ES_1_Served', 'Data_Quality_Y_Gyro_Chkout', 'S_Gyro_Chkout', 'Data_Quality_ES_2_Served', 'Yaw_2_Flag', 'X_Gyro_Warmup', 'Data_Quality_X_Gyro_Chkout', 'Data_Quality_Yaw_1_Flag', 'ES_1_OK', 'ES_2_OK', 'X_Gyro_Cmd', 'S_Gyro_Cmd', 'Data_Quality_Yaw_2_Flag', 'Data_Quality_S_Gyro_Cmd', 'Data_Quality_Earth_Sen', 'Data_Quality_X_Gyro_Warmup', 'Y_Gyro_Cmd', 'Yaw_2_Cmd_Flag', 'Z_Gyro_Cmd', 'Data_Quality_S_Gyro_Warmup', 'Z_Gyro_Warmup', 'EL_1_OK', 'Data_Quality_Gyro_Status', 'Yaw_1_Cmd_Flag', 'Data_Quality_ES_2_OK', 'Data_Quality_ES_1_Served', 'Sun_Sen', 'Data_Quality_EL_1_OK', 'Data_Quality_Y_Gyro_Cmd'}
+  {'X_Gyro_Chkout', 'Data_Quality_Z_Gyro_Warmup', 'Data_Quality_Z_Gyro_Cmd', 'Data_Quality_Yaw_2_Cmd_Flag', 'Data_Quality_ES_1_OK', 'Data_Quality_Y_Gyro_Cmd', 'Data_Quality_Sun_Sen', 'Z_Gyro_Cmd', 'Data_Quality_S_Gyro_Warmup', 'Data_Quality_S_Gyro_Cmd', 'Data_Quality_Y_Gyro_Chkout', 'Y_Gyro_Chkout', 'Data_Quality_S_Gyro_Chkout', 'S_Gyro_Chkout', 'Data_Quality_Yaw_1_Flag', 'Y_Gyro_Warmup', 'S_Gyro_Warmup', 'X_Gyro_Cmd', 'Data_Quality_X_Gyro_Cmd', 'EL_1_OK', 'Yaw_1_Cmd_Flag', 'Data_Quality_ES_2_OK', 'Data_Quality_Gyro_Status', 'Data_Quality_Yaw_2_Flag', 'Data_Quality_EL_1_OK', 'Data_Quality_ES_1_Hd_Flg', 'Yaw_2_Flag', 'ES_2_Served', 'Yaw_1_Flag', 'ES_2_OK', 'Data_Quality_X_Gyro_Warmup', 'S_Gyro_Cmd', 'Gyro_Status', 'Data_Quality_Earth_Sen', 'ES_1_Served', 'Sun_Sen', 'ES_1_Hd_Flg', 'Data_Quality_ES_2_Served', 'Data_Quality_X_Gyro_Chkout', 'Z_Gyro_Warmup', 'Z_Gyro_Chkout', 'Earth_Sen', 'Data_Quality_Yaw_1_Cmd_Flag', 'X_Gyro_Warmup', 'ES_1_OK', 'Data_Quality_ES_1_Served', 'Data_Quality_EL_2_OK', 'Data_Quality_Y_Gyro_Warmup', 'Yaw_2_Cmd_Flag', 'Data_Quality_Z_Gyro_Chkout', 'EL_2_OK', 'Y_Gyro_Cmd'}
 TSS-1R_M1_SHSA@1
   nnl = 47 != nbw = 7
-  {'Yaw_2_Flag', 'S_Gyro_Chkout', 'ES_1_Served', 'X_Gyro_Chkout', 'Data_Quality_Y_Gyro_Warmup', 'Gyro_Status', 'X_Gyro_Warmup', 'Data_Quality_X_Gyro_Chkout', 'Data_Quality_Yaw_1_Flag', 'ES_1_OK', 'Data_Quality_Sun_Sen', 'ES_2_OK', 'Yaw_1_Flag', 'X_Gyro_Cmd', 'Data_Quality_EL_2_OK', 'Data_Quality_Z_Gyro_Warmup', 'S_Gyro_Cmd', 'Earth_Sen', 'Data_Quality_Yaw_2_Flag', 'EL_2_OK', 'Z_Gyro_Chkout', 'Data_Quality_S_Gyro_Cmd', 'Data_Quality_S_Gyro_Chkout', 'Data_Quality_ES_1_OK', 'Data_Quality_X_Gyro_Warmup', 'Y_Gyro_Cmd', 'Data_Quality_Earth_Sen', 'Data_Quality_Z_Gyro_Cmd', 'Yaw_2_Cmd_Flag', 'Data_Quality_Z_Gyro_Chkout', 'Data_Quality_S_Gyro_Warmup', 'Z_Gyro_Cmd', 'Y_Gyro_Chkout', 'Data_Quality_X_Gyro_Cmd', 'Data_Quality_ES_1_Hd_Flg', 'Data_Quality_Yaw_1_Cmd_Flag', 'Z_Gyro_Warmup', 'EL_1_OK', 'Data_Quality_Gyro_Status', 'Yaw_1_Cmd_Flag', 'Data_Quality_ES_2_OK', 'ES_2_Served', 'Data_Quality_ES_1_Served', 'S_Gyro_Warmup', 'Sun_Sen', 'Data_Quality_EL_1_OK', 'Y_Gyro_Warmup', 'Data_Quality_Yaw_2_Cmd_Flag', 'ES_1_Hd_Flg', 'Data_Quality_Y_Gyro_Cmd', 'Data_Quality_Y_Gyro_Chkout', 'Data_Quality_ES_2_Served'}
+  {'X_Gyro_Chkout', 'Data_Quality_Z_Gyro_Warmup', 'Data_Quality_EL_1_OK', 'Data_Quality_ES_1_Hd_Flg', 'Yaw_2_Flag', 'ES_2_Served', 'Yaw_1_Flag', 'Data_Quality_Z_Gyro_Cmd', 'Data_Quality_Yaw_2_Cmd_Flag', 'ES_2_OK', 'Data_Quality_ES_1_OK', 'Data_Quality_X_Gyro_Warmup', 'Data_Quality_Y_Gyro_Cmd', 'Data_Quality_Sun_Sen', 'S_Gyro_Cmd', 'Z_Gyro_Cmd', 'Data_Quality_S_Gyro_Warmup', 'Gyro_Status', 'ES_1_Served', 'Data_Quality_Earth_Sen', 'Sun_Sen', 'Data_Quality_Y_Gyro_Chkout', 'ES_1_Hd_Flg', 'Data_Quality_ES_2_Served', 'Y_Gyro_Chkout', 'Data_Quality_S_Gyro_Chkout', 'S_Gyro_Chkout', 'Data_Quality_Yaw_1_Flag', 'Y_Gyro_Warmup', 'Data_Quality_X_Gyro_Chkout', 'Z_Gyro_Warmup', 'Z_Gyro_Chkout', 'S_Gyro_Warmup', 'X_Gyro_Cmd', 'Earth_Sen', 'Data_Quality_X_Gyro_Cmd', 'EL_1_OK', 'Data_Quality_Yaw_1_Cmd_Flag', 'Yaw_1_Cmd_Flag', 'X_Gyro_Warmup', 'EL_2_OK', 'Data_Quality_ES_1_Served', 'ES_1_OK', 'Data_Quality_ES_2_OK', 'Data_Quality_EL_2_OK', 'Data_Quality_Y_Gyro_Warmup', 'Yaw_2_Cmd_Flag', 'Data_Quality_Gyro_Status', 'Data_Quality_Z_Gyro_Chkout', 'Data_Quality_S_Gyro_Cmd', 'Y_Gyro_Cmd', 'Data_Quality_Yaw_2_Flag'}
 TWINS1_L1_IMAGER
   nnl = 94 != nbw = 95
   {'title'}
@@ -498,33 +384,35 @@ TWINS2_L1_IMAGER
   {'title'}
 TWINS2_OR_DEF
   nnl = 4 != nbw = 36
-  {'FBNORTH100KM', 'FLSHELL', 'FSCGEO', 'FLTGEO', 'FSCECD', 'FSCLATGEO', 'FSUNECI', 'FDIPOLERADIUS', 'FBSOUTH100KM', 'FMIRRORGSM', 'FEQUATORIALGSM', 'FINVLAT', 'FSCRADIALDIST', 'FSOLARZENITHCOS', 'FSCLONGGEO', 'FBEQUATORIAL', 'FSCRADIALALT', 'FLOSSCONE', 'NDATAFILEID', 'FNORTH100KMGSM', 'FSCLATECD', 'FDIPOLELAT', 'FSOUTH100KMGSM', 'FLTEQU', 'FDIPOLEOFFSET', 'ISTARTTIMEMJD', 'FBECI', 'FDIPOLETILT', 'FSCECI', 'FSCGSM', 'FLTECD', 'FBMIRROR'}
+  {'FMIRRORGSM', 'FBEQUATORIAL', 'ISTARTTIMEMJD', 'FEQUATORIALGSM', 'FBMIRROR', 'FDIPOLERADIUS', 'FSCECI', 'FLOSSCONE', 'FNORTH100KMGSM', 'NDATAFILEID', 'FSCLATGEO', 'FBSOUTH100KM', 'FDIPOLETILT', 'FLTEQU', 'FSCGSM', 'FSCRADIALDIST', 'FSCECD', 'FLSHELL', 'FBNORTH100KM', 'FINVLAT', 'FSUNECI', 'FDIPOLELAT', 'FSCGEO', 'FSCLATECD', 'FLTECD', 'FBECI', 'FSCLONGGEO', 'FSOLARZENITHCOS', 'FLTGEO', 'FSOUTH100KMGSM', 'FSCRADIALALT', 'FDIPOLEOFFSET'}
 TWINS2_AT_DEF not in nl
-VOYAGER1_2S_MAG@0 not in nl
-VOYAGER1_2S_MAG@1 not in nl
+VOYAGER1_2S_MAG
+  nnl = 21 != nbw = 30
+  {'F1', 'B1', 'numDetailPoints', 'RMSB2', 'F2', 'B3', 'B2', 'RMSB3', 'RMSB1'}
 VOYAGER1_10S_MAG@0
   nnl = 30 != nbw = 15
-  {'magStatus', 'B1_1nt', 'B_error', 'F2', 'F2_100nt', 'matrix1', 'B1_10nt', 'B3', 'F1_100nt', 'z', 'B1_dot1nt', 'F1_10nt', 'B2_1nt', 'zvel', 'MagCommand', 'F2_1nt', 'y', 'matrix2', 'B3_dot1nt', 'F1', 'B3_100nt', 'B2_100nt', 'RMSB3', 'F2_dot1nt', 'B1', 'B2', 'x', 'RMSB2', 'B2_10nt', 'scLon', 'F2_10nt', 'B2_dot1nt', 'matrix3', 'F1_1nt', 'yvel', 'RMSB1', 'scDistance', 'B3_1nt', 'scLat', 'F1_dot1nt', 'B1_100nt', 'xvel', 'B3_10nt'}
+  {'B_error', 'RMSB2', 'x', 'yvel', 'F2_10nt', 'B1_dot1nt', 'F2_dot1nt', 'B2_100nt', 'scLat', 'B2_1nt', 'B1', 'B1_100nt', 'magStatus', 'B1_1nt', 'B3_1nt', 'matrix1', 'B1_10nt', 'B2_10nt', 'zvel', 'z', 'B2', 'F1_1nt', 'F1_dot1nt', 'matrix3', 'F1', 'xvel', 'y', 'B3', 'scDistance', 'matrix2', 'B3_10nt', 'F1_100nt', 'RMSB1', 'B2_dot1nt', 'B3_dot1nt', 'F2_100nt', 'F2_1nt', 'F1_10nt', 'MagCommand', 'F2', 'scLon', 'B3_100nt', 'RMSB3'}
 VOYAGER1_10S_MAG@1
   nnl = 13 != nbw = 31
-  {'B3_100nt', 'B2_100nt', 'B1_1nt', 'B_error', 'RMSB3', 'F2', 'F2_100nt', 'matrix1', 'F2_dot1nt', 'B1_10nt', 'B1', 'B3', 'B2', 'F1_100nt', 'x', 'z', 'RMSB2', 'B1_dot1nt', 'B2_10nt', 'zvel', 'F1_10nt', 'scLon', 'B2_1nt', 'F2_10nt', 'matrix3', 'B2_dot1nt', 'F1_1nt', 'num1_92_averages', 'yvel', 'F2_1nt', 'y', 'matrix2', 'B3_dot1nt', 'RMSB1', 'scDistance', 'B3_1nt', 'scLat', 'F1_dot1nt', 'B1_100nt', 'xvel', 'F1', 'B3_10nt'}
+  {'B_error', 'F1', 'RMSB2', 'x', 'yvel', 'xvel', 'y', 'num1_92_averages', 'B3', 'scDistance', 'matrix2', 'B3_10nt', 'F2_10nt', 'F1_100nt', 'B1_dot1nt', 'RMSB1', 'F2_dot1nt', 'B2_dot1nt', 'B2_100nt', 'B3_dot1nt', 'scLat', 'B2_1nt', 'F2_100nt', 'B1', 'B1_100nt', 'F2_1nt', 'B1_1nt', 'F1_10nt', 'matrix1', 'B3_1nt', 'scLon', 'F2', 'B1_10nt', 'B2', 'B2_10nt', 'zvel', 'B3_100nt', 'z', 'RMSB3', 'F1_1nt', 'F1_dot1nt', 'matrix3'}
 VOYAGER1_48S_MAG
   nnl = 41 != nbw = 44
-  {'magStatus', 'magCommand', 'num9_6_averages'}
-VOYAGER2_2S_MAG@0 not in nl
-VOYAGER2_2S_MAG@1 not in nl
+  {'magCommand', 'magStatus', 'num9_6_averages'}
+VOYAGER2_2S_MAG
+  nnl = 21 != nbw = 30
+  {'F1', 'B1', 'numDetailPoints', 'RMSB2', 'F2', 'B3', 'B2', 'RMSB3', 'RMSB1'}
 VOYAGER2_10S_MAG@0
   nnl = 30 != nbw = 15
-  {'magStatus', 'B1_1nt', 'B_error', 'F2', 'F2_100nt', 'matrix1', 'B1_10nt', 'B3', 'F1_100nt', 'z', 'B1_dot1nt', 'F1_10nt', 'B2_1nt', 'zvel', 'MagCommand', 'F2_1nt', 'y', 'matrix2', 'B3_dot1nt', 'F1', 'B3_100nt', 'B2_100nt', 'RMSB3', 'F2_dot1nt', 'B1', 'B2', 'x', 'RMSB2', 'B2_10nt', 'scLon', 'F2_10nt', 'B2_dot1nt', 'matrix3', 'F1_1nt', 'yvel', 'RMSB1', 'scDistance', 'B3_1nt', 'scLat', 'F1_dot1nt', 'B1_100nt', 'xvel', 'B3_10nt'}
+  {'B_error', 'RMSB2', 'x', 'yvel', 'F2_10nt', 'B1_dot1nt', 'F2_dot1nt', 'B2_100nt', 'scLat', 'B2_1nt', 'B1', 'B1_100nt', 'magStatus', 'B1_1nt', 'B3_1nt', 'matrix1', 'B1_10nt', 'B2_10nt', 'zvel', 'z', 'B2', 'F1_1nt', 'F1_dot1nt', 'matrix3', 'F1', 'xvel', 'y', 'B3', 'scDistance', 'matrix2', 'B3_10nt', 'F1_100nt', 'RMSB1', 'B2_dot1nt', 'B3_dot1nt', 'F2_100nt', 'F2_1nt', 'F1_10nt', 'MagCommand', 'F2', 'scLon', 'B3_100nt', 'RMSB3'}
 VOYAGER2_10S_MAG@1
   nnl = 13 != nbw = 31
-  {'B3_100nt', 'B2_100nt', 'B1_1nt', 'B_error', 'RMSB3', 'F2', 'F2_100nt', 'matrix1', 'F2_dot1nt', 'B1_10nt', 'B1', 'B3', 'B2', 'F1_100nt', 'x', 'z', 'RMSB2', 'B1_dot1nt', 'B2_10nt', 'zvel', 'F1_10nt', 'scLon', 'B2_1nt', 'F2_10nt', 'matrix3', 'B2_dot1nt', 'F1_1nt', 'num1_92_averages', 'yvel', 'F2_1nt', 'y', 'matrix2', 'B3_dot1nt', 'RMSB1', 'scDistance', 'B3_1nt', 'scLat', 'F1_dot1nt', 'B1_100nt', 'xvel', 'F1', 'B3_10nt'}
+  {'B_error', 'F1', 'RMSB2', 'x', 'yvel', 'xvel', 'y', 'num1_92_averages', 'B3', 'scDistance', 'matrix2', 'B3_10nt', 'F2_10nt', 'F1_100nt', 'B1_dot1nt', 'RMSB1', 'F2_dot1nt', 'B2_dot1nt', 'B2_100nt', 'B3_dot1nt', 'scLat', 'B2_1nt', 'F2_100nt', 'B1', 'B1_100nt', 'F2_1nt', 'B1_1nt', 'F1_10nt', 'matrix1', 'B3_1nt', 'scLon', 'F2', 'B1_10nt', 'B2', 'B2_10nt', 'zvel', 'B3_100nt', 'z', 'RMSB3', 'F1_1nt', 'F1_dot1nt', 'matrix3'}
 VOYAGER2_48S_MAG
   nnl = 41 != nbw = 44
-  {'magStatus', 'magCommand', 'num9_6_averages'}
+  {'magCommand', 'magStatus', 'num9_6_averages'}
 WI_PM_3DP
   nnl = 10 != nbw = 13
-  {'VALID', 'E_RANGE', 'GAP'}
+  {'E_RANGE', 'VALID', 'GAP'}
 WI_EM_3DP
   nnl = 7 != nbw = 9
   {'VALID', 'GAP'}

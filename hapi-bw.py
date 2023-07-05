@@ -1,14 +1,33 @@
-def omit(id):
-  if False and id != 'BAR_4A_L2_USPC':
-    return True
-  return False
-
 import os
 import json
 
 base_dir = os.path.dirname(__file__)
 all_file_restructured = os.path.join(base_dir, 'data/all-resolved.restructured.json')
 out_file = os.path.join(base_dir, 'data/hapi-bw.json')
+
+issues_file = os.path.join(base_dir,"hapi-nl-issues.json")
+with open(issues_file) as f:
+  issues = json.load(f)
+
+def keep(id, depend_0=None):
+  if id in issues['keepPartial'].keys() and depend_0 == issues['keepPartial'][id]:
+    print(id)
+    print(f"  Warning: Keeping dataset associated with {depend_0} b/c it is in Nand's list")
+    return True
+  return False
+
+def omit(id, depend_0=None):
+  if depend_0 is None:
+    if id in issues['omitFull'].keys():
+      print(id)
+      print(f"  Error: Dropping dataset b/c it is not in Nand's list")
+      return True
+  else:
+    if id in issues['omitPartial'].keys() and depend_0 == issues['omitPartial'][id]:
+      print(id)
+      print(f"  Error: Dropping dataset associated with {depend_0} b/c it is not in Nand's list")
+      return True
+  return False
 
 def cdf2hapitype(cdf_type):
 
@@ -217,7 +236,8 @@ def subset_and_transform(datasets):
   datasets_new = []
   for dataset in datasets:
 
-    if omit(dataset['id']): continue
+    if omit(dataset['id']):
+      continue
 
     print(dataset['id'] + ": subsetting and creating /info")
     n = 0
@@ -227,6 +247,9 @@ def subset_and_transform(datasets):
     # First pass - drop datasets with problems
     depend_0_names = []
     for depend_0_name, depend_0_variables in depend_0s:
+
+      if omit(dataset['id'], depend_0=depend_0_name):
+        continue
 
       if depend_0_name not in dataset['_variables'].keys():
         print(f"  Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.")
@@ -245,7 +268,7 @@ def subset_and_transform(datasets):
         print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
         continue
 
-      if 'data' not in VAR_TYPES:
+      if 'data' not in VAR_TYPES and not keep(dataset['id'], depend_0=depend_0_name):
         # In general, Nand drops these, but not always
         print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
         continue
@@ -284,7 +307,6 @@ def subset_and_transform(datasets):
       n = n + 1
 
   return datasets_new
-
 
 print(f'Reading: {all_file_restructured}')
 with open(all_file_restructured, 'r', encoding='utf-8') as f:

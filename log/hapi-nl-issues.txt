@@ -1,0 +1,15 @@
+First one due to Nand having TOF_iron_Edrift associated with Epoch instead of Epoch_1
+AMPTECCE_H0_MEPA@0
+  nnl = 20 != nbw = 15
+  {'TOF_iron_Edrift', 'TOF_protons_Edrift', 'TOF_oxygen_Edrift', 'HIRES_ION_protons_Edrift', 'TOF_helium_Edrift'}
+AMPTECCE_H0_MEPA@1
+  nnl = 29 != nbw = 33
+  {'TOF_iron_Edrift', 'TOF_protons_Edrift', 'TOF_oxygen_Edrift', 'TOF_helium_Edrift'}
+AMPTECCE_H0_MEPA@3
+  nnl = 7 != nbw = 8
+  {'HIRES_ION_protons_Edrift'}
+
+Missing variables b/c they don't have a DEPEND_0.
+BAR_2L_L2_HKPG
+  nnl = 45 != nbw = 2
+  {'V2_Solar1', 'numOfSats', 'T15_CCStat', 'V5_Modem', 'V8_Mag', 'I1_TotalSolar', 'V6_NEG_XRayDet', 'timeOffset', 'cmdCounter', 'modemCounter', 'T9_Solar2', 'T11_Solar4', 'termStatus', 'T3_Battery', 'I5_Modem', 'T0_Scint', 'I7_NEG_DPU', 'T14_TermCap', 'T8_Solar1', 'weeks', 'V11_Solar4', 'I0_TotalLoad', 'V0_VoltAtLoad', 'V10_Solar3', 'V1_Battery', 'I2_Solar1', 'V3_POS_DPU', 'dcdCounter', 'T12_TermTemp', 'T1_Mag', 'V4_POS_XRayDet', 'T5_DPU', 'T7_Structure', 'T10_Solar3', 'V9_Solar2', 'T6_Modem', 'T4_PowerConv', 'T13_TermBatt', 'I4_POS_XRayDet', 'I3_POS_DPU', 'V7_NEG_DPU', 'T2_ChargeCont', 'I6_NEG_XRayDet'}
