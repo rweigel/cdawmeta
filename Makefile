@@ -41,15 +41,15 @@ tables:
 	make table-all
 
 table-hapi:
-	make data/tables/hapi.table.head.json
+	make data/tables/hapi.table.body.json
 
-data/tables/hapi.table.head.json: table/table-hapi.py data/hapi-bw.json data/hapi-nl.json
+data/tables/hapi.table.body.json: table/table-hapi.py data/hapi-bw.json data/hapi-nl.json
 	python table/table-hapi.py
 
 table-all:
-	make data/tables/all.table.head.json
+	make data/tables/all.table.body.json
 
-data/tables/all.table.head.json: table/table-all.py data/all-resolved.restructured.json
+data/tables/all.table.body.json: table/table-all.py data/all-resolved.restructured.json
 	python table/table-all.py
 
 

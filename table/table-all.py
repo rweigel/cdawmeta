@@ -136,7 +136,7 @@ def all_attribute_table(datasets):
 
           if attribute in variable[attribute_type]:
             val = variable[attribute_type][attribute]
-            if isinstance(val, str) and val == "":
+            if isinstance(val, str) and val == " ":
               val = val.replace(' ', '⎵')
             row.append(val)
           else:
