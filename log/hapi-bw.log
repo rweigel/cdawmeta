@@ -2,13 +2,105 @@ Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/all-resolved.restructured.json
 Read: /Users/weigel/git/hapi/cdaweb-hapi/data/all-resolved.restructured.json
   Error: Dropping variable "Mass" b/c it has no has no VAR_TYPE
 ELA_L1_STATE_DEFN
-  Error: Dropping dataset b/c variable "ela_sun" has no VarAttributes
+  Error: Dropping variable "ela_sun" b/c it has no VarAttributes
 ELB_L1_STATE_DEFN
-  Error: Dropping dataset b/c variable "elb_sun" has no VarAttributes
+  Error: Dropping variable "elb_sun" b/c it has no VarAttributes
+FA_ESA_L2_EEB
+  Warning: Dropping variable "valid" b/c it is not in Nand's list
+FA_ESA_L2_EEB
+  Warning: Dropping variable "data_quality" b/c it is not in Nand's list
+FA_ESA_L2_EEB
+  Warning: Dropping variable "nbins" b/c it is not in Nand's list
+FA_ESA_L2_EEB
+  Warning: Dropping variable "nenergy" b/c it is not in Nand's list
+FA_ESA_L2_EEB
+  Warning: Dropping variable "geom_factor" b/c it is not in Nand's list
+FA_ESA_L2_EEB
+  Warning: Dropping variable "gf_ind" b/c it is not in Nand's list
+FA_ESA_L2_EEB
+  Warning: Dropping variable "mode_ind" b/c it is not in Nand's list
+FA_ESA_L2_EEB
+  Warning: Dropping variable "energy_full" b/c it is not in Nand's list
+FA_ESA_L2_EEB
+  Warning: Dropping variable "denergy_full" b/c it is not in Nand's list
+FA_ESA_L2_EEB
+  Warning: Dropping variable "domega" b/c it is not in Nand's list
+FA_ESA_L2_EES
+  Warning: Dropping variable "valid" b/c it is not in Nand's list
+FA_ESA_L2_EES
+  Warning: Dropping variable "data_quality" b/c it is not in Nand's list
+FA_ESA_L2_EES
+  Warning: Dropping variable "nbins" b/c it is not in Nand's list
+FA_ESA_L2_EES
+  Warning: Dropping variable "nenergy" b/c it is not in Nand's list
+FA_ESA_L2_EES
+  Warning: Dropping variable "geom_factor" b/c it is not in Nand's list
+FA_ESA_L2_EES
+  Warning: Dropping variable "gf_ind" b/c it is not in Nand's list
+FA_ESA_L2_EES
+  Warning: Dropping variable "mode_ind" b/c it is not in Nand's list
+FA_ESA_L2_EES
+  Warning: Dropping variable "energy_full" b/c it is not in Nand's list
+FA_ESA_L2_EES
+  Warning: Dropping variable "denergy_full" b/c it is not in Nand's list
+FA_ESA_L2_EES
+  Warning: Dropping variable "domega" b/c it is not in Nand's list
+FA_ESA_L2_IEB
+  Warning: Dropping variable "valid" b/c it is not in Nand's list
+FA_ESA_L2_IEB
+  Warning: Dropping variable "data_quality" b/c it is not in Nand's list
+FA_ESA_L2_IEB
+  Warning: Dropping variable "nbins" b/c it is not in Nand's list
+FA_ESA_L2_IEB
+  Warning: Dropping variable "nenergy" b/c it is not in Nand's list
+FA_ESA_L2_IEB
+  Warning: Dropping variable "geom_factor" b/c it is not in Nand's list
+FA_ESA_L2_IEB
+  Warning: Dropping variable "gf_ind" b/c it is not in Nand's list
+FA_ESA_L2_IEB
+  Warning: Dropping variable "mode_ind" b/c it is not in Nand's list
+FA_ESA_L2_IEB
+  Warning: Dropping variable "data_audio" b/c it is not in Nand's list
+FA_ESA_L2_IEB
+  Warning: Dropping variable "energy_full" b/c it is not in Nand's list
+FA_ESA_L2_IEB
+  Warning: Dropping variable "denergy_full" b/c it is not in Nand's list
+FA_ESA_L2_IEB
+  Warning: Dropping variable "domega" b/c it is not in Nand's list
+FA_ESA_L2_IES
+  Warning: Dropping variable "valid" b/c it is not in Nand's list
+FA_ESA_L2_IES
+  Warning: Dropping variable "data_quality" b/c it is not in Nand's list
+FA_ESA_L2_IES
+  Warning: Dropping variable "nbins" b/c it is not in Nand's list
+FA_ESA_L2_IES
+  Warning: Dropping variable "nenergy" b/c it is not in Nand's list
+FA_ESA_L2_IES
+  Warning: Dropping variable "geom_factor" b/c it is not in Nand's list
+FA_ESA_L2_IES
+  Warning: Dropping variable "gf_ind" b/c it is not in Nand's list
+FA_ESA_L2_IES
+  Warning: Dropping variable "mode_ind" b/c it is not in Nand's list
+FA_ESA_L2_IES
+  Warning: Dropping variable "energy_full" b/c it is not in Nand's list
+FA_ESA_L2_IES
+  Warning: Dropping variable "denergy_full" b/c it is not in Nand's list
+FA_ESA_L2_IES
+  Warning: Dropping variable "domega" b/c it is not in Nand's list
 FAST_TEAMS_PA_L2
   Error: Dropping variable "delta_time_helium" because it has a DEPEND_0 "Epoch_helium" that is not in dataset
   Error: Dropping variable "lat_bounds" b/c it has no has no VAR_TYPE
   Error: Dropping variable "lon_bounds" b/c it has no has no VAR_TYPE
+ALOUETTE2_NEPROF_TOPS
+  Warning: Dropping variable "numDataPoints" b/c it is not in Nand's list
+ISS_DOSANL_TEPC
+  Warning: Dropping variable "FLAG" b/c it is not in Nand's list
+ISS_DOSANL_TEPC
+  Warning: Dropping variable "LOCATION" b/c it is not in Nand's list
+I1_NEPROF_TOPS
+  Warning: Dropping variable "numDataPoints" b/c it is not in Nand's list
+I2_NEPROF_TOPS
+  Warning: Dropping variable "numDataPoints" b/c it is not in Nand's list
 ICON_L2-4_FUV_DAY
   Error: Dropping variable "ICON_L24_Whole_Day_Retrieval_Flag" because it has a DEPEND_0 "Flag" that is not in dataset
 PO_H2_TIM
@@ -55,8 +147,66 @@ PO_H2_TIM
   Error: Dropping variable "NumAxisFixed" b/c it has no has no VAR_TYPE
   Error: Dropping variable "STE_detector" b/c it has no has no VAR_TYPE
 STB_L1_STE
-  Error: Dropping dataset b/c variable "STE_spectra_LABL_1" has no VarAttributes
+  Error: Dropping variable "STE_spectra_LABL_1" b/c it has no VarAttributes
   Error: Dropping variable "STE_detector" b/c it has no has no VAR_TYPE
+VOYAGER1_2S_MAG
+  Warning: Dropping variable "F1" b/c it is not in Nand's list
+VOYAGER1_2S_MAG
+  Warning: Dropping variable "F2" b/c it is not in Nand's list
+VOYAGER1_2S_MAG
+  Warning: Dropping variable "B1" b/c it is not in Nand's list
+VOYAGER1_2S_MAG
+  Warning: Dropping variable "B2" b/c it is not in Nand's list
+VOYAGER1_2S_MAG
+  Warning: Dropping variable "B3" b/c it is not in Nand's list
+VOYAGER1_2S_MAG
+  Warning: Dropping variable "RMSB1" b/c it is not in Nand's list
+VOYAGER1_2S_MAG
+  Warning: Dropping variable "RMSB2" b/c it is not in Nand's list
+VOYAGER1_2S_MAG
+  Warning: Dropping variable "RMSB3" b/c it is not in Nand's list
+VOYAGER1_2S_MAG
+  Warning: Dropping variable "numDetailPoints" b/c it is not in Nand's list
+VOYAGER1_48S_MAG
+  Warning: Dropping variable "magStatus" b/c it is not in Nand's list
+VOYAGER1_48S_MAG
+  Warning: Dropping variable "magCommand" b/c it is not in Nand's list
+VOYAGER1_48S_MAG
+  Warning: Dropping variable "num9_6_averages" b/c it is not in Nand's list
+VOYAGER2_2S_MAG
+  Warning: Dropping variable "F1" b/c it is not in Nand's list
+VOYAGER2_2S_MAG
+  Warning: Dropping variable "F2" b/c it is not in Nand's list
+VOYAGER2_2S_MAG
+  Warning: Dropping variable "B1" b/c it is not in Nand's list
+VOYAGER2_2S_MAG
+  Warning: Dropping variable "B2" b/c it is not in Nand's list
+VOYAGER2_2S_MAG
+  Warning: Dropping variable "B3" b/c it is not in Nand's list
+VOYAGER2_2S_MAG
+  Warning: Dropping variable "RMSB1" b/c it is not in Nand's list
+VOYAGER2_2S_MAG
+  Warning: Dropping variable "RMSB2" b/c it is not in Nand's list
+VOYAGER2_2S_MAG
+  Warning: Dropping variable "RMSB3" b/c it is not in Nand's list
+VOYAGER2_2S_MAG
+  Warning: Dropping variable "numDetailPoints" b/c it is not in Nand's list
+VOYAGER2_48S_MAG
+  Warning: Dropping variable "magStatus" b/c it is not in Nand's list
+VOYAGER2_48S_MAG
+  Warning: Dropping variable "magCommand" b/c it is not in Nand's list
+VOYAGER2_48S_MAG
+  Warning: Dropping variable "num9_6_averages" b/c it is not in Nand's list
+WI_PM_3DP
+  Warning: Dropping variable "E_RANGE" b/c it is not in Nand's list
+WI_PM_3DP
+  Warning: Dropping variable "GAP" b/c it is not in Nand's list
+WI_PM_3DP
+  Warning: Dropping variable "VALID" b/c it is not in Nand's list
+WI_EM_3DP
+  Warning: Dropping variable "GAP" b/c it is not in Nand's list
+WI_EM_3DP
+  Warning: Dropping variable "VALID" b/c it is not in Nand's list
 AC_OR_SSC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -157,12 +307,12 @@ AEROCUBE-6-A_DOSIMETER_L2: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 AEROCUBE-6-A_DOSIMETER_L2
-  Error: Dropping dataset associated with Epoch_10Hz b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "Epoch_10Hz" b/c it is not in Nand's list
 AEROCUBE-6-B_DOSIMETER_L2: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 AEROCUBE-6-B_DOSIMETER_L2
-  Error: Dropping dataset associated with Epoch_10Hz b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "Epoch_10Hz" b/c it is not in Nand's list
 AMPTECCE_H0_MEPA: subsetting and creating /info
   5 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -171,13 +321,13 @@ AMPTECCE_H0_MEPA: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch_3'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_4'/'support_data'; dependent VAR_TYPES {'data'}
 APOLLO12_SWS_1HR
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 APOLLO12_SWS_28S
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 APOLLO15_SWS_1HR
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 APOLLO15_SWS_28S
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 BAR_1A_L2_EPHM: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -1349,11 +1499,11 @@ C1_PP_EFW: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch__C1_PP_EFW'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
 C2_PP_EFW
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 C3_PP_EFW
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 C4_PP_EFW
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 C1_CP_FGM_SPIN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_FGM_SPIN'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -1442,13 +1592,13 @@ C1_WAVEFORM_WBD_BM2: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 C2_WAVEFORM_WBD_BM2
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 C3_WAVEFORM_WBD_BM2
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 C4_WAVEFORM_WBD_BM2
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 CL_SP_AUX
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 CL_JP_PGP: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch__CL_JP_PGP'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -1540,28 +1690,28 @@ DE1_1MIN_RIMS: subsetting and creating /info
 DE1_PWI_LFC-SPECTRA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
 DE1_PWI_OR-AT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 DE1_PWI_SFC-SPECTRA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
-  Not including bin centers for Frequencies_Reorder no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Frequencies_Reorder b/c no VarData (probably VIRTUAL)
 DE2_DUCT16MS_RPA: subsetting and creating /info
   8 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch_den'/'support_data'; dependent VAR_TYPES {'data'}
@@ -1672,12 +1822,12 @@ ELA_L1_STATE_PRED: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'ela_state_time'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 ELA_L1_STATE_PRED
-  Error: Dropping dataset associated with ela_att_time b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "ela_att_time" b/c it is not in Nand's list
 ELB_L1_STATE_PRED: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'elb_state_time'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 ELB_L1_STATE_PRED
-  Error: Dropping dataset associated with elb_att_time b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "elb_att_time" b/c it is not in Nand's list
 ELA_L1_STATE_DEFN: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'ela_state_time'/'support_data'; dependent VAR_TYPES {'data'}
@@ -1738,7 +1888,7 @@ ERG_MEPI_L2_3DFLUX: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_sp'/'support_data'; dependent VAR_TYPES {'data'}
 ERG_LEPE_L2_OMNIFLUX
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ERG_LEPI_L2_OMNIFLUX: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -1746,7 +1896,7 @@ ERG_MGF_L2_8SEC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch_8sec'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 ERG_PWE_EFD_L2_E_SPIN
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ERG_PWE_EFD_L2_POT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -1766,12 +1916,10 @@ ERG_PWE_HFA_L2_SPEC_MONIT: subsetting and creating /info
 ERG_XEP_L2_OMNIFLUX: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'ignore_data'}
-  Not including bin centers for FEDO_SSD_Energy_MEAN no VarData (probably VIRTUAL)
-  Not including bin centers for FEDO_SSD_Energy_MEAN no VarData (probably VIRTUAL)
-  Not including bin centers for FEDO_GSO_Energy_MEAN no VarData (probably VIRTUAL)
-  Not including bin centers for FEDO_SSD_Energy_MEAN no VarData (probably VIRTUAL)
-  Not including bin centers for FEDO_SSD_Energy_MEAN no VarData (probably VIRTUAL)
-  Not including bin centers for FEDO_GSO_Energy_MEAN no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for FEDO_SSD_Energy_MEAN b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for FEDO_SSD_Energy_MEAN b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for FEDO_SSD_Energy_MEAN b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for FEDO_SSD_Energy_MEAN b/c no VarData (probably VIRTUAL)
 EQ_PP_EDI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch%eq_pp_edi'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -1797,22 +1945,22 @@ FA_ESA_L2_EEB: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 FA_ESA_L2_EEB
-  Error: Dropping dataset associated with orbit_number_epoch b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "orbit_number_epoch" b/c it is not in Nand's list
 FA_ESA_L2_EES: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 FA_ESA_L2_EES
-  Error: Dropping dataset associated with orbit_number_epoch b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "orbit_number_epoch" b/c it is not in Nand's list
 FA_ESA_L2_IEB: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 FA_ESA_L2_IEB
-  Error: Dropping dataset associated with orbit_number_epoch b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "orbit_number_epoch" b/c it is not in Nand's list
 FA_ESA_L2_IES: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 FA_ESA_L2_IES
-  Error: Dropping dataset associated with orbit_number_epoch b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "orbit_number_epoch" b/c it is not in Nand's list
 FAST_HR_DCB: subsetting and creating /info
   4 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -1820,9 +1968,9 @@ FAST_HR_DCB: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Ephemeris_Epoch'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'Orbit_Fixed_Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 FAST_OR_SSC
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 FAST_TEAMS_PA_L2
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 FA_K0_ACF: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -1833,7 +1981,7 @@ FM_K0_KILP: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
 FORMOSAT5_AIP_IDN
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 GE_HPAMOM_CPI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -1849,8 +1997,8 @@ GE_EDA12SEC_LEP: subsetting and creating /info
 GE_EDB12SEC_LEP: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
-  Dropping Sensor because string parameter and no PadValue or FillValue given to allow length to be determined.
-  Dropping Sensor because string parameter and no PadValue or FillValue given to allow length to be determined.
+  Dropping variable "Sensor" because string parameter and no PadValue or FillValue given to allow length to be determined.
+  Dropping variable "Sensor" because string parameter and no PadValue or FillValue given to allow length to be determined.
 GE_1MIN_MAG_PLASMA_SW_ONLY: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -1872,9 +2020,8 @@ GE_K0_EFD: subsetting and creating /info
 GE_K0_EPI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'ignore_data'}
-GE_K0_LEP: subsetting and creating /info
-  1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+GE_K0_LEP
+  Warning: Dropping dataset b/c it is not in Nand's list
 GE_K0_PWI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -1951,25 +2098,25 @@ G8_K0_EP8: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 DN_MAGN-L2-HIRES_G17
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 DN_MAGN-L2-HIRES_G16
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 DN_MAGN-L2-HIRES_G15
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 DN_MAGN-L2-HIRES_G14
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 DN_MAGN-L2-HIRES_G13
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 DN_MAGN-L2-HIRES_G12
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 DN_MAGN-L2-HIRES_G11
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 DN_MAGN-L2-HIRES_G10
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 DN_MAGN-L2-HIRES_G09
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 DN_MAGN-L2-HIRES_G08
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 G12_L2_MAG: subsetting and creating /info
   3 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'g12_longitude_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -2037,22 +2184,22 @@ GOES10_EPHEMERIS_SSC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
 GOES9_EPHEMERIS_SSC
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 GOES8_EPHEMERIS_SSC
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 GOLD_L2_NMAX: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'nscans'/'support_data'; dependent VAR_TYPES {'support data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'nscans'/'support_data'; dependent VAR_TYPES {'metadata', 'support data'}
   Not creating dataset for DEPEND_0 = 'nscans' because none of its variables have VAR_TYPE='data'.
   DEPEND_0 Name/VAR_TYPE: 'nmask'/'support_data'; dependent VAR_TYPES {'support data'}
   Not creating dataset for DEPEND_0 = 'nmask' because none of its variables have VAR_TYPE='data'.
   DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
-  Unhandled DEPEND_0 type: CDF_CHAR
+  Unhandled DEPEND_0 type: 'CDF_CHAR'. Dropping variables associated with DEPEND_0 'time_utc'
   Due to last error, omitting sub-dataset with DEPEND_0 = time_utc
 GOLD_L2_O2DEN: subsetting and creating /info
   3 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
-  Unhandled DEPEND_0 type: CDF_CHAR
+  Unhandled DEPEND_0 type: 'CDF_CHAR'. Dropping variables associated with DEPEND_0 'time_utc'
   Due to last error, omitting sub-dataset with DEPEND_0 = time_utc
   DEPEND_0 Name/VAR_TYPE: 'nzret'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'nzret' because none of its variables have VAR_TYPE='data'.
@@ -2060,8 +2207,8 @@ GOLD_L2_O2DEN: subsetting and creating /info
   Not creating dataset for DEPEND_0 = 'nzdat' because none of its variables have VAR_TYPE='data'.
 GOLD_L2_ON2: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'data', 'support data', 'support_data', 'metadata'}
-  Unhandled DEPEND_0 type: CDF_CHAR
+  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata', 'support data'}
+  Unhandled DEPEND_0 type: 'CDF_CHAR'. Dropping variables associated with DEPEND_0 'time_utc'
   Due to last error, omitting sub-dataset with DEPEND_0 = time_utc
   DEPEND_0 Name/VAR_TYPE: 'nmask'/'support_data'; dependent VAR_TYPES {'support data'}
   Not creating dataset for DEPEND_0 = 'nmask' because none of its variables have VAR_TYPE='data'.
@@ -2069,10 +2216,10 @@ GOLD_L2_ON2: subsetting and creating /info
   Not creating dataset for DEPEND_0 = 'nscans' because none of its variables have VAR_TYPE='data'.
 GOLD_L2_TDISK: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'nmask'/'support_data'; dependent VAR_TYPES {'support data', 'support_data'}
+  DEPEND_0 Name/VAR_TYPE: 'nmask'/'support_data'; dependent VAR_TYPES {'support_data', 'support data'}
   Not creating dataset for DEPEND_0 = 'nmask' because none of its variables have VAR_TYPE='data'.
-  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
-  Unhandled DEPEND_0 type: CDF_CHAR
+  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'data', 'metadata', 'support_data'}
+  Unhandled DEPEND_0 type: 'CDF_CHAR'. Dropping variables associated with DEPEND_0 'time_utc'
   Due to last error, omitting sub-dataset with DEPEND_0 = time_utc
 GPS_TEC2HR_IGS: subsetting and creating /info
   1 DEPEND_0s
@@ -2086,11 +2233,8 @@ GPS_TEC15MIN_IGS: subsetting and creating /info
 GPS_ROTI15MIN_JPL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-GPS_RF_LANL-VTEC-1HR: subsetting and creating /info
-  2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
-  DEPEND_0 Name/VAR_TYPE: 'time'/'support_data'; dependent VAR_TYPES {'metadata'}
-  Not creating dataset for DEPEND_0 = 'time' because none of its variables have VAR_TYPE='data'.
+GPS_RF_LANL-VTEC-1HR
+  Warning: Dropping dataset b/c it is not in Nand's list
 HEL1_6SEC_NESSMAG: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -2137,7 +2281,7 @@ ALOUETTE2_AV_WNK: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 ALOUETTE2_AV_QUI
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ALOUETTE2_AV_LIM: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -2157,7 +2301,7 @@ ISS_27DAY-AVERAGES_AMS-02: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 I1_AV2_OTT
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 I1_AV2_QUI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -2165,7 +2309,7 @@ I1_AV2_SNT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 I1_AV2_ULA
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 I1_AV_ALL: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch2d'/'support_data'; dependent VAR_TYPES {'data'}
@@ -2180,17 +2324,17 @@ I1_AV_KWA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 I1_AV_ODG
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 I1_AV_ORR
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 I1_AV_OTT: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata', 'support_data'}
 I1_AV_QUI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 I1_AV_RES
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 I1_AV_SNT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -2201,7 +2345,7 @@ I1_AV_TRO: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 I1_AV_ULA
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 I1_AV_WNK: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -2242,7 +2386,7 @@ I2_AV_LAU: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 I2_AV_ODG
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 I2_AV_ORR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -2253,9 +2397,9 @@ I2_AV_QUI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 I2_AV_RES
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 I2_AV_SNT
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 I2_AV_SOD: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -2263,7 +2407,7 @@ I2_AV_SOL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 I2_AV_SYO
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 I2_AV_TRO: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -2743,33 +2887,31 @@ IBEX_H3_ENA_LO_R03_CT_RATE_ANALYSIS_7DAY: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 ICON_L2-1_MIGHTI-A_LOS-WIND-GREEN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata', 'ignore_data'}
-  Error: DEPEND_1 'Row' for variable 'ICON_L21_Zero_Wind_Phase' is not a variable. Omitting ICON_L21_Zero_Wind_Phase.
-  Error: DEPEND_1 'Row' for variable 'ICON_L21_Zero_Wind_Phase' is not a variable. Omitting ICON_L21_Zero_Wind_Phase.
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'metadata', 'support_data', 'ignore_data', 'data'}
 ICON_L2-1_MIGHTI-B_LOS-WIND-GREEN
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ICON_L2-1_MIGHTI-A_LOS-WIND-RED
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ICON_L2-1_MIGHTI-B_LOS-WIND-RED
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ICON_L2-2_MIGHTI_VECTOR-WIND-GREEN
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ICON_L2-2_MIGHTI_VECTOR-WIND-RED
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ICON_L2-3_MIGHTI-A_TEMPERATURE
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ICON_L2-3_MIGHTI-B_TEMPERATURE
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ICON_L2-4_FUV_DAY
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ICON_L2-5_FUV_NIGHT
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ICON_L2-6_EUV
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ICON_L2-7_IVM-A
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 ICON_L2-7_IVM-B
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 IG_K0_PCI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -2945,9 +3087,9 @@ MSL_HELIO1DAY_POSITION: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 MSL_RAD_OBS-L2
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 MSL_RAD_OBS-L1
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 MVN_MAG_L2-SUNSTATE-1SEC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -2961,7 +3103,7 @@ MVN_STA_L2_D9-12R64E: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 MVN_STA_L2_DA-1R64E
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 MVN_SWI_L2_ONBOARDSVYMOM: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -2994,7 +3136,7 @@ MVN_SWE_L2_ARCPAD: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'ignore_data'}
 MVN_SWE_L2_SVYPAD: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'suppport_data', 'support_data', 'ignore_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'ignore_data', 'suppport_data'}
 MVN_SEP_L2_S1-CAL-SVY-FULL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -3174,7 +3316,7 @@ MMS3_EDI_BRST_L2_AMB: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'epoch_timetag'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 MMS4_EDI_BRST_L2_AMB
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 MMS1_EDI_BRST_L2_AMB-PM2: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch_timetag'/'support_data'; dependent VAR_TYPES {'data'}
@@ -3521,7 +3663,7 @@ MMS3_FPI_BRST_L2_DES-MOMS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 MMS4_FPI_BRST_L2_DES-MOMS
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 MMS1_FPI_FAST_L2_DIS-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'ignore_data'}
@@ -3568,7 +3710,7 @@ MMS3_FPI_BRST_L2_DES-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'ignore_data'}
 MMS4_FPI_BRST_L2_DES-PARTMOMS
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 MMS1_FGM_SRVY_L2: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -3616,23 +3758,55 @@ MMS4_HPCA_BRST_L2_MOMENTS: subsetting and creating /info
 MMS1_HPCA_BRST_L2_ION: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for mms1_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_oplus_data_quality but no DimSizes found.
   DEPEND_0 Name/VAR_TYPE: 'Epoch_Angles'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'Epoch_Angles' because none of its variables have VAR_TYPE='data'.
+  Error: bins objects created for mms1_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_oplus_data_quality but no DimSizes found.
 MMS2_HPCA_BRST_L2_ION: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for mms2_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_oplus_data_quality but no DimSizes found.
   DEPEND_0 Name/VAR_TYPE: 'Epoch_Angles'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'Epoch_Angles' because none of its variables have VAR_TYPE='data'.
+  Error: bins objects created for mms2_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_oplus_data_quality but no DimSizes found.
 MMS3_HPCA_BRST_L2_ION: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for mms3_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_oplus_data_quality but no DimSizes found.
   DEPEND_0 Name/VAR_TYPE: 'Epoch_Angles'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'Epoch_Angles' because none of its variables have VAR_TYPE='data'.
+  Error: bins objects created for mms3_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_oplus_data_quality but no DimSizes found.
 MMS4_HPCA_BRST_L2_ION: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for mms4_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_oplus_data_quality but no DimSizes found.
   DEPEND_0 Name/VAR_TYPE: 'Epoch_Angles'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'Epoch_Angles' because none of its variables have VAR_TYPE='data'.
+  Error: bins objects created for mms4_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_oplus_data_quality but no DimSizes found.
 MMS1_HPCA_SRVY_L2_MOMENTS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -3648,23 +3822,55 @@ MMS4_HPCA_SRVY_L2_MOMENTS: subsetting and creating /info
 MMS1_HPCA_SRVY_L2_ION: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for mms1_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_oplus_data_quality but no DimSizes found.
   DEPEND_0 Name/VAR_TYPE: 'Epoch_Angles'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'Epoch_Angles' because none of its variables have VAR_TYPE='data'.
+  Error: bins objects created for mms1_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms1_hpca_oplus_data_quality but no DimSizes found.
 MMS2_HPCA_SRVY_L2_ION: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for mms2_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_oplus_data_quality but no DimSizes found.
   DEPEND_0 Name/VAR_TYPE: 'Epoch_Angles'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'Epoch_Angles' because none of its variables have VAR_TYPE='data'.
+  Error: bins objects created for mms2_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms2_hpca_oplus_data_quality but no DimSizes found.
 MMS3_HPCA_SRVY_L2_ION: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for mms3_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_oplus_data_quality but no DimSizes found.
   DEPEND_0 Name/VAR_TYPE: 'Epoch_Angles'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'Epoch_Angles' because none of its variables have VAR_TYPE='data'.
+  Error: bins objects created for mms3_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms3_hpca_oplus_data_quality but no DimSizes found.
 MMS4_HPCA_SRVY_L2_ION: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for mms4_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_oplus_data_quality but no DimSizes found.
   DEPEND_0 Name/VAR_TYPE: 'Epoch_Angles'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'Epoch_Angles' because none of its variables have VAR_TYPE='data'.
+  Error: bins objects created for mms4_hpca_hplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_heplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_heplusplus_data_quality but no DimSizes found.
+  Error: bins objects created for mms4_hpca_oplus_data_quality but no DimSizes found.
 MMS1_HPCA_SRVY_L2_TOF-COUNTS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -3882,7 +4088,7 @@ PIONEERVENUS_MERGED_SOLAR-WIND_10M: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 PMC-TURBO_L1_BOLIDE_VBC
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 PO_K0_MFE: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -3926,9 +4132,7 @@ PO_K0_PIX: subsetting and creating /info
 PO_H0_PWI: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  Error: DEPEND_1 'unit_time' for variable 'Time_PB5' is not a variable. Omitting Time_PB5.
   DEPEND_0 Name/VAR_TYPE: 'EpochB'/'support_data'; dependent VAR_TYPES {'data'}
-  Error: DEPEND_1 'unit_time' for variable 'Time_PB5' is not a variable. Omitting Time_PB5.
 PO_H1_PWI: subsetting and creating /info
   6 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -3979,7 +4183,7 @@ PO_H0_TIM: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch_He_1'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_He_2'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 PO_H2_TIM
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 PO_K1_TIM: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -3993,7 +4197,7 @@ PO_LEVEL1_UVI: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'EPOCH      '/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 PO_LEVEL1_UVI
-  Error: Dropping dataset associated with EPOCH_51 b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "EPOCH_51" b/c it is not in Nand's list
 PO_K0_UVI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -4086,7 +4290,7 @@ PSP_FLD_L3_MERGED_SCAM_WF: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'f_noise'/'support_data'; dependent VAR_TYPES {'metadata'}
   Not creating dataset for DEPEND_0 = 'f_noise' because none of its variables have VAR_TYPE='data'.
-  DEPEND_0 Name/VAR_TYPE: 'meta_epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'meta_epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'support_data'}
   Not creating dataset for DEPEND_0 = 'meta_epoch' because none of its variables have VAR_TYPE='data'.
   DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
@@ -5505,7 +5709,7 @@ PSP_FLD_L2_DFB_DBM_VDC: subsetting and creating /info
 PSP_FLD_L2_DFB_DBM_SCM: subsetting and creating /info
   3 DEPEND_0s
 PSP_FLD_L2_DFB_DBM_SCM
-  Error: Dropping dataset associated with epoch_psp_fld_l2_dfb_dbm_scmlg b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "epoch_psp_fld_l2_dfb_dbm_scmlg" b/c it is not in Nand's list
   DEPEND_0 Name/VAR_TYPE: 'epoch_psp_fld_l2_dfb_dbm_scmhg'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'ignore_data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
@@ -5550,7 +5754,7 @@ PSP_ISOIS_L2-SUMMARY: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'HET_Epoch'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanP'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanE'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanE'/'support_data'; dependent VAR_TYPES {'data', 'metadata', 'support_data'}
 PSP_ISOIS-EPIHI_L2-SECOND-RATES: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -5592,57 +5796,95 @@ PSP_ISOIS-EPIHI_L2-LET2-RATES3600: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 PSP_ISOIS-EPILO_L2-IC: subsetting and creating /info
   5 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanC'/'support_data'; dependent VAR_TYPES {'additonal_data', 'support_data', 'additional_data', 'data', 'metadata'}
-  Not including bin centers for He3_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for Fe_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for O_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanD'/'support_data'; dependent VAR_TYPES {'additional_data', 'data', 'support_data', 'metadata'}
-  Not including bin centers for Mg_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for C_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for Si_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for N_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for Ne_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanP'/'support_data'; dependent VAR_TYPES {'additional_data', 'data', 'support_data', 'metadata'}
-  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanR'/'support_data'; dependent VAR_TYPES {'additional_data', 'data', 'support_data', 'metadata'}
-  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanT'/'support_data'; dependent VAR_TYPES {'additional_data', 'data', 'support_data', 'metadata'}
-  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for He3_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for He4_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for Fe_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for O_ChanC_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for Mg_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for C_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for Si_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for N_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for Ne_ChanD_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanP_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanR_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
-  Not including bin centers for H_ChanT_Energy_SLICE no VarData (probably VIRTUAL)
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanC'/'support_data'; dependent VAR_TYPES {'additional_data', 'support_data', 'metadata', 'data', 'additonal_data'}
+  Warning: Not including bin centers for He3_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Fe_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for O_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He3_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He3_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Fe_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Fe_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for O_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for O_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanD'/'support_data'; dependent VAR_TYPES {'data', 'additional_data', 'support_data', 'metadata'}
+  Warning: Not including bin centers for Mg_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for C_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Si_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for N_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Ne_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Mg_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Mg_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for C_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for C_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Si_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Si_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for N_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Ne_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanP'/'support_data'; dependent VAR_TYPES {'data', 'additional_data', 'support_data', 'metadata'}
+  Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanR'/'support_data'; dependent VAR_TYPES {'data', 'additional_data', 'support_data', 'metadata'}
+  Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanT'/'support_data'; dependent VAR_TYPES {'data', 'additional_data', 'support_data', 'metadata'}
+  Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He3_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Fe_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for O_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He3_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He3_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Fe_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Fe_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for O_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for O_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Mg_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for C_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Si_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for N_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Ne_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Mg_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Mg_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for C_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for C_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Si_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Si_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for N_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for Ne_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
 PSP_ISOIS-EPILO_L2-PE: subsetting and creating /info
   3 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanE'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
@@ -5743,28 +5985,28 @@ RBSP-A-RBSPICE_LEV-3-PAP_TOFXEHE-0: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'MinMaxRange'/'metadata'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'MinMaxRange' because none of its variables have VAR_TYPE='data'.
 RBSP-A-RBSPICE_LEV-3-PAP_TOFXEHE
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-B-RBSPICE_LEV-3-PAP_TOFXEHE-0: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
   DEPEND_0 Name/VAR_TYPE: 'MinMaxRange'/'metadata'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'MinMaxRange' because none of its variables have VAR_TYPE='data'.
 RBSP-B-RBSPICE_LEV-3-PAP_TOFXEHE
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-A-RBSPICE_LEV-3-PAP_TOFXEO-0: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
   DEPEND_0 Name/VAR_TYPE: 'MinMaxRange'/'metadata'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'MinMaxRange' because none of its variables have VAR_TYPE='data'.
 RBSP-A-RBSPICE_LEV-3-PAP_TOFXEO
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-B-RBSPICE_LEV-3-PAP_TOFXEO-0: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
   DEPEND_0 Name/VAR_TYPE: 'MinMaxRange'/'metadata'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'MinMaxRange' because none of its variables have VAR_TYPE='data'.
 RBSP-B-RBSPICE_LEV-3-PAP_TOFXEO
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-A-RBSPICE_LEV-3-PAP_TOFXEION: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -5838,51 +6080,83 @@ RBSP-B-RBSPICE_LEV-3-PAP_ESRHELT: subsetting and creating /info
 RBSP-A-RBSPICE_LEV-3_TOFXEH: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-B-RBSPICE_LEV-3_TOFXEH: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-A-RBSPICE_LEV-3_TOFXEION: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-B-RBSPICE_LEV-3_TOFXEION: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-A-RBSPICE_LEV-3_TOFXENONH: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-B-RBSPICE_LEV-3_TOFXENONH: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-A-RBSPICE_LEV-3_TOFXPHHHELT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-B-RBSPICE_LEV-3_TOFXPHHHELT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-A-RBSPICE_LEV-3_TOFXPHHLEHT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-B-RBSPICE_LEV-3_TOFXPHHLEHT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-A-RBSPICE_LEV-3_ESRHELT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-B-RBSPICE_LEV-3_ESRHELT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-A-RBSPICE_LEV-3_ESRLEHT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-B-RBSPICE_LEV-3_ESRLEHT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-A-RBSPICE_LEV-3_ISRHELT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-B-RBSPICE_LEV-3_ISRHELT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
+  Error: No VAR_TYPE for depend variable 'NumAxisFixed'
 RBSP-A-RBSPICE_LEV-2_TOFXEH: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -5948,13 +6222,13 @@ RBSPA_EFW-L2_E-SPINFIT-MGSE: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_hsk'/'support_data'; dependent VAR_TYPES {'ignore_data'}
 RBSPA_EFW-L2_E-SPINFIT-MGSE
-  Warning: Keeping dataset associated with epoch_hsk b/c it is in Nand's list
+  Warning: Keeping dataset associated with "epoch_hsk" b/c it is in Nand's list
 RBSPB_EFW-L2_E-SPINFIT-MGSE: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_hsk'/'support_data'; dependent VAR_TYPES {'ignore_data'}
 RBSPB_EFW-L2_E-SPINFIT-MGSE
-  Warning: Keeping dataset associated with epoch_hsk b/c it is in Nand's list
+  Warning: Keeping dataset associated with "epoch_hsk" b/c it is in Nand's list
 RBSPA_EFW-L2_ESVY_DESPUN: subsetting and creating /info
   3 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch_e'/'support_data'; dependent VAR_TYPES {'data'}
@@ -6056,29 +6330,29 @@ RBSP-B_MAGNETOMETER_1SEC-SM_EMFISIS-L3: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 RBSP-A_MAGNETOMETER_HIRES-GEI_EMFISIS-L3
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-B_MAGNETOMETER_HIRES-GEI_EMFISIS-L3
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-A_MAGNETOMETER_HIRES-GEO_EMFISIS-L3
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-B_MAGNETOMETER_HIRES-GEO_EMFISIS-L3
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-A_MAGNETOMETER_HIRES-GSE_EMFISIS-L3
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-B_MAGNETOMETER_HIRES-GSE_EMFISIS-L3
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-A_MAGNETOMETER_HIRES-GSM_EMFISIS-L3
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-B_MAGNETOMETER_HIRES-GSM_EMFISIS-L3
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-A_MAGNETOMETER_HIRES-SM_EMFISIS-L3
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-B_MAGNETOMETER_HIRES-SM_EMFISIS-L3
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-A_MAGNETOMETER_UVW_EMFISIS-L2
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-B_MAGNETOMETER_UVW_EMFISIS-L2
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-A_HFR-SPECTRA_EMFISIS-L2: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -6092,7 +6366,7 @@ RBSP-B_HFR-SPECTRA-BURST_EMFISIS-L2: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 RBSP-A_HFR-SPECTRA-MERGED_EMFISIS-L2
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 RBSP-B_HFR-SPECTRA-MERGED_EMFISIS-L2: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -6292,7 +6566,7 @@ SOLO_HELIO1DAY_POSITION: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 SOLO_L2_SWA-PAS-GRND-MOM: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata', 'support_data'}
 SOLO_L2_SWA-PAS-EFLUX: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -6306,11 +6580,11 @@ SOLO_L2_SWA-EAS-PAD-DEF: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 SOLO_L2_SWA-EAS1-SS-PSD
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 SOLO_L2_SWA-EAS1-SS-DNF
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 SOLO_L2_SWA-EAS1-SS-DEF
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 SOLO_L2_SWA-EAS1-NM3D-PSD: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -6385,24 +6659,24 @@ SOLO_L2_RPW-LFR-SURV-BP2: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch_N_F1'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_N_F2'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_B_F0'/'support_data'; dependent VAR_TYPES {'data'}
-  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F0 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F0 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F0 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F0 b/c no VarData (probably VIRTUAL)
   DEPEND_0 Name/VAR_TYPE: 'Epoch_B_F1'/'support_data'; dependent VAR_TYPES {'data'}
-  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F1 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F1 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F1 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F1 b/c no VarData (probably VIRTUAL)
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F0 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
-  Not including bin centers for B_F1 no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F0 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F0 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F0 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F0 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F1 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F1 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F1 b/c no VarData (probably VIRTUAL)
+  Warning: Not including bin centers for B_F1 b/c no VarData (probably VIRTUAL)
 SOLO_L2_RPW-LFR-SURV-CWF-B: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -6887,10 +7161,10 @@ STA_L3_PLA_HEPLUS_SW_VELCTDIST_5MIN: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 STA_L3_WAV_HFR: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'support_data', 'data'}
 STB_L3_WAV_HFR: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'support_data', 'data'}
 STA_L3_WAV_LFR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -7492,84 +7766,234 @@ THG_L2_MAG_JAN: subsetting and creating /info
 THG_L2_MAG_NRD: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_nrd_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_nrd but no DimSizes found.
+  Error: bins objects created for thg_magd_nrd but no DimSizes found.
+  Error: bins objects created for thg_magz_nrd but no DimSizes found.
+  Error: bins objects created for thg_magh_nrd but no DimSizes found.
+  Error: bins objects created for thg_magd_nrd but no DimSizes found.
+  Error: bins objects created for thg_magz_nrd but no DimSizes found.
 THG_L2_MAG_DMH: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_dmh_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_dmh but no DimSizes found.
+  Error: bins objects created for thg_magd_dmh but no DimSizes found.
+  Error: bins objects created for thg_magz_dmh but no DimSizes found.
+  Error: bins objects created for thg_magh_dmh but no DimSizes found.
+  Error: bins objects created for thg_magd_dmh but no DimSizes found.
+  Error: bins objects created for thg_magz_dmh but no DimSizes found.
 THG_L2_MAG_DNB: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_dnb_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_dnb but no DimSizes found.
+  Error: bins objects created for thg_magd_dnb but no DimSizes found.
+  Error: bins objects created for thg_magz_dnb but no DimSizes found.
+  Error: bins objects created for thg_magh_dnb but no DimSizes found.
+  Error: bins objects created for thg_magd_dnb but no DimSizes found.
+  Error: bins objects created for thg_magz_dnb but no DimSizes found.
 THG_L2_MAG_LRV: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_lrv_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 THG_L2_MAG_SCO: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_sco_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_sco but no DimSizes found.
+  Error: bins objects created for thg_magd_sco but no DimSizes found.
+  Error: bins objects created for thg_magz_sco but no DimSizes found.
+  Error: bins objects created for thg_magh_sco but no DimSizes found.
+  Error: bins objects created for thg_magd_sco but no DimSizes found.
+  Error: bins objects created for thg_magz_sco but no DimSizes found.
 THG_L2_MAG_AMK: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_amk_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_amk but no DimSizes found.
+  Error: bins objects created for thg_magd_amk but no DimSizes found.
+  Error: bins objects created for thg_magz_amk but no DimSizes found.
+  Error: bins objects created for thg_magh_amk but no DimSizes found.
+  Error: bins objects created for thg_magd_amk but no DimSizes found.
+  Error: bins objects created for thg_magz_amk but no DimSizes found.
 THG_L2_MAG_SUM: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_sum_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 THG_L2_MAG_NAQ: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_naq_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_naq but no DimSizes found.
+  Error: bins objects created for thg_magd_naq but no DimSizes found.
+  Error: bins objects created for thg_magz_naq but no DimSizes found.
+  Error: bins objects created for thg_magh_naq but no DimSizes found.
+  Error: bins objects created for thg_magd_naq but no DimSizes found.
+  Error: bins objects created for thg_magz_naq but no DimSizes found.
 THG_L2_MAG_NRSQ: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_nrsq_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_nrsq but no DimSizes found.
+  Error: bins objects created for thg_magd_nrsq but no DimSizes found.
+  Error: bins objects created for thg_magz_nrsq but no DimSizes found.
+  Error: bins objects created for thg_magh_nrsq but no DimSizes found.
+  Error: bins objects created for thg_magd_nrsq but no DimSizes found.
+  Error: bins objects created for thg_magz_nrsq but no DimSizes found.
 THG_L2_MAG_FHB: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_fhb_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_fhb but no DimSizes found.
+  Error: bins objects created for thg_magd_fhb but no DimSizes found.
+  Error: bins objects created for thg_magz_fhb but no DimSizes found.
+  Error: bins objects created for thg_magh_fhb but no DimSizes found.
+  Error: bins objects created for thg_magd_fhb but no DimSizes found.
+  Error: bins objects created for thg_magz_fhb but no DimSizes found.
 THG_L2_MAG_STF: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_stf_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_stf but no DimSizes found.
+  Error: bins objects created for thg_magd_stf but no DimSizes found.
+  Error: bins objects created for thg_magz_stf but no DimSizes found.
+  Error: bins objects created for thg_magh_stf but no DimSizes found.
+  Error: bins objects created for thg_magd_stf but no DimSizes found.
+  Error: bins objects created for thg_magz_stf but no DimSizes found.
 THG_L2_MAG_GHB: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_ghb_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_ghb but no DimSizes found.
+  Error: bins objects created for thg_magd_ghb but no DimSizes found.
+  Error: bins objects created for thg_magz_ghb but no DimSizes found.
+  Error: bins objects created for thg_magh_ghb but no DimSizes found.
+  Error: bins objects created for thg_magd_ghb but no DimSizes found.
+  Error: bins objects created for thg_magz_ghb but no DimSizes found.
 THG_L2_MAG_UMQ: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_umq_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_umq but no DimSizes found.
+  Error: bins objects created for thg_magd_umq but no DimSizes found.
+  Error: bins objects created for thg_magz_umq but no DimSizes found.
+  Error: bins objects created for thg_magh_umq but no DimSizes found.
+  Error: bins objects created for thg_magd_umq but no DimSizes found.
+  Error: bins objects created for thg_magz_umq but no DimSizes found.
 THG_L2_MAG_STJ: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_stj_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_stj but no DimSizes found.
+  Error: bins objects created for thg_magd_stj but no DimSizes found.
+  Error: bins objects created for thg_magz_stj but no DimSizes found.
+  Error: bins objects created for thg_magh_stj but no DimSizes found.
+  Error: bins objects created for thg_magd_stj but no DimSizes found.
+  Error: bins objects created for thg_magz_stj but no DimSizes found.
 THG_L2_MAG_SKT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_skt_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_skt but no DimSizes found.
+  Error: bins objects created for thg_magd_skt but no DimSizes found.
+  Error: bins objects created for thg_magz_skt but no DimSizes found.
+  Error: bins objects created for thg_magh_skt but no DimSizes found.
+  Error: bins objects created for thg_magd_skt but no DimSizes found.
+  Error: bins objects created for thg_magz_skt but no DimSizes found.
 THG_L2_MAG_GDH: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_gdh_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_gdh but no DimSizes found.
+  Error: bins objects created for thg_magd_gdh but no DimSizes found.
+  Error: bins objects created for thg_magz_gdh but no DimSizes found.
+  Error: bins objects created for thg_magh_gdh but no DimSizes found.
+  Error: bins objects created for thg_magd_gdh but no DimSizes found.
+  Error: bins objects created for thg_magz_gdh but no DimSizes found.
 THG_L2_MAG_ATU: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_atu_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_atu but no DimSizes found.
+  Error: bins objects created for thg_magd_atu but no DimSizes found.
+  Error: bins objects created for thg_magz_atu but no DimSizes found.
+  Error: bins objects created for thg_magh_atu but no DimSizes found.
+  Error: bins objects created for thg_magd_atu but no DimSizes found.
+  Error: bins objects created for thg_magz_atu but no DimSizes found.
 THG_L2_MAG_UPN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_upn_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_upn but no DimSizes found.
+  Error: bins objects created for thg_magd_upn but no DimSizes found.
+  Error: bins objects created for thg_magz_upn but no DimSizes found.
+  Error: bins objects created for thg_magh_upn but no DimSizes found.
+  Error: bins objects created for thg_magd_upn but no DimSizes found.
+  Error: bins objects created for thg_magz_upn but no DimSizes found.
 THG_L2_MAG_KUV: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_kuv_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_kuv but no DimSizes found.
+  Error: bins objects created for thg_magd_kuv but no DimSizes found.
+  Error: bins objects created for thg_magz_kuv but no DimSizes found.
+  Error: bins objects created for thg_magh_kuv but no DimSizes found.
+  Error: bins objects created for thg_magd_kuv but no DimSizes found.
+  Error: bins objects created for thg_magz_kuv but no DimSizes found.
 THG_L2_MAG_GBAY: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_gbay_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_gbay but no DimSizes found.
+  Error: bins objects created for thg_magd_gbay but no DimSizes found.
+  Error: bins objects created for thg_magz_gbay but no DimSizes found.
+  Error: bins objects created for thg_magh_gbay but no DimSizes found.
+  Error: bins objects created for thg_magd_gbay but no DimSizes found.
+  Error: bins objects created for thg_magz_gbay but no DimSizes found.
 THG_L2_MAG_NAIN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_nain_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_nain but no DimSizes found.
+  Error: bins objects created for thg_magd_nain but no DimSizes found.
+  Error: bins objects created for thg_magz_nain but no DimSizes found.
+  Error: bins objects created for thg_magh_nain but no DimSizes found.
+  Error: bins objects created for thg_magd_nain but no DimSizes found.
+  Error: bins objects created for thg_magz_nain but no DimSizes found.
 THG_L2_MAG_SVS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_svs_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_svs but no DimSizes found.
+  Error: bins objects created for thg_magd_svs but no DimSizes found.
+  Error: bins objects created for thg_magz_svs but no DimSizes found.
+  Error: bins objects created for thg_magh_svs but no DimSizes found.
+  Error: bins objects created for thg_magd_svs but no DimSizes found.
+  Error: bins objects created for thg_magz_svs but no DimSizes found.
 THG_L2_MAG_PANG: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_pang_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_pang but no DimSizes found.
+  Error: bins objects created for thg_magd_pang but no DimSizes found.
+  Error: bins objects created for thg_magz_pang but no DimSizes found.
+  Error: bins objects created for thg_magh_pang but no DimSizes found.
+  Error: bins objects created for thg_magd_pang but no DimSizes found.
+  Error: bins objects created for thg_magz_pang but no DimSizes found.
 THG_L2_MAG_SEPT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_sept_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_sept but no DimSizes found.
+  Error: bins objects created for thg_magd_sept but no DimSizes found.
+  Error: bins objects created for thg_magz_sept but no DimSizes found.
+  Error: bins objects created for thg_magh_sept but no DimSizes found.
+  Error: bins objects created for thg_magd_sept but no DimSizes found.
+  Error: bins objects created for thg_magz_sept but no DimSizes found.
 THG_L2_MAG_SCHF: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_schf_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_schf but no DimSizes found.
+  Error: bins objects created for thg_magd_schf but no DimSizes found.
+  Error: bins objects created for thg_magz_schf but no DimSizes found.
+  Error: bins objects created for thg_magh_schf but no DimSizes found.
+  Error: bins objects created for thg_magd_schf but no DimSizes found.
+  Error: bins objects created for thg_magz_schf but no DimSizes found.
 THG_L2_MAG_KUUJ: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_kuuj_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_kuuj but no DimSizes found.
+  Error: bins objects created for thg_magd_kuuj but no DimSizes found.
+  Error: bins objects created for thg_magz_kuuj but no DimSizes found.
+  Error: bins objects created for thg_magh_kuuj but no DimSizes found.
+  Error: bins objects created for thg_magd_kuuj but no DimSizes found.
+  Error: bins objects created for thg_magz_kuuj but no DimSizes found.
 THG_L2_MAG_IQA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_iqa_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_iqa but no DimSizes found.
+  Error: bins objects created for thg_magd_iqa but no DimSizes found.
+  Error: bins objects created for thg_magz_iqa but no DimSizes found.
+  Error: bins objects created for thg_magh_iqa but no DimSizes found.
+  Error: bins objects created for thg_magd_iqa but no DimSizes found.
+  Error: bins objects created for thg_magz_iqa but no DimSizes found.
 THG_L2_MAG_CRVR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_crvr_epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -7582,6 +8006,12 @@ THG_L2_MAG_THL: subsetting and creating /info
 THG_L2_MAG_STFL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_stfl_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_stfl but no DimSizes found.
+  Error: bins objects created for thg_magd_stfl but no DimSizes found.
+  Error: bins objects created for thg_magz_stfl but no DimSizes found.
+  Error: bins objects created for thg_magh_stfl but no DimSizes found.
+  Error: bins objects created for thg_magd_stfl but no DimSizes found.
+  Error: bins objects created for thg_magz_stfl but no DimSizes found.
 THG_L2_MAG_CHBG: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_chbg_epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -7591,90 +8021,258 @@ THG_L2_MAG_OTT: subsetting and creating /info
 THG_L2_MAG_SALU: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_salu_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_salu but no DimSizes found.
+  Error: bins objects created for thg_magd_salu but no DimSizes found.
+  Error: bins objects created for thg_magz_salu but no DimSizes found.
+  Error: bins objects created for thg_magh_salu but no DimSizes found.
+  Error: bins objects created for thg_magd_salu but no DimSizes found.
+  Error: bins objects created for thg_magz_salu but no DimSizes found.
 THG_L2_MAG_CDRT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_cdrt_epoch'/'support_data'; dependent VAR_TYPES {'data'}
 THG_L2_MAG_PUVR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_puvr_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_puvr but no DimSizes found.
+  Error: bins objects created for thg_magd_puvr but no DimSizes found.
+  Error: bins objects created for thg_magz_puvr but no DimSizes found.
+  Error: bins objects created for thg_magh_puvr but no DimSizes found.
+  Error: bins objects created for thg_magd_puvr but no DimSizes found.
+  Error: bins objects created for thg_magz_puvr but no DimSizes found.
 THG_L2_MAG_KJPK: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_kjpk_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_kjpk but no DimSizes found.
+  Error: bins objects created for thg_magd_kjpk but no DimSizes found.
+  Error: bins objects created for thg_magz_kjpk but no DimSizes found.
+  Error: bins objects created for thg_magh_kjpk but no DimSizes found.
+  Error: bins objects created for thg_magd_kjpk but no DimSizes found.
+  Error: bins objects created for thg_magz_kjpk but no DimSizes found.
 THG_L2_MAG_RADI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_radi_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_radi but no DimSizes found.
+  Error: bins objects created for thg_magd_radi but no DimSizes found.
+  Error: bins objects created for thg_magz_radi but no DimSizes found.
+  Error: bins objects created for thg_magh_radi but no DimSizes found.
+  Error: bins objects created for thg_magd_radi but no DimSizes found.
+  Error: bins objects created for thg_magz_radi but no DimSizes found.
 THG_L2_MAG_VLDR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_vldr_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_vldr but no DimSizes found.
+  Error: bins objects created for thg_magd_vldr but no DimSizes found.
+  Error: bins objects created for thg_magz_vldr but no DimSizes found.
+  Error: bins objects created for thg_magh_vldr but no DimSizes found.
+  Error: bins objects created for thg_magd_vldr but no DimSizes found.
+  Error: bins objects created for thg_magz_vldr but no DimSizes found.
 THG_L2_MAG_AKUL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_akul_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_akul but no DimSizes found.
+  Error: bins objects created for thg_magd_akul but no DimSizes found.
+  Error: bins objects created for thg_magz_akul but no DimSizes found.
+  Error: bins objects created for thg_magh_akul but no DimSizes found.
+  Error: bins objects created for thg_magd_akul but no DimSizes found.
+  Error: bins objects created for thg_magz_akul but no DimSizes found.
 THG_L2_MAG_INUK: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_inuk_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_inuk but no DimSizes found.
+  Error: bins objects created for thg_magd_inuk but no DimSizes found.
+  Error: bins objects created for thg_magz_inuk but no DimSizes found.
+  Error: bins objects created for thg_magh_inuk but no DimSizes found.
+  Error: bins objects created for thg_magd_inuk but no DimSizes found.
+  Error: bins objects created for thg_magz_inuk but no DimSizes found.
 THG_L2_MAG_SNKQ: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_snkq_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_snkq but no DimSizes found.
+  Error: bins objects created for thg_magd_snkq but no DimSizes found.
+  Error: bins objects created for thg_magz_snkq but no DimSizes found.
+  Error: bins objects created for thg_magh_snkq but no DimSizes found.
+  Error: bins objects created for thg_magd_snkq but no DimSizes found.
+  Error: bins objects created for thg_magz_snkq but no DimSizes found.
 THG_L2_MAG_IGLO: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_iglo_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_iglo but no DimSizes found.
+  Error: bins objects created for thg_magd_iglo but no DimSizes found.
+  Error: bins objects created for thg_magz_iglo but no DimSizes found.
+  Error: bins objects created for thg_magh_iglo but no DimSizes found.
+  Error: bins objects created for thg_magd_iglo but no DimSizes found.
+  Error: bins objects created for thg_magz_iglo but no DimSizes found.
 THG_L2_MAG_KAPU: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_kapu_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_kapu but no DimSizes found.
+  Error: bins objects created for thg_magd_kapu but no DimSizes found.
+  Error: bins objects created for thg_magz_kapu but no DimSizes found.
+  Error: bins objects created for thg_magh_kapu but no DimSizes found.
+  Error: bins objects created for thg_magd_kapu but no DimSizes found.
+  Error: bins objects created for thg_magz_kapu but no DimSizes found.
 THG_L2_MAG_CHBR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_chbr_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_chbr but no DimSizes found.
+  Error: bins objects created for thg_magd_chbr but no DimSizes found.
+  Error: bins objects created for thg_magz_chbr but no DimSizes found.
+  Error: bins objects created for thg_magh_chbr but no DimSizes found.
+  Error: bins objects created for thg_magd_chbr but no DimSizes found.
+  Error: bins objects created for thg_magz_chbr but no DimSizes found.
 THG_L2_MAG_HRP: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_hrp_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_hrp but no DimSizes found.
+  Error: bins objects created for thg_magd_hrp but no DimSizes found.
+  Error: bins objects created for thg_magz_hrp but no DimSizes found.
+  Error: bins objects created for thg_magh_hrp but no DimSizes found.
+  Error: bins objects created for thg_magd_hrp but no DimSizes found.
+  Error: bins objects created for thg_magz_hrp but no DimSizes found.
 THG_L2_MAG_RBAY: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_rbay_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_rbay but no DimSizes found.
+  Error: bins objects created for thg_magd_rbay but no DimSizes found.
+  Error: bins objects created for thg_magz_rbay but no DimSizes found.
+  Error: bins objects created for thg_magh_rbay but no DimSizes found.
+  Error: bins objects created for thg_magd_rbay but no DimSizes found.
+  Error: bins objects created for thg_magz_rbay but no DimSizes found.
 THG_L2_MAG_RANK: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_rank_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_rank but no DimSizes found.
+  Error: bins objects created for thg_magd_rank but no DimSizes found.
+  Error: bins objects created for thg_magz_rank but no DimSizes found.
+  Error: bins objects created for thg_magh_rank but no DimSizes found.
+  Error: bins objects created for thg_magd_rank but no DimSizes found.
+  Error: bins objects created for thg_magz_rank but no DimSizes found.
 THG_L2_MAG_FCC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_fcc_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_fcc but no DimSizes found.
+  Error: bins objects created for thg_magd_fcc but no DimSizes found.
+  Error: bins objects created for thg_magz_fcc but no DimSizes found.
+  Error: bins objects created for thg_magh_fcc but no DimSizes found.
+  Error: bins objects created for thg_magd_fcc but no DimSizes found.
+  Error: bins objects created for thg_magz_fcc but no DimSizes found.
 THG_L2_MAG_GILL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_gill_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_gill but no DimSizes found.
+  Error: bins objects created for thg_magd_gill but no DimSizes found.
+  Error: bins objects created for thg_magz_gill but no DimSizes found.
+  Error: bins objects created for thg_magh_gill but no DimSizes found.
+  Error: bins objects created for thg_magd_gill but no DimSizes found.
+  Error: bins objects created for thg_magz_gill but no DimSizes found.
 THG_L2_MAG_GJOA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_gjoa_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_gjoa but no DimSizes found.
+  Error: bins objects created for thg_magd_gjoa but no DimSizes found.
+  Error: bins objects created for thg_magz_gjoa but no DimSizes found.
+  Error: bins objects created for thg_magh_gjoa but no DimSizes found.
+  Error: bins objects created for thg_magd_gjoa but no DimSizes found.
+  Error: bins objects created for thg_magz_gjoa but no DimSizes found.
 THG_L2_MAG_BLC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_blc_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_blc but no DimSizes found.
+  Error: bins objects created for thg_magd_blc but no DimSizes found.
+  Error: bins objects created for thg_magz_blc but no DimSizes found.
+  Error: bins objects created for thg_magh_blc but no DimSizes found.
+  Error: bins objects created for thg_magd_blc but no DimSizes found.
+  Error: bins objects created for thg_magz_blc but no DimSizes found.
 THG_L2_MAG_PINA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_pina_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_pina but no DimSizes found.
+  Error: bins objects created for thg_magd_pina but no DimSizes found.
+  Error: bins objects created for thg_magz_pina but no DimSizes found.
+  Error: bins objects created for thg_magh_pina but no DimSizes found.
+  Error: bins objects created for thg_magd_pina but no DimSizes found.
+  Error: bins objects created for thg_magz_pina but no DimSizes found.
 THG_L2_MAG_TPAS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_tpas_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_tpas but no DimSizes found.
+  Error: bins objects created for thg_magd_tpas but no DimSizes found.
+  Error: bins objects created for thg_magz_tpas but no DimSizes found.
+  Error: bins objects created for thg_magh_tpas but no DimSizes found.
+  Error: bins objects created for thg_magd_tpas but no DimSizes found.
+  Error: bins objects created for thg_magz_tpas but no DimSizes found.
 THG_L2_MAG_CBB: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_cbb_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_cbb but no DimSizes found.
+  Error: bins objects created for thg_magd_cbb but no DimSizes found.
+  Error: bins objects created for thg_magz_cbb but no DimSizes found.
+  Error: bins objects created for thg_magh_cbb but no DimSizes found.
+  Error: bins objects created for thg_magd_cbb but no DimSizes found.
+  Error: bins objects created for thg_magz_cbb but no DimSizes found.
 THG_L2_MAG_LARG: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_larg_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_larg but no DimSizes found.
+  Error: bins objects created for thg_magd_larg but no DimSizes found.
+  Error: bins objects created for thg_magz_larg but no DimSizes found.
+  Error: bins objects created for thg_magh_larg but no DimSizes found.
+  Error: bins objects created for thg_magd_larg but no DimSizes found.
+  Error: bins objects created for thg_magz_larg but no DimSizes found.
 THG_L2_MAG_LRG: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_lrg_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_lrg but no DimSizes found.
+  Error: bins objects created for thg_magd_lrg but no DimSizes found.
+  Error: bins objects created for thg_magz_lrg but no DimSizes found.
+  Error: bins objects created for thg_magh_lrg but no DimSizes found.
+  Error: bins objects created for thg_magd_lrg but no DimSizes found.
+  Error: bins objects created for thg_magz_lrg but no DimSizes found.
 THG_L2_MAG_LCL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_lcl_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_lcl but no DimSizes found.
+  Error: bins objects created for thg_magd_lcl but no DimSizes found.
+  Error: bins objects created for thg_magz_lcl but no DimSizes found.
+  Error: bins objects created for thg_magh_lcl but no DimSizes found.
+  Error: bins objects created for thg_magd_lcl but no DimSizes found.
+  Error: bins objects created for thg_magz_lcl but no DimSizes found.
 THG_L2_MAG_PKS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_pks_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_pks but no DimSizes found.
+  Error: bins objects created for thg_magd_pks but no DimSizes found.
+  Error: bins objects created for thg_magz_pks but no DimSizes found.
+  Error: bins objects created for thg_magh_pks but no DimSizes found.
+  Error: bins objects created for thg_magd_pks but no DimSizes found.
+  Error: bins objects created for thg_magz_pks but no DimSizes found.
 THG_L2_MAG_EKAT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_ekat_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_ekat but no DimSizes found.
+  Error: bins objects created for thg_magd_ekat but no DimSizes found.
+  Error: bins objects created for thg_magz_ekat but no DimSizes found.
+  Error: bins objects created for thg_magh_ekat but no DimSizes found.
+  Error: bins objects created for thg_magd_ekat but no DimSizes found.
+  Error: bins objects created for thg_magz_ekat but no DimSizes found.
 THG_L2_MAG_SNAP: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_snap_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_snap but no DimSizes found.
+  Error: bins objects created for thg_magd_snap but no DimSizes found.
+  Error: bins objects created for thg_magz_snap but no DimSizes found.
+  Error: bins objects created for thg_magh_snap but no DimSizes found.
+  Error: bins objects created for thg_magd_snap but no DimSizes found.
+  Error: bins objects created for thg_magz_snap but no DimSizes found.
 THG_L2_MAG_FSMI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_fsmi_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+  Error: bins objects created for thg_magh_fsmi but no DimSizes found.
+  Error: bins objects created for thg_magd_fsmi but no DimSizes found.
+  Error: bins objects created for thg_magz_fsmi but no DimSizes found.
+  Error: bins objects created for thg_magh_fsmi but no DimSizes found.
+  Error: bins objects created for thg_magd_fsmi but no DimSizes found.
+  Error: bins objects created for thg_magz_fsmi but no DimSizes found.
 THG_L2_MAG_LETH: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_leth_epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -7699,12 +8297,24 @@ THG_L2_MAG_YKC: subsetting and creating /info
 THG_L2_MAG_FSJ: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_fsj_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_fsj but no DimSizes found.
+  Error: bins objects created for thg_magd_fsj but no DimSizes found.
+  Error: bins objects created for thg_magz_fsj but no DimSizes found.
+  Error: bins objects created for thg_magh_fsj but no DimSizes found.
+  Error: bins objects created for thg_magd_fsj but no DimSizes found.
+  Error: bins objects created for thg_magz_fsj but no DimSizes found.
 THG_L2_MAG_FSIM: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_fsim_epoch'/'support_data'; dependent VAR_TYPES {'data'}
 THG_L2_MAG_FTN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_ftn_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_ftn but no DimSizes found.
+  Error: bins objects created for thg_magd_ftn but no DimSizes found.
+  Error: bins objects created for thg_magz_ftn but no DimSizes found.
+  Error: bins objects created for thg_magh_ftn but no DimSizes found.
+  Error: bins objects created for thg_magd_ftn but no DimSizes found.
+  Error: bins objects created for thg_magz_ftn but no DimSizes found.
 THG_L2_MAG_PGEO: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_pgeo_epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -7720,6 +8330,12 @@ THG_L2_MAG_INUV: subsetting and creating /info
 THG_L2_MAG_WHS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_whs_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_whs but no DimSizes found.
+  Error: bins objects created for thg_magd_whs but no DimSizes found.
+  Error: bins objects created for thg_magz_whs but no DimSizes found.
+  Error: bins objects created for thg_magh_whs but no DimSizes found.
+  Error: bins objects created for thg_magd_whs but no DimSizes found.
+  Error: bins objects created for thg_magz_whs but no DimSizes found.
 THG_L2_MAG_WHIT: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_whit_epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -7795,33 +8411,87 @@ THG_L2_MAG_DIK: subsetting and creating /info
 THG_L2_MAG_VIZ: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_viz_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_viz but no DimSizes found.
+  Error: bins objects created for thg_magd_viz but no DimSizes found.
+  Error: bins objects created for thg_magz_viz but no DimSizes found.
+  Error: bins objects created for thg_magh_viz but no DimSizes found.
+  Error: bins objects created for thg_magd_viz but no DimSizes found.
+  Error: bins objects created for thg_magz_viz but no DimSizes found.
 THG_L2_MAG_AMD: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_amd_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 THG_L2_MAG_LOZ: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_loz_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_loz but no DimSizes found.
+  Error: bins objects created for thg_magd_loz but no DimSizes found.
+  Error: bins objects created for thg_magz_loz but no DimSizes found.
+  Error: bins objects created for thg_magh_loz but no DimSizes found.
+  Error: bins objects created for thg_magd_loz but no DimSizes found.
+  Error: bins objects created for thg_magz_loz but no DimSizes found.
 THG_L2_MAG_MEK: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_mek_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_mek but no DimSizes found.
+  Error: bins objects created for thg_magd_mek but no DimSizes found.
+  Error: bins objects created for thg_magz_mek but no DimSizes found.
+  Error: bins objects created for thg_magh_mek but no DimSizes found.
+  Error: bins objects created for thg_magd_mek but no DimSizes found.
+  Error: bins objects created for thg_magz_mek but no DimSizes found.
 THG_L2_MAG_IVA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_iva_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_iva but no DimSizes found.
+  Error: bins objects created for thg_magd_iva but no DimSizes found.
+  Error: bins objects created for thg_magz_iva but no DimSizes found.
+  Error: bins objects created for thg_magh_iva but no DimSizes found.
+  Error: bins objects created for thg_magd_iva but no DimSizes found.
+  Error: bins objects created for thg_magz_iva but no DimSizes found.
 THG_L2_MAG_OUJ: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_ouj_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_ouj but no DimSizes found.
+  Error: bins objects created for thg_magd_ouj but no DimSizes found.
+  Error: bins objects created for thg_magz_ouj but no DimSizes found.
+  Error: bins objects created for thg_magh_ouj but no DimSizes found.
+  Error: bins objects created for thg_magd_ouj but no DimSizes found.
+  Error: bins objects created for thg_magz_ouj but no DimSizes found.
 THG_L2_MAG_KEV: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_kev_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_kev but no DimSizes found.
+  Error: bins objects created for thg_magd_kev but no DimSizes found.
+  Error: bins objects created for thg_magz_kev but no DimSizes found.
+  Error: bins objects created for thg_magh_kev but no DimSizes found.
+  Error: bins objects created for thg_magd_kev but no DimSizes found.
+  Error: bins objects created for thg_magz_kev but no DimSizes found.
 THG_L2_MAG_HAN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_han_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_han but no DimSizes found.
+  Error: bins objects created for thg_magd_han but no DimSizes found.
+  Error: bins objects created for thg_magz_han but no DimSizes found.
+  Error: bins objects created for thg_magh_han but no DimSizes found.
+  Error: bins objects created for thg_magd_han but no DimSizes found.
+  Error: bins objects created for thg_magz_han but no DimSizes found.
 THG_L2_MAG_TAR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_tar_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_tar but no DimSizes found.
+  Error: bins objects created for thg_magd_tar but no DimSizes found.
+  Error: bins objects created for thg_magz_tar but no DimSizes found.
+  Error: bins objects created for thg_magh_tar but no DimSizes found.
+  Error: bins objects created for thg_magd_tar but no DimSizes found.
+  Error: bins objects created for thg_magz_tar but no DimSizes found.
 THG_L2_MAG_RAN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_ran_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_ran but no DimSizes found.
+  Error: bins objects created for thg_magd_ran but no DimSizes found.
+  Error: bins objects created for thg_magz_ran but no DimSizes found.
+  Error: bins objects created for thg_magh_ran but no DimSizes found.
+  Error: bins objects created for thg_magd_ran but no DimSizes found.
+  Error: bins objects created for thg_magz_ran but no DimSizes found.
 THG_L2_MAG_NOR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_nor_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -7831,21 +8501,51 @@ THG_L2_MAG_HOP: subsetting and creating /info
 THG_L2_MAG_NUR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_nur_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_nur but no DimSizes found.
+  Error: bins objects created for thg_magd_nur but no DimSizes found.
+  Error: bins objects created for thg_magz_nur but no DimSizes found.
+  Error: bins objects created for thg_magh_nur but no DimSizes found.
+  Error: bins objects created for thg_magd_nur but no DimSizes found.
+  Error: bins objects created for thg_magz_nur but no DimSizes found.
 THG_L2_MAG_PEL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_pel_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_pel but no DimSizes found.
+  Error: bins objects created for thg_magd_pel but no DimSizes found.
+  Error: bins objects created for thg_magz_pel but no DimSizes found.
+  Error: bins objects created for thg_magh_pel but no DimSizes found.
+  Error: bins objects created for thg_magd_pel but no DimSizes found.
+  Error: bins objects created for thg_magz_pel but no DimSizes found.
 THG_L2_MAG_MAS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_mas_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_mas but no DimSizes found.
+  Error: bins objects created for thg_magd_mas but no DimSizes found.
+  Error: bins objects created for thg_magz_mas but no DimSizes found.
+  Error: bins objects created for thg_magh_mas but no DimSizes found.
+  Error: bins objects created for thg_magd_mas but no DimSizes found.
+  Error: bins objects created for thg_magz_mas but no DimSizes found.
 THG_L2_MAG_MUO: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_muo_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_muo but no DimSizes found.
+  Error: bins objects created for thg_magd_muo but no DimSizes found.
+  Error: bins objects created for thg_magz_muo but no DimSizes found.
+  Error: bins objects created for thg_magh_muo but no DimSizes found.
+  Error: bins objects created for thg_magd_muo but no DimSizes found.
+  Error: bins objects created for thg_magz_muo but no DimSizes found.
 THG_L2_MAG_SOR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_sor_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 THG_L2_MAG_KIL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_kil_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_kil but no DimSizes found.
+  Error: bins objects created for thg_magd_kil but no DimSizes found.
+  Error: bins objects created for thg_magz_kil but no DimSizes found.
+  Error: bins objects created for thg_magh_kil but no DimSizes found.
+  Error: bins objects created for thg_magd_kil but no DimSizes found.
+  Error: bins objects created for thg_magz_kil but no DimSizes found.
 THG_L2_MAG_BJN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_bjn_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -7864,6 +8564,12 @@ THG_L2_MAG_LYR: subsetting and creating /info
 THG_L2_MAG_BBG: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_bbg_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_bbg but no DimSizes found.
+  Error: bins objects created for thg_magd_bbg but no DimSizes found.
+  Error: bins objects created for thg_magz_bbg but no DimSizes found.
+  Error: bins objects created for thg_magh_bbg but no DimSizes found.
+  Error: bins objects created for thg_magd_bbg but no DimSizes found.
+  Error: bins objects created for thg_magz_bbg but no DimSizes found.
 THG_L2_MAG_DON: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_don_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -7891,21 +8597,57 @@ THG_L2_MAG_SOL: subsetting and creating /info
 THG_L2_MAG_PG5: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_pg5_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_pg5 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg5 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg5 but no DimSizes found.
+  Error: bins objects created for thg_magh_pg5 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg5 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg5 but no DimSizes found.
 THG_L2_MAG_PG4: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_pg4_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_pg4 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg4 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg4 but no DimSizes found.
+  Error: bins objects created for thg_magh_pg4 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg4 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg4 but no DimSizes found.
 THG_L2_MAG_PG3: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_pg3_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_pg3 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg3 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg3 but no DimSizes found.
+  Error: bins objects created for thg_magh_pg3 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg3 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg3 but no DimSizes found.
 THG_L2_MAG_PG2: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_pg2_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_pg2 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg2 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg2 but no DimSizes found.
+  Error: bins objects created for thg_magh_pg2 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg2 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg2 but no DimSizes found.
 THG_L2_MAG_PG1: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_pg1_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_pg1 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg1 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg1 but no DimSizes found.
+  Error: bins objects created for thg_magh_pg1 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg1 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg1 but no DimSizes found.
 THG_L2_MAG_PG0: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_pg0_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_pg0 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg0 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg0 but no DimSizes found.
+  Error: bins objects created for thg_magh_pg0 but no DimSizes found.
+  Error: bins objects created for thg_magd_pg0 but no DimSizes found.
+  Error: bins objects created for thg_magz_pg0 but no DimSizes found.
 THG_L2_MAG_SJG: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_sjg_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -8011,6 +8753,12 @@ THG_L2_MAG_GUA: subsetting and creating /info
 THG_L2_MAG_BRN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_brn_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
+  Error: bins objects created for thg_magh_brn but no DimSizes found.
+  Error: bins objects created for thg_magd_brn but no DimSizes found.
+  Error: bins objects created for thg_magz_brn but no DimSizes found.
+  Error: bins objects created for thg_magh_brn but no DimSizes found.
+  Error: bins objects created for thg_magd_brn but no DimSizes found.
+  Error: bins objects created for thg_magz_brn but no DimSizes found.
 THG_L2_MAG_TDC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'thg_mag_tdc_epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -8023,10 +8771,10 @@ TIMED_L2A_SABER: subsetting and creating /info
 TIMED_L3A_SEE: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  Dropping NAME_LINE because string parameter and no PadValue or FillValue given to allow length to be determined.
-  Dropping NAME_LINE because string parameter and no PadValue or FillValue given to allow length to be determined.
+  Dropping variable "NAME_LINE" because string parameter and no PadValue or FillValue given to allow length to be determined.
+  Dropping variable "NAME_LINE" because string parameter and no PadValue or FillValue given to allow length to be determined.
 TIMED_WINDVECTORSNCAR_TIDI
-  Error: Dropping dataset b/c it is not in Nand's list
+  Warning: Dropping dataset b/c it is not in Nand's list
 TIMED_EDP_GUVI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -8837,9 +9585,8 @@ TWINS2_OR_DEF: subsetting and creating /info
 TWINS1_AT_DEF: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
-TWINS2_AT_DEF: subsetting and creating /info
-  1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+TWINS2_AT_DEF
+  Warning: Dropping dataset b/c it is not in Nand's list
 TWINS1_HK_1SEC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -8887,7 +9634,7 @@ UY_M0_HFT: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 UY_M0_KET: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'support'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support', 'support_data', 'data'}
 UY_M0_LET: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -8995,7 +9742,7 @@ VOYAGER2_48S_MAG-VIM: subsetting and creating /info
 VOYAGER1_2S_MAG: subsetting and creating /info
   2 DEPEND_0s
 VOYAGER1_2S_MAG
-  Error: Dropping dataset associated with Epoch b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "Epoch" b/c it is not in Nand's list
   DEPEND_0 Name/VAR_TYPE: 'Epoch2'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 VOYAGER1_10S_MAG: subsetting and creating /info
   2 DEPEND_0s
@@ -9007,7 +9754,7 @@ VOYAGER1_48S_MAG: subsetting and creating /info
 VOYAGER2_2S_MAG: subsetting and creating /info
   2 DEPEND_0s
 VOYAGER2_2S_MAG
-  Error: Dropping dataset associated with Epoch b/c it is not in Nand's list
+  Warning: Dropping dataset associated with "Epoch" b/c it is not in Nand's list
   DEPEND_0 Name/VAR_TYPE: 'Epoch2'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 VOYAGER2_10S_MAG: subsetting and creating /info
   2 DEPEND_0s
@@ -9066,7 +9813,7 @@ VOYAGER-2_LECP_ELEC-BGND-COR-1D: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
 WI_L3-DUSTIMPACT_WAVES: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'metadata', 'support_data', 'data'}
 WI_L2-1HOUR-SEP_EPACT-APE_B: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
@@ -9111,10 +9858,10 @@ WI_L2_3MIN_SMS-STICS-NVT-SOLARWIND: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
 WI_L2-3MIN_SMS-STICS-VDF-MAGNETOSPHERE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata', 'ignore_data', 'support_data'}
 WI_L2-3MIN_SMS-STICS-VDF-SOLARWIND: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata', 'ignore_data', 'support_data'}
 WI_H0_MFI: subsetting and creating /info
   3 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data', 'metadata'}
@@ -9123,7 +9870,7 @@ WI_H0_MFI: subsetting and creating /info
 WI_H2_MFI: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'support_data'}
-  DEPEND_0 Name/VAR_TYPE: 'Epoch1'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch1'/'support_data'; dependent VAR_TYPES {'metadata', 'support_data'}
   Not creating dataset for DEPEND_0 = 'Epoch1' because none of its variables have VAR_TYPE='data'.
 WI_H3-RTN_MFI: subsetting and creating /info
   3 DEPEND_0s
@@ -9256,9 +10003,8 @@ COMETGS_HELIO1DAY_POSITION: subsetting and creating /info
 COMETHMP_HELIO1DAY_POSITION: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
-DAWN_HELIO1DAY_POSITION: subsetting and creating /info
-  1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
+DAWN_HELIO1DAY_POSITION
+  Warning: Dropping dataset b/c it is not in Nand's list
 EARTH_HELIO1DAY_POSITION: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}

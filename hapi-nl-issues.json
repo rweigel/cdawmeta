@@ -1,10 +1,26 @@
 {
-  "keepPartial": {
+  "keepSubset": {
     "_comment": "Nand drops variables associated with a DEPEND_0 when it has no dependents with type 'data'. Except these.",
     "RBSPA_EFW-L2_E-SPINFIT-MGSE": "epoch_hsk",
     "RBSPB_EFW-L2_E-SPINFIT-MGSE": "epoch_hsk"
   },
-  "omitPartial": {
+  "omitVariables": {
+    "ALOUETTE2_NEPROF_TOPS": ["numDataPoints"],
+    "FA_ESA_L2_EEB": ["geom_factor", "gf_ind", "denergy_full", "data_quality", "nenergy", "energy_full", "valid", "nbins", "mode_ind", "domega"],
+    "FA_ESA_L2_EES": ["geom_factor", "gf_ind", "denergy_full", "data_quality", "nenergy", "energy_full", "valid", "nbins", "mode_ind", "domega"],
+    "FA_ESA_L2_IEB": ["geom_factor", "gf_ind", "denergy_full", "data_quality", "nenergy", "energy_full", "valid", "nbins", "data_audio", "mode_ind", "domega"],
+    "FA_ESA_L2_IES": ["geom_factor", "gf_ind", "denergy_full", "data_quality", "nenergy", "energy_full", "valid", "nbins", "mode_ind", "domega"],
+    "I1_NEPROF_TOPS": ["numDataPoints"],
+    "I2_NEPROF_TOPS": ["numDataPoints"],
+    "ISS_DOSANL_TEPC": ["FLAG", "LOCATION"],
+    "VOYAGER1_48S_MAG": ["magStatus", "magCommand", "num9_6_averages"],
+    "VOYAGER2_48S_MAG": ["magStatus", "magCommand", "num9_6_averages"],
+    "VOYAGER1_2S_MAG": ["RMSB1", "RMSB2", "B1", "F1", "RMSB3", "F2", "numDetailPoints", "B2", "B3"],
+    "VOYAGER2_2S_MAG": ["RMSB1", "RMSB2", "B1", "F1", "RMSB3", "F2", "numDetailPoints", "B2", "B3"],
+    "WI_EM_3DP": ["VALID", "GAP"],
+    "WI_PM_3DP": ["VALID", "E_RANGE", "GAP"]
+  },
+  "omitSubset": {
     "AEROCUBE-6-A_DOSIMETER_L2": "Epoch_10Hz",
     "AEROCUBE-6-B_DOSIMETER_L2": "Epoch_10Hz",
     "ELA_L1_STATE_PRED": "ela_att_time",
@@ -13,12 +29,13 @@
     "FA_ESA_L2_EES": "orbit_number_epoch",
     "FA_ESA_L2_IEB": "orbit_number_epoch",
     "FA_ESA_L2_IES": "orbit_number_epoch",
+    "GE_EDA12SEC_LEP": "scan_code",
     "PO_LEVEL1_UVI": "EPOCH_51",
     "PSP_FLD_L2_DFB_DBM_SCM": "epoch_psp_fld_l2_dfb_dbm_scmlg",
     "VOYAGER1_2S_MAG": "Epoch",
     "VOYAGER2_2S_MAG": "Epoch"
   },
-  "omitFull": {
+  "omitAll": {
     "ALOUETTE2_AV_QUI": null,
     "APOLLO12_SWS_1HR": null,
     "APOLLO12_SWS_28S": null,
@@ -47,6 +64,8 @@
     "DN_MAGN-L2-HIRES_G10": null,
     "DN_MAGN-L2-HIRES_G09": null,
     "DN_MAGN-L2-HIRES_G08": null,
+    "GE_K0_LEP": null,
+    "GPS_RF_LANL-VTEC-1HR": null,
     "GOES9_EPHEMERIS_SSC": null,
     "GOES8_EPHEMERIS_SSC": null,
     "ICON_L2-1_MIGHTI-B_LOS-WIND-GREEN": null,
@@ -99,6 +118,7 @@
     "SOLO_L2_SWA-EAS1-SS-PSD": null,
     "SOLO_L2_SWA-EAS1-SS-DNF": null,
     "SOLO_L2_SWA-EAS1-SS-DEF": null,
-    "TIMED_WINDVECTORSNCAR_TIDI": null
+    "TIMED_WINDVECTORSNCAR_TIDI": null,
+    "TWINS2_AT_DEF": null
   }
 }

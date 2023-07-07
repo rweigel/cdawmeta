@@ -6,6 +6,7 @@ ALLBODY=../data/tables/all.table.body.json
 
 table-ui:
 	@- git clone https://github.com/rweigel/table-ui
+	@- git pull https://github.com/rweigel/table-ui
 
 serve-all:
 	cd ../; make table-all

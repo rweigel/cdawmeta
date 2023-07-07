@@ -22,7 +22,7 @@ data/all-resolved.restructured.json: data/all-resolved.json all-restructure.py
 	python all-restructure.py
 
 
-data/hapi-bw.json: data/all-resolved.restructured.json hapi-bw.py
+data/hapi-bw.json: data/all-resolved.restructured.json hapi-bw.py hapi-nl-issues.json
 	python hapi-bw.py | tee log/hapi-bw.log
 
 hapi-bw: 
