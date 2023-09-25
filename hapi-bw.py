@@ -9,21 +9,63 @@ issues_file = os.path.join(base_dir,"hapi-nl-issues.json")
 with open(issues_file) as f:
   issues = json.load(f)
 
-def keep(id, depend_0=None):
+def order_depend0s(id, depend0_names):
+
+  if id not in issues['depend0Order'].keys():
+    return depend0_names
+
+  order_wanted = issues['depend0Order'][id]
+  order_given = depend0_names
+
+  # Next two ifs are similar to the ones in order_variables()
+  # TODO: Refactor?
+  if len(order_wanted) != len(order_wanted):
+    print(f'Error: {id}\n  Number of depend0s in new order list ({len(order_wanted)}) does not match number found in dataset ({len(order_given)})')
+    print(f'  New order:   {order_wanted}')
+    print(f'  Given order: {list(order_given)}')
+    print(f'  Exiting with code 1')
+    exit(1)
+
+  if sorted(order_wanted) != sorted(order_wanted):
+    print(f'Error: {id}\n  Mismatch in depend0 names between new order list and dataset')
+    print(f'  New order:   {order_wanted}')
+    print(f'  Given order: {list(order_given)}')
+    print(f'  Exiting with code 1')
+    exit(1)
+
+  return order_wanted
+
+def order_variables(id, variables):
+
+  if id not in issues['variableOrder'].keys():
+    return variables
+
+  order_wanted = issues['variableOrder'][id]
+  order_given = variables.keys()
+  if len(order_wanted) != len(order_wanted):
+    print(f'Error: {id}\n  Number of variables in new order list ({len(order_wanted)}) does not match number found in dataset ({len(order_given)})')
+    print(f'  New order:   {order_wanted}')
+    print(f'  Given order: {list(order_given)}')
+    print(f'  Exiting with code 1')
+    exit(1)
+
+  if sorted(order_wanted) != sorted(order_wanted):
+    print(f'Error: {id}\n  Mismatch in variable names between new order list and dataset')
+    print(f'  New order:   {order_wanted}')
+    print(f'  Given order: {list(order_given)}')
+    print(f'  Exiting with code 1')
+    exit(1)
+
+  return {k: variables[k] for k in order_wanted}
+
+def keep_dataset(id, depend_0=None):
   if id in issues['keepSubset'].keys() and depend_0 == issues['keepSubset'][id]:
     print(id)
     print(f"  Warning: Keeping dataset associated with \"{depend_0}\" b/c it is in Nand's list")
     return True
   return False
 
-def omitVariable(id, variable_name):
-  if id in issues['omitVariables'].keys() and variable_name in issues['omitVariables'][id]:
-    print(id)
-    print(f"  Warning: Dropping variable \"{variable_name}\" b/c it is not in Nand's list")
-    return True
-  return False
-
-def omit(id, depend_0=None):
+def omit_dataset(id, depend_0=None):
   if depend_0 is None:
     if id in issues['omitAll'].keys():
       print(id)
@@ -34,6 +76,28 @@ def omit(id, depend_0=None):
       print(id)
       print(f"  Warning: Dropping dataset associated with \"{depend_0}\" b/c it is not in Nand's list")
       return True
+  return False
+
+def omit_variable(id, variable_name):
+
+  for key in list(issues['omitVariables'].keys()):
+    # Some keys of issues['omitVariables'] are ids with @subset_number"
+    # The @subset_number is not needed, but kept for reference.
+    # Here we contatenate all variables with common dataset base
+    # name (variable names are unique within a dataset, so this works).
+    newkey = key.split("@")[0]
+    if newkey != key:
+      if newkey not in issues['omitVariables'].keys():
+        issues['omitVariables'][newkey] = issues['omitVariables'][key]
+      else:
+        # Append new list to existing list
+        issues['omitVariables'][newkey] += issues['omitVariables'][key]
+      del issues['omitVariables'][key]
+
+  if id in issues['omitVariables'].keys() and variable_name in issues['omitVariables'][id]:
+    print(id)
+    print(f"  Warning: Dropping variable \"{variable_name}\" b/c it is not in Nand's list")
+    return True
   return False
 
 def cdf2hapitype(cdf_type):
@@ -72,7 +136,7 @@ def split_variables(datasets):
         print(f'  Error: Dropping variable "{name}" b/c it has no has no VAR_TYPE')
         continue
 
-      if omitVariable(dataset['id'], name):
+      if omit_variable(dataset['id'], name):
         continue
 
       if 'DEPEND_0' in variable_meta['VarAttributes']:
@@ -276,7 +340,7 @@ def subset_and_transform(datasets):
   datasets_new = []
   for dataset in datasets:
 
-    if omit(dataset['id']):
+    if omit_dataset(dataset['id']):
       continue
 
     print(dataset['id'] + ": subsetting and creating /info")
@@ -288,7 +352,7 @@ def subset_and_transform(datasets):
     depend_0_names = []
     for depend_0_name, depend_0_variables in depend_0s:
 
-      if omit(dataset['id'], depend_0=depend_0_name):
+      if omit_dataset(dataset['id'], depend_0=depend_0_name):
         continue
 
       if depend_0_name not in dataset['_variables'].keys():
@@ -308,7 +372,7 @@ def subset_and_transform(datasets):
         print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
         continue
 
-      if 'data' not in VAR_TYPES and not keep(dataset['id'], depend_0=depend_0_name):
+      if 'data' not in VAR_TYPES and not keep_dataset(dataset['id'], depend_0=depend_0_name):
         # In general, Nand drops these, but not always
         print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
         continue
@@ -325,16 +389,22 @@ def subset_and_transform(datasets):
 
       depend_0_names.append(depend_0_name)
 
+    #print(depend_0_names)
+    depend_0_names = order_depend0s(dataset['id'], depend_0_names)
+    #print(depend_0_names)
+
     for depend_0_name in depend_0_names:
 
       depend_0_variable = dataset['_variables'][depend_0_name]
       depend_0_variables = dataset['_variables_split'][depend_0_name]
 
-      parameters = variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, dataset['_variables'])
-
       subset = ''
       if len(depend_0_names) > 1:
         subset = '@' + str(n)
+
+      depend_0_variables = order_variables(dataset['id'] + subset, depend_0_variables)
+
+      parameters = variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, dataset['_variables'])
 
       dataset_new = {
         'id': dataset['id'] + subset,
