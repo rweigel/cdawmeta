@@ -100,6 +100,7 @@ def omit_variable(id, variable_name):
     return True
   return False
 
+
 def cdf2hapitype(cdf_type):
 
   if cdf_type in ['CDF_CHAR', 'CDF_UCHAR']:
@@ -115,43 +116,6 @@ def cdf2hapitype(cdf_type):
     return 'double'
 
   return None
-
-def split_variables(datasets):
-
-  for dataset in datasets:
-
-    depend_0_dict = {}
-
-    names = dataset['_variables'].keys()
-    for name in names:
-
-      variable_meta = dataset['_variables'][name]
-
-      if 'VarAttributes' not in variable_meta:
-        print(dataset['id'])
-        print(f'  Error: Dropping variable "{name}" b/c it has no VarAttributes')
-        continue
-
-      if 'VAR_TYPE' not in variable_meta['VarAttributes']:
-        print(f'  Error: Dropping variable "{name}" b/c it has no has no VAR_TYPE')
-        continue
-
-      if omit_variable(dataset['id'], name):
-        continue
-
-      if 'DEPEND_0' in variable_meta['VarAttributes']:
-        depend_0_name = variable_meta['VarAttributes']['DEPEND_0']
-
-        if depend_0_name not in dataset['_variables']:
-          print(dataset['id'])
-          print(f'  Error: Dropping variable "{name}" because it has a DEPEND_0 "{depend_0_name}" that is not in dataset')
-          continue
-
-        if depend_0_name not in depend_0_dict:
-          depend_0_dict[depend_0_name] = {}
-        depend_0_dict[depend_0_name][name] = variable_meta
-
-    dataset['_variables_split'] = depend_0_dict
 
 def cdftimelen(cdf_type):
 
@@ -341,6 +305,47 @@ def bins(DEPEND_x_NAME, DEPEND_x):
     else:
       print(f"  Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (probably VIRTUAL)")
       return None
+
+def split_variables(datasets):
+  """
+  Create _variables_split dict. Each key is the name of the DEPEND_0
+  variable. Each value is a dict of variables that reference that DEPEND_0
+  """
+
+  for dataset in datasets:
+
+    depend_0_dict = {}
+
+    names = dataset['_variables'].keys()
+    for name in names:
+
+      variable_meta = dataset['_variables'][name]
+
+      if 'VarAttributes' not in variable_meta:
+        print(dataset['id'])
+        print(f'  Error: Dropping variable "{name}" b/c it has no VarAttributes')
+        continue
+
+      if 'VAR_TYPE' not in variable_meta['VarAttributes']:
+        print(f'  Error: Dropping variable "{name}" b/c it has no has no VAR_TYPE')
+        continue
+
+      if omit_variable(dataset['id'], name):
+        continue
+
+      if 'DEPEND_0' in variable_meta['VarAttributes']:
+        depend_0_name = variable_meta['VarAttributes']['DEPEND_0']
+
+        if depend_0_name not in dataset['_variables']:
+          print(dataset['id'])
+          print(f'  Error: Dropping variable "{name}" because it has a DEPEND_0 "{depend_0_name}" that is not in dataset')
+          continue
+
+        if depend_0_name not in depend_0_dict:
+          depend_0_dict[depend_0_name] = {}
+        depend_0_dict[depend_0_name][name] = variable_meta
+
+    dataset['_variables_split'] = depend_0_dict
 
 def subset_and_transform(datasets):
 
