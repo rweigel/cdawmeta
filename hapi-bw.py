@@ -66,14 +66,14 @@ def keep_dataset(id, depend_0=None):
   return False
 
 def omit_dataset(id, depend_0=None):
+
   if depend_0 is None:
     if id in issues['omitAll'].keys():
       print(id)
       print(f"  Warning: Dropping dataset b/c it is not in Nand's list")
       return True
   else:
-    if id in issues['omitSubset'].keys() and depend_0 == issues['omitSubset'][id]:
-      print(id)
+    if id in issues['omitSubset'].keys() and depend_0 in issues['omitSubset'][id]:
       print(f"  Warning: Dropping dataset associated with \"{depend_0}\" b/c it is not in Nand's list")
       return True
   return False

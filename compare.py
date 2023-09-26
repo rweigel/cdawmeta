@@ -39,7 +39,7 @@ for dsid in datasets_nl.keys():
 
 for dsid in datasets_bw.keys():
   if not dsid in datasets_nl:
-    print(f"{dsid} not in nl")
+    print(f'{dsid} not in nl (DEPEND_0 = {datasets_bw[dsid]["info"]["parameters"][0]["_name"]})')
     dsid0 = dsid + "@0"
     if dsid[-2] != "@" and dsid0 in list(datasets_nl.keys()):
       print(f"  But {dsid0} in nl")

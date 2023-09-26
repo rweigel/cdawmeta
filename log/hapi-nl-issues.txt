@@ -1,3 +1,7 @@
+***************************************************************
+TWINS2_OR_DEF not in bw
+
+***************************************************************
 First one due to Nand having TOF_iron_Edrift associated with Epoch instead of Epoch_1
 AMPTECCE_H0_MEPA@0
   nnl = 20 != nbw = 15
@@ -9,23 +13,104 @@ AMPTECCE_H0_MEPA@3
   nnl = 7 != nbw = 8
   {'HIRES_ION_protons_Edrift'}
 
+***************************************************************
 Missing variables b/c they don't have a DEPEND_0. Do they intend to
 fix masters?
 BAR_2L_L2_HKPG
   nnl = 45 != nbw = 2
   {'V2_Solar1', 'numOfSats', 'T15_CCStat', 'V5_Modem', 'V8_Mag', 'I1_TotalSolar', 'V6_NEG_XRayDet', 'timeOffset', 'cmdCounter', 'modemCounter', 'T9_Solar2', 'T11_Solar4', 'termStatus', 'T3_Battery', 'I5_Modem', 'T0_Scint', 'I7_NEG_DPU', 'T14_TermCap', 'T8_Solar1', 'weeks', 'V11_Solar4', 'I0_TotalLoad', 'V0_VoltAtLoad', 'V10_Solar3', 'V1_Battery', 'I2_Solar1', 'V3_POS_DPU', 'dcdCounter', 'T12_TermTemp', 'T1_Mag', 'V4_POS_XRayDet', 'T5_DPU', 'T7_Structure', 'T10_Solar3', 'V9_Solar2', 'T6_Modem', 'T4_PowerConv', 'T13_TermBatt', 'I4_POS_XRayDet', 'I3_POS_DPU', 'V7_NEG_DPU', 'T2_ChargeCont', 'I6_NEG_XRayDet'}
 
+***************************************************************
 Due to data and eflux being time varying. Nand generally drops bins
-for this case, but here he did not.
+for this case, but here he did not. Here he uses integers. Why
+does he keep for this case?
 FA_ESA_L2_EEB
   nl has bins for data but bw does not
 FA_ESA_L2_EEB
   nl has bins for eflux but bw does not
+FA_ESA_L2_EEB
+  nl has bins for data but bw does not
+FA_ESA_L2_EEB
+  nl has bins for eflux but bw does not
+FA_ESA_L2_EEB
+  bw has bins for pitch_angle_median but nl does not
+FA_ESA_L2_EEB
+  bw has bins for energy_median but nl does not
+FA_ESA_L2_EEB
+  nl has bins for pitch_angle but bw does not
+FA_ESA_L2_EES
+  nl has bins for data but bw does not
+FA_ESA_L2_EES
+  nl has bins for eflux but bw does not
+FA_ESA_L2_EES
+  bw has bins for pitch_angle_median but nl does not
+FA_ESA_L2_EES
+  bw has bins for energy_median but nl does not
+FA_ESA_L2_EES
+  nl has bins for pitch_angle but bw does not
+FA_ESA_L2_IEB
+  nl has bins for data but bw does not
+FA_ESA_L2_IEB
+  nl has bins for eflux but bw does not
+FA_ESA_L2_IEB
+  bw has bins for pitch_angle_median but nl does not
+FA_ESA_L2_IEB
+  bw has bins for energy_median but nl does not
+FA_ESA_L2_IEB
+  nl has bins for pitch_angle but bw does not
+FA_ESA_L2_IES
+  nl has bins for data but bw does not
+FA_ESA_L2_IES
+  nl has bins for eflux but bw does not
+FA_ESA_L2_IES
+  bw has bins for pitch_angle_median but nl does not
+FA_ESA_L2_IES
+  bw has bins for energy_median but nl does not
+FA_ESA_L2_IES
+  nl has bins for pitch_angle but bw does not
 
-Due to Nand has DATA_QUALITY and Gain1 having same time variable, but this is not correct.
+***************************************************************
+Due to Nand having DATA_QUALITY and Gain1 having same time variable, but this is not correct.
 PO_H4_PWI@0
   nnl = 6 != nbw = 8 for bw DEPEND_0  = Epoch
   Differences: {'HFWR_Bz2K', 'HFWR_Ey2K', 'HFWR_Ex2K', 'Gain3', 'HFWR_Ez2K', 'Gain1', 'MGain', 'HFWR_By2K', 'HFWR_Bx2K', 'Gain2'}
 PO_H4_PWI@1
   nnl = 7 != nbw = 5 for bw DEPEND_0  = Epoch0
   Differences: {'HFWR_Bz2K', 'HFWR_Ey2K', 'HFWR_Ex2K', 'Gain3', 'HFWR_Ez2K', 'Gain1', 'MGain', 'HFWR_By2K', 'HFWR_Bx2K', 'Gain2'}
+
+***************************************************************
+ParticleDir_SM dropped because one of its DEPEND_2 variable (NumAxisFixed) does
+not have a VAR_TYPE. In principle, knowing the VAR_TYPE is not needed because
+(NumAxis does not have a VAR_TYPE. I think it did not cause a problem because it is used as a label pointer.)
+RBSP-A-RBSPICE_LEV-3_TOFXEH
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_TOFXEH
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_TOFXEION
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_TOFXEION
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_TOFXENONH
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_TOFXENONH
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_TOFXPHHHELT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_TOFXPHHHELT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_TOFXPHHLEHT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_TOFXPHHLEHT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_ESRHELT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_ESRHELT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_ESRLEHT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_ESRLEHT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_ISRHELT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_ISRHELT
+  nl has bins for ParticleDir_SM but bw does not

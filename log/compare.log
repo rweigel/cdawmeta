@@ -3,27 +3,23 @@ Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-bw.json
 Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
 Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
 IBEX_H3_ENA_LO_R06_STATE_VECTORS not in bw
-PO_LEVEL1_UVI not in bw
 PSP_ISOIS-EPILO_L2-IC@0 not in bw
 PSP_ISOIS-EPILO_L2-IC@1 not in bw
 PSP_ISOIS-EPILO_L2-IC@2 not in bw
 PSP_ISOIS-EPILO_L2-IC@3 not in bw
 PSP_ISOIS-EPILO_L2-IC@4 not in bw
-TSS-1R_M1_SHSA@2 not in bw
-TSS-1R_M1_SHSA@3 not in bw
-TSS-1R_M1_SHSA@4 not in bw
 AMPTECCE_H0_MEPA@0
   nnl = 20 != nbw = 15 for bw DEPEND_0  = Epoch
-  Differences: {'HIRES_ION_protons_Edrift', 'TOF_iron_Edrift', 'TOF_oxygen_Edrift', 'TOF_protons_Edrift', 'TOF_helium_Edrift'}
+  Differences: {'TOF_helium_Edrift', 'TOF_iron_Edrift', 'TOF_protons_Edrift', 'TOF_oxygen_Edrift', 'HIRES_ION_protons_Edrift'}
 AMPTECCE_H0_MEPA@1
   nnl = 29 != nbw = 33 for bw DEPEND_0  = Epoch_1
-  Differences: {'TOF_iron_Edrift', 'TOF_oxygen_Edrift', 'TOF_protons_Edrift', 'TOF_helium_Edrift'}
+  Differences: {'TOF_helium_Edrift', 'TOF_iron_Edrift', 'TOF_protons_Edrift', 'TOF_oxygen_Edrift'}
 AMPTECCE_H0_MEPA@3
   nnl = 7 != nbw = 8 for bw DEPEND_0  = Epoch_3
   Differences: {'HIRES_ION_protons_Edrift'}
 BAR_2L_L2_HKPG
   nnl = 45 != nbw = 2 for bw DEPEND_0  = Epoch
-  Differences: {'V8_Mag', 'V6_NEG_XRayDet', 'T12_TermTemp', 'V3_POS_DPU', 'I0_TotalLoad', 'modemCounter', 'weeks', 'V10_Solar3', 'I7_NEG_DPU', 'V9_Solar2', 'I3_POS_DPU', 'I2_Solar1', 'I5_Modem', 'V2_Solar1', 'V4_POS_XRayDet', 'T4_PowerConv', 'T1_Mag', 'T8_Solar1', 'I1_TotalSolar', 'dcdCounter', 'T11_Solar4', 'V5_Modem', 'I6_NEG_XRayDet', 'V0_VoltAtLoad', 'T14_TermCap', 'T10_Solar3', 'T7_Structure', 'T0_Scint', 'cmdCounter', 'T13_TermBatt', 'I4_POS_XRayDet', 'V1_Battery', 'T5_DPU', 'T2_ChargeCont', 'T15_CCStat', 'termStatus', 'timeOffset', 'T6_Modem', 'T3_Battery', 'numOfSats', 'V7_NEG_DPU', 'T9_Solar2', 'V11_Solar4'}
+  Differences: {'T6_Modem', 'weeks', 'T3_Battery', 'T13_TermBatt', 'dcdCounter', 'I6_NEG_XRayDet', 'V3_POS_DPU', 'T7_Structure', 'timeOffset', 'T1_Mag', 'I0_TotalLoad', 'numOfSats', 'I3_POS_DPU', 'I4_POS_XRayDet', 'V10_Solar3', 'V7_NEG_DPU', 'V5_Modem', 'T2_ChargeCont', 'T15_CCStat', 'V1_Battery', 'T4_PowerConv', 'T11_Solar4', 'V4_POS_XRayDet', 'T10_Solar3', 'T14_TermCap', 'V8_Mag', 'V11_Solar4', 'I1_TotalSolar', 'V2_Solar1', 'T8_Solar1', 'termStatus', 'V6_NEG_XRayDet', 'I7_NEG_DPU', 'I5_Modem', 'T0_Scint', 'T12_TermTemp', 'T9_Solar2', 'modemCounter', 'T5_DPU', 'cmdCounter', 'V0_VoltAtLoad', 'I2_Solar1', 'V9_Solar2'}
 FA_ESA_L2_EEB
   nl has bins for data but bw does not
 FA_ESA_L2_EEB
@@ -67,15 +63,13 @@ FA_ESA_L2_IES
 GE_EDB12SEC_LEP
   nnl = 10 != nbw = 9 for bw DEPEND_0  = Epoch
   Differences: {'Sensor'}
-ICON_L2-1_MIGHTI-A_LOS-WIND-GREEN not in nl
-PO_H1_PWI@5 not in nl
 PO_H4_PWI@0
   nnl = 6 != nbw = 8 for bw DEPEND_0  = Epoch
-  Differences: {'HFWR_Bz2K', 'HFWR_Ey2K', 'HFWR_Ex2K', 'Gain3', 'HFWR_Ez2K', 'Gain1', 'MGain', 'HFWR_By2K', 'HFWR_Bx2K', 'Gain2'}
+  Differences: {'HFWR_By2K', 'MGain', 'HFWR_Ex2K', 'Gain3', 'HFWR_Bx2K', 'Gain1', 'HFWR_Ez2K', 'HFWR_Bz2K', 'Gain2', 'HFWR_Ey2K'}
 PO_H4_PWI@1
   nnl = 7 != nbw = 5 for bw DEPEND_0  = Epoch0
-  Differences: {'HFWR_Bz2K', 'HFWR_Ey2K', 'HFWR_Ex2K', 'Gain3', 'HFWR_Ez2K', 'Gain1', 'MGain', 'HFWR_By2K', 'HFWR_Bx2K', 'Gain2'}
-PSP_ISOIS-EPILO_L2-IC not in nl
+  Differences: {'HFWR_By2K', 'MGain', 'HFWR_Ex2K', 'HFWR_Ez2K', 'HFWR_Bx2K', 'Gain1', 'Gain3', 'HFWR_Bz2K', 'Gain2', 'HFWR_Ey2K'}
+PSP_ISOIS-EPILO_L2-IC not in nl (DEPEND_0 = Epoch_ChanT)
   But PSP_ISOIS-EPILO_L2-IC@0 in nl
 RBSP-A-RBSPICE_LEV-3_TOFXEH
   nl has bins for ParticleDir_SM but bw does not
@@ -121,38 +115,24 @@ RBSPA_EFW-L2_ESVY_DESPUN@0
   bw: ['Time', 'efield_mgse']
 RBSPA_EFW-L2_ESVY_DESPUN@1
   nnl = 13 != nbw = 2 for bw DEPEND_0  = epoch_qual
-  Differences: {'orbit_num', 'bias_current', 'mlt', 'lshell', 'diagEx1', 'spinaxis_gse', 'diagBratio', 'mlat', 'pos_gse', 'efw_qual', 'vel_gse', 'diagEx2', 'flags_charging_bias_eclipse'}
-RBSPA_EFW-L2_ESVY_DESPUN@2 not in nl
+  Differences: {'mlat', 'pos_gse', 'diagBratio', 'flags_charging_bias_eclipse', 'mlt', 'spinaxis_gse', 'lshell', 'diagEx1', 'diagEx2', 'efw_qual', 'bias_current', 'vel_gse', 'orbit_num'}
+RBSPA_EFW-L2_ESVY_DESPUN@2 not in nl (DEPEND_0 = epoch)
 RBSPB_EFW-L2_ESVY_DESPUN@0
   Order differs for bw DEPEND_0 = epoch_e
   nl: ['Time', 'efw_qual']
   bw: ['Time', 'efield_mgse']
 RBSPB_EFW-L2_ESVY_DESPUN@1
   nnl = 13 != nbw = 2 for bw DEPEND_0  = epoch_qual
-  Differences: {'orbit_num', 'bias_current', 'mlt', 'lshell', 'diagEx1', 'spinaxis_gse', 'diagBratio', 'mlat', 'pos_gse', 'efw_qual', 'vel_gse', 'diagEx2', 'flags_charging_bias_eclipse'}
-RBSPB_EFW-L2_ESVY_DESPUN@2 not in nl
-SOLO_L2_RPW-LFR-SURV-BP1@4 not in nl
-SOLO_L2_RPW-LFR-SURV-BP1@5 not in nl
-SOLO_L2_RPW-LFR-SURV-BP2@4 not in nl
-SOLO_L2_RPW-LFR-SURV-BP2@5 not in nl
+  Differences: {'mlat', 'pos_gse', 'diagBratio', 'flags_charging_bias_eclipse', 'mlt', 'spinaxis_gse', 'lshell', 'diagEx1', 'diagEx2', 'efw_qual', 'bias_current', 'vel_gse', 'orbit_num'}
 THA_L2_FFT@3
   nnl = 12 != nbw = 9 for bw DEPEND_0  = tha_ffp_32_epoch
-  Differences: {'tha_ffp_32_scm3', 'tha_ffp_32_dbpara', 'tha_ffp_32_eac12', 'tha_ffp_32_v6', 'tha_ffp_32_dbperp', 'tha_ffp_32_scm2', 'tha_ffp_32_v2', 'tha_ffp_32_epara', 'tha_ffp_32_edc56', 'tha_ffp_32_edc12', 'tha_ffp_32_v1', 'tha_ffp_32_eperp', 'tha_ffp_32_scm1', 'tha_ffp_32_v5', 'tha_ffp_32_v4', 'tha_ffp_32_v3', 'tha_ffp_32_eac34', 'tha_ffp_32_eac56', 'tha_ffp_32_edc34'}
-THA_L2_FFT@8 not in nl
-THG_L1_ASK@20 not in nl
-THG_L1_ASK@21 not in nl
-THG_L1_ASK@22 not in nl
-THG_L1_ASK@23 not in nl
-THG_L2_MAG_PANG not in nl
+  Differences: {'tha_ffp_32_v3', 'tha_ffp_32_v4', 'tha_ffp_32_scm2', 'tha_ffp_32_edc56', 'tha_ffp_32_v5', 'tha_ffp_32_v2', 'tha_ffp_32_eac34', 'tha_ffp_32_scm1', 'tha_ffp_32_eperp', 'tha_ffp_32_eac12', 'tha_ffp_32_v6', 'tha_ffp_32_v1', 'tha_ffp_32_dbperp', 'tha_ffp_32_edc12', 'tha_ffp_32_eac56', 'tha_ffp_32_epara', 'tha_ffp_32_dbpara', 'tha_ffp_32_edc34', 'tha_ffp_32_scm3'}
 TIMED_L3A_SEE
   nnl = 17 != nbw = 3 for bw DEPEND_0  = Epoch
-  Differences: {'FLUX_SP_SUM5_44', 'ERR_MEAS_LINE', 'FLUX_SP_SUM6', 'FLUX_SP_133', 'FLUX_LINE', 'ERR_TOT_SP', 'WAVE_LINE', 'FLUX_SP_30', 'LOGT_LINE', 'FLUX_SP_36', 'ERR_MEAS_SP', 'ERR_TOT_LINE', 'FLUX_SP_121', 'FLUX_SP_33', 'FLUX_SP_SUM104', 'COR_1AU', 'FLUX_SP', 'FLUX_SP_SUM44'}
+  Differences: {'FLUX_SP_SUM104', 'ERR_MEAS_SP', 'COR_1AU', 'LOGT_LINE', 'FLUX_SP_133', 'FLUX_SP_33', 'WAVE_LINE', 'FLUX_SP_SUM6', 'ERR_TOT_SP', 'ERR_MEAS_LINE', 'FLUX_SP_36', 'FLUX_SP', 'FLUX_SP_30', 'FLUX_SP_SUM5_44', 'ERR_TOT_LINE', 'FLUX_SP_SUM44', 'FLUX_SP_121', 'FLUX_LINE'}
 TWINS1_L1_IMAGER
   nnl = 94 != nbw = 2 for bw DEPEND_0  = Epoch
-  Differences: {'attitude_delta_deg', 'sun_posv_eci', 'twins_Mimage_e8', 'error_Mimage_e2', 'no_orbit_data', 'error_Mimage_e6', 'smooth_image_e9', 'smooth_Mimage_e1', 'error_Mimage_e7', 'smooth_image_e7', 'sc_posv_re_eci', 'smooth_Merror_image_e4', 'error_Mimage_e4', 'smooth_image_e6', 'twins_image_e9', 'twins_image_e4', 'smooth_Mimage_e7', 'smooth_Merror_image_e5', 'error_image_e9', 'smooth_error_image_e1', 'smooth_error_image_e5', 'smooth_Mimage_e2', 'smooth_image_e2', 'smooth_image_val', 'error_Mimage_e1', 'mag_eci', 'twins_image_e1', 'mlt', 'title', 'smooth_error_image_e3', 'smooth_image_e4', 'smooth_error_image_e8', 'smooth_Merror_image_e1', 'sc_posv_re_sm', 'twins_image_e5', 'twins_image_e6', 'twins_image_e8', 'smooth_image_e3', 'twins_Mimage_e1', 'error_image_e4', 'error_image_e8', 'smooth_Mimage_e6', 'error_Mimage_e8', 'lat_pixelsize_deg', 'error_Mimage_e9', 'quality_flag', 'smooth_error_image_e2', 'twins_Mimage_e7', 'prime_meridian_sm', 'smooth_error_image_e7', 'smooth_Merror_image_e2', 'twins_image_e7', 'pixel_sweep_count', 'spin_axis_eci', 'smooth_Mimage_e3', 'twins_Mimage_e9', 'smooth_Merror_image_e8', 'error_image_e3', 'smooth_Mimage_e5', 'prime_meridian_eci', 'twins_Mimage_e6', 'error_image_e1', 'error_Mimage_e3', 'smooth_Merror_image_e3', 'twins_Mimage_e3', 'smooth_image_e8', 'lshell_dip', 'error_Mimage_e5', 'twins_image_e2', 'twins_Mimage_e4', 'sun_posv_sm', 'error_image_e6', 'smooth_image_energy_kev', 'smooth_image_e5', 'smooth_Mimage_e8', 'smooth_Merror_image_e6', 'smooth_Mimage_e4', 'error_image_e7', 'error_image_e2', 'spin_axis_sm', 'twins_Mimage_e5', 'smooth_error_image_e6', 'smooth_Merror_image_e7', 'lon_pixelsize_deg', 'latitude_deg', 'smooth_error_image_e9', 'smooth_image_e1', 'twins_image_e3', 'smooth_Mimage_e9', 'smooth_error_image_e4', 'smooth_Merror_image_e9', 'error_image_e5', 'twins_Mimage_e2', 'radial_distance_re'}
+  Differences: {'smooth_image_e7', 'smooth_Mimage_e9', 'smooth_Mimage_e6', 'twins_Mimage_e6', 'twins_image_e2', 'twins_Mimage_e4', 'sun_posv_sm', 'quality_flag', 'smooth_Mimage_e3', 'smooth_Merror_image_e2', 'sun_posv_eci', 'title', 'error_Mimage_e5', 'smooth_image_e4', 'smooth_image_val', 'spin_axis_eci', 'error_image_e6', 'smooth_Mimage_e4', 'smooth_error_image_e8', 'error_image_e5', 'twins_Mimage_e1', 'radial_distance_re', 'error_Mimage_e1', 'twins_Mimage_e9', 'mlt', 'smooth_Mimage_e2', 'lon_pixelsize_deg', 'smooth_Merror_image_e6', 'mag_eci', 'smooth_image_energy_kev', 'no_orbit_data', 'error_image_e9', 'smooth_error_image_e4', 'smooth_Mimage_e8', 'sc_posv_re_eci', 'lat_pixelsize_deg', 'smooth_Merror_image_e7', 'smooth_error_image_e7', 'smooth_error_image_e2', 'twins_image_e7', 'smooth_error_image_e3', 'smooth_Merror_image_e1', 'smooth_image_e1', 'smooth_Merror_image_e4', 'twins_Mimage_e8', 'error_image_e4', 'lshell_dip', 'smooth_image_e9', 'error_image_e2', 'smooth_image_e5', 'prime_meridian_eci', 'smooth_Mimage_e1', 'smooth_Mimage_e7', 'attitude_delta_deg', 'error_image_e7', 'error_Mimage_e2', 'error_Mimage_e8', 'smooth_error_image_e5', 'twins_image_e1', 'sc_posv_re_sm', 'error_image_e8', 'twins_image_e4', 'smooth_error_image_e6', 'error_Mimage_e4', 'error_Mimage_e6', 'twins_image_e5', 'smooth_Merror_image_e8', 'spin_axis_sm', 'twins_Mimage_e3', 'smooth_Merror_image_e3', 'smooth_Merror_image_e5', 'twins_image_e3', 'smooth_image_e2', 'twins_Mimage_e2', 'error_Mimage_e9', 'smooth_Merror_image_e9', 'smooth_image_e6', 'pixel_sweep_count', 'twins_image_e6', 'error_Mimage_e3', 'error_Mimage_e7', 'error_image_e3', 'smooth_error_image_e9', 'twins_image_e9', 'twins_Mimage_e7', 'smooth_image_e8', 'smooth_image_e3', 'smooth_error_image_e1', 'twins_Mimage_e5', 'smooth_Mimage_e5', 'latitude_deg', 'prime_meridian_sm', 'error_image_e1', 'twins_image_e8'}
 TWINS2_L1_IMAGER
   nnl = 94 != nbw = 2 for bw DEPEND_0  = Epoch
-  Differences: {'attitude_delta_deg', 'sun_posv_eci', 'twins_Mimage_e8', 'error_Mimage_e2', 'no_orbit_data', 'error_Mimage_e6', 'smooth_image_e9', 'smooth_Mimage_e1', 'error_Mimage_e7', 'smooth_image_e7', 'sc_posv_re_eci', 'smooth_Merror_image_e4', 'error_Mimage_e4', 'smooth_image_e6', 'twins_image_e9', 'twins_image_e4', 'smooth_Mimage_e7', 'smooth_Merror_image_e5', 'error_image_e9', 'smooth_error_image_e1', 'smooth_error_image_e5', 'smooth_Mimage_e2', 'smooth_image_e2', 'smooth_image_val', 'error_Mimage_e1', 'mag_eci', 'twins_image_e1', 'mlt', 'title', 'smooth_error_image_e3', 'smooth_image_e4', 'smooth_error_image_e8', 'smooth_Merror_image_e1', 'sc_posv_re_sm', 'twins_image_e5', 'twins_image_e6', 'twins_image_e8', 'smooth_image_e3', 'twins_Mimage_e1', 'error_image_e4', 'error_image_e8', 'smooth_Mimage_e6', 'error_Mimage_e8', 'lat_pixelsize_deg', 'error_Mimage_e9', 'quality_flag', 'smooth_error_image_e2', 'twins_Mimage_e7', 'prime_meridian_sm', 'smooth_error_image_e7', 'smooth_Merror_image_e2', 'twins_image_e7', 'pixel_sweep_count', 'spin_axis_eci', 'smooth_Mimage_e3', 'twins_Mimage_e9', 'smooth_Merror_image_e8', 'error_image_e3', 'smooth_Mimage_e5', 'prime_meridian_eci', 'twins_Mimage_e6', 'error_image_e1', 'error_Mimage_e3', 'smooth_Merror_image_e3', 'twins_Mimage_e3', 'smooth_image_e8', 'lshell_dip', 'error_Mimage_e5', 'twins_image_e2', 'twins_Mimage_e4', 'sun_posv_sm', 'error_image_e6', 'smooth_image_energy_kev', 'smooth_image_e5', 'smooth_Mimage_e8', 'smooth_Merror_image_e6', 'smooth_Mimage_e4', 'error_image_e7', 'error_image_e2', 'spin_axis_sm', 'twins_Mimage_e5', 'smooth_error_image_e6', 'smooth_Merror_image_e7', 'lon_pixelsize_deg', 'latitude_deg', 'smooth_error_image_e9', 'smooth_image_e1', 'twins_image_e3', 'smooth_Mimage_e9', 'smooth_error_image_e4', 'smooth_Merror_image_e9', 'error_image_e5', 'twins_Mimage_e2', 'radial_distance_re'}
-TWINS2_OR_DEF
-  nnl = 4 != nbw = 33 for bw DEPEND_0  = Epoch
-  Differences: {'FSCGEO_O', 'FSCLATECD', 'FBECI', 'FDIPOLELAT', 'FLOSSCONE', 'FBEQUATORIAL', 'FDIPOLEOFFSET', 'FDIPOLERADIUS', 'FSCLONGGEO', 'NDATAFILEID', 'FNORTH100KMGSM', 'FDIPOLETILT', 'FSCGEO', 'FSUNECI', 'FEQUATORIALGSM', 'FBSOUTH100KM', 'FINVLAT', 'FBNORTH100KM', 'FSCECD', 'FSOLARZENITHCOS', 'FSCLATGEO', 'FLTGEO', 'FSCGSM_O', 'FSCECI', 'FMIRRORGSM', 'FBMIRROR', 'ISTARTTIMEMJD', 'FSCRADIALDIST', 'FLSHELL', 'FSCECI_O', 'FLTECD', 'FSCGSM', 'FSOUTH100KMGSM', 'FSCRADIALALT', 'FLTEQU'}
+  Differences: {'smooth_image_e7', 'smooth_Mimage_e9', 'smooth_Mimage_e6', 'twins_Mimage_e6', 'twins_image_e2', 'twins_Mimage_e4', 'sun_posv_sm', 'quality_flag', 'smooth_Mimage_e3', 'smooth_Merror_image_e2', 'sun_posv_eci', 'title', 'error_Mimage_e5', 'smooth_image_e4', 'smooth_image_val', 'spin_axis_eci', 'error_image_e6', 'smooth_Mimage_e4', 'smooth_error_image_e8', 'error_image_e5', 'twins_Mimage_e1', 'radial_distance_re', 'error_Mimage_e1', 'twins_Mimage_e9', 'mlt', 'smooth_Mimage_e2', 'lon_pixelsize_deg', 'smooth_Merror_image_e6', 'mag_eci', 'smooth_image_energy_kev', 'no_orbit_data', 'error_image_e9', 'smooth_error_image_e4', 'smooth_Mimage_e8', 'sc_posv_re_eci', 'lat_pixelsize_deg', 'smooth_Merror_image_e7', 'smooth_error_image_e7', 'smooth_error_image_e2', 'twins_image_e7', 'smooth_error_image_e3', 'smooth_Merror_image_e1', 'smooth_image_e1', 'smooth_Merror_image_e4', 'twins_Mimage_e8', 'error_image_e4', 'lshell_dip', 'smooth_image_e9', 'error_image_e2', 'smooth_image_e5', 'prime_meridian_eci', 'smooth_Mimage_e1', 'smooth_Mimage_e7', 'attitude_delta_deg', 'error_image_e7', 'error_Mimage_e2', 'error_Mimage_e8', 'smooth_error_image_e5', 'twins_image_e1', 'sc_posv_re_sm', 'error_image_e8', 'twins_image_e4', 'smooth_error_image_e6', 'error_Mimage_e4', 'error_Mimage_e6', 'twins_image_e5', 'smooth_Merror_image_e8', 'spin_axis_sm', 'twins_Mimage_e3', 'smooth_Merror_image_e3', 'smooth_Merror_image_e5', 'twins_image_e3', 'smooth_image_e2', 'twins_Mimage_e2', 'error_Mimage_e9', 'smooth_Merror_image_e9', 'smooth_image_e6', 'pixel_sweep_count', 'twins_image_e6', 'error_Mimage_e3', 'error_Mimage_e7', 'error_image_e3', 'smooth_error_image_e9', 'twins_image_e9', 'twins_Mimage_e7', 'smooth_image_e8', 'smooth_image_e3', 'smooth_error_image_e1', 'twins_Mimage_e5', 'smooth_Mimage_e5', 'latitude_deg', 'prime_meridian_sm', 'error_image_e1', 'twins_image_e8'}
