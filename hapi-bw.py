@@ -347,7 +347,7 @@ def split_variables(datasets):
 
     dataset['_variables_split'] = depend_0_dict
 
-def subset_and_transform(datasets):
+def build_hapi_infos(datasets):
 
   datasets_new = []
   for dataset in datasets:
@@ -435,14 +435,10 @@ with open(all_file_restructured, 'r', encoding='utf-8') as f:
   datasets = json.load(f)
 print(f'Read: {all_file_restructured}')
 
-# Create _variables_split dict to each dataset. Each key is the name of
-# the DEPEND_0 variable and all variables that reference that DEPEND_0 are
-# under it.
+# Add _variables_split dict to each dataset.
 split_variables(datasets)
 
-# Split datasets with more than one DEPEND_0 variable into datasets with
-# only one DEPEND_0.
-datasets_hapi = subset_and_transform(datasets)
+datasets_hapi = build_hapi_infos(datasets)
 
 print(f'Writing: {out_file}')
 with open(out_file, 'w', encoding='utf-8') as f:

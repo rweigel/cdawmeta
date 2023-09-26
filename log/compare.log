@@ -5,16 +5,16 @@ Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
 IBEX_H3_ENA_LO_R06_STATE_VECTORS not in bw
 AMPTECCE_H0_MEPA@0
   nnl = 20 != nbw = 15 for bw DEPEND_0  = Epoch
-  Differences: {'TOF_oxygen_Edrift', 'TOF_iron_Edrift', 'HIRES_ION_protons_Edrift', 'TOF_protons_Edrift', 'TOF_helium_Edrift'}
+  Differences: {'TOF_iron_Edrift', 'HIRES_ION_protons_Edrift', 'TOF_helium_Edrift', 'TOF_oxygen_Edrift', 'TOF_protons_Edrift'}
 AMPTECCE_H0_MEPA@1
   nnl = 29 != nbw = 33 for bw DEPEND_0  = Epoch_1
-  Differences: {'TOF_oxygen_Edrift', 'TOF_iron_Edrift', 'TOF_protons_Edrift', 'TOF_helium_Edrift'}
+  Differences: {'TOF_iron_Edrift', 'TOF_helium_Edrift', 'TOF_oxygen_Edrift', 'TOF_protons_Edrift'}
 AMPTECCE_H0_MEPA@3
   nnl = 7 != nbw = 8 for bw DEPEND_0  = Epoch_3
   Differences: {'HIRES_ION_protons_Edrift'}
 BAR_2L_L2_HKPG
   nnl = 45 != nbw = 2 for bw DEPEND_0  = Epoch
-  Differences: {'I0_TotalLoad', 'T13_TermBatt', 'modemCounter', 'V2_Solar1', 'I2_Solar1', 'T8_Solar1', 'dcdCounter', 'numOfSats', 'I7_NEG_DPU', 'cmdCounter', 'V5_Modem', 'V7_NEG_DPU', 'V8_Mag', 'V0_VoltAtLoad', 'V11_Solar4', 'T6_Modem', 'V1_Battery', 'V6_NEG_XRayDet', 'timeOffset', 'T15_CCStat', 'V4_POS_XRayDet', 'T3_Battery', 'weeks', 'T12_TermTemp', 'termStatus', 'T11_Solar4', 'T2_ChargeCont', 'I4_POS_XRayDet', 'V9_Solar2', 'V3_POS_DPU', 'T7_Structure', 'T9_Solar2', 'I5_Modem', 'V10_Solar3', 'I6_NEG_XRayDet', 'T1_Mag', 'I1_TotalSolar', 'T0_Scint', 'T14_TermCap', 'I3_POS_DPU', 'T5_DPU', 'T4_PowerConv', 'T10_Solar3'}
+  Differences: {'T12_TermTemp', 'dcdCounter', 'T5_DPU', 'T2_ChargeCont', 'T10_Solar3', 'T0_Scint', 'V2_Solar1', 'T7_Structure', 'V1_Battery', 'V5_Modem', 'V8_Mag', 'weeks', 'V3_POS_DPU', 'T1_Mag', 'I1_TotalSolar', 'I3_POS_DPU', 'I7_NEG_DPU', 'numOfSats', 'V9_Solar2', 'I6_NEG_XRayDet', 'V10_Solar3', 'I5_Modem', 'T3_Battery', 'T13_TermBatt', 'modemCounter', 'V0_VoltAtLoad', 'T9_Solar2', 'T4_PowerConv', 'V7_NEG_DPU', 'I4_POS_XRayDet', 'T15_CCStat', 'V4_POS_XRayDet', 'timeOffset', 'termStatus', 'V11_Solar4', 'I0_TotalLoad', 'T8_Solar1', 'I2_Solar1', 'T11_Solar4', 'cmdCounter', 'V6_NEG_XRayDet', 'T14_TermCap', 'T6_Modem'}
 FA_ESA_L2_EEB
   nl has bins for data but bw does not
 FA_ESA_L2_EEB
