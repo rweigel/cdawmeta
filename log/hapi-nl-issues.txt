@@ -20,6 +20,11 @@ BAR_2L_L2_HKPG
   nnl = 45 != nbw = 2
   {'V2_Solar1', 'numOfSats', 'T15_CCStat', 'V5_Modem', 'V8_Mag', 'I1_TotalSolar', 'V6_NEG_XRayDet', 'timeOffset', 'cmdCounter', 'modemCounter', 'T9_Solar2', 'T11_Solar4', 'termStatus', 'T3_Battery', 'I5_Modem', 'T0_Scint', 'I7_NEG_DPU', 'T14_TermCap', 'T8_Solar1', 'weeks', 'V11_Solar4', 'I0_TotalLoad', 'V0_VoltAtLoad', 'V10_Solar3', 'V1_Battery', 'I2_Solar1', 'V3_POS_DPU', 'dcdCounter', 'T12_TermTemp', 'T1_Mag', 'V4_POS_XRayDet', 'T5_DPU', 'T7_Structure', 'T10_Solar3', 'V9_Solar2', 'T6_Modem', 'T4_PowerConv', 'T13_TermBatt', 'I4_POS_XRayDet', 'I3_POS_DPU', 'V7_NEG_DPU', 'T2_ChargeCont', 'I6_NEG_XRayDet'}
 
+"Sensor" dropped because string parameter and no PadValue or FillValue given to allow length to be determined.
+GE_EDB12SEC_LEP
+  nnl = 10 != nbw = 9 for bw DEPEND_0  = Epoch
+  Differences: {'Sensor'}
+
 ***************************************************************
 Due to data and eflux being time varying. Nand generally drops bins
 for this case, but here he did not. Here he uses integers. Why
@@ -78,6 +83,32 @@ PO_H4_PWI@1
   nnl = 7 != nbw = 5 for bw DEPEND_0  = Epoch0
   Differences: {'HFWR_Bz2K', 'HFWR_Ey2K', 'HFWR_Ex2K', 'Gain3', 'HFWR_Ez2K', 'Gain1', 'MGain', 'HFWR_By2K', 'HFWR_Bx2K', 'Gain2'}
 
+Nand has DATA_QUALITY associated with Epoch0 but it should be for Epoch
+PO_H4_PWI@0
+  nnl = 6 != nbw = 5 for bw DEPEND_0  = Epoch0
+  Differences: {'DATA_QUALITY'}
+PO_H4_PWI@1
+  nnl = 7 != nbw = 8 for bw DEPEND_0  = Epoch
+  Differences: {'DATA_QUALITY'}
+
+Due to e_spinfit_mgse_efw_qual being associated with DEPEND_0 = 'epoch'
+but no such variable (Epoch exists, however).
+RBSPA_EFW-L2_E-SPINFIT-MGSE@1
+  nnl = 2 != nbw = 1 for bw DEPEND_0  = epoch_hsk
+  Differences: {'e_spinfit_mgse_efw_qual'}
+RBSPB_EFW-L2_E-SPINFIT-MGSE@1
+  nnl = 2 != nbw = 1 for bw DEPEND_0  = epoch_hsk
+  Differences: {'e_spinfit_mgse_efw_qual'}
+
+Nand has e_spinfit_mgse_efw_qual associated with epoch_hsk, but it
+should be epoch.
+RBSPA_EFW-L2_E-SPINFIT-MGSE@1
+  nnl = 2 != nbw = 1 for bw DEPEND_0  = epoch_hsk
+  Differences: {'e_spinfit_mgse_efw_qual'}
+RBSPB_EFW-L2_E-SPINFIT-MGSE@1
+  nnl = 2 != nbw = 1 for bw DEPEND_0  = epoch_hsk
+  Differences: {'e_spinfit_mgse_efw_qual'}
+
 ***************************************************************
 ParticleDir_SM dropped because one of its DEPEND_2 variable (NumAxisFixed) does
 not have a VAR_TYPE. In principle, knowing the VAR_TYPE is not needed because
@@ -114,3 +145,4 @@ RBSP-A-RBSPICE_LEV-3_ISRHELT
   nl has bins for ParticleDir_SM but bw does not
 RBSP-B-RBSPICE_LEV-3_ISRHELT
   nl has bins for ParticleDir_SM but bw does not
+
