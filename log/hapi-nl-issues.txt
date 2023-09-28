@@ -1,8 +1,6 @@
 ***************************************************************
-TWINS2_OR_DEF not in bw
-
-***************************************************************
-First one due to Nand having TOF_iron_Edrift associated with Epoch instead of Epoch_1
+First one due to Nand having TOF_iron_Edrift associated with
+Epoch instead of Epoch_1
 AMPTECCE_H0_MEPA@0
   nnl = 20 != nbw = 15
   {'TOF_iron_Edrift', 'TOF_protons_Edrift', 'TOF_oxygen_Edrift', 'HIRES_ION_protons_Edrift', 'TOF_helium_Edrift'}
@@ -75,7 +73,8 @@ FA_ESA_L2_IES
   nl has bins for pitch_angle but bw does not
 
 ***************************************************************
-Due to Nand having DATA_QUALITY and Gain1 having same time variable, but this is not correct.
+Due to Nand having DATA_QUALITY and Gain1 having same time variable,
+but this is not correct.
 PO_H4_PWI@0
   nnl = 6 != nbw = 8 for bw DEPEND_0  = Epoch
   Differences: {'HFWR_Bz2K', 'HFWR_Ey2K', 'HFWR_Ex2K', 'Gain3', 'HFWR_Ez2K', 'Gain1', 'MGain', 'HFWR_By2K', 'HFWR_Bx2K', 'Gain2'}
@@ -112,7 +111,8 @@ RBSPB_EFW-L2_E-SPINFIT-MGSE@1
 ***************************************************************
 ParticleDir_SM dropped because one of its DEPEND_2 variable (NumAxisFixed) does
 not have a VAR_TYPE. In principle, knowing the VAR_TYPE is not needed because
-(NumAxis does not have a VAR_TYPE. I think it did not cause a problem because it is used as a label pointer.)
+(NumAxis does not have a VAR_TYPE. I think it did not cause a problem because
+it is used as a label pointer.)
 RBSP-A-RBSPICE_LEV-3_TOFXEH
   nl has bins for ParticleDir_SM but bw does not
 RBSP-B-RBSPICE_LEV-3_TOFXEH
@@ -145,4 +145,3 @@ RBSP-A-RBSPICE_LEV-3_ISRHELT
   nl has bins for ParticleDir_SM but bw does not
 RBSP-B-RBSPICE_LEV-3_ISRHELT
   nl has bins for ParticleDir_SM but bw does not
-

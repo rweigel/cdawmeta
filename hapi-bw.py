@@ -146,7 +146,7 @@ def variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, a
                     'units': 'UTC',
                     'length': length,
                     'fill': None,
-                    '_name': depend_0_name
+                    'x_cdf_depend_0_name': depend_0_name
                   }
                 ]
 
@@ -163,8 +163,8 @@ def variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, a
     if VAR_TYPE != 'data':
       continue
 
+    length = None
     if VAR_TYPE == 'data' and type == 'string':
-      length = None
 
       PadValue = None
       if 'PadValue' in variable['VarDescription']:
@@ -203,10 +203,10 @@ def variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, a
       parameter['length'] = length
 
     if 'VIRTUAL' in variable['VarAttributes']:
-      parameter['_VIRTUAL'] = variable['VarAttributes']['VIRTUAL']
+      parameter['x_cdf_is_virtual'] = variable['VarAttributes']['VIRTUAL'].lower()
 
     if 'DEPEND_0' in variable['VarAttributes']:
-      parameter['_DEPEND_0'] = variable['VarAttributes']['DEPEND_0']
+      parameter['x_cdf_depend_0'] = variable['VarAttributes']['DEPEND_0']
 
     if 'DimSizes' in variable['VarDescription']:
       parameter['size'] = variable['VarDescription']['DimSizes']
@@ -222,13 +222,9 @@ def variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, a
     if fill is not None:
       parameter['fill'] = fill
 
-    units = None
+    parameter['units'] = None
     if 'UNITS' in variable['VarAttributes']:
-      _units = variable['VarAttributes']['UNITS']
-      if _units.strip() != '':
-        units = _units
-    if units is not None:
-      parameter['units'] = units
+      parameter['units'] = variable['VarAttributes']['UNITS']
 
     parameter['bins'] = []
     DEPEND_xs = ['DEPEND_1','DEPEND_2','DEPEND_3']
@@ -257,7 +253,11 @@ def variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, a
 
       if 'size' not in parameter and 'bins' in parameter:
         del parameter['bins']
-        print(f"  Error: bins objects created for {name} but no DimSizes found.")
+        # TODO: This is not always an error. If the variable is virtual,
+        # then DimSizes can't be written into the CDF file for that variable
+        # (because the variable has no asssoicated data). In this case,
+        # we need to get the DimSizes from the DEPEND variable.
+        print(f"  Error: Omitting bins for parameter {name} because no DimSizes attribute found.")
 
     parameters.append(parameter)
 
@@ -327,6 +327,7 @@ def split_variables(datasets):
         continue
 
       if 'VAR_TYPE' not in variable_meta['VarAttributes']:
+        print(dataset['id'])
         print(f'  Error: Dropping variable "{name}" b/c it has no has no VAR_TYPE')
         continue
 
