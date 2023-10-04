@@ -5,24 +5,18 @@ Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
 IBEX_H3_ENA_LO_R06_STATE_VECTORS not in bw
 AMPTECCE_H0_MEPA@0
   n_params_nl = 20 != n_params_bw = 15 for bw DEPEND_0  = Epoch
-  Differences: {'TOF_helium_Edrift', 'TOF_protons_Edrift', 'HIRES_ION_protons_Edrift', 'TOF_iron_Edrift', 'TOF_oxygen_Edrift'}
+  Differences: {'TOF_iron_Edrift', 'TOF_oxygen_Edrift', 'TOF_protons_Edrift', 'HIRES_ION_protons_Edrift', 'TOF_helium_Edrift'}
 AMPTECCE_H0_MEPA@1
   n_params_nl = 29 != n_params_bw = 33 for bw DEPEND_0  = Epoch_1
-  Differences: {'TOF_helium_Edrift', 'TOF_iron_Edrift', 'TOF_protons_Edrift', 'TOF_oxygen_Edrift'}
+  Differences: {'TOF_iron_Edrift', 'TOF_oxygen_Edrift', 'TOF_protons_Edrift', 'TOF_helium_Edrift'}
 AMPTECCE_H0_MEPA@3
   n_params_nl = 7 != n_params_bw = 8 for bw DEPEND_0  = Epoch_3
   Differences: {'HIRES_ION_protons_Edrift'}
 BAR_2L_L2_HKPG
   n_params_nl = 45 != n_params_bw = 2 for bw DEPEND_0  = Epoch
-  Differences: {'I4_POS_XRayDet', 'T5_DPU', 'V6_NEG_XRayDet', 'V2_Solar1', 'T9_Solar2', 'T11_Solar4', 'numOfSats', 'V9_Solar2', 'T0_Scint', 'V11_Solar4', 'I6_NEG_XRayDet', 'T13_TermBatt', 'T4_PowerConv', 'V3_POS_DPU', 'dcdCounter', 'T10_Solar3', 'V10_Solar3', 'T14_TermCap', 'I5_Modem', 'V0_VoltAtLoad', 'T3_Battery', 'modemCounter', 'T6_Modem', 'T8_Solar1', 'T15_CCStat', 'timeOffset', 'I2_Solar1', 'T2_ChargeCont', 'weeks', 'V1_Battery', 'I1_TotalSolar', 'T12_TermTemp', 'T7_Structure', 'termStatus', 'V4_POS_XRayDet', 'V7_NEG_DPU', 'I0_TotalLoad', 'I3_POS_DPU', 'cmdCounter', 'T1_Mag', 'V5_Modem', 'I7_NEG_DPU', 'V8_Mag'}
-FA_ESA_L2_EEB/data
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
+  Differences: {'I7_NEG_DPU', 'T11_Solar4', 'modemCounter', 'V9_Solar2', 'I0_TotalLoad', 'V10_Solar3', 'I4_POS_XRayDet', 'I2_Solar1', 'T13_TermBatt', 'T6_Modem', 'numOfSats', 'T1_Mag', 'T4_PowerConv', 'termStatus', 'T3_Battery', 'V1_Battery', 'I5_Modem', 'T7_Structure', 'V2_Solar1', 'T5_DPU', 'T8_Solar1', 'timeOffset', 'T12_TermTemp', 'V11_Solar4', 'T14_TermCap', 'cmdCounter', 'I3_POS_DPU', 'I6_NEG_XRayDet', 'dcdCounter', 'V3_POS_DPU', 'V0_VoltAtLoad', 'I1_TotalSolar', 'V5_Modem', 'T0_Scint', 'V7_NEG_DPU', 'T15_CCStat', 'T2_ChargeCont', 'V4_POS_XRayDet', 'weeks', 'V6_NEG_XRayDet', 'V8_Mag', 'T10_Solar3', 'T9_Solar2'}
 FA_ESA_L2_EEB
   nl has bins for data but bw does not
-FA_ESA_L2_EEB/eflux
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
 FA_ESA_L2_EEB
   nl has bins for eflux but bw does not
 FA_ESA_L2_EEB/eflux_movie
@@ -44,19 +38,10 @@ FA_ESA_L2_EEB/energy_median
   Differences: {'size', 'bins'}
 FA_ESA_L2_EEB
   bw has bins for energy_median but nl does not
-FA_ESA_L2_EEB/pitch_angle
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
 FA_ESA_L2_EEB
   nl has bins for pitch_angle but bw does not
-FA_ESA_L2_EES/data
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
 FA_ESA_L2_EES
   nl has bins for data but bw does not
-FA_ESA_L2_EES/eflux
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
 FA_ESA_L2_EES
   nl has bins for eflux but bw does not
 FA_ESA_L2_EES/eflux_movie
@@ -78,19 +63,10 @@ FA_ESA_L2_EES/energy_median
   Differences: {'size', 'bins'}
 FA_ESA_L2_EES
   bw has bins for energy_median but nl does not
-FA_ESA_L2_EES/pitch_angle
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
 FA_ESA_L2_EES
   nl has bins for pitch_angle but bw does not
-FA_ESA_L2_IEB/data
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
 FA_ESA_L2_IEB
   nl has bins for data but bw does not
-FA_ESA_L2_IEB/eflux
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
 FA_ESA_L2_IEB
   nl has bins for eflux but bw does not
 FA_ESA_L2_IEB/eflux_movie
@@ -112,19 +88,10 @@ FA_ESA_L2_IEB/energy_median
   Differences: {'size', 'bins'}
 FA_ESA_L2_IEB
   bw has bins for energy_median but nl does not
-FA_ESA_L2_IEB/pitch_angle
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
 FA_ESA_L2_IEB
   nl has bins for pitch_angle but bw does not
-FA_ESA_L2_IES/data
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
 FA_ESA_L2_IES
   nl has bins for data but bw does not
-FA_ESA_L2_IES/eflux
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
 FA_ESA_L2_IES
   nl has bins for eflux but bw does not
 FA_ESA_L2_IES/eflux_movie
@@ -146,9 +113,6 @@ FA_ESA_L2_IES/energy_median
   Differences: {'size', 'bins'}
 FA_ESA_L2_IES
   bw has bins for energy_median but nl does not
-FA_ESA_L2_IES/pitch_angle
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = epoch
-  Differences: {'bins'}
 FA_ESA_L2_IES
   nl has bins for pitch_angle but bw does not
 PO_H4_PWI@0
@@ -157,84 +121,36 @@ PO_H4_PWI@0
 PO_H4_PWI@1
   n_params_nl = 7 != n_params_bw = 8 for bw DEPEND_0  = Epoch
   Differences: {'DATA_QUALITY'}
-RBSP-A-RBSPICE_LEV-3_TOFXEH/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-A-RBSPICE_LEV-3_TOFXEH
   nl has bins for ParticleDir_SM but bw does not
-RBSP-B-RBSPICE_LEV-3_TOFXEH/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-B-RBSPICE_LEV-3_TOFXEH
   nl has bins for ParticleDir_SM but bw does not
-RBSP-A-RBSPICE_LEV-3_TOFXEION/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-A-RBSPICE_LEV-3_TOFXEION
   nl has bins for ParticleDir_SM but bw does not
-RBSP-B-RBSPICE_LEV-3_TOFXEION/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-B-RBSPICE_LEV-3_TOFXEION
   nl has bins for ParticleDir_SM but bw does not
-RBSP-A-RBSPICE_LEV-3_TOFXENONH/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-A-RBSPICE_LEV-3_TOFXENONH
   nl has bins for ParticleDir_SM but bw does not
-RBSP-B-RBSPICE_LEV-3_TOFXENONH/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-B-RBSPICE_LEV-3_TOFXENONH
   nl has bins for ParticleDir_SM but bw does not
-RBSP-A-RBSPICE_LEV-3_TOFXPHHHELT/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-A-RBSPICE_LEV-3_TOFXPHHHELT
   nl has bins for ParticleDir_SM but bw does not
-RBSP-B-RBSPICE_LEV-3_TOFXPHHHELT/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-B-RBSPICE_LEV-3_TOFXPHHHELT
   nl has bins for ParticleDir_SM but bw does not
-RBSP-A-RBSPICE_LEV-3_TOFXPHHLEHT/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-A-RBSPICE_LEV-3_TOFXPHHLEHT
   nl has bins for ParticleDir_SM but bw does not
-RBSP-B-RBSPICE_LEV-3_TOFXPHHLEHT/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-B-RBSPICE_LEV-3_TOFXPHHLEHT
   nl has bins for ParticleDir_SM but bw does not
-RBSP-A-RBSPICE_LEV-3_ESRHELT/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-A-RBSPICE_LEV-3_ESRHELT
   nl has bins for ParticleDir_SM but bw does not
-RBSP-B-RBSPICE_LEV-3_ESRHELT/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-B-RBSPICE_LEV-3_ESRHELT
   nl has bins for ParticleDir_SM but bw does not
-RBSP-A-RBSPICE_LEV-3_ESRLEHT/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-A-RBSPICE_LEV-3_ESRLEHT
   nl has bins for ParticleDir_SM but bw does not
-RBSP-B-RBSPICE_LEV-3_ESRLEHT/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-B-RBSPICE_LEV-3_ESRLEHT
   nl has bins for ParticleDir_SM but bw does not
-RBSP-A-RBSPICE_LEV-3_ISRHELT/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-A-RBSPICE_LEV-3_ISRHELT
   nl has bins for ParticleDir_SM but bw does not
-RBSP-B-RBSPICE_LEV-3_ISRHELT/ParticleDir_SM
-  n_param_keys_nl = 7 != n_param_keys_bw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'bins'}
 RBSP-B-RBSPICE_LEV-3_ISRHELT
   nl has bins for ParticleDir_SM but bw does not
 RBSPA_EFW-L2_E-SPINFIT-MGSE@1

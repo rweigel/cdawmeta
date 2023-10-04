@@ -40,9 +40,10 @@ def compare_param(params_nl, params_bw):
   n_param_keys_nl = len(params_nl_keys)
   n_param_keys_bw = len(params_bw_keys)
   if n_param_keys_nl != n_param_keys_bw:
-    print(f"{dsid}/{params_nl['name']}")
-    print(f'  n_param_keys_nl = {n_param_keys_nl} != n_param_keys_bw = {n_param_keys_bw} for bw DEPEND_0  = {x_cdf_depend_0_name}')
-    print(f"  Differences: {set(params_bw_keys) ^ set(params_nl_keys)}")
+    if {'bins'} != set(params_bw_keys) ^ set(params_nl_keys):
+      print(f"{dsid}/{params_nl['name']}")
+      print(f'  n_param_keys_nl = {n_param_keys_nl} != n_param_keys_bw = {n_param_keys_bw} for bw DEPEND_0  = {x_cdf_depend_0_name}')
+      print(f"  Differences: {set(params_bw_keys) ^ set(params_nl_keys)}")
 
   compare_bins(params_nl, params_bw)
 

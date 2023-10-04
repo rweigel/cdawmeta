@@ -179,7 +179,7 @@ def variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, a
         NumElements = variable['VarDescription']['NumElements']
 
       if PadValue is None and FillValue is None and NumElements is None:
-        print(f'  Error: Dropping variable "{name}" because string parameter and no PadValue or FillValue given to allow length to be determined.')
+        print(f'  Error: Dropping variable "{name}" because string parameter and no PadValue, FillValue, or NumElements given to allow length to be determined.')
         continue
 
       if NumElements is None:
