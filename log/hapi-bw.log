@@ -1,5 +1,5 @@
-Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/all-resolved.restructured.json
-Read: /Users/weigel/git/hapi/cdaweb-hapi/data/all-resolved.restructured.json
+Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/all-restructure.json
+Read: /Users/weigel/git/hapi/cdaweb-hapi/data/all-restructure.json
 DE2_WIND2S_WATS
   Error: Dropping variable "Mass" b/c it has no has no VAR_TYPE
 DMSP-F16_SSIES-3_THERMAL-PLASMA
@@ -2174,6 +2174,48 @@ BAR_5A_L2_USPC: subsetting and creating /info
 BAR_5A_L2_XSPC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_6A_L2_EPHM: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_6A_L2_FSPC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_6A_L2_HKPG: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_6A_L2_MAGN: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_6A_L2_MSPC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_6A_L2_RCNT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_6A_L2_SSPC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_7A_L2_EPHM: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_7A_L2_FSPC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_7A_L2_HKPG: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_7A_L2_MAGN: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_7A_L2_MSPC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_7A_L2_RCNT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+BAR_7A_L2_SSPC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 BEPICOLOMBO_HELIO1DAY_POSITION: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -2231,6 +2273,312 @@ C3_PP_EFW
   Warning: Dropping dataset b/c it is not in Nand's list
 C4_PP_EFW
   Warning: Dropping dataset b/c it is not in Nand's list
+C1_CP_CIS-CODIF_H1_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_H1_1D_PEF'/'support_data'; dependent VAR_TYPES {'data'}
+C3_CP_CIS-CODIF_H1_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_H1_1D_PEF'/'support_data'; dependent VAR_TYPES {'data'}
+C4_CP_CIS-CODIF_H1_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_H1_1D_PEF'/'support_data'; dependent VAR_TYPES {'data'}
+C1_CP_CIS-CODIF_HS_H1_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_HS_H1_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-CODIF_HS_H1_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_HS_H1_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_HS_H1_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_HS_H1_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-CODIF_HS_H1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_HS_H1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-CODIF_HS_H1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_HS_H1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_HS_H1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_HS_H1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-CODIF_HS_H1_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_HS_H1_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-CODIF_HS_H1_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_HS_H1_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_HS_H1_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_HS_H1_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-CODIF_HS_HE1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_HS_He1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-CODIF_HS_HE1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_HS_He1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_HS_HE1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_HS_He1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-CODIF_HS_HE1_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_HS_He1_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-CODIF_HS_HE1_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_HS_He1_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_HS_HE1_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_HS_He1_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-CODIF_HS_O1_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_HS_O1_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-CODIF_HS_O1_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_HS_O1_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_HS_O1_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_HS_O1_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-CODIF_HS_O1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_HS_O1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-CODIF_HS_O1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_HS_O1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_HS_O1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_HS_O1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-CODIF_HS_O1_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_HS_O1_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-CODIF_HS_O1_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_HS_O1_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_HS_O1_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_HS_O1_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-CODIF_HE1_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_He1_1D_PEF'/'support_data'; dependent VAR_TYPES {'data'}
+C3_CP_CIS-CODIF_HE1_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_He1_1D_PEF'/'support_data'; dependent VAR_TYPES {'data'}
+C4_CP_CIS-CODIF_HE1_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_He1_1D_PEF'/'support_data'; dependent VAR_TYPES {'data'}
+C4_CP_CIS-CODIF_HE1_DENSITY_CORRECTED: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_He1_DENSITY_CORRECTED'/'support_data'; dependent VAR_TYPES {'data'}
+C4_CP_CIS-CODIF_LS_H1_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_LS_H1_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_LS_H1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_LS_H1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_LS_H1_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_LS_H1_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_LS_HE1_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_LS_He1_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_LS_HE1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_LS_He1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_LS_O1_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_LS_O1_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_LS_O1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_LS_O1_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_CIS-CODIF_LS_O1_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_LS_O1_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-CODIF_O1_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_O1_1D_PEF'/'support_data'; dependent VAR_TYPES {'data'}
+C3_CP_CIS-CODIF_O1_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_O1_1D_PEF'/'support_data'; dependent VAR_TYPES {'data'}
+C4_CP_CIS-CODIF_O1_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_O1_1D_PEF'/'support_data'; dependent VAR_TYPES {'data'}
+C1_CP_CIS-CODIF_PAD_HS_H1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_PAD_HS_H1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C3_CP_CIS-CODIF_PAD_HS_H1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_PAD_HS_H1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C4_CP_CIS-CODIF_PAD_HS_H1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_PAD_HS_H1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C1_CP_CIS-CODIF_PAD_HS_HE1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_PAD_HS_He1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C3_CP_CIS-CODIF_PAD_HS_HE1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_PAD_HS_He1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C4_CP_CIS-CODIF_PAD_HS_HE1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_PAD_HS_He1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C1_CP_CIS-CODIF_PAD_HS_O1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_CODIF_PAD_HS_O1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C3_CP_CIS-CODIF_PAD_HS_O1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_CODIF_PAD_HS_O1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C4_CP_CIS-CODIF_PAD_HS_O1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_PAD_HS_O1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C4_CP_CIS-CODIF_PAD_LS_H1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_PAD_LS_H1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C4_CP_CIS-CODIF_PAD_LS_HE1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_PAD_LS_He1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C4_CP_CIS-CODIF_PAD_LS_O1_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_CIS_CODIF_PAD_LS_O1_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C1_CP_CIS-HIA_HS_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_HS_1D_PEF'/'support_data'; dependent VAR_TYPES {'data'}
+C3_CP_CIS-HIA_HS_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_HS_1D_PEF'/'support_data'; dependent VAR_TYPES {'data'}
+C1_CP_CIS-HIA_HS_MAG_IONS_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_HS_MAG_IONS_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-HIA_HS_MAG_IONS_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_HS_MAG_IONS_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-HIA_HS_MAG_IONS_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_HS_MAG_IONS_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-HIA_HS_MAG_IONS_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_HS_MAG_IONS_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-HIA_HS_MAG_IONS_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_HS_MAG_IONS_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-HIA_HS_MAG_IONS_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_HS_MAG_IONS_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-HIA_HS_SW_IONS_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_HS_SW_IONS_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-HIA_HS_SW_IONS_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_HS_SW_IONS_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-HIA_HS_SW_IONS_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_HS_SW_IONS_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-HIA_HS_SW_IONS_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_HS_SW_IONS_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-HIA_HS_SW_IONS_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_HS_SW_IONS_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-HIA_HS_SW_IONS_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_HS_SW_IONS_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-HIA_LS_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_LS_1D_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-HIA_LS_1D_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_LS_1D_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-HIA_LS_SW_IONS_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_LS_SW_IONS_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-HIA_LS_SW_IONS_PEF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_LS_SW_IONS_PEF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-HIA_LS_SW_IONS_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_LS_SW_IONS_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-HIA_LS_SW_IONS_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_LS_SW_IONS_PF'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-HIA_LS_SW_IONS_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_LS_SW_IONS_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_CIS-HIA_LS_SW_IONS_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_LS_SW_IONS_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_CIS-HIA_PAD_HS_MAG_IONS_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_CIS_HIA_PAD_HS_MAG_IONS_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C3_CP_CIS-HIA_PAD_HS_MAG_IONS_PF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_CIS_HIA_PAD_HS_MAG_IONS_PF'/'support_data'; dependent VAR_TYPES {'data'}
+C1_CP_EDI_AEDC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_EDI_AEDC'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_EDI_AEDC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_EDI_AEDC'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_EDI_AEDC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_EDI_AEDC'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_EDI_MP: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_EDI_MP'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_EDI_MP: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_EDI_MP'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_EDI_MP: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_EDI_MP'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_EDI_QZC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_EDI_QZC'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_EDI_QZC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_EDI_QZC'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_EDI_QZC: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_EDI_QZC'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_EDI_SPIN: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_EDI_SPIN'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_EDI_SPIN: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_EDI_SPIN'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_EDI_SPIN: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_EDI_SPIN'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_EFW_L3_E3D_INERT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_EFW_L3_E3D_INERT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_EFW_L3_E3D_INERT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_EFW_L3_E3D_INERT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_EFW_L3_E3D_INERT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_EFW_L3_E3D_INERT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_EFW_L3_E3D_INERT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_EFW_L3_E3D_INERT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_EFW_L3_P: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_EFW_L3_P'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_EFW_L3_P: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_EFW_L3_P'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_EFW_L3_P: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_EFW_L3_P'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_EFW_L3_P: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_EFW_L3_P'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_EFW_L3_V3D_INERT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_EFW_L3_V3D_INERT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_EFW_L3_V3D_INERT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_EFW_L3_V3D_INERT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_EFW_L3_V3D_INERT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_EFW_L3_V3D_INERT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_EFW_L3_V3D_INERT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_EFW_L3_V3D_INERT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 C1_CP_FGM_SPIN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_FGM_SPIN'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -2243,6 +2591,291 @@ C3_CP_FGM_SPIN: subsetting and creating /info
 C4_CP_FGM_SPIN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_FGM_SPIN'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_FGM_5VPS: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_FGM_5VPS'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_FGM_5VPS: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_FGM_5VPS'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_FGM_5VPS: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_FGM_5VPS'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_FGM_5VPS: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_FGM_5VPS'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_E3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_E3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_E3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_E3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_E3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_E3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_E3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_E3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_ESPCT6: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_ESPCT6'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_ESPCT6: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_ESPCT6'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_ESPCT6: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_ESPCT6'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_ESPCT6: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_ESPCT6'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_HSPCT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_HSPCT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_HSPCT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_HSPCT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_HSPCT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_HSPCT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_HSPCT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_HSPCT'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_I3DM_CNO: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_I3DM_CNO'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_I3DM_CNO: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_I3DM_CNO'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_I3DM_CNO: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_I3DM_CNO'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_I3DM_CNO: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_I3DM_CNO'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_I3DM_H: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_I3DM_H'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_I3DM_H: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_I3DM_H'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_I3DM_H: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_I3DM_H'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_I3DM_H: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_I3DM_H'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_I3DM_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_I3DM_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_I3DM_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_I3DM_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_I3DM_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_I3DM_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_I3DM_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_I3DM_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_ISPCT_CNO: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_ISPCT_CNO'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_ISPCT_CNO: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_ISPCT_CNO'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_ISPCT_CNO: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_ISPCT_CNO'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_ISPCT_CNO: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_ISPCT_CNO'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_ISPCT_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_ISPCT_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_ISPCT_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_ISPCT_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_ISPCT_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_ISPCT_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_ISPCT_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_ISPCT_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_L3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_L3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_L3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_L3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_L3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_L3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_L3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_L3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_PAD_CNO: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_PAD_CNO'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_PAD_CNO: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_PAD_CNO'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_PAD_CNO: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_PAD_CNO'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_PAD_E3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_PAD_E3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_PAD_E3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_PAD_E3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_PAD_E3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_PAD_E3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_PAD_E3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_PAD_E3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_PAD_H: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_PAD_H'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_PAD_H: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_PAD_H'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_PAD_H: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_PAD_H'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_PAD_H: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_PAD_H'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_PAD_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_PAD_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_PAD_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_PAD_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_PAD_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_PAD_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_PAD_HE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_PAD_He'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_RAP_PAD_L3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C1_CP_RAP_PAD_L3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_RAP_PAD_L3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C2_CP_RAP_PAD_L3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_RAP_PAD_L3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C3_CP_RAP_PAD_L3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_RAP_PAD_L3DD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time_tags__C4_CP_RAP_PAD_L3DD'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C1_CP_STA_CWF_GSE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C1_CP_STA_CWF_GSE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C2_CP_STA_CWF_GSE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C2_CP_STA_CWF_GSE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C3_CP_STA_CWF_GSE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C3_CP_STA_CWF_GSE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C4_CP_STA_CWF_GSE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C4_CP_STA_CWF_GSE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C1_CP_STA_PPP: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C1_CP_STA_PPP'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C2_CP_STA_PPP: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C2_CP_STA_PPP'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C3_CP_STA_PPP: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C3_CP_STA_PPP'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C4_CP_STA_PPP: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C4_CP_STA_PPP'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C1_CP_STA_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C1_CP_STA_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C2_CP_STA_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C2_CP_STA_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C3_CP_STA_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C3_CP_STA_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C4_CP_STA_PSD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C4_CP_STA_PSD'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C1_CP_STA_SM: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C1_CP_STA_SM'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C2_CP_STA_SM: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C2_CP_STA_SM'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C3_CP_STA_SM: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C3_CP_STA_SM'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C4_CP_STA_SM: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Time__C4_CP_STA_SM'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C1_CP_WHI_ACTIVE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_WHI_ACTIVE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C2_CP_WHI_ACTIVE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_WHI_ACTIVE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C3_CP_WHI_ACTIVE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_WHI_ACTIVE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C4_CP_WHI_ACTIVE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_WHI_ACTIVE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C1_CP_WHI_ELECTRON_DENSITY: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_WHI_ELECTRON_DENSITY'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C2_CP_WHI_ELECTRON_DENSITY: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_WHI_ELECTRON_DENSITY'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C3_CP_WHI_ELECTRON_DENSITY: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_WHI_ELECTRON_DENSITY'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C4_CP_WHI_ELECTRON_DENSITY: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_WHI_ELECTRON_DENSITY'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C1_CP_WHI_NATURAL: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_WHI_NATURAL'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C2_CP_WHI_NATURAL: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_WHI_NATURAL'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C3_CP_WHI_NATURAL: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_WHI_NATURAL'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C4_CP_WHI_NATURAL: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_WHI_NATURAL'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C1_CP_WHI_PASSIVE_ACTIVE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_WHI_PASSIVE_ACTIVE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C2_CP_WHI_PASSIVE_ACTIVE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_WHI_PASSIVE_ACTIVE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C3_CP_WHI_PASSIVE_ACTIVE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_WHI_PASSIVE_ACTIVE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C4_CP_WHI_PASSIVE_ACTIVE: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_WHI_PASSIVE_ACTIVE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
+C1_CP_WHI_WAVE_FORM_ENERGY: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C1_CP_WHI_WAVE_FORM_ENERGY'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C2_CP_WHI_WAVE_FORM_ENERGY: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C2_CP_WHI_WAVE_FORM_ENERGY'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C3_CP_WHI_WAVE_FORM_ENERGY: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C3_CP_WHI_WAVE_FORM_ENERGY'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+C4_CP_WHI_WAVE_FORM_ENERGY: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'time_tags__C4_CP_WHI_WAVE_FORM_ENERGY'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 C1_UP_FGM: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch__C1_UP_FGM'/'support_data'; dependent VAR_TYPES {'data'}
@@ -2926,7 +3559,7 @@ GOLD_L2_O2DEN: subsetting and creating /info
   Not creating dataset for DEPEND_0 = 'nzdat' because none of its variables have VAR_TYPE='data'.
 GOLD_L2_ON2: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'support data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata', 'support data'}
   Unhandled DEPEND_0 type: 'CDF_CHAR'. Dropping variables associated with DEPEND_0 'time_utc'
   Due to last error, omitting sub-dataset with DEPEND_0 = time_utc
   DEPEND_0 Name/VAR_TYPE: 'nmask'/'support_data'; dependent VAR_TYPES {'support data'}
@@ -2962,10 +3595,10 @@ HEL2_6SEC_NESSMAG: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 HELIOS1_E6_KUNOW_1HOUR_PARTICLE-FLUX: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data', 'metadata'}
 HELIOS2_E6_KUNOW_1HOUR_PARTICLE-FLUX: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data', 'metadata'}
 HELIOS1_E6_1HOUR_PARTICLE_FLUX: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
@@ -3010,12 +3643,12 @@ ALOUETTE2_AV_SNT: subsetting and creating /info
 ALOUETTE2_AV_SOL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
+ISS_SP_FPMU: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 ISS_DOSANL_TEPC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
-ISS_SP_FPMU: subsetting and creating /info
-  1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 ISS_27DAY-AVERAGES_AMS-02: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -3574,6 +4207,9 @@ IBEX_H3_ENA_HI_R07_NOCG_NOSP_OMNI_6MO: subsetting and creating /info
 IBEX_H3_ENA_HI_R07_NOCG_SP_OMNI_6MO: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+IBEX_H3_ENA_LO_R06_STATE_VECTORS: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 IBEX_H3_ENA_LO_R06_SCHWADRON-H: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -5079,6 +5715,170 @@ PSP_FLD_L3_DUST: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'psp_fld_l3_dust_V2_rate_epoch'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'psp_fld_l3_dust_V2_event_epoch'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'psp_fld_l3_dust_ej2000_pointing_epoch'/'support_data'; dependent VAR_TYPES {'data'}
+PSP_FLD_L3_RFS_HFR: subsetting and creating /info
+  70 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_averages_ch0_V1V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_averages_ch1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V1V2_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V1V2_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_position'/'support_data'; dependent VAR_TYPES {'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_stokes'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
+  Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_averages_ch0_V1V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_averages_ch0_V1'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_averages_ch0_V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_averages_ch1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_averages_ch1_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_averages_ch1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_averages_ch1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_peaks_ch0_V1V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_peaks_ch0_V1V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_peaks_ch0_V1'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_peaks_ch0_V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_peaks_ch1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_peaks_ch1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_peaks_ch1_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_peaks_ch1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_auto_peaks_ch1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V1V2_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V1V2_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V1V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V1V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V1V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_im_V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V1V2_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V1V2_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V1V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V1V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V1V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_cross_re_V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V1V2_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V1V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V1V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V1V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_coher_V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V1V2_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V1V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V1V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V1V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_temperature'/'support_data'; dependent VAR_TYPES {'data'}
+PSP_FLD_L3_RFS_LFR: subsetting and creating /info
+  88 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_averages_ch0_V1V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_averages_ch1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V1V2_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V1V2_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_position'/'support_data'; dependent VAR_TYPES {'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_stokes'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
+  Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_averages_ch0_V1V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_averages_ch0_V1'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_averages_ch0_V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_averages_ch1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_averages_ch1_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_averages_ch1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_averages_ch1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_peaks_ch0_V1V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_peaks_ch0_V1V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_peaks_ch0_V1'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_peaks_ch0_V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_peaks_ch1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_peaks_ch1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_peaks_ch1_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_peaks_ch1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_auto_peaks_ch1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_averages_ch0_V1V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_averages_ch0_V1V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_averages_ch0_V1'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_averages_ch0_V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_averages_ch1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_averages_ch1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_averages_ch1_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_averages_ch1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_averages_ch1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_peaks_ch0_V1V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_peaks_ch0_V1V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_peaks_ch0_V1'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_peaks_ch0_V3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_peaks_ch1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_peaks_ch1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_peaks_ch1_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_peaks_ch1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_hires_peaks_ch1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V1V2_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V1V2_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V1V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V1V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V1V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_im_V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V1V2_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V1V2_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V1V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V1V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V1V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_cross_re_V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V1V2_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V1V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V1V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V1V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_coher_V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V1V2_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V1V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V1V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V1V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V1_V3V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V1_V3V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V1_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V1_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V3_V1V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V3_V2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_V3_V4'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_temperature'/'support_data'; dependent VAR_TYPES {'data'}
 PSP_FLD_L2_MAG_RTN: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch_mag_RTN'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -6569,7 +7369,7 @@ PSP_ISOIS-EPIHI_L2-LET2-RATES3600: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 PSP_ISOIS-EPILO_L2-IC: subsetting and creating /info
   5 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanC'/'support_data'; dependent VAR_TYPES {'metadata', 'additional_data', 'support_data', 'data', 'additonal_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanC'/'support_data'; dependent VAR_TYPES {'data', 'metadata', 'support_data', 'additonal_data', 'additional_data'}
   Warning: Not including bin centers for He3_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
@@ -6660,10 +7460,10 @@ PSP_ISOIS-EPILO_L2-IC: subsetting and creating /info
   Warning: Not including bin centers for Ne_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
 PSP_ISOIS-EPILO_L2-PE: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanE'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata', 'additional_data'}
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanF'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata', 'additional_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanE'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'additional_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanF'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'additional_data', 'metadata'}
   Warning: Not including bin centers for H_ChanF_Energy_SLICE b/c no VarData (probably VIRTUAL)
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanG'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata', 'additional_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanG'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'additional_data', 'metadata'}
   Warning: Not including bin centers for H_ChanF_Energy_SLICE b/c no VarData (probably VIRTUAL)
 PSP_ISOIS_L2-EPHEM: subsetting and creating /info
   1 DEPEND_0s
@@ -7205,6 +8005,102 @@ RBSPA_L2-1MIN_PSBR-RPS: subsetting and creating /info
 RBSPB_L2-1MIN_PSBR-RPS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-101_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-102_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-105_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-108_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-113_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-114_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-115_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-116_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-133_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-134_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-135_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-136_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-137_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-138_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-139_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-140_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-148_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-149_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-162_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-163_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-164_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-165_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-166_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'data'}
+REACH-VID-169_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-170_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-171_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-172_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-173_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-175_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-176_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-180_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+REACH-VID-181_DOSIMETER-L1C: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_cdf'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 RENU2_H0_EFIELD: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -7312,25 +8208,10 @@ SOHO_ERNE-LED_L2-1MIN: subsetting and creating /info
 SOHO_ERNE-HED_L2-1MIN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
-SOLO_L3_SWA-HIS-COMP-10MIN: subsetting and creating /info
-  1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
-SOLO_L3_RPW-BIA-DENSITY-10-SECONDS: subsetting and creating /info
+SOHO_ERNE_HEAVY-ION-1HR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
-SOLO_L3_RPW-BIA-DENSITY: subsetting and creating /info
-  1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
-SOLO_L3_RPW-BIA-EFIELD-10-SECONDS: subsetting and creating /info
-  1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
-SOLO_L3_RPW-BIA-EFIELD: subsetting and creating /info
-  1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
-SOLO_L3_RPW-BIA-SCPOT-10-SECONDS: subsetting and creating /info
-  1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
-SOLO_L3_RPW-BIA-SCPOT: subsetting and creating /info
+SOHO_ERNE_HEAVY-ION-5MIN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 SOLO_COHO1HR_MERGED_MAG_PLASMA: subsetting and creating /info
@@ -7339,6 +8220,9 @@ SOLO_COHO1HR_MERGED_MAG_PLASMA: subsetting and creating /info
 SOLO_HELIO1DAY_POSITION: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
+SOLO_L3_SWA-HIS-COMP-10MIN: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 SOLO_L2_SWA-PAS-GRND-MOM: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
@@ -7420,6 +8304,24 @@ SOLO_L2_MAG-VSO-NORMAL: subsetting and creating /info
 SOLO_L2_MAG-VSO-NORMAL-1-MINUTE: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'data', 'metadata'}
+SOLO_L3_RPW-BIA-DENSITY-10-SECONDS: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+SOLO_L3_RPW-BIA-DENSITY: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+SOLO_L3_RPW-BIA-EFIELD-10-SECONDS: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+SOLO_L3_RPW-BIA-EFIELD: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+SOLO_L3_RPW-BIA-SCPOT-10-SECONDS: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+SOLO_L3_RPW-BIA-SCPOT: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 SOLO_L2_RPW-LFR-SURV-BP1: subsetting and creating /info
   6 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -10312,7 +11214,7 @@ TSS-1R_M1_SPSD: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 TWINS_M2_ENA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
 TWINS1_TISTORM_IMAGER: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
@@ -10564,9 +11466,6 @@ VOYAGER-1_LECP_ELEC-BGND-COR-1D: subsetting and creating /info
 VOYAGER-2_LECP_ELEC-BGND-COR-1D: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
-WI_L3-DUSTIMPACT_WAVES: subsetting and creating /info
-  1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
 WI_L2-1HOUR-SEP_EPACT-APE_B: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -10611,10 +11510,10 @@ WI_L2_3MIN_SMS-STICS-NVT-SOLARWIND: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
 WI_L2-3MIN_SMS-STICS-VDF-MAGNETOSPHERE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data', 'metadata'}
 WI_L2-3MIN_SMS-STICS-VDF-SOLARWIND: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data', 'metadata'}
 WI_H0_MFI: subsetting and creating /info
   3 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata'}
@@ -10729,6 +11628,12 @@ WI_H1_WAV: subsetting and creating /info
 WI_K0_WAV: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+WI_WA_RAD1_L3_DF: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
+WI_L3-DUSTIMPACT_WAVES: subsetting and creating /info
+  1 DEPEND_0s
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
 WI_OR_DEF: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}

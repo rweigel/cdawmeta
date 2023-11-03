@@ -1,6 +1,15 @@
-# Use
-#   make clean; make
-# to force re-recreation of all metadata
+# To force re-recreation of all metadata and tables:
+#   make clean; make all
+#
+# For a fast update, use
+#   make all --always-make
+# This causes all scripts to be executed. The scripts use caching so only
+# metadata parts that appear in the json files in ./cache that need to be
+# updated will be updated.
+#
+# If an update is needed due to a source code change, use
+#   make all
+# This will use the cached .json files in ./cache only.
 
 all:
 	make hapi-bw
@@ -15,17 +24,18 @@ log/compare.log: data/hapi-bw.json data/hapi-nl.json compare.py
 	python compare.py | tee log/compare.log
 
 
-data/all-resolved.json: all.py 
-	python all.py
+data/all-resolve.json: all-resolve.py
+	python all-resolve.py
 
-data/all-resolved.restructured.json: data/all-resolved.json all-restructure.py
+data/all-restructure.json: data/all-resolve.json all-restructure.py
 	python all-restructure.py
 
 
-data/hapi-bw.json: data/all-resolved.restructured.json hapi-bw.py hapi-nl-issues.json
+
+data/hapi-bw.json: data/all-restructure.json hapi-bw.py hapi-nl-issues.json
 	python hapi-bw.py | tee log/hapi-bw.log
 
-hapi-bw: 
+hapi-bw:
 	make data/hapi-bw.json
 
 
@@ -49,7 +59,7 @@ data/tables/hapi.table.body.json: table/table-hapi.py data/hapi-bw.json data/hap
 table-all:
 	make data/tables/all.table.body.json
 
-data/tables/all.table.body.json: table/table-all.py data/all-resolved.restructured.json
+data/tables/all.table.body.json: table/table-all.py data/all-restructure.json
 	python table/table-all.py
 
 

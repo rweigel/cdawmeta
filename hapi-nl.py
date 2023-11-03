@@ -1,5 +1,18 @@
+test_run = False
+
+base_url = "https://cottagesystems.com/server/cdaweb-nand/hapi"
+initial = 'jf'
+
+#base_url = "https://cdaweb.gsfc.nasa.gov/hapi"
+#initial = 'nl'
+
 def omit(id):
-  return False
+  if test_run:
+    if id.startswith("AC_"):
+      return False
+    return True
+  else:
+    return False
 
 import os
 import json
@@ -10,7 +23,7 @@ except:
   import requests_cache
 
 base_dir = os.path.dirname(__file__)
-out_file = os.path.join(base_dir, 'data/hapi-nl.json')
+out_file = os.path.join(base_dir, f'data/hapi-{initial}.json')
 os.makedirs(os.path.dirname(out_file), exist_ok=True)
 
 def CachedSession():
@@ -18,9 +31,9 @@ def CachedSession():
   from datetime import timedelta
   # https://requests-cache.readthedocs.io/en/stable/#settings
   # https://requests-cache.readthedocs.io/en/stable/user_guide/headers.html
-  
+
   # Cache dir
-  cdir = os.path.join(os.path.dirname(__file__), 'data/cache/hapi-nl')
+  cdir = os.path.join(os.path.dirname(__file__), f'data/cache/hapi-{initial}')
   copts = {
     "use_cache_dir": True,                # Save files in the default user cache dir
     "cache_control": True,                # Use Cache-Control response headers for expiration, if available
@@ -33,7 +46,7 @@ def CachedSession():
 
 session = CachedSession()
 
-resp = session.get('https://cdaweb.gsfc.nasa.gov/hapi/catalog')
+resp = session.get(base_url + '/catalog')
 datasets = resp.json()['catalog']
 
 for idx, dataset in enumerate(datasets):
@@ -44,7 +57,7 @@ for idx, dataset in enumerate(datasets):
     datasets[idx] = None
     continue
 
-  url = 'https://cdaweb.gsfc.nasa.gov/hapi/info?id=' + id
+  url = base_url + '/info?id=' + id
   resp = session.get(url)
   print(f'Read: (from cache={resp.from_cache}) {url}')
   if resp.status_code != 200:

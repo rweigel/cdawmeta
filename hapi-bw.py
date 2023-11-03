@@ -2,7 +2,7 @@ import os
 import json
 
 base_dir = os.path.dirname(__file__)
-all_file_restructured = os.path.join(base_dir, 'data/all-resolved.restructured.json')
+all_file_restructured = os.path.join(base_dir, 'data/all-restructure.json')
 out_file = os.path.join(base_dir, 'data/hapi-bw.json')
 
 issues_file = os.path.join(base_dir,"hapi-nl-issues.json")

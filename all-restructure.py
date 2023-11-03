@@ -2,8 +2,8 @@ import os
 import json
 
 base_dir = os.path.dirname(__file__)
-all_file = os.path.join(base_dir, 'data/all-resolved.json')
-all_file_restructured = os.path.join(base_dir, 'data/all-resolved.restructured.json')
+all_file = os.path.join(base_dir, 'data/all-resolve.json')
+all_file_restructured = os.path.join(base_dir, 'data/all-restructure.json')
 
 def add_variables(datasets):
 
@@ -41,9 +41,14 @@ def add_variables(datasets):
 
   for dataset in datasets:
 
-    file = list(dataset['_master'].keys())[0]
+    with open(dataset['_master'], 'r', encoding='utf-8') as f:
+      dataset['_master_data'] = json.load(f)["_decoded_content"]
 
-    variables = dataset['_master'][file]['CDFVariables']
+    #add_globals(dataset)
+
+    file = list(dataset['_master_data'].keys())[0]
+
+    variables = dataset['_master_data'][file]['CDFVariables']
     variables_new = {}
 
     for variable in variables:
@@ -66,32 +71,74 @@ def add_variables(datasets):
 
       variables_new[variable_name] = variable_dict
 
+    del dataset["_master_data"]
+
     dataset['_variables'] = variables_new
 
 
-def add_globals(datasets):
+def add_globals(dataset):
+
+  file = list(dataset['_master_data'].keys())[0]
+
+  globals = dataset['_master_data'][file]['CDFglobalAttributes']
+  globals_new = {}
+
+  for _global in globals:
+    gkey = list(_global.keys())
+    if len(gkey) > 1:
+      print("Expected only one key in _global object.")
+      exit()
+    gvals = _global[gkey[0]]
+    text = []
+    for gval in gvals:
+      line = gval[list(gval.keys())[0]];
+      text.append(str(line))
+
+    globals_new[gkey[0]] = "\n".join(text)
+
+  dataset['_globals'] = globals_new
+
+
+def add_sample_start_stop(datasets):
+
+  def extract_sample_start_stop(file_list):
+
+    if isinstance(file_list["FileDescription"], dict):
+      file_list["FileDescription"] = [file_list["FileDescription"]]
+
+    num_files = len(file_list["FileDescription"])
+    if num_files == 0:
+      sampleFile = None
+    if num_files == 1:
+      sampleFile = file_list["FileDescription"][0]
+    elif num_files == 2:
+      sampleFile = file_list["FileDescription"][1]
+    else:
+      sampleFile = file_list["FileDescription"][-2]
+
+    if sampleFile is not None:
+      sampleStartDate = sampleFile["StartTime"]
+      sampleStopDate = sampleFile["EndTime"]
+
+    range = {
+              "sampleStartDate": sampleStartDate,
+              "sampleStopDate": sampleStopDate
+            }
+
+    return range
 
   for dataset in datasets:
+    with open(dataset['_file_list'], 'r', encoding='utf-8') as f:
+      dataset['_file_list_data'] = json.load(f)["_decoded_content"]
 
-    file = list(dataset['_master'].keys())[0]
+    if not "FileDescription" in dataset["_file_list_data"]:
+      print("No file list for " + dataset["id"])
+      continue
+    range = extract_sample_start_stop(dataset["_file_list_data"])
+    dataset["info"]["sampleStartDate"] = range["sampleStartDate"]
+    dataset["info"]["sampleStopDate"] = range["sampleStopDate"]
 
-    globals = dataset['_master'][file]['CDFglobalAttributes']
-    globals_new = {}
-
-    for _global in globals:
-      gkey = list(_global.keys())
-      if len(gkey) > 1:
-        print("Expected only one key in _global object.")
-        exit()
-      gvals = _global[gkey[0]]
-      text = []
-      for gval in gvals:
-        line = gval[list(gval.keys())[0]];
-        text.append(str(line))
-
-      globals_new[gkey[0]] = "\n".join(text)
-
-    dataset['_globals'] = globals_new
+    del dataset["_file_list_data"]
 
 print(f'Reading: {all_file}')
 with open(all_file, 'r', encoding='utf-8') as f:
@@ -110,13 +157,7 @@ datasets = [i for i in datasets if i is not None]
 # Add _variables element to each dataset
 add_variables(datasets)
 
-# Add _globals element to each dataset
-#add_globals(datasets)
-
-for idx, dataset in enumerate(datasets):
-  del datasets[idx]["_master"]
-  if "_spase" in dataset:
-    del datasets[idx]["_spase"]
+add_sample_start_stop(datasets)
 
 # Save result to all_file_restructured; _variables node is used by hapi-bw.py
 # and table-all.py.

@@ -114,7 +114,7 @@ def all_attribute_table(datasets):
 
   table = []
   for dataset in datasets:
-    print(dataset['id'])
+    #print(dataset['id'])
     if omit(dataset['id']) == True:
       continue
     for name, variable in dataset['_variables'].items():
