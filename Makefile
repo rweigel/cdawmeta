@@ -16,6 +16,13 @@ all:
 	make hapi-nl
 	make tables
 
+bundle:
+	cp compare.py compare
+	mkdir -p compare
+	cp compare.py compare/
+	cp data/hapi-bw.json compare/
+	tar zcvf compare.tgz compare/
+	scp compare.tgz weigel@mag.gmu.edu:www/tmp
 
 compare:
 	make log/compare.log
