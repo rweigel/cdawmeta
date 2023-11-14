@@ -2221,7 +2221,7 @@ BEPICOLOMBO_HELIO1DAY_POSITION: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 CASSINI_MAG_1MIN_MAGNETIC_FIELD: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 C1_PP_ASP: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch__C1_PP_ASP'/'support_data'; dependent VAR_TYPES {'data'}
@@ -2266,7 +2266,7 @@ C4_PP_EDI: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch__C4_PP_EDI'/'support_data'; dependent VAR_TYPES {'data'}
 C1_PP_EFW: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch__C1_PP_EFW'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch__C1_PP_EFW'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 C2_PP_EFW
   Warning: Dropping dataset b/c it is not in Nand's list
 C3_PP_EFW
@@ -3003,10 +3003,10 @@ CN_K0_MPA: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 CN_K0_MARI: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 CN_K1_MARI: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 CNOFS_CINDI_IVM_500MS: subsetting and creating /info
   3 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -3022,7 +3022,7 @@ CNOFS_VEFI_EFIELD_1SEC: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 CNOFS_VEFI_BFIELD_1SEC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 CNOFS_PLP_PLASMA_1SEC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'data'}
@@ -3100,8 +3100,8 @@ DE2_UA16S_ALL: subsetting and creating /info
 DE2_VION250MS_IDM: subsetting and creating /info
   3 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_velZ'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_velY'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_velZ'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_velY'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 DE2_WIND2S_WATS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -3273,7 +3273,7 @@ ERG_PWE_HFA_L2_SPEC_MONIT: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 ERG_XEP_L2_OMNIFLUX: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   Warning: Not including bin centers for FEDO_SSD_Energy_MEAN b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for FEDO_SSD_Energy_MEAN b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for FEDO_SSD_Energy_MEAN b/c no VarData (probably VIRTUAL)
@@ -3286,7 +3286,7 @@ EQ_PP_EPI: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch%eq_pp_epi'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 EQ_PP_ICI: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch%eq_pp_ici'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch%eq_pp_ici'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 EQ_PP_MAM: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch%eq_pp_mam'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -3330,7 +3330,7 @@ FA_K0_ACF: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 FA_K0_TMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 FM_K0_KILP: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
@@ -3359,10 +3359,10 @@ GE_K0_MGF: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 GE_SW_CPI: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GE_H0_CPI: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 GE_K0_CPI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -3371,7 +3371,7 @@ GE_K0_EFD: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 GE_K0_EPI: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GE_K0_LEP
   Warning: Dropping dataset b/c it is not in Nand's list
 GE_K0_PWI: subsetting and creating /info
@@ -3379,10 +3379,10 @@ GE_K0_PWI: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 GE_OR_DEF: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GE_OR_PRE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GE_AT_DEF: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -3406,22 +3406,22 @@ GOES13_EPEAD-SCIENCE-ELECTRONS-E13EW_1MIN: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 GOES15_EPS-MAGED_1MIN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GOES14_EPS-MAGED_1MIN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GOES13_EPS-MAGED_1MIN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GOES15_EPS-MAGED_5MIN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GOES14_EPS-MAGED_5MIN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GOES13_EPS-MAGED_5MIN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GOES15_EPS-PITCH-ANGLES_1MIN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -3433,10 +3433,10 @@ GOES13_EPS-PITCH-ANGLES_1MIN: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 G7_K0_EPS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 G6_K0_EPS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GOES11_K0_EP8: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -3495,13 +3495,13 @@ G8_K0_MAG: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 G7_K0_MAG: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 G7_K1_MAG: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 G6_K0_MAG: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 GOES12_K0_MAG: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -3513,28 +3513,28 @@ GOES18_EPHEMERIS_SSC: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 GOES17_EPHEMERIS_SSC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 GOES16_EPHEMERIS_SSC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 GOES15_EPHEMERIS_SSC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 GOES14_EPHEMERIS_SSC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 GOES13_EPHEMERIS_SSC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 GOES12_EPHEMERIS_SSC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 GOES11_EPHEMERIS_SSC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 GOES10_EPHEMERIS_SSC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 GOES9_EPHEMERIS_SSC
   Warning: Dropping dataset b/c it is not in Nand's list
 GOES8_EPHEMERIS_SSC
@@ -3545,12 +3545,12 @@ GOLD_L2_NMAX: subsetting and creating /info
   Not creating dataset for DEPEND_0 = 'nscans' because none of its variables have VAR_TYPE='data'.
   DEPEND_0 Name/VAR_TYPE: 'nmask'/'support_data'; dependent VAR_TYPES {'support data'}
   Not creating dataset for DEPEND_0 = 'nmask' because none of its variables have VAR_TYPE='data'.
-  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
   Unhandled DEPEND_0 type: 'CDF_CHAR'. Dropping variables associated with DEPEND_0 'time_utc'
   Due to last error, omitting sub-dataset with DEPEND_0 = time_utc
 GOLD_L2_O2DEN: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
   Unhandled DEPEND_0 type: 'CDF_CHAR'. Dropping variables associated with DEPEND_0 'time_utc'
   Due to last error, omitting sub-dataset with DEPEND_0 = time_utc
   DEPEND_0 Name/VAR_TYPE: 'nzret'/'support_data'; dependent VAR_TYPES {'support_data'}
@@ -3559,7 +3559,7 @@ GOLD_L2_O2DEN: subsetting and creating /info
   Not creating dataset for DEPEND_0 = 'nzdat' because none of its variables have VAR_TYPE='data'.
 GOLD_L2_ON2: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata', 'support data'}
+  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'metadata', 'support_data', 'support data', 'data'}
   Unhandled DEPEND_0 type: 'CDF_CHAR'. Dropping variables associated with DEPEND_0 'time_utc'
   Due to last error, omitting sub-dataset with DEPEND_0 = time_utc
   DEPEND_0 Name/VAR_TYPE: 'nmask'/'support_data'; dependent VAR_TYPES {'support data'}
@@ -3570,7 +3570,7 @@ GOLD_L2_TDISK: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'nmask'/'support_data'; dependent VAR_TYPES {'support_data', 'support data'}
   Not creating dataset for DEPEND_0 = 'nmask' because none of its variables have VAR_TYPE='data'.
-  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'time_utc'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
   Unhandled DEPEND_0 type: 'CDF_CHAR'. Dropping variables associated with DEPEND_0 'time_utc'
   Due to last error, omitting sub-dataset with DEPEND_0 = time_utc
 GPS_TEC2HR_IGS: subsetting and creating /info
@@ -3595,16 +3595,16 @@ HEL2_6SEC_NESSMAG: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 HELIOS1_E6_KUNOW_1HOUR_PARTICLE-FLUX: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'ignore_data', 'data'}
 HELIOS2_E6_KUNOW_1HOUR_PARTICLE-FLUX: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'ignore_data', 'data'}
 HELIOS1_E6_1HOUR_PARTICLE_FLUX: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 HELIOS2_E6_1HOUR_PARTICLE_FLUX: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 HELIOS1_COHO1HR_MERGED_MAG_PLASMA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -4352,7 +4352,7 @@ IM_K0_MENA: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 IM_K0_RPI: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
 IM_K1_RPI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -4418,10 +4418,10 @@ ISEE2_60SEC_MFI: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 ISEE-3_MAGPLASMA_2MIN_MAGNETIC_FIELD_PLASMA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 ISEE-3_MAG_1MIN_MAGNETIC_FIELD: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 IT_H0_MFI: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -4457,25 +4457,25 @@ L9_H0_MPA: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 L9_K0_MPA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 L9_K0_SPA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 L0_K0_MPA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 L0_K0_SPA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 L1_K0_MPA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 L1_K0_SPA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 L4_K0_MPA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 L4_K0_SPA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -4484,16 +4484,16 @@ L7_H0_MPA: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 L7_K0_MPA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 L7_K0_SPA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 A1_K0_MPA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 A2_K0_MPA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MSL_HELIO1DAY_POSITION: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -4544,10 +4544,10 @@ MVN_SWE_L2_ARC3D: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 MVN_SWE_L2_ARCPAD: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MVN_SWE_L2_SVYPAD: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'suppport_data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'suppport_data', 'support_data', 'ignore_data', 'data'}
 MVN_SEP_L2_S1-CAL-SVY-FULL: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -5077,49 +5077,49 @@ MMS4_FPI_BRST_L2_DES-MOMS
   Warning: Dropping dataset b/c it is not in Nand's list
 MMS1_FPI_FAST_L2_DIS-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS2_FPI_FAST_L2_DIS-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS3_FPI_FAST_L2_DIS-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS4_FPI_FAST_L2_DIS-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS1_FPI_BRST_L2_DIS-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS2_FPI_BRST_L2_DIS-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS3_FPI_BRST_L2_DIS-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS4_FPI_BRST_L2_DIS-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS1_FPI_FAST_L2_DES-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS2_FPI_FAST_L2_DES-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS3_FPI_FAST_L2_DES-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS4_FPI_FAST_L2_DES-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS1_FPI_BRST_L2_DES-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS2_FPI_BRST_L2_DES-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS3_FPI_BRST_L2_DES-PARTMOMS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 MMS4_FPI_BRST_L2_DES-PARTMOMS
   Warning: Dropping dataset b/c it is not in Nand's list
 MMS1_FGM_SRVY_L2: subsetting and creating /info
@@ -5371,13 +5371,13 @@ MMS1_SCM_SRVY_L2_SCSRVY: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 MMS2_SCM_SRVY_L2_SCSRVY: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 MMS3_SCM_SRVY_L2_SCSRVY: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 MMS4_SCM_SRVY_L2_SCSRVY: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 MMS1_SCM_BRST_L2_SCB: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -5392,16 +5392,16 @@ MMS4_SCM_BRST_L2_SCB: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 MMS1_SCM_BRST_L2_SCHB: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 MMS2_SCM_BRST_L2_SCHB: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 MMS3_SCM_BRST_L2_SCHB: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 MMS4_SCM_BRST_L2_SCHB: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 MUNIN_M1_MDSE: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -5440,28 +5440,28 @@ NOAA12_MEPED1MIN_SEM: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 NOAA14_MEPED1MIN_SEM: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 NOAA15_POES-SEM2_FLUXES-2SEC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 NOAA16_POES-SEM2_FLUXES-2SEC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 NOAA18_POES-SEM2_FLUXES-2SEC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 NOAA19_POES-SEM2_FLUXES-2SEC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 METOP1_POES-SEM2_FLUXES-2SEC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 METOP2_POES-SEM2_FLUXES-2SEC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 METOP3_POES-SEM2_FLUXES-2SEC: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 OMNI_HRO_1MIN: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -5484,7 +5484,7 @@ OMNI_COHO1HR_MERGED_MAG_PLASMA: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 PIONEER10_MAG_1MIN_MAGNETIC_FIELD: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_light_time'/'support_data'; dependent VAR_TYPES {'data'}
 PIONEER10_COHO1HR_MERGED_MAG_PLASMA: subsetting and creating /info
   1 DEPEND_0s
@@ -5625,13 +5625,13 @@ PO_K0_VIS: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 PO_K1_VIS: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
 PO_OR_DEF: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PO_OR_PRE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PO_AT_DEF: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -5658,43 +5658,43 @@ PSP_SWP_SPC_L2I: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 PSP_SWP_SPI_SF00_L3_MOM_INST: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPI_SF0A_L3_MOM_INST: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPI_SF0A_L3_MOM: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPI_SF00_L3_MOM: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPI_SF00_L2_8DX32EX8A: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPI_SF01_L2_8DX32EX8A: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPA_SF0_L2_16AX8DX32E: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPA_SF1_L2_32E: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPB_SF0_L2_16AX8DX32E: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPB_SF1_L2_32E: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPE_SF0_L3_PAD: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPA_SF0_L3_PAD: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_SWP_SPB_SF0_L3_PAD: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_FLD_L3_MERGED_SCAM_WF: subsetting and creating /info
   4 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -6142,7 +6142,7 @@ PSP_FLD_L2_RFS_BURST: subsetting and creating /info
   Not creating dataset for DEPEND_0 = 'epoch_burst_cross_re_GND_V4' because none of its variables have VAR_TYPE='data'.
   DEPEND_0 Name/VAR_TYPE: 'epoch_burst_cross_re_GND_GND'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data'}
   Not creating dataset for DEPEND_0 = 'epoch_burst_cross_re_GND_GND' because none of its variables have VAR_TYPE='data'.
-  DEPEND_0 Name/VAR_TYPE: 'epoch_burst'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_burst'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
 PSP_FLD_L2_RFS_HFR: subsetting and creating /info
@@ -6587,7 +6587,7 @@ PSP_FLD_L2_RFS_HFR: subsetting and creating /info
   Not creating dataset for DEPEND_0 = 'epoch_hfr_phase_GND_V4' because none of its variables have VAR_TYPE='data'.
   DEPEND_0 Name/VAR_TYPE: 'epoch_hfr_phase_GND_GND'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data'}
   Not creating dataset for DEPEND_0 = 'epoch_hfr_phase_GND_GND' because none of its variables have VAR_TYPE='data'.
-  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_hfr'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
 PSP_FLD_L2_RFS_LFR: subsetting and creating /info
@@ -7084,13 +7084,13 @@ PSP_FLD_L2_RFS_LFR: subsetting and creating /info
   Not creating dataset for DEPEND_0 = 'epoch_lfr_phase_GND_V4' because none of its variables have VAR_TYPE='data'.
   DEPEND_0 Name/VAR_TYPE: 'epoch_lfr_phase_GND_GND'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data'}
   Not creating dataset for DEPEND_0 = 'epoch_lfr_phase_GND_GND' because none of its variables have VAR_TYPE='data'.
-  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_lfr'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
 PSP_FLD_L2_TDS_WF: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'PSP_FLD_L2_TDS_WF_Burst_Time_Series_Times_TT2000_f'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
-  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'PSP_FLD_L2_TDS_WF_Burst_Time_Series_Times_TT2000_f'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 PSP_FLD_L2_F2_100BPS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -7262,28 +7262,28 @@ PSP_FLD_L2_DFB_DC_XSPEC_SCMELFHG_SCMFLFHG: subsetting and creating /info
   Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
 PSP_FLD_L2_DFB_DBM_DVAC: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'epoch_psp_fld_l2_dfb_dbm_dvac'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_psp_fld_l2_dfb_dbm_dvac'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
 PSP_FLD_L2_DFB_DBM_DVDC: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'epoch_psp_fld_l2_dfb_dbm_dvdc'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_psp_fld_l2_dfb_dbm_dvdc'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
 PSP_FLD_L2_DFB_DBM_VAC: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'epoch_psp_fld_l2_dfb_dbm_vac'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_psp_fld_l2_dfb_dbm_vac'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
 PSP_FLD_L2_DFB_DBM_VDC: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'epoch_psp_fld_l2_dfb_dbm_vdc'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_psp_fld_l2_dfb_dbm_vdc'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
 PSP_FLD_L2_DFB_DBM_SCM: subsetting and creating /info
   3 DEPEND_0s
   Warning: Dropping dataset associated with "epoch_psp_fld_l2_dfb_dbm_scmlg" b/c it is not in Nand's list
-  DEPEND_0 Name/VAR_TYPE: 'epoch_psp_fld_l2_dfb_dbm_scmhg'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_psp_fld_l2_dfb_dbm_scmhg'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_quality_flags'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'epoch_quality_flags' because none of its variables have VAR_TYPE='data'.
 PSP_FLD_L2_DFB_WF_VDC: subsetting and creating /info
@@ -7326,7 +7326,7 @@ PSP_ISOIS_L2-SUMMARY: subsetting and creating /info
   4 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'HET_Epoch'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanP'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanP'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanE'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
 PSP_ISOIS-EPIHI_L2-SECOND-RATES: subsetting and creating /info
   1 DEPEND_0s
@@ -7369,7 +7369,7 @@ PSP_ISOIS-EPIHI_L2-LET2-RATES3600: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 PSP_ISOIS-EPILO_L2-IC: subsetting and creating /info
   5 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanC'/'support_data'; dependent VAR_TYPES {'data', 'metadata', 'support_data', 'additonal_data', 'additional_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanC'/'support_data'; dependent VAR_TYPES {'metadata', 'additonal_data', 'additional_data', 'data', 'support_data'}
   Warning: Not including bin centers for He3_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for He4_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
@@ -7384,7 +7384,7 @@ PSP_ISOIS-EPILO_L2-IC: subsetting and creating /info
   Warning: Not including bin centers for Fe_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for O_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for O_ChanC_Energy_SLICE b/c no VarData (probably VIRTUAL)
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanD'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'additional_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanD'/'support_data'; dependent VAR_TYPES {'metadata', 'support_data', 'additional_data', 'data'}
   Warning: Not including bin centers for Mg_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for C_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for Si_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
@@ -7398,19 +7398,19 @@ PSP_ISOIS-EPILO_L2-IC: subsetting and creating /info
   Warning: Not including bin centers for Si_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for N_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for Ne_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanP'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'additional_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanP'/'support_data'; dependent VAR_TYPES {'metadata', 'support_data', 'additional_data', 'data'}
   Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for H_ChanP_Energy_SLICE b/c no VarData (probably VIRTUAL)
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanR'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'additional_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanR'/'support_data'; dependent VAR_TYPES {'metadata', 'support_data', 'additional_data', 'data'}
   Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for H_ChanR_Energy_SLICE b/c no VarData (probably VIRTUAL)
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanT'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'additional_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanT'/'support_data'; dependent VAR_TYPES {'metadata', 'support_data', 'additional_data', 'data'}
   Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
   Warning: Not including bin centers for H_ChanT_Energy_SLICE b/c no VarData (probably VIRTUAL)
@@ -7460,10 +7460,10 @@ PSP_ISOIS-EPILO_L2-IC: subsetting and creating /info
   Warning: Not including bin centers for Ne_ChanD_Energy_SLICE b/c no VarData (probably VIRTUAL)
 PSP_ISOIS-EPILO_L2-PE: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanE'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'additional_data', 'metadata'}
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanF'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'additional_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanE'/'support_data'; dependent VAR_TYPES {'additional_data', 'support_data', 'metadata', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanF'/'support_data'; dependent VAR_TYPES {'additional_data', 'support_data', 'metadata', 'data'}
   Warning: Not including bin centers for H_ChanF_Energy_SLICE b/c no VarData (probably VIRTUAL)
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanG'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'additional_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_ChanG'/'support_data'; dependent VAR_TYPES {'additional_data', 'support_data', 'metadata', 'data'}
   Warning: Not including bin centers for H_ChanF_Energy_SLICE b/c no VarData (probably VIRTUAL)
 PSP_ISOIS_L2-EPHEM: subsetting and creating /info
   1 DEPEND_0s
@@ -7520,14 +7520,14 @@ RBSPB_REL04_ECT-HOPE-SCI-L2SA: subsetting and creating /info
   Not creating dataset for DEPEND_0 = 'Epoch' because none of its variables have VAR_TYPE='data'.
 RBSPA_REL04_ECT-HOPE-SCI-L2: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_Ion'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_Ele'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_Ion'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_Ele'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'Epoch' because none of its variables have VAR_TYPE='data'.
 RBSPB_REL04_ECT-HOPE-SCI-L2: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_Ion'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
-  DEPEND_0 Name/VAR_TYPE: 'Epoch_Ele'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_Ion'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch_Ele'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'Epoch' because none of its variables have VAR_TYPE='data'.
 RBSPA_REL03_ECT-MAGEIS-L2: subsetting and creating /info
@@ -7782,25 +7782,25 @@ RBSP-B-RBSPICE_LEV-2_ISRHELT: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 RBSPA_EFW-L2_E-HIRES-UVW: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_hsk'/'support_data'; dependent VAR_TYPES {'ignore_data'}
   Not creating dataset for DEPEND_0 = 'epoch_hsk' because none of its variables have VAR_TYPE='data'.
-  DEPEND_0 Name/VAR_TYPE: 'epoch_qual'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_qual'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 RBSPB_EFW-L2_E-HIRES-UVW: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_hsk'/'support_data'; dependent VAR_TYPES {'ignore_data'}
   Not creating dataset for DEPEND_0 = 'epoch_hsk' because none of its variables have VAR_TYPE='data'.
-  DEPEND_0 Name/VAR_TYPE: 'epoch_qual'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch_qual'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 RBSPA_EFW-L2_E-SPINFIT-MGSE: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_hsk'/'support_data'; dependent VAR_TYPES {'ignore_data'}
 RBSPA_EFW-L2_E-SPINFIT-MGSE
   Warning: Keeping dataset associated with "epoch_hsk" b/c it is in Nand's list
 RBSPB_EFW-L2_E-SPINFIT-MGSE: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'epoch_hsk'/'support_data'; dependent VAR_TYPES {'ignore_data'}
 RBSPB_EFW-L2_E-SPINFIT-MGSE
   Warning: Keeping dataset associated with "epoch_hsk" b/c it is in Nand's list
@@ -7808,12 +7808,12 @@ RBSPA_EFW-L2_ESVY_DESPUN: subsetting and creating /info
   3 DEPEND_0s
   Warning: Dropping dataset associated with "epoch_e" b/c it is not in Nand's list
   DEPEND_0 Name/VAR_TYPE: 'epoch_qual'/'support_data'; dependent VAR_TYPES {'data'}
-  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 RBSPB_EFW-L2_ESVY_DESPUN: subsetting and creating /info
   3 DEPEND_0s
   Warning: Dropping dataset associated with "epoch_e" b/c it is not in Nand's list
   DEPEND_0 Name/VAR_TYPE: 'epoch_qual'/'support_data'; dependent VAR_TYPES {'data'}
-  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 RBSPA_EFW-L2_FBK: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -7965,30 +7965,30 @@ RBSP-B_WFR-SPECTRAL-MATRIX-DIAGONAL-MERGED_EMFISIS-L2: subsetting and creating /
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 RBSP-A_HFR-WAVEFORM_EMFISIS-L2: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_expanded'/'support_data'; dependent VAR_TYPES {'data'}
 RBSP-B_HFR-WAVEFORM_EMFISIS-L2: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_expanded'/'support_data'; dependent VAR_TYPES {'data'}
 RBSP-A_WFR-WAVEFORM_EMFISIS-L2: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'CalFrequencies'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'CalFrequencies' because none of its variables have VAR_TYPE='data'.
 RBSP-B_WFR-WAVEFORM_EMFISIS-L2: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'CalFrequencies'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'CalFrequencies' because none of its variables have VAR_TYPE='data'.
 RBSP-A_WFR-WAVEFORM-CONTINUOUS-BURST_EMFISIS-L2: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'CalFrequencies'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'CalFrequencies' because none of its variables have VAR_TYPE='data'.
 RBSP-B_WFR-WAVEFORM-CONTINUOUS-BURST_EMFISIS-L2: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'CalFrequencies'/'support_data'; dependent VAR_TYPES {'support_data'}
   Not creating dataset for DEPEND_0 = 'CalFrequencies' because none of its variables have VAR_TYPE='data'.
 RBSPA_L2_PSBR-RPS: subsetting and creating /info
@@ -8162,7 +8162,7 @@ SO_K0_CST: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 SO_K0_ERN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 SO_OR_DEF: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -8273,37 +8273,37 @@ SOLO_L2_SWA-EAS2-NM3D-DEF: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 SOLO_L2_MAG-RTN-BURST: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_L2_MAG-RTN-NORMAL: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_L2_MAG-RTN-NORMAL-1-MINUTE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_L2_MAG-RTN-LL: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_L2_MAG-RTN-LL-1-MINUTE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_L2_MAG-SRF-BURST: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_L2_MAG-SRF-NORMAL: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_L2_MAG-SRF-LL: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_L2_MAG-VSO-BURST: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_L2_MAG-VSO-NORMAL: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_L2_MAG-VSO-NORMAL-1-MINUTE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'metadata'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_L3_RPW-BIA-DENSITY-10-SECONDS: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -8582,7 +8582,7 @@ SOLO_LL02_SWA-EAS-SS: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'EPOCH_1'/'support_data'; dependent VAR_TYPES {'data'}
 SOLO_LL02_MAG: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 SOLO_LL02_RPW-TNR: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -8668,14 +8668,14 @@ STA_LB_IMPACT: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch_MAG'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_SWEA'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data'}
   Not creating dataset for DEPEND_0 = 'Epoch_SWEA' because none of its variables have VAR_TYPE='data'.
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_SEP'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 STB_LB_IMPACT: subsetting and creating /info
   4 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch_MAG'/'support_data'; dependent VAR_TYPES {'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_SWEA'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data'}
   Not creating dataset for DEPEND_0 = 'Epoch_SWEA' because none of its variables have VAR_TYPE='data'.
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch_SEP'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 STA_L1_IMPACT_BURST: subsetting and creating /info
   1 DEPEND_0s
@@ -8691,16 +8691,16 @@ STB_L1_IMPACT_HKP: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 STA_L1_SWEA_DIST: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 STB_L1_SWEA_DIST: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 STA_L1_SWEA_DISB: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 STB_L1_SWEA_DISB: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 STA_L1_SWEA_SPEC: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch_Spectra'/'support_data'; dependent VAR_TYPES {'data'}
@@ -8717,10 +8717,10 @@ STB_L2_SWEA_PAD: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 STA_L1_LET: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 STB_L1_LET: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 STA_L1_HET: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -8743,10 +8743,10 @@ STB_L1_SIT: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 STA_L1_STE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 STB_L1_STE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 STA_L1_MAG_SC: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -10437,8 +10437,8 @@ TIMED_EDP_GUVI: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 TIMED_L1CDISK_GUVI: subsetting and creating /info
   2 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch2'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch2'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 TSS-1R_M1_RPBB: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -11214,19 +11214,19 @@ TSS-1R_M1_SPSD: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 TWINS_M2_ENA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 TWINS1_TISTORM_IMAGER: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 TWINS2_TISTORM_IMAGER: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 TWINS1_L1_IMAGER: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 TWINS2_L1_IMAGER: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 TWINS1_L1_LAD: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -11241,7 +11241,7 @@ TWINS2_OR_DEF: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 TWINS1_AT_DEF: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 TWINS2_AT_DEF
   Warning: Dropping dataset b/c it is not in Nand's list
 TWINS1_HK_1SEC: subsetting and creating /info
@@ -11406,7 +11406,7 @@ VOYAGER1_10S_MAG: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 VOYAGER1_48S_MAG: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 VOYAGER2_2S_MAG: subsetting and creating /info
   2 DEPEND_0s
   Warning: Dropping dataset associated with "Epoch" b/c it is not in Nand's list
@@ -11417,7 +11417,7 @@ VOYAGER2_10S_MAG: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch2'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 VOYAGER2_48S_MAG: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 VOYAGER1_COHO1HR_MERGED_MAG_PLASMA: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -11426,10 +11426,10 @@ VOYAGER2_COHO1HR_MERGED_MAG_PLASMA: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 VOYAGER1_PLS_HIRES_PLASMA_DATA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 VOYAGER2_PLS_HIRES_PLASMA_DATA: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'metadata', 'data'}
 VOYAGER1_PLS_COMPOSITION: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -11480,45 +11480,45 @@ WI_EPACT_STEP-DIFFERENTIAL-ION-FLUX-1HR: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 WI_EPACT_STEP-DIRECTIONAL-DIFF-CNO-FLUX-10MIN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_EPACT_STEP-DIRECTIONAL-DIFF-FE-FLUX-10MIN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_EPACT_STEP-DIRECTIONAL-DIFF-HE-FLUX-10MIN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_EPACT_STEP-DIRECTIONAL-DIFF-H-FLUX-10MIN: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_L2-30MIN_SMS-STICS-AFM-MAGNETOSPHERE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_L2-30MIN_SMS-STICS-AFM-SOLARWIND: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_L2-30MIN_SMS-STICS-ERPA-MAGNETOSPHERE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_L2-30MIN_SMS-STICS-ERPA-SOLARWIND: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_L2_3MIN_SMS-STICS-NVT-MAGNETOSPHERE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 WI_L2_3MIN_SMS-STICS-NVT-SOLARWIND: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 WI_L2-3MIN_SMS-STICS-VDF-MAGNETOSPHERE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'ignore_data', 'data'}
 WI_L2-3MIN_SMS-STICS-VDF-SOLARWIND: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'ignore_data', 'data'}
 WI_H0_MFI: subsetting and creating /info
   3 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
   DEPEND_0 Name/VAR_TYPE: 'Epoch3'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
-  DEPEND_0 Name/VAR_TYPE: 'Epoch1'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'metadata'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch1'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
 WI_H2_MFI: subsetting and creating /info
   2 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -11539,7 +11539,7 @@ WI_K0_MFI: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 WI_K0_SWE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_H0_SWE: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -11548,7 +11548,7 @@ WI_H1_SWE: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 WI_SW-ION-DIST_SWE-FARADAY: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 WI_STRAHL0_SWE: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
@@ -11572,13 +11572,13 @@ WI_PM_3DP: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 WI_PLSP_3DP: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_SOSP_3DP: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
 WI_SOPD_3DP: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_EM_3DP: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -11593,13 +11593,13 @@ WI_ELSP_3DP: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 WI_ELPD_3DP: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'ignore_data', 'data'}
 WI_EHSP_3DP: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'data'}
 WI_EHPD_3DP: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_SFSP_3DP: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}
@@ -11636,10 +11636,10 @@ WI_L3-DUSTIMPACT_WAVES: subsetting and creating /info
   DEPEND_0 Name/VAR_TYPE: 'EPOCH'/'support_data'; dependent VAR_TYPES {'support_data', 'metadata', 'data'}
 WI_OR_DEF: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_OR_PRE: subsetting and creating /info
   1 DEPEND_0s
-  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data', 'ignore_data'}
+  DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'ignore_data', 'data'}
 WI_AT_DEF: subsetting and creating /info
   1 DEPEND_0s
   DEPEND_0 Name/VAR_TYPE: 'Epoch'/'support_data'; dependent VAR_TYPES {'support_data', 'data'}

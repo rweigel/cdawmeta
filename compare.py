@@ -1,29 +1,102 @@
+data = True    # Compare data
+serial = True  # If False, request dataset data from servers in parallel
+
+s1 = 'jf'
+url1 = "https://cottagesystems.com/server/cdaweb-nand/hapi"
+#url1 = "https://cdaweb-dev.sci.gsfc.nasa.gov/hapi"
+
+s2 = 'nl'
+url2 = "https://cdaweb.gsfc.nasa.gov/hapi"
+
+def omit(id):
+  if id == 'AIM_CIPS_SCI_3A': # Very large/slow; always omit
+    return True
+  if False: # Set to True to omit some datasets
+    if id.startswith("AC_"):
+      return False
+    return True
+  else:
+    return False
+
 import os
+base_dir = os.path.dirname(__file__)
+
 import copy
 import time
 import json
-from datetime import datetime
+import datetime
+import urllib3
 
-import requests
+try:
+  import requests
+  import requests_cache 
+except:
+  print(os.popen('pip install requests requests_cache').read())
+  import requests
+  import requests_cache
 
-data = False    # Compare data
-serial = False  # If False, request dataset data from servers in parallel
+def get_all_metadata(server_url, server_name, cache_dir):
 
-s1 = 'jf'
-s2 = 'nl'
+  out_file = os.path.join(cache_dir, f'hapi-{server_name}.json')
 
-url1 = "https://cottagesystems.com/server/cdaweb-nand/hapi"
-url2 = "https://cdaweb.gsfc.nasa.gov/hapi"
+  if False:
+    print(f"Reading: {out_file}")
+    with open(out_file, 'r', encoding='utf-8') as f:
+      datasets = json.load(f)
+    print(f"Read: {out_file}")
+    return datasets
 
-base_dir = os.path.join(os.path.dirname(__file__), 'data')
-all_input_s1 = os.path.join(base_dir, f'hapi-{s1}.json')
-all_input_s2 = os.path.join(base_dir, f'hapi-{s2}.json')
+  os.makedirs(os.path.dirname(out_file), exist_ok=True)
+
+  def CachedSession():
+    # https://requests-cache.readthedocs.io/en/stable/#settings
+    # https://requests-cache.readthedocs.io/en/stable/user_guide/headers.html
+    copts = {
+      "use_cache_dir": True,                # Save files in the default user cache dir
+      "cache_control": True,                # Use Cache-Control response headers for expiration, if available
+      "expire_after": datetime.timedelta(days=2),    # Otherwise expire responses after one day
+      "allowable_codes": [200],             # Cache responses with these status codes
+      "stale_if_error": True,               # In case of request errors, use stale cache data if possible
+      "backend": "filesystem"
+    }
+    return requests_cache.CachedSession(cache_dir, **copts)
+
+  session = CachedSession()
+
+  #resp = session.get(server_url + '/catalog')
+  urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+  resp = session.request('get', server_url + '/catalog', verify=False)
+  datasets = resp.json()['catalog']
+
+  for dataset in datasets:
+
+    id = dataset['id']
+    if omit(id):
+      continue
+    url = server_url + '/info?id=' + id
+    #resp = session.get(url)
+    resp = session.request('get', url, verify=False)
+    print(f'Read: (from cache={resp.from_cache}) {url}')
+    if resp.status_code != 200:
+      continue
+
+    dataset['info'] = resp.json()
+    del dataset['info']['status']
+    del dataset['info']['HAPI']
+
+  with open(out_file, 'w', encoding='utf-8') as f:
+    json.dump(datasets, f, indent=2)
+  print(f'Wrote: {out_file}')
+
+  return datasets
 
 def restructure(datasets):
   """Create _parameters dict with keys of parameter name."""
   datasetsr = {}
   for dataset in datasets:
     id = dataset["id"]
+    if omit(id):
+      continue
     datasetsr[id] = copy.deepcopy(dataset)
     datasetsr[id]["info"]["_parameters"] = {}
     for parameter in dataset["info"]["parameters"]:
@@ -32,6 +105,9 @@ def restructure(datasets):
   return datasetsr
 
 def compare_data(dsid, datasets_s0=None):
+
+  if data is False:
+    return
 
   sampleStartDate = None
   sampleStopDate = None
@@ -46,12 +122,9 @@ def compare_data(dsid, datasets_s0=None):
   if 'sampleStartDate' in datasets_s1[dsid]['info']:
     sampleStopDate = datasets_s1[dsid]['info']['sampleStopDate']
 
-  if datasets_s0 is not None:
+  if datasets_s0 is not None and 'sampleStartDate' in datasets_s0[dsid]['info']:
     sampleStartDate = datasets_s0[dsid]['info']['sampleStartDate']
     sampleStopDate = datasets_s0[dsid]['info']['sampleStopDate']
-
-  if not dsid.startswith("G"):
-    return
 
   times = 2*[None]
   resps = 2*[None]
@@ -61,11 +134,12 @@ def compare_data(dsid, datasets_s0=None):
 
   def get(i):
     start = time.time()
-    now = datetime.now()
+    now = datetime.datetime.now()
     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
     print("  " + dt_string)
     print("  " + urls[i])
-    resps[i] = requests.get(urls[i])
+    #resps[i] = requests.get(urls[i])
+    resps[i] = requests.get(urls[i], verify=False)
     times[i] = time.time() - start
 
   print(dsid)
@@ -176,31 +250,32 @@ def compare_info(dsid, info_s2, info_s1):
           print(f"{dsid}/info/{key}")
           print(f"  val_{s2} = {info_s2[key]} != val_{s1} = {info_s1[key]}")
 
-if data == False and all_input_s1 == all_input_s2:
-  exit()
+base_dir = os.path.join(base_dir, 'data')
+cache_dir = os.path.join(base_dir, 'data', 'cache')
 
 datasets_s0 = None
 if s1 == 'jf' and s2 == 'nl':
   # Get sample starts/stops from s0
-  all_input_s0 = os.path.join(base_dir, f'hapi-bw.json')
+  f1 = os.path.join(os.path.dirname(__file__), f'hapi-bw.json')
+  if os.path.exists(f1):
+    all_input_s0 = f1
+  else:
+    all_input_s0 = os.path.join(base_dir, f'hapi-bw.json')
+
   print(f"Reading: {all_input_s0}")
   with open(all_input_s0, 'r', encoding='utf-8') as f:
     datasets_s0o = json.load(f)
   print(f"Read: {all_input_s0}")
   datasets_s0 = restructure(datasets_s0o)
 
-print(f"Reading: {all_input_s1}")
-with open(all_input_s1, 'r', encoding='utf-8') as f:
-  datasets_s1o = json.load(f)
-print(f"Read: {all_input_s1}")
-
-print(f"Reading: {all_input_s2}")
-with open(all_input_s2, 'r', encoding='utf-8') as f:
-  datasets_s2o = json.load(f)
-print(f"Read: {all_input_s2}")
+datasets_s1o = get_all_metadata(url1, s1, cache_dir)
+datasets_s2o = get_all_metadata(url2, s2, cache_dir)
 
 print(f"s1 = {s1}")
 print(f"s2 = {s2}")
+
+if data == False and datasets_s1o == datasets_s2o:
+  exit(0)
 
 datasets_s1 = restructure(datasets_s1o)
 datasets_s2 = restructure(datasets_s2o)

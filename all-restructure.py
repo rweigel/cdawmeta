@@ -128,12 +128,18 @@ def add_sample_start_stop(datasets):
     return range
 
   for dataset in datasets:
+
+    if not "_file_list" in dataset:
+      print("No _file_list for " + dataset["id"])
+      continue
+
     with open(dataset['_file_list'], 'r', encoding='utf-8') as f:
       dataset['_file_list_data'] = json.load(f)["_decoded_content"]
 
     if not "FileDescription" in dataset["_file_list_data"]:
       print("No file list for " + dataset["id"])
       continue
+
     range = extract_sample_start_stop(dataset["_file_list_data"])
     dataset["info"]["sampleStartDate"] = range["sampleStartDate"]
     dataset["info"]["sampleStopDate"] = range["sampleStopDate"]

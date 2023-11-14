@@ -16,7 +16,7 @@ def omit(id):
   else:
     return False
 
-max_workers = 1
+max_workers = 4
 allxml  = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
 filews  = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
 
