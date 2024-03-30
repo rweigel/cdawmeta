@@ -10,7 +10,7 @@ def omit(id):
 import os
 
 base_dir    = os.path.join(os.path.dirname(__file__), '../data')
-all_input   = os.path.join(base_dir, 'all-resolved.restructured.json')
+all_input   = os.path.join(base_dir, 'all-restructure.json')
 file_body   = os.path.join(base_dir, 'tables/all.table.body.json')
 file_header = os.path.join(base_dir, 'tables/all.table.head.json')
 

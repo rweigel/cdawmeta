@@ -47,7 +47,17 @@ def CachedSession():
 session = CachedSession()
 
 resp = session.get(base_url + '/catalog')
-datasets = resp.json()['catalog']
+if resp.status_code != 200:
+  print('Error. Server returned status code of ' + str(resp.status_code))
+  exit(1)
+
+try:
+  datasets = resp.json()['catalog']
+except:
+  # TODO: Catch other errors.
+  print('Error. Could not parse catalog. Response given below.')
+  print(resp.text)
+  exit(1)
 
 for idx, dataset in enumerate(datasets):
 
@@ -63,7 +73,13 @@ for idx, dataset in enumerate(datasets):
   if resp.status_code != 200:
     continue
 
-  dataset['info'] = resp.json()
+  try:
+    dataset['info'] = resp.json()
+  except:
+    print('Error. Could not info response. Response given below.')
+    print(resp.text)
+    exit(1)
+
   del dataset['info']['status']
   del dataset['info']['HAPI']
 

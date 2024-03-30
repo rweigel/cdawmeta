@@ -1,3 +1,10 @@
+# Usage: python all-resolve.py
+#
+# Creates data/all-resolve.json, which contains all datasets, each with keys of
+# _all_xml, _master, _spase, and _file_list
+# _all_xml contains the content of the dataset node in all.xml as JSON.
+# The values of the the other keys are the paths to the cached JSON files.
+
 import os
 import json
 from datetime import timedelta
@@ -32,7 +39,6 @@ import xmltodict
 
 base_dir = os.path.dirname(__file__)
 all_file = os.path.join(base_dir, 'data/all-resolve.json')
-files_file = os.path.join(base_dir, 'data/files.json')
 
 def get(function, datasets, cache_dir):
 
@@ -60,8 +66,10 @@ def CachedSession(cdir):
     "expire_after": expire_after,   # Expire responses after one day if no cache control header
     "allowable_codes": [200],       # Cache responses with these status codes
     "stale_if_error": True,         # In case of request errors, use stale cache data if possible
-    "backend": "filesystem"
+    "backend": "filesystem",
+    "serializer": "json"
   }
+
   return requests_cache.CachedSession(cdir, **copts)
 
 def create_datasets():
@@ -137,8 +145,10 @@ def add_master(datasets):
       print("Error getting " + masterjson)
       return
 
-    print(f'Read: (from cache={r.from_cache}) {masterjson}')
     dataset['_master_data'] = r.json()
+
+    print(f'Read: (from cache={r.from_cache}) {masterjson}')
+
     dataset['_master'] = cache_dir + "/" + r.cache_key + ".json"
 
     files = list(dataset['_master_data'].keys())
@@ -191,8 +201,8 @@ def add_spase(datasets):
       return
 
     print(f'Read: (from cache={r.from_cache}) {url}')
+
     dataset['_spase'] = cache_dir + "/" + r.cache_key + ".json"
-    #dataset['_spase_data'] = r.json()['Spase']
 
   cache_dir = os.path.join(os.path.dirname(__file__), 'data/cache/spase')
   get(get_spase, datasets, cache_dir)
@@ -207,9 +217,8 @@ def add_file_list(datasets):
     print("Requesting: " + url)
     r = session.get(url, headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
     print(f'Read: (from cache={r.from_cache}) {url}')
-    print(r.cache_key)
+
     dataset['_file_list'] = cache_dir + "/" + r.cache_key + ".json"
-    #dataset['_file_list_data'] = r.json()
 
   cache_dir = os.path.join(os.path.dirname(__file__), 'data/cache/files')
   get(get_file_list, datasets, cache_dir)

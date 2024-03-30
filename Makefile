@@ -16,6 +16,9 @@ all:
 	make hapi-nl
 	make tables
 
+clean:
+	rm -f data/*
+
 bundle:
 	cp compare.py compare
 	mkdir -p compare
@@ -24,35 +27,39 @@ bundle:
 	tar zcvf compare.tgz compare/
 	scp compare.tgz weigel@mag.gmu.edu:www/tmp
 
+################################################################################
 compare:
 	make log/compare.log
 
 log/compare.log: data/hapi-bw.json data/hapi-nl.json compare.py
 	python compare.py | tee log/compare.log
+################################################################################
 
-
-data/all-resolve.json: all-resolve.py
-	python all-resolve.py
-
-data/all-restructure.json: data/all-resolve.json all-restructure.py
-	python all-restructure.py
-
-
+################################################################################
+hapi-bw:
+	make data/hapi-bw.json
 
 data/hapi-bw.json: data/all-restructure.json hapi-bw.py hapi-nl-issues.json
 	python hapi-bw.py | tee log/hapi-bw.log
 
-hapi-bw:
-	make data/hapi-bw.json
+data/all-restructure.json: data/all-resolve.json all-restructure.py
+	python all-restructure.py
+
+data/all-resolve.json: all-resolve.py
+	python all-resolve.py
+################################################################################
 
 
+################################################################################
 data/hapi-nl.json: hapi-nl.py
 	python hapi-nl.py
 
 hapi-nl:
 	make data/hapi-nl.json
+################################################################################
 
 
+################################################################################
 tables:
 	make table-hapi
 	make table-all
@@ -68,7 +75,4 @@ table-all:
 
 data/tables/all.table.body.json: table/table-all.py data/all-restructure.json
 	python table/table-all.py
-
-
-clean:
-	rm -f data/*
+################################################################################

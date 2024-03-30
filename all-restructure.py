@@ -41,8 +41,12 @@ def add_variables(datasets):
 
   for dataset in datasets:
 
-    with open(dataset['_master'], 'r', encoding='utf-8') as f:
-      dataset['_master_data'] = json.load(f)["_decoded_content"]
+    try:
+      with open(dataset['_master'], 'r', encoding='utf-8') as f:
+        dataset['_master_data'] = json.load(f)["_decoded_content"]
+    except:
+      print("Error: Could not open " + dataset["id"] + " master file. Skipping.")
+      continue
 
     #add_globals(dataset)
 
@@ -151,6 +155,7 @@ with open(all_file, 'r', encoding='utf-8') as f:
   datasets = json.load(f)
 print(f'Read: {all_file}')
 
+print("Removing datasets without _master")
 for idx, dataset in enumerate(datasets):
 
   if '_master' not in dataset:
@@ -161,8 +166,10 @@ for idx, dataset in enumerate(datasets):
 datasets = [i for i in datasets if i is not None]
 
 # Add _variables element to each dataset
+print("Adding _variables")
 add_variables(datasets)
 
+print("Adding sampleStartDate and sampleStopDate")
 add_sample_start_stop(datasets)
 
 # Save result to all_file_restructured; _variables node is used by hapi-bw.py
