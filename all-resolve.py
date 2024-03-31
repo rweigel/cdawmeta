@@ -3,13 +3,12 @@
 # Creates data/all-resolve.json, which contains all datasets, each with keys of
 # _all_xml, _master, _spase, and _file_list
 # _all_xml contains the content of the dataset node in all.xml as JSON.
-# The values of the the other keys are the paths to the cached JSON files.
+# The values of the the other keys are paths to the cached JSON files.
 
 import os
 import json
-from datetime import timedelta
 
-test_run = False
+test_run = True
 expire_after = None # Use, e.g., timedelta(days=1), to force cache expiration
                     # after one day, independent of cache-related headers.
 
