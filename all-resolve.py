@@ -11,7 +11,7 @@ from datetime import timedelta
 
 test_run = False
 expire_after = None # Use, e.g., timedelta(days=1), to force cache expiration
-                    # after one day independent of cache-related headers.
+                    # after one day, independent of cache-related headers.
 
 def omit(id):
   if id == 'AIM_CIPS_SCI_3A':

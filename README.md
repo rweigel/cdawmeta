@@ -1,8 +1,8 @@
 # Running
 
 ```
-git clone https://github.com/rweigel/cdaweb-hapi.git
-cd cdaweb-hapi
+git clone https://github.com/rweigel/cdaweb-metadata.git
+cd cdaweb-metadata
 make hapi-bw
 ```
 
