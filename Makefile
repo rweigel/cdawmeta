@@ -60,6 +60,6 @@ data/tables/hapi.table.body.json: table/table-hapi.py data/hapi/hapi-new.json da
 table-cdaweb:
 	make data/tables/cdaweb.table.body.json
 
-data/tables/cdaweb.table.body.json: table/table-cdaweb.py data/main.json
+data/tables/cdaweb.table.body.json: table/table-cdaweb.py data/cdaweb.json
 	python table/table-cdaweb.py
 ################################################################################
