@@ -1,6 +1,12 @@
 from setuptools import setup, find_packages
 
-install_requires = ["requests_cache", "xmltodict"]
+# Need requests_cache 1.2 because of
+# https://github.com/requests-cache/requests-cache/issues/927
+# and fact that hpde.io returns json with
+# "Content-Type": "application/json; charset=utf-8"
+# (charset=utf-8 is redundant and causes requests_cache not not cache
+# _decoded_content)
+install_requires = ["requests_cache==1.2", "xmltodict"]
 
 setup(
     name='cdawmeta',

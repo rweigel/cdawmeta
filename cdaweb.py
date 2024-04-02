@@ -171,7 +171,7 @@ def add_spase(datasets):
       return
 
     print(f'Read: (from cache={r.from_cache}) {url}')
-
+    print(r.json())
     dataset['_spase'] = cache_dir + "/" + r.cache_key + ".json"
 
   cache_dir = os.path.join(os.path.dirname(__file__), 'data/cache/spase')

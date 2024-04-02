@@ -2,7 +2,7 @@ import os
 import json
 
 base_dir = os.path.join(os.path.dirname(__file__), '..', 'data') 
-in_file  = os.path.join(base_dir, 'main.json')
+in_file  = os.path.join(base_dir, 'cdaweb.json')
 out_dir  = os.path.join(base_dir, 'hapi')
 out_file = os.path.join(out_dir, 'hapi-new.json')
 
@@ -501,8 +501,6 @@ def build_hapi_infos(datasets):
       n = n + 1
 
   return datasets_new
-
-
 
 
 print(f'Reading: {in_file}')

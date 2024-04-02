@@ -9,9 +9,9 @@ make hapi-new
 **Scripts**
 
 ```
-python cdaweb.py  # creates cdaweb/main.json
+python cdaweb.py         # creates cdaweb/main.json
 python hapi/hapi-new.py  # creates data/hapi/hapi-new.json using data/main.json
-python hapi/hapi-nl.py  # creates data/hapi/hapi-nl.json using https://cdaweb.gsfc.nasa.gov/hapi/{catalog,info}
+python hapi/hapi-nl.py   # creates data/hapi/hapi-nl.json using https://cdaweb.gsfc.nasa.gov/hapi/{catalog,info}
 ```
 
 # Visualize/Compare
