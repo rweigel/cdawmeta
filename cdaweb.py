@@ -1,6 +1,6 @@
-# Usage: python all-resolve.py
+# Usage: python main.py
 #
-# Creates data/all-resolve.json, which contains all datasets, each with keys of
+# Creates data/main.json, which contains all datasets, each with keys of
 # _all_xml, _master, _spase, and _file_list
 # _all_xml contains the content of the dataset node in all.xml as JSON.
 # The values of the the other keys are paths to the cached JSON files.
@@ -27,7 +27,7 @@ allxml  = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
 filews  = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
 
 out_dir = os.path.join(os.path.dirname(__file__), 'data')
-out_file = os.path.join(out_dir, 'all-resolve.json')
+out_file = os.path.join(out_dir, 'cdaweb.json')
 
 def get(function, datasets, cache_dir):
 

@@ -4,55 +4,42 @@
 # For a fast update, use
 #   make all --always-make
 # This causes all scripts to be executed. The scripts use caching so only
-# metadata parts that appear in the json files in ./cache that need to be
+# metadata parts that appear in the json files in ./data/cache that need to be
 # updated will be updated.
 #
 # If an update is needed due to a source code change, use
 #   make all
-# This will use the cached .json files in ./cache only.
+# This will use the cached .json files in ./data/cache only.
 
 all:
-	make hapi-bw
+	make hapi-new
 	make hapi-nl
 	make tables
 
 clean:
-	rm -f data/*
-
-bundle:
-	cp compare.py compare
-	mkdir -p compare
-	cp compare.py compare/
-	cp data/hapi/hapi-bw.json compare/
-	tar zcvf compare.tgz compare/
-	scp compare.tgz weigel@mag.gmu.edu:www/tmp
+	-rm -rf data/*
 
 ################################################################################
-compare:
-	make log/compare.log
+cdaweb:
+	make data/cdaweb.json
 
-log/compare.log: data/hapi/hapi-bw.json data/hapi/hapi-nl.json compare.py
-	python compare.py | tee log/compare.log
+data/cdaweb.json: cdaweb.py
+	python cdaweb.py
 ################################################################################
 
 ################################################################################
-hapi-bw:
-	make data/hapi/hapi-bw.json
+hapi-new:
+	make data/hapi/hapi-new.json
 
-data/hapi/hapi-bw.json: data/all-restructure.json hapi/hapi-bw.py hapi/hapi-nl-issues.json
-	python hapi/hapi-bw.py | tee log/hapi-bw.log
-
-data/all-restructure.json: data/all-resolve.json all-restructure.py
-	python all-restructure.py
-
-data/all-resolve.json: all-resolve.py
-	python all-resolve.py
+data/hapi/hapi-new.json: data/cdaweb.json hapi/hapi-new.py hapi/hapi-nl-issues.json
+	-mkdir -p data/hapi/log
+	python hapi/hapi-new.py | tee data/hapi/log/hapi-new.log
 ################################################################################
 
 
 ################################################################################
-data/hapi/hapi-nl.json: hapi-nl.py
-	python hapi-nl.py
+data/hapi/hapi-nl.json: hapi/hapi-nl.py
+	python hapi/hapi-nl.py
 
 hapi-nl:
 	make data/hapi/hapi-nl.json
@@ -62,17 +49,17 @@ hapi-nl:
 ################################################################################
 tables:
 	make table-hapi
-	make table-all
+	make table-cdaweb
 
 table-hapi:
 	make data/tables/hapi.table.body.json
 
-data/tables/hapi.table.body.json: table/table-hapi.py data/hapi/hapi-bw.json data/hapi/hapi-nl.json
+data/tables/hapi.table.body.json: table/table-hapi.py data/hapi/hapi-new.json data/hapi/hapi-nl.json
 	python table/table-hapi.py
 
-table-all:
-	make data/tables/all.table.body.json
+table-cdaweb:
+	make data/tables/cdaweb.table.body.json
 
-data/tables/all.table.body.json: table/table-all.py data/all-restructure.json
-	python table/table-all.py
+data/tables/cdaweb.table.body.json: table/table-cdaweb.py data/main.json
+	python table/table-cdaweb.py
 ################################################################################

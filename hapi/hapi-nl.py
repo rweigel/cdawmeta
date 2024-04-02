@@ -1,10 +1,7 @@
 test_run = False
 
-base_url = "https://cottagesystems.com/server/cdaweb-nand/hapi"
-initial = 'jf'
-
-#base_url = "https://cdaweb.gsfc.nasa.gov/hapi"
-#initial = 'nl'
+base_url = "https://cdaweb.gsfc.nasa.gov/hapi"
+initial = 'nl'
 
 def omit(id):
   if test_run:

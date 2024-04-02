@@ -1,25 +1,25 @@
-HAPIHEAD=../data/tables/hapi.table.head.json
-HAPIBODY=../data/tables/hapi.table.body.json
+HAPIHEAD=../../../data/tables/hapi.table.head.json
+HAPIBODY=../../../data/tables/hapi.table.body.json
 
-ALLHEAD=../data/tables/all.table.head.json
-ALLBODY=../data/tables/all.table.body.json
+ALLHEAD=../../../data/tables/cdaweb.table.head.json
+ALLBODY=../../../data/tables/cdaweb.table.body.json
 
 table-ui:
 	@- git clone https://github.com/rweigel/table-ui
 	@- git pull https://github.com/rweigel/table-ui
 
-serve-all:
-	cd ../; make table-all
+serve-cdaweb:
+	cd ../; make table-cdaweb
 	make table-ui
 	cd table-ui/ajax; python server.py 8051 $(ALLHEAD) $(ALLBODY)
 
-serve-all-sql:
-	cd ../; make table-all
-	make all-sql
+serve-cdaweb-sql:
+	cd ../; make table-cdaweb
+	make cdaweb-sql
 	python table-ui/ajax/server.py 8051 $(ALLHEAD) $(ALLBODY).sql
 
-all-sql:
-	cd ../; make table-all
+cdaweb-sql:
+	cd ../; make table-cdaweb
 	make table-ui
 	make $(ALLBODY).sql
 
