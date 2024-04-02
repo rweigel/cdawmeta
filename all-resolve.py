@@ -26,18 +26,8 @@ max_workers = 4
 allxml  = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
 filews  = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
 
-try:
-  # TODO: Create and use setup.py
-  import requests_cache
-  import xmltodict
-except:
-  print(os.popen('pip install xmltodict requests_cache').read())
-
-import requests_cache
-import xmltodict
-
-base_dir = os.path.dirname(__file__)
-all_file = os.path.join(base_dir, 'data/all-resolve.json')
+out_dir = os.path.join(os.path.dirname(__file__), 'data')
+out_file = os.path.join(out_dir, 'all-resolve.json')
 
 def get(function, datasets, cache_dir):
 
@@ -54,7 +44,7 @@ def get(function, datasets, cache_dir):
       pool.map(call, datasets)
 
 def CachedSession(cdir):
-
+  import requests_cache
   # https://requests-cache.readthedocs.io/en/stable/#settings
   # https://requests-cache.readthedocs.io/en/stable/user_guide/headers.html
 
@@ -77,7 +67,7 @@ def create_datasets():
   Create a list of datasets; each element has content of dataset node in
   all.xml. An info and id node is also added.
   """
-
+  import xmltodict
   cdir = os.path.join(os.path.dirname(__file__), 'data/cache/all')
   session = CachedSession(cdir)
 
@@ -94,26 +84,7 @@ def create_datasets():
     if omit(id):
       continue
 
-    startDate = dataset_allxml['@timerange_start'].replace(' ', 'T') + 'Z';
-    stopDate = dataset_allxml['@timerange_stop'].replace(' ', 'T') + 'Z';
-
-    contact = ''
-    if 'data_producer' in dataset_allxml:
-      if '@name' in dataset_allxml['data_producer']:
-        contact = dataset_allxml['data_producer']['@name']
-      if '@affiliation' in dataset_allxml['data_producer']:
-        contact = contact + " @ " + dataset_allxml['data_producer']['@affiliation']
-
-    dataset = {
-                'id': id,
-                'info': {
-                    'startDate': startDate,
-                    'stopDate': stopDate,
-                    'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{id[0]}.html#' + id,
-                    'contact': contact
-                },
-                '_allxml': dataset_allxml
-    }
+    dataset = {'id': id, '_allxml': dataset_allxml}
 
     if not 'mastercdf' in dataset_allxml:
       print('No mastercdf for ' + id)
@@ -210,12 +181,15 @@ def add_file_list(datasets):
 
   def get_file_list(dataset, session, cache_dir):
 
-    start = dataset["info"]["startDate"].replace("-","").replace(":","")
-    stop = dataset["info"]["stopDate"].replace("-","").replace(":","")
+    start = dataset['_allxml']['@timerange_start'].replace(" ", "T").replace("-","").replace(":","") + "Z";
+    stop = dataset['_allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z";
     url = filews + dataset["id"] + "/orig_data/" + start + "," + stop
+
     print("Requesting: " + url)
     r = session.get(url, headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
-    print(f'Read: (from cache={r.from_cache}) {url}')
+    if r.status_code != 200:
+      print(f"HTTP status code {r.status_code} when getting '{url}'")
+      return
 
     dataset['_file_list'] = cache_dir + "/" + r.cache_key + ".json"
 
@@ -229,7 +203,11 @@ add_file_list(datasets)
 
 print(f'# of datasets: {len(datasets)}')
 
-print(f'Writing {all_file}')
-with open(all_file, 'w', encoding='utf-8') as f:
+if not os.path.exists(out_dir):
+  print(f'Creating {out_dir}')
+  os.makedirs(out_dir, exist_ok=True)
+
+print(f'Writing {out_file}')
+with open(out_file, 'w', encoding='utf-8') as f:
   json.dump(datasets, f, indent=2)
-print(f'Wrote {all_file}')
+print(f'Wrote {out_file}')

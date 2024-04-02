@@ -90,7 +90,7 @@ def all_attribute_table(datasets):
 
     if use_all_attributes == True:
       for dataset in datasets:
-        for name, variable in dataset['_variables'].items():
+        for name, variable in dataset['_master_restructured']['_variables'].items():
           for attribute_type in ['VarDescription', 'VarAttributes']:
             if not attribute_type in variable:
               print("Missing " + attribute_type + " in " + name + " in " + dataset['id'])
@@ -117,7 +117,7 @@ def all_attribute_table(datasets):
     #print(dataset['id'])
     if omit(dataset['id']) == True:
       continue
-    for name, variable in dataset['_variables'].items():
+    for name, variable in dataset['_master_restructured']['_variables'].items():
       row = [dataset['id'], name]
       for attribute_type in ['VarDescription', 'VarAttributes']:
 
@@ -149,6 +149,9 @@ def all_attribute_table(datasets):
 import json
 with open(all_input, 'r', encoding='utf-8') as f:
   datasets = json.load(f)
+
+from cdawmeta.restructure_master import add_master_restructured
+datasets = add_master_restructured(datasets)
 
 header, table = all_attribute_table(datasets)
 
