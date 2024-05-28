@@ -12,12 +12,11 @@ import deepdiff
 
 from hapiclient import hapitime2datetime
 
-base_dir = os.path.dirname(__file__)
-base_dir = os.path.join(base_dir, 'data')
+base_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
 
-opts = {'compare_data': True, 'parallel': False}
+opts = {'compare_data': False, 'parallel': False, 'base_dir': base_dir}
 
-if True:
+if False:
   opts = {**opts,
           'keep': r'^a',
           "sample_duration": {"days": 1},
@@ -36,23 +35,35 @@ if False:
           'keep': r'^A',
           "s1": "jf",
           "s2": "nl",
-          "url1": "https://cottagesystems.com/server/cdaweb-nand/hapi",
+          "url1": "https://cottagesystems.com/server/cdaweb/hapi",
           "url2": "https://cdaweb.gsfc.nasa.gov/hapi",
           "s1_expire_after": {"days": 1},
           "s2_expire_after": {"days": 1},
           "sample_duration": {"days": 1}
         }
 
-l1 = len(opts['s1'])
-l2 = len(opts['s2'])
-opts['s2_padded'] = opts['s2']
-opts['s1_padded'] = opts['s1']
-if l1 > l2:
-  opts['s2_padded'] = opts['s2'] + ' '*(l1-l2)
-if l2 > l1:
-  opts['s1_padded'] = opts['s1'] + ' '*(l2-l1)
+if True:
+  opts = {**opts,
+          'keep': r'^A`|^B',
+          "s1": "bw",
+          "s2": "nl",
+          "url1": "",
+          "url2": "https://cdaweb.gsfc.nasa.gov/hapi",
+          "s1_expire_after": None,
+          "s2_expire_after": {"days": 1},
+          "sample_duration": {"days": 1}
+        }
 
 def compare_metadata(datasets_s1, datasets_s2, opts):
+
+
+  for dsid in datasets_s2.keys():
+    if not dsid in datasets_s1:
+
+      report(f"{dsid} not in {opts['s1']}",'fail')
+      dsid0 = dsid + "@0"
+      if dsid[-2] != "@" and dsid0 in list(datasets_s1.keys()):
+        report(f"  But {dsid0} in {opts['s1']}",'info')
 
   for dsid in datasets_s1.keys():
 
@@ -60,6 +71,7 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
 
     extra = ""
     if "x_cdf_depend_0_name" in datasets_s1[dsid]["info"]["parameters"][0]:
+      # Special case for when s1 = 'bw'
       x_cdf_depend_0_name = datasets_s1[dsid]["info"]["parameters"][0]["x_cdf_depend_0_name"]
       extra = f'for s1 DEPEND_0  = {x_cdf_depend_0_name}'
 
@@ -107,31 +119,24 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
 
 def compare_info(dsid, info_s2, info_s1):
 
-    keys_s2 = list(info_s2.keys())
-    keys_s1 = list(info_s1.keys())
+  keys_s2 = list(info_s2.keys())
+  keys_s1 = list(info_s1.keys())
 
-    for ignore in ['_parameters', 'parameters', 'stopDate']:
-      keys_s2.remove(ignore)
-      keys_s1.remove(ignore)
+  keys_s1 = remove_keys(keys_s1)
+  keys_s2 = remove_keys(keys_s2)
 
-    # Special case for s1. TODO: Create list of elements to ignore
-    if 'sampleStartDate' in keys_s1:
-      keys_s1.remove('sampleStartDate')
-    if 'sampleStopDate' in keys_s1:
-      keys_s1.remove('sampleStopDate')
-
-    n_keys_s2 = len(keys_s2)
-    n_keys_s1 = len(keys_s1)
-    if n_keys_s2 != n_keys_s1:
-      #print(f"{dsid}")
-      report(f'n_keys_{s2} = {n_keys_s2} != n_keys_{s1} = {n_keys_s1}','fail')
-      report(f"  Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
-    else:
-      common_keys = set(keys_s2) & set(keys_s1)
-      for key in common_keys:
-        if info_s2[key] != info_s1[key]:
-          #print(f"{dsid}/info/{key}")
-          report(f"val_{s2} = {info_s2[key]} != val_{s1} = {info_s1[key]}",'fail')
+  n_keys_s2 = len(keys_s2)
+  n_keys_s1 = len(keys_s1)
+  if n_keys_s2 != n_keys_s1:
+    #print(f"{dsid}")
+    report(f'n_keys_{opts["s2"]} = {n_keys_s2} != n_keys_{opts["s1"]} = {n_keys_s1}','fail')
+    report(f"  Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
+  else:
+    common_keys = set(keys_s2) & set(keys_s1)
+    for key in common_keys:
+      if info_s2[key] != info_s1[key]:
+        #print(f"{dsid}/info/{key}")
+        report(f'{key} val_{opts["s2"]} = {info_s2[key]} != val_{opts["s1"]} = {info_s1[key]}','fail')
 
 def compare_parameter(param_s2, param_s1):
 
@@ -278,6 +283,16 @@ def compare_data(dsid, datasets_s1, datasets_s2, opts, parameters="", datasets_s
     report(f"{opts['s2']} data (length = {len(resps[1].text)}) != {opts['s1']} data (length = {len(resps[0].text)})",'fail')
 
 
+def remove_keys(keys):
+  for key in keys.copy():
+    if opts['s1'] == 'bw' and key in ['sampleStartDate', 'sampleStopDate']:
+      keys.remove(key)
+    if key.startswith("x_"):
+      keys.remove(key)
+    if key in ['_parameters', 'parameters']:
+      keys.remove(key)
+  return keys
+
 def omit(id):
   import re
   if id == 'AIM_CIPS_SCI_3A': # Very large/slow; always omit
@@ -289,13 +304,13 @@ def get_all_metadata(server_url, server_name, expire_after={"days": 1}):
 
   def server_dir(url):
     url_parts = urlparse(url)
-    url_dir = os.path.join(base_dir, 'compare', url_parts.netloc, *url_parts.path.split('/'))
+    url_dir = os.path.join(opts['base_dir'], 'compare', url_parts.netloc, *url_parts.path.split('/'))
     os.makedirs(url_dir, exist_ok=True)
     return url_dir
 
   cache_dir = server_dir(server_url)
   out_file = os.path.join(cache_dir, f'hapi-{server_name}.json')
-  report(f"\n{server_name} = {opts['url1']}")
+  report(f"\n{server_name} = {server_url}")
   report(f"cache_dir = {cache_dir}")
 
   if False:
@@ -321,7 +336,6 @@ def get_all_metadata(server_url, server_name, expire_after={"days": 1}):
 
   session = CachedSession()
 
-  #resp = session.get(server_url + '/catalog')
   urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
   resp = session.request('get', server_url + '/catalog', verify=False)
   datasets = resp.json()['catalog']
@@ -370,14 +384,10 @@ def restructure(datasets):
       datasetsr[id]["info"]["_parameters"][name] = parameter
   return datasetsr
 
-def read_hapi_bw(base_dir):
+def read_hapi_bw():
 
   # Get sample starts/stops from s0
-  f1 = os.path.join(os.path.dirname(__file__), f'hapi-bw.json')
-  if os.path.exists(f1):
-    all_input = f1
-  else:
-    all_input = os.path.join(base_dir, f'hapi-bw.json')
+  all_input = os.path.join(opts['base_dir'], 'hapi', f'hapi-new.json')
 
   print(f"Reading: {all_input}")
   with open(all_input, 'r', encoding='utf-8') as f:
@@ -400,18 +410,29 @@ def report(msg, msg_type=None):
 
   print(prefix + msg)
 
+def pad_server_name(opts):
+  l1 = len(opts['s1'])
+  l2 = len(opts['s2'])
+  opts['s2_padded'] = opts['s2']
+  opts['s1_padded'] = opts['s1']
+  if l1 > l2:
+    opts['s2_padded'] = opts['s2'] + ' '*(l1-l2)
+  if l2 > l1:
+    opts['s1_padded'] = opts['s1'] + ' '*(l2-l1)
+
+  return opts
+
+opts = pad_server_name(opts)
 
 datasets_s0 = None
-if opts['s2'] != 'nl':
-  datasets_s1o = get_all_metadata(opts['url1'], opts['s1'], expire_after=opts['s1_expire_after'])
+if opts['s1'] == 'jf' and opts['s2'] == 'nl' and opts['compare_data'] is True:
+  # datasets_s0 has sample{Start,Stop} for all datasets. Needed for comparing data.
+  datasets_s0  = restructure(read_hapi_bw())
+
+if opts['s1'] == 'bw':
+  datasets_s1o = read_hapi_bw()
 else:
-  if opts['s1'] == 'jf':
-    # datasets_s0 has start/stop info for all datasets
-    datasets_s0o = read_hapi_bw(base_dir)
-    datasets_s0  = restructure(datasets_s0o)
-    datasets_s1o = get_all_metadata(opts['url1'], opts['s1'], expire_after=opts['s1_expire_after'])
-  if opts['s1'] == 'bw':
-    datasets_s1o = read_hapi_bw(base_dir)
+  datasets_s1o = get_all_metadata(opts['url1'], opts['s1'], expire_after=opts['s1_expire_after'])
 
 datasets_s2o = get_all_metadata(opts['url2'], opts['s2'], expire_after=opts['s2_expire_after'])
 

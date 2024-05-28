@@ -84,7 +84,7 @@ def omit_variable(id, variable_name):
   for key in list(issues['omitVariables'].keys()):
     # Some keys of issues['omitVariables'] are ids with @subset_number"
     # The @subset_number is not needed, but kept for reference.
-    # Here we contatenate all variables with common dataset base
+    # Here we concatenate all variables with common dataset base
     # name (variable names are unique within a dataset, so this works).
     newkey = key.split("@")[0]
     if newkey != key:
@@ -164,10 +164,11 @@ def add_info(datasets):
       if '@affiliation' in _allxml['data_producer']:
         contact = contact + " @ " + _allxml['data_producer']['@affiliation']
 
+
     dataset['info'] = {
         'startDate': startDate,
         'stopDate': stopDate,
-        'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{dataset["id"]}.html#',
+        'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{dataset["id"][0]}.html#{dataset["id"]}',
         'contact': contact
     }
 
@@ -201,7 +202,8 @@ def cdftimelen(cdf_type):
 
   return None
 
-def variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, all_variables):
+def variables2parameters(depend_0_name, depend_0_variables, all_variables, print_info=False):
+  depend_0_variable = all_variables[depend_0_name]
 
   cdf_type = depend_0_variable['VarDescription']['DataType']
   length = cdftimelen(cdf_type)
@@ -282,10 +284,48 @@ def variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, a
     if 'DimSizes' in variable['VarDescription']:
       parameter['size'] = variable['VarDescription']['DimSizes']
 
-    description = ""
+
+    CATDESC = ""
     if 'CATDESC' in variable['VarAttributes']:
-      description = variable['VarAttributes']['CATDESC']
-    parameter['description'] = description
+      CATDESC = variable['VarAttributes']['CATDESC'].strip()
+
+    VAR_NOTES = ""
+    if 'VAR_NOTES' in variable['VarAttributes']:
+      VAR_NOTES = variable['VarAttributes']['VAR_NOTES'].strip()
+
+    if VAR_NOTES == CATDESC:
+      parameter['description'] = f"VAR_NOTES: {CATDESC}"
+    elif CATDESC != "" and VAR_NOTES == "":
+      parameter['description'] = f"CATDESC: {CATDESC}"
+    elif VAR_NOTES != "" and CATDESC == "":
+      parameter['description'] = f"VAR_NOTES: {CATDESC}"
+    elif CATDESC != "" and VAR_NOTES != "":
+      parameter['description'] = f"CATDESC: {CATDESC}; VAR_NOTES: {VAR_NOTES}"
+
+    def trim(label):
+      if isinstance(label, str):
+        return label.strip()
+      for i in range(0, len(label)):
+        label[i] = label[i].strip()
+      return label
+
+    if 'size' in parameter:
+      label = []
+      for i in range(0, len(parameter['size'])):
+        label.append([])
+        labl_ptr_name = f'LABL_PTR_{i+1}'
+        if labl_ptr_name in variable['VarAttributes']:
+          labl_ptr_name = variable['VarAttributes'][labl_ptr_name]
+          if labl_ptr_name in all_variables:
+            #print(all_variables[labl_ptr_name])
+            if 'VarData' in all_variables[labl_ptr_name]:
+              label[i] = trim(all_variables[labl_ptr_name]['VarData'])
+      parameter['label'] = label
+      if len(parameter['size']) == 1:
+        parameter['label'] = label[0]
+
+    if 'LABLAXIS' in variable['VarAttributes']:
+      parameter['label'] = trim(variable['VarAttributes']['LABLAXIS'])
 
     fill = None
     if 'FILLVAL' in variable['VarAttributes']:
@@ -329,6 +369,11 @@ def variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, a
         # (because the variable has no asssoicated data). In this case,
         # we need to get the DimSizes from the DEPEND variable.
         print(f"  Error: Omitting bins for parameter {name} because no DimSizes attribute found.")
+
+    if print_info:
+      print(f" {parameter['name']}")
+      print('  size = {}'.format(parameter.get('size', None)))
+      print('  label = {}'.format(parameter.get('label', None)))
 
     parameters.append(parameter)
 
@@ -374,7 +419,7 @@ def bins(DEPEND_x_NAME, DEPEND_x):
                     }
       return bins_object
     else:
-      print(f"  Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (probably VIRTUAL)")
+      print(f"  Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
       return None
 
 def split_variables(datasets):
@@ -430,9 +475,10 @@ def build_hapi_infos(datasets):
     print(dataset['id'] + ": subsetting and creating /info")
     n = 0
     depend_0s = dataset['_variables_split'].items()
-    print(f"  {len(depend_0s)} DEPEND_0s")
+    plural = "s" if len(depend_0s) > 1 else ""
+    print(f"  {len(depend_0s)} DEPEND_0{plural}")
 
-    # First pass - drop datasets with problems
+    # First pass - drop datasets with problems and create list of DEPEND_0 names
     depend_0_names = []
     for depend_0_name, depend_0_variables in depend_0s:
 
@@ -461,8 +507,8 @@ def build_hapi_infos(datasets):
         print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
         continue
 
-      depend_0_variable = dataset['_master_restructured']['_variables'][depend_0_name]
-      parameters = variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, dataset['_master_restructured']['_variables'])
+      all_variables = dataset['_master_restructured']['_variables']
+      parameters = variables2parameters(depend_0_name, depend_0_variables, all_variables, print_info=False)
       if parameters == None:
         dataset['_variables_split'][depend_0_name] = None
         if len(depend_0s) == 1:
@@ -479,7 +525,6 @@ def build_hapi_infos(datasets):
 
     for depend_0_name in depend_0_names:
 
-      depend_0_variable = dataset['_master_restructured']['_variables'][depend_0_name]
       depend_0_variables = dataset['_variables_split'][depend_0_name]
 
       subset = ''
@@ -488,7 +533,8 @@ def build_hapi_infos(datasets):
 
       depend_0_variables = order_variables(dataset['id'] + subset, depend_0_variables)
 
-      parameters = variables2parameters(depend_0_name, depend_0_variable, depend_0_variables, dataset['_master_restructured']['_variables'])
+      all_variables = dataset['_master_restructured']['_variables']
+      parameters = variables2parameters(depend_0_name, depend_0_variables, all_variables, print_info=True)
 
       dataset_new = {
         'id': dataset['id'] + subset,

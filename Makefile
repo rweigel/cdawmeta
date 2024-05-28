@@ -11,6 +11,9 @@
 #   make all
 # This will use the cached .json files in ./data/cache only.
 
+cdawmeta.egg-info:
+	pip install -e .
+
 all:
 	make hapi-new
 	make hapi-nl
@@ -24,24 +27,23 @@ cdaweb:
 	make data/cdaweb.json
 
 data/cdaweb.json: cdaweb.py
-	python cdaweb.py
+	python cdaweb.py | tee data/cdaweb.log
 ################################################################################
 
 ################################################################################
-hapi-new:
+hapi-new: cdawmeta.egg-info
 	make data/hapi/hapi-new.json
 
 data/hapi/hapi-new.json: data/cdaweb.json hapi/hapi-new.py hapi/hapi-nl-issues.json
-	-mkdir -p data/hapi/log
-	python hapi/hapi-new.py | tee data/hapi/log/hapi-new.log
+	python hapi/hapi-new.py | tee data/hapi/hapi-new.log
 ################################################################################
 
 
 ################################################################################
 data/hapi/hapi-nl.json: hapi/hapi-nl.py
-	python hapi/hapi-nl.py
+	python hapi/hapi-nl.py | tee data/hapi/hapi-nl.log
 
-hapi-nl:
+hapi-nl: cdawmeta.egg-info
 	make data/hapi/hapi-nl.json
 ################################################################################
 

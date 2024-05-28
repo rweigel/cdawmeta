@@ -1,22 +1,24 @@
 # Usage: python main.py
 #
-# Creates data/main.json, which contains all datasets, each with keys of
-# _all_xml, _master, _spase, and _file_list
-# _all_xml contains the content of the dataset node in all.xml as JSON.
-# The values of the the other keys are paths to the cached JSON files.
+# Creates data/main.json, which is an object with keys of dataset id, each with
+# keys of _all_xml, _master, _spase, and _file_list. _all_xml contains the
+# content of the dataset node in all.xml as JSON. The values of the other keys
+# are paths to the cached JSON files.
 
 import os
 import json
 
 test_run = True
 expire_after = None # Use, e.g., timedelta(days=1), to force cache expiration
-                    # after one day, independent of cache-related headers.
+                    # after one day, independent of cache-related HTTP headers.
 
 def omit(id):
+  import re
   if id == 'AIM_CIPS_SCI_3A':
     return True
   if test_run:
-    if id.startswith("AC_H0"):
+    #if re.search('^A|^B', id):
+    if re.search('^AC_H0', id):
       return False
     return True
   else:
@@ -171,7 +173,7 @@ def add_spase(datasets):
       return
 
     print(f'Read: (from cache={r.from_cache}) {url}')
-    print(r.json())
+    #print(r.json())
     dataset['_spase'] = cache_dir + "/" + r.cache_key + ".json"
 
   cache_dir = os.path.join(os.path.dirname(__file__), 'data/cache/spase')
