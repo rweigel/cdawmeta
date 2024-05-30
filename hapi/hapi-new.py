@@ -287,20 +287,24 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
 
     CATDESC = ""
     if 'CATDESC' in variable['VarAttributes']:
-      CATDESC = variable['VarAttributes']['CATDESC'].strip()
+      CATDESC = variable['VarAttributes']['CATDESC']
 
     VAR_NOTES = ""
     if 'VAR_NOTES' in variable['VarAttributes']:
-      VAR_NOTES = variable['VarAttributes']['VAR_NOTES'].strip()
+      VAR_NOTES = variable['VarAttributes']['VAR_NOTES']
 
     if VAR_NOTES == CATDESC:
-      parameter['description'] = f"VAR_NOTES: {CATDESC}"
+      parameter['description'] = f"{CATDESC}"
     elif CATDESC != "" and VAR_NOTES == "":
-      parameter['description'] = f"CATDESC: {CATDESC}"
+      parameter['description'] = f"{CATDESC}"
     elif VAR_NOTES != "" and CATDESC == "":
-      parameter['description'] = f"VAR_NOTES: {CATDESC}"
+      parameter['description'] = f"{CATDESC}"
     elif CATDESC != "" and VAR_NOTES != "":
-      parameter['description'] = f"CATDESC: {CATDESC}; VAR_NOTES: {VAR_NOTES}"
+      parameter['description'] = CATDESC
+      parameter['x_description'] = f"CATDESC: {CATDESC}; VAR_NOTES: {VAR_NOTES}"
+
+    # TODO: parameter['description'] = parameter['description'].strip()
+    #       Not done now to reduce number of mismatches with Nand.
 
     def trim(label):
       if isinstance(label, str):
@@ -320,12 +324,12 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
             #print(all_variables[labl_ptr_name])
             if 'VarData' in all_variables[labl_ptr_name]:
               label[i] = trim(all_variables[labl_ptr_name]['VarData'])
-      parameter['label'] = label
+      parameter['x_label'] = label
       if len(parameter['size']) == 1:
-        parameter['label'] = label[0]
+        parameter['x_label'] = label[0]
 
     if 'LABLAXIS' in variable['VarAttributes']:
-      parameter['label'] = trim(variable['VarAttributes']['LABLAXIS'])
+      parameter['x_label'] = trim(variable['VarAttributes']['LABLAXIS'])
 
     fill = None
     if 'FILLVAL' in variable['VarAttributes']:
@@ -366,14 +370,17 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
         del parameter['bins']
         # TODO: This is not always an error. If the variable is virtual,
         # then DimSizes can't be written into the CDF file for that variable
-        # (because the variable has no asssoicated data). In this case,
+        # (because the variable has no associated data). In this case,
         # we need to get the DimSizes from the DEPEND variable.
         print(f"  Error: Omitting bins for parameter {name} because no DimSizes attribute found.")
 
     if print_info:
-      print(f" {parameter['name']}")
-      print('  size = {}'.format(parameter.get('size', None)))
-      print('  label = {}'.format(parameter.get('label', None)))
+      virtual = parameter.get('x_cdf_is_virtual', '')
+      if virtual != '':
+        virtual = f'({virtual})'
+      print(f"  {parameter['name']} {virtual}")
+      print('   size = {}'.format(parameter.get('size', None)))
+      print('   x_label = {}'.format(parameter.get('x_label', None)))
 
     parameters.append(parameter)
 

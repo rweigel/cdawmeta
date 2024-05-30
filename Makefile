@@ -11,6 +11,8 @@
 #   make all
 # This will use the cached .json files in ./data/cache only.
 
+INCLUDE='.*'
+
 cdawmeta.egg-info:
 	pip install -e .
 
@@ -22,12 +24,17 @@ all:
 clean:
 	-rm -rf data/*
 
+compare:
+	make cdaweb INCLUDE='$(INCLUDE)'
+	make hapi-new
+	python hapi/compare.py --include '$(INCLUDE)'
+
 ################################################################################
 cdaweb:
-	make data/cdaweb.json
+	make data/cdaweb.json INCLUDE='$(INCLUDE)'
 
 data/cdaweb.json: cdaweb.py
-	python cdaweb.py | tee data/cdaweb.log
+	python cdaweb.py --include '$(INCLUDE)' | tee data/cdaweb.log
 ################################################################################
 
 ################################################################################

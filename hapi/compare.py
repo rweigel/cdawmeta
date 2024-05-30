@@ -12,6 +12,11 @@ import deepdiff
 
 from hapiclient import hapitime2datetime
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--include', help="Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)")
+args = parser.parse_args()
+
 base_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
 
 opts = {'compare_data': False, 'parallel': False, 'base_dir': base_dir}
@@ -32,7 +37,6 @@ if False:
 
 if False:
   opts = {**opts,
-          'keep': r'^A',
           "s1": "jf",
           "s2": "nl",
           "url1": "https://cottagesystems.com/server/cdaweb/hapi",
@@ -44,7 +48,6 @@ if False:
 
 if True:
   opts = {**opts,
-          'keep': r'^A`|^B',
           "s1": "bw",
           "s2": "nl",
           "url1": "",
@@ -54,12 +57,22 @@ if True:
           "sample_duration": {"days": 1}
         }
 
-def compare_metadata(datasets_s1, datasets_s2, opts):
+def omit(id):
+  # TODO: This is a copy of function in cdaweb.py. Move to a common module.
+  import re
+  if id == 'AIM_CIPS_SCI_3A':
+    return True
+  if args.include:
+    if re.search(args.include, id):
+      return False
+    return True
+  else:
+    return False
 
+def compare_metadata(datasets_s1, datasets_s2, opts):
 
   for dsid in datasets_s2.keys():
     if not dsid in datasets_s1:
-
       report(f"{dsid} not in {opts['s1']}",'fail')
       dsid0 = dsid + "@0"
       if dsid[-2] != "@" and dsid0 in list(datasets_s1.keys()):
@@ -73,7 +86,7 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
     if "x_cdf_depend_0_name" in datasets_s1[dsid]["info"]["parameters"][0]:
       # Special case for when s1 = 'bw'
       x_cdf_depend_0_name = datasets_s1[dsid]["info"]["parameters"][0]["x_cdf_depend_0_name"]
-      extra = f'for s1 DEPEND_0  = {x_cdf_depend_0_name}'
+      extra = f'for s1 DEPEND_0 = {x_cdf_depend_0_name}'
 
     if not dsid in datasets_s2:
 
@@ -97,11 +110,11 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
         if list(keys_s1)[0:m] != list(keys_s2)[0:m]:
           report(f"n_params_{opts['s2']} = {n_params_s2} != n_params_{opts['s1']} = {n_params_s1} {extra}",'fail')
           report(f"  Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
-          report(f"  Error because first {m} parameters are the same.",'info')
+          report(f"  Error because first {m} parameters are not identical.",'info')
         else:
           report(f"n_params_{opts['s2']} = {n_params_s2} != n_params_{opts['s1']} = {n_params_s1} {extra}",'warn')
           report(f"  Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
-          report(f"  Not error because first {m} parameters are the same.",'info')
+          report(f"  Not error because first {m} parameters are identical.",'info')
           parameters = list(keys_s1)[0:m]
           compare_data(dsid, datasets_s1, datasets_s2, opts, parameters=parameters, datasets_s0=datasets_s0)
       else:
@@ -113,7 +126,7 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
           for i in range(len(datasets_s2[dsid]["info"]["parameters"])):
             param_s2 = datasets_s2[dsid]["info"]["parameters"][i]
             param_s1 = datasets_s1[dsid]["info"]["parameters"][i]
-            compare_parameter(param_s2, param_s1)
+            compare_parameter(dsid, param_s2, param_s1)
 
           compare_data(dsid, datasets_s1, datasets_s2, opts, datasets_s0=datasets_s0)
 
@@ -138,13 +151,13 @@ def compare_info(dsid, info_s2, info_s1):
         #print(f"{dsid}/info/{key}")
         report(f'{key} val_{opts["s2"]} = {info_s2[key]} != val_{opts["s1"]} = {info_s1[key]}','fail')
 
-def compare_parameter(param_s2, param_s1):
+def compare_parameter(dsid, param_s2, param_s1):
 
   param_s1_keys = sorted(list(param_s1.keys()))
   param_s2_keys = sorted(list(param_s2.keys()))
 
   for key in param_s1_keys.copy():
-    if key.startswith("x_cdf_"):
+    if key.startswith("x_"):
       param_s1_keys.remove(key)
 
   n_param_keys_s1 = len(param_s1_keys)
@@ -152,7 +165,7 @@ def compare_parameter(param_s2, param_s1):
   if n_param_keys_s1 != n_param_keys_s2:
     if {'bins'} != set(param_s1_keys) ^ set(param_s2_keys):
       report(f"{dsid}/{param_s2['name']}",'info')
-      report(f'  n_param_keys_{s2} = {n_param_keys_s2} != n_param_keys_{s1} = {n_param_keys_s1} for s1 DEPEND_0  = {x_cdf_depend_0_name}','fail')
+      report(f"  n_param_keys_{opts['s2']} = {n_param_keys_s2} != n_param_keys_{opts['s1']} = {n_param_keys_s1}",'fail')
       report(f"    Differences: {set(param_s1_keys) ^ set(param_s2_keys)}",'info')
 
   common_keys = set(param_s2_keys) & set(param_s1_keys)
@@ -166,17 +179,17 @@ def compare_parameter(param_s2, param_s1):
         if a and b:
           if float(param_s2[key]) != float(param_s1[key]):
             report(f"{param_s2['name']}/{key}",'info')
-            report(f"  val_{s2} = {param_s2[key]} != val_{s1} = {param_s1[key]}",'fail')
+            report(f"val_{opts['s2']} = {param_s2[key]} != val_{opts['s1']} = {param_s1[key]}",'fail')
       elif key == 'size' and isinstance(param_s2[key],list) and isinstance(param_s1[key],list):
         if param_s2[key] != param_s1[key]:
           report(f"{param_s2['name']}/{key}",'info')
-          report(f"  val_{s2} = {param_s2[key]} != val_{s1} = {param_s1[key]}",'fail')
+          report(f"val_{opts['s2']} = {param_s2[key]} != val_{opts['s1']} = {param_s1[key]}",'fail')
       elif type(param_s2[key]) != type(param_s1[key]):
         report(f"{param_s2['name']}/{key}",'info')
-        report(f"  type_{s2} = {type(param_s2[key])} != type_{s1} = {type(param_s1[key])}",'fail')
+        report(f"  type_{opts['s2']} = {type(param_s2[key])} != type_{opts['s1']} = {type(param_s1[key])}",'fail')
       else:
         report(f"{param_s2['name']}/{key}",'info')
-        report(f"  val_{s2} = {param_s2[key]} != val_{s1} = {param_s1[key]}",'fail')
+        report(f"val_{opts['s2']} = '{param_s2[key]}' != val_{opts['s1']} = '{param_s1[key]}'",'fail')
 
   compare_bins(param_s2, param_s1)
 
@@ -292,13 +305,6 @@ def remove_keys(keys):
     if key in ['_parameters', 'parameters']:
       keys.remove(key)
   return keys
-
-def omit(id):
-  import re
-  if id == 'AIM_CIPS_SCI_3A': # Very large/slow; always omit
-    return True
-  if not bool(re.match(opts['keep'],id)):
-    return True
 
 def get_all_metadata(server_url, server_name, expire_after={"days": 1}):
 

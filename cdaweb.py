@@ -1,4 +1,4 @@
-# Usage: python main.py
+# Usage: python cdaweb.py
 #
 # Creates data/main.json, which is an object with keys of dataset id, each with
 # keys of _all_xml, _master, _spase, and _file_list. _all_xml contains the
@@ -8,28 +8,32 @@
 import os
 import json
 
-test_run = True
-expire_after = None # Use, e.g., timedelta(days=1), to force cache expiration
-                    # after one day, independent of cache-related HTTP headers.
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--include', help="Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)")
+args = parser.parse_args()
+
+max_workers = 4
+expire_after = None  # Use, e.g., timedelta(days=1), to force cache expiration
+                     # after one day, independent of cache-related HTTP headers.
+cache_control = True # Use Cache-Control response headers for expiration, if available
+
+allxml = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
+filews = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
+
+out_dir = os.path.join(os.path.dirname(__file__), 'data')
+out_file = os.path.join(out_dir, 'cdaweb.json')
 
 def omit(id):
   import re
   if id == 'AIM_CIPS_SCI_3A':
     return True
-  if test_run:
-    #if re.search('^A|^B', id):
-    if re.search('^AC_H0', id):
+  if args.include:
+    if re.search(args.include, id):
       return False
     return True
   else:
     return False
-
-max_workers = 4
-allxml  = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
-filews  = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
-
-out_dir = os.path.join(os.path.dirname(__file__), 'data')
-out_file = os.path.join(out_dir, 'cdaweb.json')
 
 def get(function, datasets, cache_dir):
 
@@ -54,7 +58,7 @@ def CachedSession(cdir):
   copts = {
     "use_cache_dir": True,          # Save files in the default user cache dir
     "cache_control": False,         # Use Cache-Control response headers for expiration, if available
-    "expire_after": expire_after,   # Expire responses after one day if no cache control header
+    "expire_after": expire_after,   # Expire responses after expire_after if no cache control header
     "allowable_codes": [200],       # Cache responses with these status codes
     "stale_if_error": True,         # In case of request errors, use stale cache data if possible
     "backend": "filesystem",
@@ -74,6 +78,7 @@ def create_datasets():
   session = CachedSession(cdir)
 
   resp = session.get(allxml)
+  print(f'Read: (from cache={resp.from_cache}) {allxml}')
   allxml_text = resp.text
 
   all_dict = xmltodict.parse(allxml_text);
@@ -118,7 +123,6 @@ def add_master(datasets):
       return
 
     dataset['_master_data'] = r.json()
-
     print(f'Read: (from cache={r.from_cache}) {masterjson}')
 
     dataset['_master'] = cache_dir + "/" + r.cache_key + ".json"
