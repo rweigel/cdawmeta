@@ -1,10 +1,13 @@
 import os
 import json
 
-base_dir = os.path.join(os.path.dirname(__file__), '..', 'data') 
+from cdawmeta.write_json import write_json
+
+base_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
 in_file  = os.path.join(base_dir, 'cdaweb.json')
-out_dir  = os.path.join(base_dir, 'hapi')
-out_file = os.path.join(out_dir, 'hapi-new.json')
+out_file = os.path.join(os.path.join(base_dir, 'hapi'), 'catalog-all.json')
+
+cat_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'hapi', 'catalog.json')
 
 issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
 with open(issues_file) as f:
@@ -471,7 +474,17 @@ def split_variables(datasets):
 
     dataset['_variables_split'] = depend_0_dict
 
-def build_hapi_infos(datasets):
+
+def create_infos(datasets):
+
+  from cdawmeta.restructure_master import add_master_restructured
+  datasets = add_master_restructured(datasets)
+
+  add_info(datasets)
+  add_sample_start_stop(datasets)
+
+  # Add _variables_split dict to each dataset.
+  split_variables(datasets)
 
   datasets_new = []
   for dataset in datasets:
@@ -555,28 +568,23 @@ def build_hapi_infos(datasets):
 
   return datasets_new
 
+def create_catalog(datasets):
+  # Create catalog.json
+  catalog = []
+  for dataset in datasets:
+    id = dataset['id']
+    if dataset['_allxml'].get('description') and dataset['_allxml']['description'].get('@short'):
+      catalog.append({'id': id, 'description': dataset['_allxml']['description'].get('@short')})
+    else:
+      catalog.append({'id': id})
+  return catalog
+
 
 print(f'Reading: {in_file}')
 with open(in_file, 'r', encoding='utf-8') as f:
   datasets = json.load(f)
 print(f'Read: {in_file}')
 
-from cdawmeta.restructure_master import add_master_restructured
-datasets = add_master_restructured(datasets)
+write_json(create_catalog(datasets), cat_file)
 
-add_info(datasets)
-add_sample_start_stop(datasets)
-
-# Add _variables_split dict to each dataset.
-split_variables(datasets)
-
-datasets_hapi = build_hapi_infos(datasets)
-
-if not os.path.exists(out_dir):
-  print(f'Creating {out_dir}')
-  os.makedirs(out_dir, exist_ok=True)
-
-print(f'Writing: {out_file}')
-with open(out_file, 'w', encoding='utf-8') as f:
-  json.dump(datasets_hapi, f, indent=2)
-print(f'Wrote: {out_file}')
+write_json(create_infos(datasets), out_file)

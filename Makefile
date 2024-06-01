@@ -12,9 +12,6 @@
 
 INCLUDE='.*'
 
-cdawmeta.egg-info:
-	pip install -e .
-
 all:
 	make hapi-new
 	make hapi-nl
@@ -27,6 +24,9 @@ compare:
 	make cdaweb INCLUDE='$(INCLUDE)'
 	make hapi-new
 	python hapi/compare.py --include '$(INCLUDE)' | tee hapi/compare.log
+
+cdawmeta.egg-info:
+	pip install -e .
 
 ################################################################################
 cdaweb:

@@ -20,9 +20,8 @@ expire_after = None  # Set to 0 to force re-download
 allxml = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
 filews = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
 
-out_dir = os.path.join(os.path.dirname(__file__), 'data')
-out_file = os.path.join(out_dir, 'cdaweb.json')
-cache_dir = os.path.join(os.path.dirname(__file__), 'data/cache')
+cache_dir = os.path.join(os.path.dirname(__file__), 'data', 'cache')
+out_file = os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.json')
 
 def omit(id):
   import re
@@ -235,11 +234,4 @@ add_file_list(datasets, cache_dir)
 
 print(f'# of datasets: {len(datasets)}')
 
-if not os.path.exists(out_dir):
-  print(f'Creating {out_dir}')
-  os.makedirs(out_dir, exist_ok=True)
-
-print(f'Writing {out_file}')
-with open(out_file, 'w', encoding='utf-8') as f:
-  json.dump(datasets, f, indent=2)
-print(f'Wrote {out_file}')
+write_json(datasets, out_file)
