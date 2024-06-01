@@ -164,9 +164,9 @@ def compare_parameter(dsid, param_s2, param_s1):
   n_param_keys_s2 = len(param_s2_keys)
   if n_param_keys_s1 != n_param_keys_s2:
     if {'bins'} != set(param_s1_keys) ^ set(param_s2_keys):
-      report(f"{dsid}/{param_s2['name']}",'info')
-      report(f"  n_param_keys_{opts['s2']} = {n_param_keys_s2} != n_param_keys_{opts['s1']} = {n_param_keys_s1}",'fail')
-      report(f"    Differences: {set(param_s1_keys) ^ set(param_s2_keys)}",'info')
+      report(f"{param_s2['name']}",'info')
+      report(f"n_param_keys_{opts['s2']} = {n_param_keys_s2} != n_param_keys_{opts['s1']} = {n_param_keys_s1}",'fail')
+      report(f"  Differences: {set(param_s1_keys) ^ set(param_s2_keys)}",'info')
 
   common_keys = set(param_s2_keys) & set(param_s1_keys)
   for key in common_keys:
@@ -200,18 +200,18 @@ def compare_bins(params_s2, params_s1):
   if 'bins' in params_s2:
     if not 'bins' in params_s1:
       #report(f"{dsid}")
-      report(f'{s2} has bins for {name_s2} but {s1} does not','fail')
+      report(f"{opts['s2']} has bins for {name_s2} but {opts['s1']} does not",'fail')
   if 'bins' in params_s1:
     if not 'bins' in params_s2:
       #print(f"{dsid}")
-      report(f'{s1} has bins for {name_s1} but {s2} does not','fail')
+      report(f"{opts['s1']} has bins for {name_s1} but {opts['s2']} does not",'fail')
   if 'bins' in params_s1:
     if 'bins' in params_s2:
       n_bins_s2 = len(params_s1["bins"])
       n_bins_s1 = len(params_s2["bins"])
       if n_bins_s2 != n_bins_s1:
         #print(f"{dsid}")
-        report(f'{s1} has {n_bins_s1} bins objects; {s2} has {n_bins_s2}','fail')
+        report(f"{opts['s1']} has {n_bins_s1} bins objects; {opts['s2']} has {n_bins_s2}",'fail')
       # TODO: Compare content at bins level
 
 def compare_data(dsid, datasets_s1, datasets_s2, opts, parameters="", datasets_s0=None):
@@ -406,11 +406,11 @@ def report(msg, msg_type=None):
 
   prefix = ""
   if msg_type == 'pass':
-    prefix = "  ✓ "
+    prefix = "    ✓ "
   if msg_type == 'fail':
-    prefix = "  ✗ "
+    prefix = "    ✗ "
   if msg_type == 'warn':
-    prefix = "  ⚠ "
+    prefix = "    ⚠ "
   if msg_type == 'info':
     prefix = "  "
 

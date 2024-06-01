@@ -3,10 +3,10 @@ Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-bw.json
 Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
 Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
 
-** Bob - document why  
+** Bob - document why
 IBEX_H3_ENA_LO_R06_STATE_VECTORS not in bw
 
-* Jeremy - If in log, figure out why this happens  
+* Jeremy - If in log, figure out why this happens
 AMPTECCE_H0_MEPA@0
   nnl = 20 != nbw = 15 for bw DEPEND_0  = Epoch
   Differences: {'TOF_oxygen_Edrift', 'TOF_iron_Edrift', 'TOF_helium_Edrift', 'HIRES_ION_protons_Edrift', 'TOF_protons_Edrift'}
@@ -21,34 +21,6 @@ AMPTECCE_H0_MEPA@3
 BAR_2L_L2_HKPG
   nnl = 45 != nbw = 2 for bw DEPEND_0  = Epoch
   Differences: {'T12_TermTemp', 'T14_TermCap', 'V9_Solar2', 'termStatus', 'V10_Solar3', 'timeOffset', 'V1_Battery', 'modemCounter', 'weeks', 'T2_ChargeCont', 'V3_POS_DPU', 'I0_TotalLoad', 'T15_CCStat', 'I3_POS_DPU', 'T5_DPU', 'numOfSats', 'T13_TermBatt', 'V11_Solar4', 'T9_Solar2', 'I7_NEG_DPU', 'V2_Solar1', 'I1_TotalSolar', 'T10_Solar3', 'T8_Solar1', 'I5_Modem', 'T1_Mag', 'V5_Modem', 'cmdCounter', 'T0_Scint', 'T11_Solar4', 'I4_POS_XRayDet', 'T3_Battery', 'dcdCounter', 'T7_Structure', 'T4_PowerConv', 'V6_NEG_XRayDet', 'V0_VoltAtLoad', 'V8_Mag', 'T6_Modem', 'I6_NEG_XRayDet', 'I2_Solar1', 'V7_NEG_DPU', 'V4_POS_XRayDet'}
-
-* Jeremy - see if in log 
-DE2_DUCT16MS_RPA@1
-  nnl = 2 != nbw = 6 for bw DEPEND_0  = Epoch
-  Differences: {'ilat', 'glon', 'glat', 'wb1', 'mlt', 'alt'}
-DE2_DUCT16MS_RPA@2
-  Order differs for bw DEPEND_0 = Epoch_wb1
-  nl: ['Time', 'wb2']
-  bw: ['Time', 'wb1']
-DE2_DUCT16MS_RPA@3
-  Order differs for bw DEPEND_0 = Epoch_wb2
-  nl: ['Time', 'wb3']
-  bw: ['Time', 'wb2']
-DE2_DUCT16MS_RPA@4
-  Order differs for bw DEPEND_0 = Epoch_wb3
-  nl: ['Time', 'wb4']
-  bw: ['Time', 'wb3']
-DE2_DUCT16MS_RPA@5
-  Order differs for bw DEPEND_0 = Epoch_wb4
-  nl: ['Time', 'wb5']
-  bw: ['Time', 'wb4']
-DE2_DUCT16MS_RPA@6
-  Order differs for bw DEPEND_0 = Epoch_wb5
-  nl: ['Time', 'wb6']
-  bw: ['Time', 'wb5']
-DE2_DUCT16MS_RPA@7
-  nnl = 6 != nbw = 2 for bw DEPEND_0  = Epoch_wb6
-  Differences: {'ilat', 'glon', 'glat', 'wb6', 'mlt', 'alt'}
 
 DMSP-F16_SSIES-3_THERMAL-PLASMA
   nnl = 31 != nbw = 54 for bw DEPEND_0  = Epoch
@@ -134,16 +106,6 @@ FA_ESA_L2_IES
   bw has bins for energy_median but nl does not
 FA_ESA_L2_IES
   nl has bins for pitch_angle but bw does not
-
-* Jeremy - look into why
-GE_EDA12SEC_LEP
-  nnl = 10 != nbw = 11 for bw DEPEND_0  = Epoch
-  Differences: {'scan_code'}
-
-I8_OR_SSC
-  Order differs for bw DEPEND_0 = Epoch
-  nl: ['Time', 'XYZ_GSE', 'XYZ_GSE_Time', 'XYZ_GSM', 'XYZ_GSM_Time', 'RADIUS', 'GSE_LAT', 'GSE_LON', 'GSE_LCT_T', 'GSM_LAT', 'GSM_LON']
-  bw: ['Time', 'RADIUS', 'GSE_LAT', 'GSE_LON', 'GSE_LCT_T', 'GSM_LAT', 'GSM_LON', 'XYZ_GSE', 'XYZ_GSE_Time', 'XYZ_GSM', 'XYZ_GSM_Time']
 
 * Jeremy - look into
 IBEX_H3_ENA_LO_R17_CG_SP_RAM_1YR

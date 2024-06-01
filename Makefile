@@ -7,9 +7,8 @@
 # metadata parts that appear in the json files in ./data/cache that need to be
 # updated will be updated.
 #
-# If an update is needed due to a source code change, use
+# If an update is needed due only to a source code change, use
 #   make all
-# This will use the cached .json files in ./data/cache only.
 
 INCLUDE='.*'
 
@@ -27,7 +26,7 @@ clean:
 compare:
 	make cdaweb INCLUDE='$(INCLUDE)'
 	make hapi-new
-	python hapi/compare.py --include '$(INCLUDE)'
+	python hapi/compare.py --include '$(INCLUDE)' | tee hapi/compare.log
 
 ################################################################################
 cdaweb:
