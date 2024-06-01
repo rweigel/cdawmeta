@@ -234,4 +234,5 @@ add_file_list(datasets, cache_dir)
 
 print(f'# of datasets: {len(datasets)}')
 
+from cdawmeta.write_json import write_json
 write_json(datasets, out_file)

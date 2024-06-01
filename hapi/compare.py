@@ -72,6 +72,9 @@ def omit(id):
 def compare_metadata(datasets_s1, datasets_s2, opts):
 
   for dsid in datasets_s2.keys():
+    if omit(dsid):
+      continue
+
     if not dsid in datasets_s1:
       report(f"{dsid} not in {opts['s1']}",'fail')
       dsid0 = dsid + "@0"
@@ -79,6 +82,9 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
         report(f"  But {dsid0} in {opts['s1']}",'info')
 
   for dsid in datasets_s1.keys():
+
+    if omit(dsid):
+      continue
 
     report(f"{dsid} - Checking metadata")
 
@@ -393,7 +399,7 @@ def restructure(datasets):
 def read_hapi_bw():
 
   # Get sample starts/stops from s0
-  all_input = os.path.join(opts['base_dir'], 'hapi', f'hapi-new.json')
+  all_input = os.path.join(opts['base_dir'], 'hapi', f'catalog-all.json')
 
   print(f"Reading: {all_input}")
   with open(all_input, 'r', encoding='utf-8') as f:

@@ -38,10 +38,10 @@ data/cdaweb.json: cdaweb.py
 
 ################################################################################
 hapi-new: cdawmeta.egg-info
-	make data/hapi/hapi-new.json
+	make data/hapi/catalog-all.json
 
-data/hapi/hapi-new.json: data/cdaweb.json hapi/hapi-new.py hapi/hapi-nl-issues.json
-	python hapi/hapi-new.py | tee data/hapi/hapi-new.log
+data/hapi/catalog-all.json: data/cdaweb.json hapi/hapi-new.py hapi/hapi-nl-issues.json
+	python hapi/hapi-new.py | tee data/hapi/catalog-all.log
 ################################################################################
 
 
