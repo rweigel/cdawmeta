@@ -5,15 +5,11 @@ from cdawmeta.write_json import write_json
 
 base_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
 in_file  = os.path.join(base_dir, 'cdaweb.json')
-out_file = os.path.join(os.path.join(base_dir, 'hapi'), 'catalog-all.json')
 
-cat_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'hapi', 'catalog.json')
+catalog_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'hapi', 'catalog.json')
+catalog_all_file = os.path.join(os.path.join(base_dir, 'hapi'), 'catalog-all.json')
 
-issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
-with open(issues_file) as f:
-  issues = json.load(f)
-
-def order_depend0s(id, depend0_names):
+def order_depend0s(id, depend0_names, issues):
 
   if id not in issues['depend0Order'].keys():
     return depend0_names
@@ -39,7 +35,7 @@ def order_depend0s(id, depend0_names):
 
   return order_wanted
 
-def order_variables(id, variables):
+def order_variables(id, variables, issues):
 
   if id not in issues['variableOrder'].keys():
     return variables
@@ -62,14 +58,14 @@ def order_variables(id, variables):
 
   return {k: variables[k] for k in order_wanted}
 
-def keep_dataset(id, depend_0=None):
+def keep_dataset(id, issues, depend_0=None):
   if id in issues['keepSubset'].keys() and depend_0 == issues['keepSubset'][id]:
     print(id)
     print(f"  Warning: Keeping dataset associated with \"{depend_0}\" b/c it is in Nand's list")
     return True
   return False
 
-def omit_dataset(id, depend_0=None):
+def omit_dataset(id, issues, depend_0=None):
 
   if depend_0 is None:
     if id in issues['omitAll'].keys():
@@ -82,7 +78,7 @@ def omit_dataset(id, depend_0=None):
       return True
   return False
 
-def omit_variable(id, variable_name):
+def omit_variable(id, variable_name, issues):
 
   for key in list(issues['omitVariables'].keys()):
     # Some keys of issues['omitVariables'] are ids with @subset_number"
@@ -103,6 +99,7 @@ def omit_variable(id, variable_name):
     print(f"  Warning: Dropping variable \"{variable_name}\" b/c it is not in Nand's list")
     return True
   return False
+
 
 def add_sample_start_stop(datasets):
 
@@ -432,7 +429,7 @@ def bins(DEPEND_x_NAME, DEPEND_x):
       print(f"  Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
       return None
 
-def split_variables(datasets):
+def split_variables(datasets, issues):
   """
   Create _variables_split dict. Each key is the name of the DEPEND_0
   variable. Each value is a dict of variables that reference that DEPEND_0
@@ -457,7 +454,7 @@ def split_variables(datasets):
         print(f'  Error: Dropping variable "{name}" b/c it has no has no VAR_TYPE')
         continue
 
-      if omit_variable(dataset['id'], name):
+      if omit_variable(dataset['id'], name, issues):
         continue
 
       if 'DEPEND_0' in variable_meta['VarAttributes']:
@@ -475,7 +472,7 @@ def split_variables(datasets):
     dataset['_variables_split'] = depend_0_dict
 
 
-def create_infos(datasets):
+def create_infos(datasets, issues):
 
   from cdawmeta.restructure_master import add_master_restructured
   datasets = add_master_restructured(datasets)
@@ -484,12 +481,12 @@ def create_infos(datasets):
   add_sample_start_stop(datasets)
 
   # Add _variables_split dict to each dataset.
-  split_variables(datasets)
+  split_variables(datasets, issues)
 
   datasets_new = []
   for dataset in datasets:
 
-    if omit_dataset(dataset['id']):
+    if omit_dataset(dataset['id'], issues):
       continue
 
     print(dataset['id'] + ": subsetting and creating /info")
@@ -502,7 +499,7 @@ def create_infos(datasets):
     depend_0_names = []
     for depend_0_name, depend_0_variables in depend_0s:
 
-      if omit_dataset(dataset['id'], depend_0=depend_0_name):
+      if omit_dataset(dataset['id'], issues, depend_0=depend_0_name):
         continue
 
       if depend_0_name not in dataset['_master_restructured']['_variables'].keys():
@@ -522,7 +519,7 @@ def create_infos(datasets):
         print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
         continue
 
-      if 'data' not in VAR_TYPES and not keep_dataset(dataset['id'], depend_0=depend_0_name):
+      if 'data' not in VAR_TYPES and not keep_dataset(dataset['id'], issues, depend_0=depend_0_name):
         # In general, Nand drops these, but not always
         print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
         continue
@@ -540,7 +537,7 @@ def create_infos(datasets):
       depend_0_names.append(depend_0_name)
 
     #print(depend_0_names)
-    depend_0_names = order_depend0s(dataset['id'], depend_0_names)
+    depend_0_names = order_depend0s(dataset['id'], depend_0_names, issues)
     #print(depend_0_names)
 
     for depend_0_name in depend_0_names:
@@ -551,7 +548,7 @@ def create_infos(datasets):
       if len(depend_0_names) > 1:
         subset = '@' + str(n)
 
-      depend_0_variables = order_variables(dataset['id'] + subset, depend_0_variables)
+      depend_0_variables = order_variables(dataset['id'] + subset, depend_0_variables, issues)
 
       all_variables = dataset['_master_restructured']['_variables']
       parameters = variables2parameters(depend_0_name, depend_0_variables, all_variables, print_info=True)
@@ -568,6 +565,7 @@ def create_infos(datasets):
 
   return datasets_new
 
+
 def create_catalog(datasets):
   # Create catalog.json
   catalog = []
@@ -579,12 +577,17 @@ def create_catalog(datasets):
       catalog.append({'id': id})
   return catalog
 
+issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
+print(f'Reading: {issues_file}')
+with open(issues_file) as f:
+  issues = json.load(f)
+print(f'Read: {issues_file}')
 
 print(f'Reading: {in_file}')
 with open(in_file, 'r', encoding='utf-8') as f:
   datasets = json.load(f)
 print(f'Read: {in_file}')
 
-write_json(create_catalog(datasets), cat_file)
+write_json(create_catalog(datasets), catalog_file)
 
-write_json(create_infos(datasets), out_file)
+write_json(create_infos(datasets, issues), catalog_all_file)

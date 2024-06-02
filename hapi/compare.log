@@ -1,0 +1,2079 @@
+Reading: /Users/weigel/git/hapi/cdawmeta/hapi/../data/hapi/catalog-all.json
+Read: /Users/weigel/git/hapi/cdawmeta/hapi/../data/hapi/catalog-all.json
+
+nl = https://cdaweb.gsfc.nasa.gov/hapi
+cache_dir = /Users/weigel/git/hapi/cdawmeta/hapi/../data/compare/cdaweb.gsfc.nasa.gov/hapi
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=A1_K0_MPA
+  Got: (time = 0.103063 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=A1_K0_MPA
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=A2_K0_MPA
+  Got: (time = 0.027609 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=A2_K0_MPA
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_AT_DEF
+  Got: (time = 0.045837 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_AT_DEF
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H0_MFI
+  Got: (time = 0.030689 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H0_MFI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H0_SWE
+  Got: (time = 0.028079 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H0_SWE
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H1_EPM
+  Got: (time = 0.047456 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H1_EPM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H1_MFI
+  Got: (time = 0.028875 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H1_MFI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H1_SIS
+  Got: (time = 0.027908 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H1_SIS
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_CRIS
+  Got: (time = 0.040861 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_CRIS
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_EPM
+  Got: (time = 0.041382 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_EPM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_MFI
+  Got: (time = 0.027117 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_MFI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_SEP
+  Got: (time = 0.046337 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_SEP
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_SIS
+  Got: (time = 0.036551 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_SIS
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_SWE
+  Got: (time = 0.027144 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_SWE
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_SWI
+  Got: (time = 0.026399 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_SWI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_ULE
+  Got: (time = 0.044650 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H2_ULE
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H3_CRIS
+  Got: (time = 0.051769 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H3_CRIS
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H3_EPM
+  Got: (time = 0.032481 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H3_EPM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H3_MFI
+  Got: (time = 0.033703 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H3_MFI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H3_SW2
+  Got: (time = 0.034263 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H3_SW2
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H3_SWI
+  Got: (time = 0.039539 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H3_SWI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H4_SWI
+  Got: (time = 0.036855 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H4_SWI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H5_SWI
+  Got: (time = 0.035332 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H5_SWI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H6_SWI
+  Got: (time = 0.033327 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_H6_SWI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K0_EPM
+  Got: (time = 0.028360 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K0_EPM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K0_MFI
+  Got: (time = 0.028988 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K0_MFI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K0_SIS
+  Got: (time = 0.028475 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K0_SIS
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K0_SWE
+  Got: (time = 0.029516 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K0_SWE
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K1_EPM
+  Got: (time = 0.026714 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K1_EPM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K1_MFI
+  Got: (time = 0.031802 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K1_MFI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K1_SWE
+  Got: (time = 0.029275 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K1_SWE
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K2_MFI
+  Got: (time = 0.029083 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_K2_MFI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_OR_DEF
+  Got: (time = 0.028911 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_OR_DEF
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_OR_SSC
+  Got: (time = 0.048141 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AC_OR_SSC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AEROCUBE-6-A_DOSIMETER_L2
+  Got: (time = 0.031347 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AEROCUBE-6-A_DOSIMETER_L2
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AEROCUBE-6-B_DOSIMETER_L2
+  Got: (time = 0.041730 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AEROCUBE-6-B_DOSIMETER_L2
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_LIM
+  Got: (time = 0.028411 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_LIM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_QUI
+  Got: (time = 0.040702 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_QUI
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_SNT
+  Got: (time = 0.033925 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_SNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_SOL
+  Got: (time = 0.034261 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_SOL
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_ULA
+  Got: (time = 0.029106 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_ULA
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_WNK
+  Got: (time = 0.042423 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_AV_WNK
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_NEPROF_TOPS
+  Got: (time = 0.032859 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=ALOUETTE2_NEPROF_TOPS
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AMPTECCE_H0_MEPA@0
+  Got: (time = 0.046167 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AMPTECCE_H0_MEPA@0
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AMPTECCE_H0_MEPA@1
+  Got: (time = 0.033254 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AMPTECCE_H0_MEPA@1
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AMPTECCE_H0_MEPA@2
+  Got: (time = 0.041784 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AMPTECCE_H0_MEPA@2
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AMPTECCE_H0_MEPA@3
+  Got: (time = 0.072943 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AMPTECCE_H0_MEPA@3
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=AMPTECCE_H0_MEPA@4
+  Got: (time = 0.025622 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=AMPTECCE_H0_MEPA@4
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=APOLLO12_SWS_1HR
+  Got: (time = 0.032841 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=APOLLO12_SWS_1HR
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=APOLLO12_SWS_28S
+  Got: (time = 0.028947 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=APOLLO12_SWS_28S
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=APOLLO15_SWS_1HR
+  Got: (time = 0.035822 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=APOLLO15_SWS_1HR
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=APOLLO15_SWS_28S
+  Got: (time = 0.034053 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=APOLLO15_SWS_28S
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1A_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1B_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1C_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1D_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1G_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1H_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1I_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1J_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1K_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1M_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1N_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1O_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1Q_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1R_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1S_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1T_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1U_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_1V_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2A_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2B_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2C_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2D_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2E_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2F_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2I_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2K_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2L_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2M_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2N_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2O_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2P_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Q_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2T_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2W_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2X_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_2Y_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3A_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3B_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3C_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3D_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3E_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3F_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_3G_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_USPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_USPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_XSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4A_L2_XSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_USPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_USPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_XSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4B_L2_XSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_USPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_USPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_XSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4C_L2_XSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_USPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_USPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_XSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4D_L2_XSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_USPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_USPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_XSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4E_L2_XSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_USPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_USPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_XSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4F_L2_XSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_USPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_USPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_XSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4G_L2_XSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_USPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_USPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_XSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_4H_L2_XSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_USPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_USPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_XSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_5A_L2_XSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_6A_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_EPHM
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_EPHM
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_FSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_FSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_HKPG
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_HKPG
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_MAGN
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_MAGN
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_MSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_MSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_RCNT
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_RCNT
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_SSPC
+  Got: (from cache) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BAR_7A_L2_SSPC
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BEPICOLOMBO_HELIO1DAY_POSITION
+  Got: (time = 0.034771 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BEPICOLOMBO_HELIO1DAY_POSITION
+  Getting: https://cdaweb.gsfc.nasa.gov/hapi/info?id=BORRELLY_HELIO1DAY_POSITION
+  Got: (time = 0.042618 [s]) https://cdaweb.gsfc.nasa.gov/hapi/info?id=BORRELLY_HELIO1DAY_POSITION
+
+    ✗ ALOUETTE2_AV_QUI not in bw
+    ✗ APOLLO12_SWS_1HR not in bw
+    ✗ APOLLO12_SWS_28S not in bw
+    ✗ APOLLO15_SWS_1HR not in bw
+    ✗ APOLLO15_SWS_28S not in bw
+AC_OR_SSC - Checking metadata
+AC_OR_DEF - Checking metadata
+AC_AT_DEF - Checking metadata
+AC_H2_CRIS - Checking metadata
+AC_H3_CRIS - Checking metadata
+AC_H0_MFI - Checking metadata
+AC_K0_MFI - Checking metadata
+AC_H1_MFI - Checking metadata
+AC_K1_MFI - Checking metadata
+AC_H2_MFI - Checking metadata
+AC_H3_MFI - Checking metadata
+AC_K2_MFI - Checking metadata
+AC_H2_SEP - Checking metadata
+AC_H0_SWE - Checking metadata
+AC_K0_SWE - Checking metadata
+AC_H2_SWE - Checking metadata
+AC_K1_SWE - Checking metadata
+AC_H2_SWI - Checking metadata
+AC_H3_SWI - Checking metadata
+AC_H3_SW2 - Checking metadata
+AC_H4_SWI - Checking metadata
+AC_H5_SWI - Checking metadata
+AC_H6_SWI - Checking metadata
+AC_H1_EPM - Checking metadata
+AC_H2_EPM - Checking metadata
+AC_H3_EPM - Checking metadata
+AC_K0_EPM - Checking metadata
+AC_K1_EPM - Checking metadata
+AC_K0_SIS - Checking metadata
+AC_H1_SIS - Checking metadata
+AC_H2_SIS - Checking metadata
+AC_H2_ULE - Checking metadata
+AEROCUBE-6-A_DOSIMETER_L2 - Checking metadata
+AEROCUBE-6-B_DOSIMETER_L2 - Checking metadata
+AMPTECCE_H0_MEPA@0 - Checking metadata
+    ⚠ n_params_nl = 20 != n_params_bw = 15 for s1 DEPEND_0 = Epoch
+    Differences: {'TOF_protons_Edrift', 'TOF_oxygen_Edrift', 'TOF_iron_Edrift', 'HIRES_ION_protons_Edrift', 'TOF_helium_Edrift'}
+    Not error because first 15 parameters are identical.
+AMPTECCE_H0_MEPA@1 - Checking metadata
+    ✗ n_params_nl = 29 != n_params_bw = 33 for s1 DEPEND_0 = Epoch_1
+    Differences: {'TOF_protons_Edrift', 'TOF_oxygen_Edrift', 'TOF_helium_Edrift', 'TOF_iron_Edrift'}
+    Error because first 29 parameters are not identical.
+AMPTECCE_H0_MEPA@2 - Checking metadata
+AMPTECCE_H0_MEPA@3 - Checking metadata
+    ⚠ n_params_nl = 7 != n_params_bw = 8 for s1 DEPEND_0 = Epoch_3
+    Differences: {'HIRES_ION_protons_Edrift'}
+    Not error because first 7 parameters are identical.
+AMPTECCE_H0_MEPA@4 - Checking metadata
+  spin_axis_dirn_in_GSE/fill
+    ✗ val_nl = -1.0E38 != val_bw = -9.999999680285692e+37
+BAR_1A_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1A_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1A_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1A_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1A_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1A_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1A_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1B_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1B_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1B_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1B_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1B_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1B_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1B_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1C_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1C_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1C_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1C_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1C_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1C_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1C_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1D_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1D_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1D_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1D_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1D_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1D_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1D_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1G_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1G_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1G_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1G_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1G_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1G_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1G_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1H_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1H_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1H_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1H_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1H_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1H_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1H_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1I_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1I_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1I_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1I_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1I_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1I_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1I_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1J_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1J_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1J_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1J_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1J_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1J_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1J_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1K_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1K_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1K_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1K_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1K_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1K_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1K_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1M_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1M_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1M_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1M_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1M_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1M_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1M_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1N_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1N_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1N_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1N_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1N_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1N_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1N_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1O_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1O_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1O_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1O_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1O_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1O_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1O_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1Q_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1Q_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1Q_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1Q_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1Q_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1Q_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1Q_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1R_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1R_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1R_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1R_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1R_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1R_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1R_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1S_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1S_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1S_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1S_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1S_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1S_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1S_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1T_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1T_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1T_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1T_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1T_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1T_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1T_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1U_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1U_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1U_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1U_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1U_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1U_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1U_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1V_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1V_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1V_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1V_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1V_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1V_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_1V_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2A_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2A_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2A_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2A_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2A_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2A_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2A_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2B_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2B_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2B_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2B_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2B_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2B_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2B_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2C_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2C_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2C_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2C_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2C_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2C_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2C_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2D_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2D_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2D_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2D_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2D_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2D_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2D_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2E_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2E_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2E_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2E_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2E_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2E_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2E_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2F_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2F_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2F_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2F_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2F_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2F_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2F_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2I_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2I_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2I_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2I_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2I_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2I_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2I_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2K_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2K_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2K_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2K_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2K_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2K_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2K_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2L_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2L_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2L_L2_HKPG - Checking metadata
+    ⚠ n_params_nl = 45 != n_params_bw = 2 for s1 DEPEND_0 = Epoch
+    Differences: {'T2_ChargeCont', 'V8_Mag', 'T8_Solar1', 'T12_TermTemp', 'I1_TotalSolar', 'V7_NEG_DPU', 'I6_NEG_XRayDet', 'T14_TermCap', 'timeOffset', 'dcdCounter', 'V11_Solar4', 'V10_Solar3', 'T4_PowerConv', 'cmdCounter', 'V0_VoltAtLoad', 'I2_Solar1', 'I7_NEG_DPU', 'T0_Scint', 'V9_Solar2', 'weeks', 'T6_Modem', 'T1_Mag', 'T11_Solar4', 'T5_DPU', 'numOfSats', 'V5_Modem', 'I3_POS_DPU', 'modemCounter', 'V2_Solar1', 'T9_Solar2', 'T13_TermBatt', 'termStatus', 'V4_POS_XRayDet', 'V3_POS_DPU', 'V1_Battery', 'I0_TotalLoad', 'V6_NEG_XRayDet', 'T3_Battery', 'T10_Solar3', 'T15_CCStat', 'I5_Modem', 'T7_Structure', 'I4_POS_XRayDet'}
+    Not error because first 2 parameters are identical.
+BAR_2L_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2L_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2L_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2L_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2M_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2M_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2M_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2M_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2M_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2M_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2M_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2N_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2N_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2N_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2N_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2N_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2N_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2N_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2O_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2O_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2O_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2O_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2O_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2O_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2O_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2P_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2P_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2P_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2P_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2P_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2P_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2P_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Q_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Q_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Q_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Q_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Q_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Q_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Q_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2T_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2T_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2T_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2T_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2T_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2T_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2T_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2W_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2W_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2W_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2W_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2W_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2W_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2W_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2X_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2X_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2X_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2X_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2X_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2X_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2X_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Y_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Y_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Y_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Y_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Y_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Y_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_2Y_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3A_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3A_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3A_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3A_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3A_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3A_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3A_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3B_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3B_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3B_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3B_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3B_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3B_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3B_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3C_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3C_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3C_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3C_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3C_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3C_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3C_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3D_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3D_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3D_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3D_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3D_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3D_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3D_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3E_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3E_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3E_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3E_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3E_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3E_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3E_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3F_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3F_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3F_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3F_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3F_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3F_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3F_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3G_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3G_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3G_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3G_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3G_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3G_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_3G_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4A_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4A_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4A_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4A_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4A_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4A_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4A_L2_USPC - Checking metadata
+BAR_4A_L2_XSPC - Checking metadata
+BAR_4B_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4B_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4B_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4B_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4B_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4B_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4B_L2_USPC - Checking metadata
+BAR_4B_L2_XSPC - Checking metadata
+BAR_4C_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4C_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4C_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4C_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4C_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4C_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4C_L2_USPC - Checking metadata
+BAR_4C_L2_XSPC - Checking metadata
+BAR_4D_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4D_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4D_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4D_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4D_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4D_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4D_L2_USPC - Checking metadata
+BAR_4D_L2_XSPC - Checking metadata
+BAR_4E_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4E_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4E_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4E_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4E_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4E_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4E_L2_USPC - Checking metadata
+BAR_4E_L2_XSPC - Checking metadata
+BAR_4F_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4F_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4F_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4F_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4F_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4F_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4F_L2_USPC - Checking metadata
+BAR_4F_L2_XSPC - Checking metadata
+BAR_4G_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4G_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4G_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4G_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4G_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4G_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4G_L2_USPC - Checking metadata
+BAR_4G_L2_XSPC - Checking metadata
+BAR_4H_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4H_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4H_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4H_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4H_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4H_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_4H_L2_USPC - Checking metadata
+BAR_4H_L2_XSPC - Checking metadata
+BAR_5A_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_5A_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_5A_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_5A_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_5A_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_5A_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_5A_L2_USPC - Checking metadata
+BAR_5A_L2_XSPC - Checking metadata
+BAR_6A_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_6A_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_6A_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_6A_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_6A_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_6A_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_6A_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_7A_L2_EPHM - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_7A_L2_FSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_7A_L2_HKPG - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_7A_L2_MAGN - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_7A_L2_MSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_7A_L2_RCNT - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BAR_7A_L2_SSPC - Checking metadata
+  Quality/type
+    ✗ val_nl = 'double' != val_bw = 'integer'
+BEPICOLOMBO_HELIO1DAY_POSITION - Checking metadata
+ALOUETTE2_NEPROF_TOPS - Checking metadata
+ALOUETTE2_AV_ULA - Checking metadata
+ALOUETTE2_AV_WNK - Checking metadata
+ALOUETTE2_AV_LIM - Checking metadata
+ALOUETTE2_AV_SNT - Checking metadata
+ALOUETTE2_AV_SOL - Checking metadata
+A1_K0_MPA - Checking metadata
+A2_K0_MPA - Checking metadata
+BORRELLY_HELIO1DAY_POSITION - Checking metadata

@@ -73,10 +73,10 @@ def print_resp_info(resp, url):
   res_cache_headers = {k: v for k, v in resp.headers.items() if k in ['ETag', 'Last-Modified', 'Cache-Control', 'Vary']}
   print(f"  Status Code: {resp.status_code}")
   print(f"  From cache:  {resp.from_cache}")
-  print(f"  Request Cache Headers:")
+  print(f"  Request Cache-Related Headers:")
   for k, v in req_cache_headers.items():
     print(f"    {k}: {v}")
-  print(f"  Response Cache Headers:")
+  print(f"  Response Cache-Related Headers:")
   for k, v in res_cache_headers.items():
     print(f"    {k}: {v}")
 
