@@ -52,22 +52,3 @@ data/hapi/hapi-nl.json: hapi/hapi-nl.py
 hapi-nl: cdawmeta.egg-info
 	make data/hapi/hapi-nl.json
 ################################################################################
-
-
-################################################################################
-tables:
-#	make table-hapi
-	make table-cdaweb
-
-table-hapi:
-	make data/tables/hapi.table.body.json
-
-data/tables/hapi.table.body.json: table/table-hapi.py data/hapi/hapi-new.json data/hapi/hapi-nl.json
-	python table/table-hapi.py
-
-table-cdaweb:
-	make data/tables/cdaweb.table.body.json
-
-data/tables/cdaweb.table.body.json: table/table-cdaweb.py data/cdaweb.json
-	python table/table-cdaweb.py
-################################################################################
