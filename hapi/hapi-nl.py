@@ -13,14 +13,10 @@ def omit(id):
 
 import os
 import json
-try:
-  import requests_cache
-except:
-  print(os.popen('pip install requests_cache').read())
-  import requests_cache
+import requests_cache
 
 base_dir = os.path.dirname(__file__)
-out_file = os.path.join(base_dir, f'data/hapi-{initial}.json')
+out_file = os.path.join(base_dir, '..', 'data', 'hapi', f'catalog-all.{initial}.json')
 os.makedirs(os.path.dirname(out_file), exist_ok=True)
 
 def CachedSession():
@@ -30,7 +26,7 @@ def CachedSession():
   # https://requests-cache.readthedocs.io/en/stable/user_guide/headers.html
 
   # Cache dir
-  cdir = os.path.join(os.path.dirname(__file__), f'data/cache/hapi-{initial}')
+  cdir = os.path.join(os.path.dirname(__file__), '..', 'data', 'cache', f'hapi-{initial}')
   copts = {
     "use_cache_dir": True,                # Save files in the default user cache dir
     "cache_control": True,                # Use Cache-Control response headers for expiration, if available

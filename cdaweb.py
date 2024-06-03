@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--include', help="Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)")
 args = parser.parse_args()
 
-max_workers = 1
+max_workers = 4
 cache_control = True # Use Cache-Control response headers for expiration, if available
 expire_after = None  # Set to 0 to force re-download
 
@@ -213,7 +213,7 @@ def add_file_list(datasets, cache_dir):
 
     print("Get: " + url)
     try:
-      resp = session.get(url, headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
+      resp = session.get(url, timeout=10, headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
     except:
       print(f"{dataset['id']}: Error getting '{url}'")
       return

@@ -18,6 +18,7 @@ parser.add_argument('--include', help="Pattern for dataset IDs to include, e.g.,
 args = parser.parse_args()
 
 base_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
+catalog_all = os.path.join(base_dir, 'hapi', 'catalog-all.json')
 
 opts = {'compare_data': False, 'parallel': False, 'base_dir': base_dir}
 
@@ -50,8 +51,8 @@ if True:
   opts = {**opts,
           "s1": "bw",
           "s2": "nl",
-          "url1": "",
-          "url2": "https://cdaweb.gsfc.nasa.gov/hapi",
+          "url1": catalog_all,
+          "url2": os.path.join(base_dir, 'hapi', 'catalog-all.nl.json'),
           "s1_expire_after": None,
           "s2_expire_after": {"days": 1},
           "sample_duration": {"days": 1}
@@ -76,7 +77,7 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
       continue
 
     if not dsid in datasets_s1:
-      report(f"{dsid} not in {opts['s1']}",'fail')
+      report(f"{dsid} not in {opts['s1']}", 'fail', pad='')
       dsid0 = dsid + "@0"
       if dsid[-2] != "@" and dsid0 in list(datasets_s1.keys()):
         report(f"  But {dsid0} in {opts['s1']}",'info')
@@ -192,7 +193,7 @@ def compare_parameter(dsid, param_s2, param_s1):
           report(f"val_{opts['s2']} = {param_s2[key]} != val_{opts['s1']} = {param_s1[key]}",'fail')
       elif type(param_s2[key]) != type(param_s1[key]):
         report(f"{param_s2['name']}/{key}",'info')
-        report(f"  type_{opts['s2']} = {type(param_s2[key])} != type_{opts['s1']} = {type(param_s1[key])}",'fail')
+        report(f"type_{opts['s2']} = {type(param_s2[key])} != type_{opts['s1']} = {type(param_s1[key])}",'fail')
       else:
         report(f"{param_s2['name']}/{key}",'info')
         report(f"val_{opts['s2']} = '{param_s2[key]}' != val_{opts['s1']} = '{param_s1[key]}'",'fail')
@@ -320,19 +321,19 @@ def get_all_metadata(server_url, server_name, expire_after={"days": 1}):
     os.makedirs(url_dir, exist_ok=True)
     return url_dir
 
-  cache_dir = server_dir(server_url)
-  out_file = os.path.join(cache_dir, f'hapi-{server_name}.json')
   report(f"\n{server_name} = {server_url}")
-  report(f"cache_dir = {cache_dir}")
 
-  if False:
-    print(f"Reading: {out_file}")
-    with open(out_file, 'r', encoding='utf-8') as f:
+  if not server_url.startswith('http'):
+    print(f"Reading: {server_url}")
+    with open(server_url, 'r', encoding='utf-8') as f:
       datasets = json.load(f)
-    print(f"Read: {out_file}")
+    print(f"Read: {server_url}")
     return datasets
 
-  os.makedirs(os.path.dirname(out_file), exist_ok=True)
+  cache_dir = server_dir(server_url)
+  out_file = os.path.join(cache_dir, f'hapi-{server_name}.json')
+  report(f"cache_dir = {cache_dir}")
+  os.makedirs(os.path.dirname(server_url), exist_ok=True)
 
   def CachedSession():
     # https://requests-cache.readthedocs.io/en/stable/#settings
@@ -376,9 +377,10 @@ def get_all_metadata(server_url, server_name, expire_after={"days": 1}):
     del dataset['info']['status']
     del dataset['info']['HAPI']
 
+  print(f'Writing: {out_file}')
   with open(out_file, 'w', encoding='utf-8') as f:
     json.dump(datasets, f, indent=2)
-  #print(f'Wrote: {out_file}')
+  print(f'Wrote: {out_file}')
 
   return datasets
 
@@ -396,27 +398,24 @@ def restructure(datasets):
       datasetsr[id]["info"]["_parameters"][name] = parameter
   return datasetsr
 
-def read_hapi_bw():
+def read_catalog_all(all_filename):
 
-  # Get sample starts/stops from s0
-  all_input = os.path.join(opts['base_dir'], 'hapi', f'catalog-all.json')
-
-  print(f"Reading: {all_input}")
-  with open(all_input, 'r', encoding='utf-8') as f:
+  print(f"Reading: {all_filename}")
+  with open(all_filename, 'r', encoding='utf-8') as f:
     datasets = json.load(f)
-  print(f"Read: {all_input}")
+  print(f"Read: {all_filename}")
 
   return datasets
 
-def report(msg, msg_type=None):
+def report(msg, msg_type=None, pad='    '):
 
   prefix = ""
   if msg_type == 'pass':
-    prefix = "    ✓ "
+    prefix = pad + "✓ "
   if msg_type == 'fail':
-    prefix = "    ✗ "
+    prefix = pad + "✗ "
   if msg_type == 'warn':
-    prefix = "    ⚠ "
+    prefix = pad + "⚠ "
   if msg_type == 'info':
     prefix = "  "
 
@@ -439,10 +438,10 @@ opts = pad_server_name(opts)
 datasets_s0 = None
 if opts['s1'] == 'jf' and opts['s2'] == 'nl' and opts['compare_data'] is True:
   # datasets_s0 has sample{Start,Stop} for all datasets. Needed for comparing data.
-  datasets_s0  = restructure(read_hapi_bw())
+  datasets_s0  = restructure(read_catalog_all(catalog_all))
 
 if opts['s1'] == 'bw':
-  datasets_s1o = read_hapi_bw()
+  datasets_s1o = read_catalog_all(catalog_all)
 else:
   datasets_s1o = get_all_metadata(opts['url1'], opts['s1'], expire_after=opts['s1_expire_after'])
 
@@ -450,7 +449,8 @@ datasets_s2o = get_all_metadata(opts['url2'], opts['s2'], expire_after=opts['s2_
 
 report("")
 
-if {} == deepdiff.DeepDiff(datasets_s1o, datasets_s2o):
+if False and {} == deepdiff.DeepDiff(datasets_s1o, datasets_s2o):
+  # Takes a long time for large catalogs.
   report("All /info metadata is the same.\n")
   if opts['compare_data'] is False:
     report("Not checking data responses.")

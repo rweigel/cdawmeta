@@ -10,7 +10,7 @@
 # If an update is needed due only to a source code change, use
 #   make all
 
-INCLUDE='.*'
+INCLUDE=.*
 
 all:
 	make hapi-new
@@ -23,7 +23,7 @@ clean:
 compare:
 	make cdaweb INCLUDE='$(INCLUDE)'
 	make hapi-new
-	python hapi/compare.py --include '$(INCLUDE)' | tee hapi/compare.log
+	python hapi/compare.py --include '$(INCLUDE)' | tee data/hapi/compare.log
 
 cdawmeta.egg-info:
 	pip install -e .
@@ -56,7 +56,7 @@ hapi-nl: cdawmeta.egg-info
 
 ################################################################################
 tables:
-	make table-hapi
+#	make table-hapi
 	make table-cdaweb
 
 table-hapi:

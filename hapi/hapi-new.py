@@ -1,4 +1,5 @@
 import os
+import re
 import json
 
 from cdawmeta.write_json import write_json
@@ -9,29 +10,29 @@ in_file  = os.path.join(base_dir, 'cdaweb.json')
 catalog_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'hapi', 'catalog.json')
 catalog_all_file = os.path.join(os.path.join(base_dir, 'hapi'), 'catalog-all.json')
 
+info_dir = os.path.join(os.path.dirname(__file__), '..', 'data', 'hapi', 'info')
+
 def order_depend0s(id, depend0_names, issues):
 
   if id not in issues['depend0Order'].keys():
     return depend0_names
 
   order_wanted = issues['depend0Order'][id]
-  order_given = depend0_names
 
-  # Next two ifs are similar to the ones in order_variables()
-  # TODO: Refactor?
-  if len(order_wanted) != len(order_wanted):
-    print(f'Error: {id}\n  Number of depend0s in new order list ({len(order_wanted)}) does not match number found in dataset ({len(order_given)})')
-    print(f'  New order:   {order_wanted}')
-    print(f'  Given order: {list(order_given)}')
-    print(f'  Exiting with code 1')
-    exit(1)
+  for depend0_name in order_wanted:
+    if not depend0_name in depend0_names:
+      print(f'Error: {id}\n  DEPEND_0 {depend0_name} in new order list is not a depend0 in dataset ({depend0_names})')
+      print(f'  Exiting with code 1')
+      exit(1)
 
-  if sorted(order_wanted) != sorted(order_wanted):
-    print(f'Error: {id}\n  Mismatch in depend0 names between new order list and dataset')
-    print(f'  New order:   {order_wanted}')
-    print(f'  Given order: {list(order_given)}')
-    print(f'  Exiting with code 1')
-    exit(1)
+  if False:
+    # Eventually we will want to use this when we are not trying to match
+    # Nand's metadata exactly.
+    # Append depend0s not in order_wanted to the end of the list
+    final = order_wanted.copy()
+    for i in depend0_names:
+      if not i in order_wanted:
+        final.append(i)
 
   return order_wanted
 
@@ -70,8 +71,13 @@ def omit_dataset(id, issues, depend_0=None):
   if depend_0 is None:
     if id in issues['omitAll'].keys():
       print(id)
-      print(f"  Warning: Dropping dataset b/c it is not in Nand's list")
+      print(f"  Warning: Dropping dataset {id} b/c it is not in Nand's list")
       return True
+    for pattern in issues['omitAllPattern']:
+      if re.search(pattern, id):
+        print(id)
+        print(f"  Warning: Dropping dataset {id} b/c it is not in Nand's list")
+        return True
   else:
     if id in issues['omitSubset'].keys() and depend_0 in issues['omitSubset'][id]:
       print(f"  Warning: Dropping dataset associated with \"{depend_0}\" b/c it is not in Nand's list")
@@ -323,7 +329,9 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
           if labl_ptr_name in all_variables:
             #print(all_variables[labl_ptr_name])
             if 'VarData' in all_variables[labl_ptr_name]:
-              label[i] = trim(all_variables[labl_ptr_name]['VarData'])
+              #print(labl_ptr_name)
+              #print(all_variables[labl_ptr_name]['VarData'])
+              label[i] = trim(str(all_variables[labl_ptr_name]['VarData']))
       parameter['x_label'] = label
       if len(parameter['size']) == 1:
         parameter['x_label'] = label[0]
@@ -565,7 +573,6 @@ def create_infos(datasets, issues):
 
   return datasets_new
 
-
 def create_catalog(datasets):
   # Create catalog.json
   catalog = []
@@ -576,6 +583,17 @@ def create_catalog(datasets):
     else:
       catalog.append({'id': id})
   return catalog
+
+def write_infos(infos, info_dir):
+  if not os.path.exists(info_dir):
+    print(f'Creating {info_dir}')
+    os.makedirs(info_dir, exist_ok=True)
+
+  for info in infos:
+    file_name = info['id'] + '.json'
+    file_name = os.path.join(info_dir, file_name)
+    write_json(info, file_name)
+
 
 issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
 print(f'Reading: {issues_file}')
@@ -590,4 +608,7 @@ print(f'Read: {in_file}')
 
 write_json(create_catalog(datasets), catalog_file)
 
-write_json(create_infos(datasets, issues), catalog_all_file)
+infos = create_infos(datasets, issues)
+write_json(infos, catalog_all_file)
+
+write_infos(infos, info_dir)
