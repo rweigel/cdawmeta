@@ -1,8 +1,8 @@
 HAPIHEAD=../data/tables/hapi.table.head.json
 HAPIBODY=../data/tables/hapi.table.body.json
 
-ALLHEAD=../data/tables/cdaweb.table.head.json
-ALLBODY=../data/tables/cdaweb.table.body.json
+ALLHEAD=../../../data/tables/cdaweb.table.head.json
+ALLBODY=../../../data/tables/cdaweb.table.body.json
 
 table-ui:
 	@- git clone https://github.com/rweigel/table-ui
