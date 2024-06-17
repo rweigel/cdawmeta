@@ -6,7 +6,6 @@ table-ui:
 	@- git clone https://github.com/rweigel/table-ui
 	@- git pull https://github.com/rweigel/table-ui
 
-
 serve-cdaweb-json:
 	make table-ui
 	make cdaweb-json
@@ -17,11 +16,11 @@ serve-cdaweb-sql:
 	make cdaweb-sql
 	python table-ui/ajax/server.py 8051 $(CDAWEBHEAD) $(CDAWEBBODY).sql
 
-cdaweb-sql:
-	make $(CDAWEBBODY).sql
-
 cdaweb-json: $(CDAWEB)
 	make $(CDAWEBBODY)
+
+cdaweb-sql:
+	make $(CDAWEBBODY).sql
 
 $(CDAWEB):
 	cd ../; make cdaweb
@@ -36,22 +35,29 @@ $(CDAWEBBODY).sql: table-ui/ajax/sql/sql.py $(CDAWEBBODY)
 
 HAPIHEAD=../data/tables/hapi.table.head.json
 HAPIBODY=../data/tables/hapi.table.body.json
+HAPI=../data/hapi/catalog-all.json
 
-serve-hapi:
-	cd ../; make table-hapi
+serve-hapi-json:
 	make table-ui
+	make hapi-json
 	python table-ui/ajax/server.py 8052 $(HAPIHEAD) $(HAPIBODY)
 
 serve-hapi-sql:
-	cd ../; make table-hapi
+	make table-ui
 	make hapi-sql
 	python table-ui/ajax/server.py 8052 $(HAPIHEAD) $(HAPIBODY).sql
 
+hapi-json: $(HAPI)
+	make $(HAPIBODY)
+
 hapi-sql:
-	cd ../; make table-hapi
-	make table-ui
 	make $(HAPIBODY).sql
 
-$(HAPIBODY).sql: table-ui/ajax/sql/sql.py $(HAPIHEAD) $(HAPIBODY)
-	python table-ui/ajax/sql/sql.py $(HAPIHEAD) $(HAPIBODY)
+$(HAPI):
+	cd ../; make hapi-new
 
+$(HAPIBODY): table-hapi.py $(HAPI)
+	python table-hapi.py
+
+$(HAPIBODY).sql: table-ui/ajax/sql/sql.py $(HAPIBODY)
+	python table-ui/ajax/sql/sql.py $(HAPIHEAD) $(HAPIBODY)

@@ -1,7 +1,7 @@
 import os
 base_dir = os.path.join(os.path.dirname(__file__), '../data')
-all_input_bw = os.path.join(base_dir, 'hapi-bw.json')
-all_input_nl = os.path.join(base_dir, 'hapi-nl.json')
+all_input_bw = os.path.join(base_dir, 'hapi','catalog-all.json')
+all_input_nl = os.path.join(base_dir, 'hapi', 'catalog-all.nl.json')
 file_body   = os.path.join(base_dir, 'tables/hapi.table.body.json')
 file_header = os.path.join(base_dir, 'tables/hapi.table.head.json')
 

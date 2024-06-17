@@ -1,4 +1,4 @@
-# To force re-recreation of all metadata and tables:
+# To force re-recreation of all metadata:
 #   make clean; make all
 #
 # For a fast update, use
@@ -15,10 +15,12 @@ INCLUDE=.*
 all:
 	make hapi-new
 	make hapi-nl
-	make tables
 
 clean:
 	-rm -rf data/*
+
+rsync:
+	rsync -avz data weigel@mag.gmu.edu:www/git-data/cdawmeta
 
 compare:
 	make cdaweb INCLUDE='$(INCLUDE)'
@@ -44,11 +46,18 @@ data/hapi/catalog-all.json: data/cdaweb.json hapi/hapi-new.py hapi/hapi-nl-issue
 	python hapi/hapi-new.py | tee data/hapi/catalog-all.log
 ################################################################################
 
-
 ################################################################################
 data/hapi/hapi-nl.json: hapi/hapi-nl.py
 	python hapi/hapi-nl.py | tee data/hapi/hapi-nl.log
 
 hapi-nl: cdawmeta.egg-info
 	make data/hapi/hapi-nl.json
+################################################################################
+
+################################################################################
+spase: data/spase/spase.log
+	make data/spase-units.txt
+
+data/spase/spase.log: data/cdaweb.json spase/spase.py
+	python spase/spase.py | tee data/spase/spase.log
 ################################################################################
