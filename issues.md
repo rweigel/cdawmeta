@@ -1,6 +1,5 @@
 1. I think the `FILLVAL` on [these 5](https://hapi-server.org/meta/cdaweb/#VariableName=E1W_DTC_FLUX&FILLVAL=-9.999999796611898e-32) is wrong:
 
-
 given [`-1e+31` returns ~50k hits](https://hapi-server.org/meta/cdaweb/#FILLVAL=-1e+31)
 
 2. These `FILLVALs` are suspect:
@@ -9,7 +8,7 @@ given [`-1e+31` returns ~50k hits](https://hapi-server.org/meta/cdaweb/#FILLVAL=
 
    https://hapi-server.org/meta/cdaweb/#FILLVAL=1.0000000331813535e+32
 
-3. Not all data variables have a `DEPEND_0` in `BAR_2L_L2_HKPG`: https://hapi-server.org/meta/cdaweb/#datasetID=BAR_2L_L2_HKPG
+3. Not all data variables have a `DEPEND_0` in `BAR_2L_L2_HKPG`. See https://hapi-server.org/meta/cdaweb/#datasetID=BAR_2L_L2_HKPG
 
 4. In `WI_OR_DEF/SUN_VECTOR`, Nand has a description of
 
@@ -30,14 +29,15 @@ I see `"UNITS":"\u0000"` it in a.json from
 curl "https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/iss_sp_fpmu_00000000_v01.json" > a.json
 ```
 
-However, I don't see it when I open [iss_sp_fpmu_00000000_v01.json](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/iss_sp_fpmu_00000000_v01.json).
+However, I don't see it when I open [iss_sp_fpmu_00000000_v01.json](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/iss_sp_fpmu_00000000_v01.json) in a browser.
 
 8. If you search on `Error:` in http://mag.gmu.edu/git-data/cdawmeta/data/hapi/catalog-all.log, you will see ~300 possible errors in the master CDFs associated with missing
 
   1. `VarAttributes`,
-  2. `VAR_TYPE`,
+  2. `VAR_TYPE` [39 cases](https://hapi-server.org/meta/cdaweb/#VAR_TYPE='')
   3. `DimSizes` (I throw an error if a `DimsSizes` is not given for a parameter with a `DEPEND_{1,2,3}` because most do. I'm not sure if this is an error.)
 
+     For example [SOLO_L2_RPW-LFR-SURV-BP2/BP2_RE_N_F0](https://hapi-server.org/meta/cdaweb/#VariableName='BP2_RE_N_F0')
 
 and
 
@@ -50,6 +50,6 @@ and
      Error: Dropping variable "H_spins" because it has a DEPEND_0 "H_epoch" that is not in dataset
    ```
 
-   The explanation is that [PO_H2_TIM has a variable named "H_Epoch"](https://hapi-server.org/meta/cdaweb/#datasetID=PO_H2_TIM) (upper case "E").
+   The explanation is that [`PO_H2_TIM` has a variable named `H_Epoch`](https://hapi-server.org/meta/cdaweb/#datasetID=PO_H2_TIM) (upper case "E").
 
-9. If you search on "Error getting" in http://mag.gmu.edu/git-data/cdawmeta/data/cdaweb.log you will see many errors associated with the fact that `spase_DatasetResourceID` does not start with `spase://`. I think an empty space is placed there because a SPASE record does not exist, which I guess is there to make validation pass if for a validator that only checks for a non-empty string.
+9. If you search on "Error getting" in http://mag.gmu.edu/git-data/cdawmeta/data/cdaweb.log you will see many errors associated with the fact that `spase_DatasetResourceID` does not start with `spase://`. I think an empty space is placed there because a SPASE record does not exist, which may be there to make validation pass on a validator that only checks for a non-empty string.
