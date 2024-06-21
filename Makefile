@@ -15,6 +15,7 @@ INCLUDE=.*
 all:
 	make hapi-new
 	make hapi-nl
+	make compare
 
 clean:
 	-rm -rf data/*
@@ -25,33 +26,34 @@ rsync:
 compare:
 	make cdaweb INCLUDE='$(INCLUDE)'
 	make hapi-new
+	make hapi-nl
 	python hapi/compare.py --include '$(INCLUDE)' | tee data/hapi/compare.log
 
 cdawmeta.egg-info:
 	pip install -e .
 
 ################################################################################
-cdaweb:
+cdaweb: cdaweb.py
 	make data/cdaweb.json INCLUDE='$(INCLUDE)'
 
-data/cdaweb.json: cdaweb.py
+data/cdaweb.json:
 	python cdaweb.py --include '$(INCLUDE)' | tee data/cdaweb.log
 ################################################################################
 
 ################################################################################
-hapi-new: cdawmeta.egg-info
+hapi-new:
 	make data/hapi/catalog-all.json
 
-data/hapi/catalog-all.json: data/cdaweb.json hapi/hapi-new.py hapi/hapi-nl-issues.json
+data/hapi/catalog-all.json: cdawmeta.egg-info data/cdaweb.json hapi/hapi-new.py hapi/hapi-nl-issues.json
 	python hapi/hapi-new.py | tee data/hapi/catalog-all.log
 ################################################################################
 
 ################################################################################
-data/hapi/hapi-nl.json: hapi/hapi-nl.py
-	python hapi/hapi-nl.py | tee data/hapi/hapi-nl.log
+hapi-nl:
+	make data/hapi/catalog-all.nl.json
 
-hapi-nl: cdawmeta.egg-info
-	make data/hapi/hapi-nl.json
+data/hapi/catalog-all.nl.json: cdawmeta.egg-info hapi/hapi-nl.py
+	python hapi/hapi-nl.py | tee data/hapi/catalog-all.nl.log
 ################################################################################
 
 ################################################################################

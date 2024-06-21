@@ -13,12 +13,24 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--include', help="Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)")
 args = parser.parse_args()
 
-max_workers = 4
+max_workers = 4      # Number of threads to use for downloading
 cache_control = True # Use Cache-Control response headers for expiration, if available
-expire_after = None  # Set to 0 to force re-download
+expire_after = None  # Set to 0 to force re-download (is HEAD performed first to see if file has changed?)
+
+timeouts = {
+  'allxml': 30,
+  'master': 30,
+  'spase': 30,
+  'file_list': 60
+}
 
 allxml = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
 filews = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--include', help="Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)")
+args = parser.parse_args()
 
 cache_dir = os.path.join(os.path.dirname(__file__), 'data', 'cache')
 out_file = os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.json')
@@ -92,7 +104,7 @@ def create_datasets(cache_dir):
 
   print("Getting: " + url)
   try:
-    resp = session.get(url)
+    resp = session.get(url, timeout=timeouts['allxml'])
   except:
     print("Error getting " + url)
     exit(1)
@@ -138,7 +150,7 @@ def add_master(datasets, cache_dir):
 
     print('Get: ' + url)
     try:
-      resp = session.get(url)
+      resp = session.get(url, timeout=timeouts['master'])
     except:
       print("Error getting " + url)
       exit(1)
@@ -178,6 +190,9 @@ def add_spase(datasets, cache_dir):
       for attribute in global_attributes:
         if 'spase_DatasetResourceID' in attribute:
           id = attribute['spase_DatasetResourceID'][0]['0']
+          if not url.startswith('spase://'):
+            print(f"Error: spase_DatasetResourceID = '{id}' does not start with 'spase://' for '{dataset['id']}'")
+            return None
           return id.replace('spase://', 'https://hpde.io/') + '.json';
 
     url = spase_url(dataset)
@@ -186,10 +201,13 @@ def add_spase(datasets, cache_dir):
     if url is None:
       dataset['_spase'] = None
       return
+    if not url.startswith('spase'):
+      dataset['_spase'] = None
+      return
 
     print('Got: ' + url)
     try:
-      resp = session.get(url)
+      resp = session.get(url, timeout=timeouts['spase'])
     except:
       print(f"{dataset['id']}: Error getting '{url}'")
       return
@@ -213,7 +231,7 @@ def add_file_list(datasets, cache_dir):
 
     print("Get: " + url)
     try:
-      resp = session.get(url, timeout=10, headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
+      resp = session.get(url, timeout=timeouts['file_list'], headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
     except:
       print(f"{dataset['id']}: Error getting '{url}'")
       return

@@ -20,7 +20,14 @@ args = parser.parse_args()
 base_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
 catalog_all = os.path.join(base_dir, 'hapi', 'catalog-all.json')
 
-opts = {'compare_data': False, 'parallel': False, 'base_dir': base_dir}
+# mode = 'update' or 'exact'.
+# If update, warnings for backwards compatible differences
+opts = {
+  'compare_data': False,
+  'parallel': False,
+  'base_dir': base_dir,
+  'mode': 'exact'
+}
 
 if False:
   opts = {**opts,
@@ -49,12 +56,14 @@ if False:
 
 if True:
   opts = {**opts,
-          "s1": "bw",
-          "s2": "nl",
-          "url1": catalog_all,
-          "url2": os.path.join(base_dir, 'hapi', 'catalog-all.nl.json'),
-          "s1_expire_after": None,
-          "s2_expire_after": {"days": 1},
+          "mode": "update",
+          "s1": "nl",
+          "s2": "bw",
+          "url1": os.path.join(base_dir, 'hapi', 'catalog-all.nl.json'),
+          "url2": catalog_all,
+          "s1_expire_after": {"days": 1},
+          "s2_expire_after": None,
+          "s2_omits": ['stopDate', 'sampleStartDate', 'sampleStopDate'],
           "sample_duration": {"days": 1}
         }
 
@@ -77,7 +86,11 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
       continue
 
     if not dsid in datasets_s1:
-      report(f"{dsid} not in {opts['s1']}", 'fail', pad='')
+      msg = f"{dsid} not in {opts['s1']}"
+      if opts['mode'] == 'update':
+        report(msg, 'warn', pad='')
+      else:
+        report(msg, 'fail', pad='')
       dsid0 = dsid + "@0"
       if dsid[-2] != "@" and dsid0 in list(datasets_s1.keys()):
         report(f"  But {dsid0} in {opts['s1']}",'info')
@@ -119,9 +132,16 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
           report(f"  Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
           report(f"  Error because first {m} parameters are not identical.",'info')
         else:
-          report(f"n_params_{opts['s2']} = {n_params_s2} != n_params_{opts['s1']} = {n_params_s1} {extra}",'warn')
+          if opts['mode'] == 'update':
+            msg = f"n_params_{opts['s2']} = {n_params_s2} != n_params_{opts['s1']} = {n_params_s1} {extra}"
+            report(msg,'warn')
+          else:
+            report(msg,'fail')
           report(f"  Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
-          report(f"  Not error because first {m} parameters are identical.",'info')
+          if n_params_s2 > n_params_s1:
+            report(f"First {m} parameters are identical, mode = 'update', and n_params_{opts['s2']} > n_params_{opts['s1']}",'warn')
+          else:
+            report(f"First {m} parameters are identical but n_params_{opts['s2']} < n_params_{opts['s1']}",'fail')
           parameters = list(keys_s1)[0:m]
           compare_data(dsid, datasets_s1, datasets_s2, opts, parameters=parameters, datasets_s0=datasets_s0)
       else:
@@ -167,6 +187,10 @@ def compare_parameter(dsid, param_s2, param_s1):
     if key.startswith("x_"):
       param_s1_keys.remove(key)
 
+  for key in param_s2_keys.copy():
+    if key.startswith("x_"):
+      param_s2_keys.remove(key)
+
   n_param_keys_s1 = len(param_s1_keys)
   n_param_keys_s2 = len(param_s2_keys)
   if n_param_keys_s1 != n_param_keys_s2:
@@ -186,17 +210,43 @@ def compare_parameter(dsid, param_s2, param_s1):
         if a and b:
           if float(param_s2[key]) != float(param_s1[key]):
             report(f"{param_s2['name']}/{key}",'info')
-            report(f"val_{opts['s2']} = {param_s2[key]} != val_{opts['s1']} = {param_s1[key]}",'fail')
+            msg = f"val_{opts['s2']} = {param_s2[key]} != val_{opts['s1']} = {param_s1[key]}"
+            if opts['mode'] == 'update':
+              report(msg,'warn')
+            else:
+              report(msg,'fail')
       elif key == 'size' and isinstance(param_s2[key],list) and isinstance(param_s1[key],list):
         if param_s2[key] != param_s1[key]:
           report(f"{param_s2['name']}/{key}",'info')
           report(f"val_{opts['s2']} = {param_s2[key]} != val_{opts['s1']} = {param_s1[key]}",'fail')
       elif type(param_s2[key]) != type(param_s1[key]):
         report(f"{param_s2['name']}/{key}",'info')
-        report(f"type_{opts['s2']} = {type(param_s2[key])} != type_{opts['s1']} = {type(param_s1[key])}",'fail')
+        msg = f"type_{opts['s2']} = {type(param_s2[key])} != type_{opts['s1']} = {type(param_s1[key])}"
+        if opts['mode'] == 'update':
+          report(msg,'warn')
+        else:
+          report(msg,'fail')
       else:
         report(f"{param_s2['name']}/{key}",'info')
-        report(f"val_{opts['s2']} = '{param_s2[key]}' != val_{opts['s1']} = '{param_s1[key]}'",'fail')
+        if key == 'description':
+          msg1 = f"val_{opts['s2']} = '{param_s2[key]}'"
+          msg2 = f"!="
+          msg3 = f"val_{opts['s1']} = '{param_s1[key]}'"
+          if opts['mode'] == 'update':
+            report(msg1,'warn')
+            report(msg2,'warn')
+            report(msg3,'warn')
+          else:
+            report(msg1,'warn')
+            report(msg2,'warn')
+            report(msg3,'warn')
+        else:
+          msg = f"val_{opts['s2']} = '{param_s2[key]}' != val_{opts['s1']} = '{param_s1[key]}'"
+          if opts['mode'] == 'update':
+            report(msg,'warn')
+          else:
+            report(msg,'fail')
+
 
   compare_bins(param_s2, param_s1)
 
@@ -206,18 +256,22 @@ def compare_bins(params_s2, params_s1):
   name_s1 = params_s1["name"]
   if 'bins' in params_s2:
     if not 'bins' in params_s1:
-      #report(f"{dsid}")
-      report(f"{opts['s2']} has bins for {name_s2} but {opts['s1']} does not",'fail')
+      report(f"  {name_s2}")
+      msg = f"{opts['s2']} has bins for '{name_s2}' but {opts['s1']} does not"
+      if opts['mode'] == 'update':
+        report(msg,'warn')
+      else:
+        report(msg,'fail')
   if 'bins' in params_s1:
     if not 'bins' in params_s2:
-      #print(f"{dsid}")
-      report(f"{opts['s1']} has bins for {name_s1} but {opts['s2']} does not",'fail')
+      report(f"  {name_s1}")
+      report(f"{opts['s1']} has bins for '{name_s1}' but {opts['s2']} does not",'fail')
   if 'bins' in params_s1:
     if 'bins' in params_s2:
       n_bins_s2 = len(params_s1["bins"])
       n_bins_s1 = len(params_s2["bins"])
       if n_bins_s2 != n_bins_s1:
-        #print(f"{dsid}")
+        print(f"  {params_s1}/bins")
         report(f"{opts['s1']} has {n_bins_s1} bins objects; {opts['s2']} has {n_bins_s2}",'fail')
       # TODO: Compare content at bins level
 
@@ -305,7 +359,7 @@ def compare_data(dsid, datasets_s1, datasets_s2, opts, parameters="", datasets_s
 
 def remove_keys(keys):
   for key in keys.copy():
-    if opts['s1'] == 'bw' and key in ['sampleStartDate', 'sampleStopDate']:
+    if 's2_omits' in opts and key in opts['s2_omits']:
       keys.remove(key)
     if key.startswith("x_"):
       keys.remove(key)
@@ -320,8 +374,6 @@ def get_all_metadata(server_url, server_name, expire_after={"days": 1}):
     url_dir = os.path.join(opts['base_dir'], 'compare', url_parts.netloc, *url_parts.path.split('/'))
     os.makedirs(url_dir, exist_ok=True)
     return url_dir
-
-  report(f"\n{server_name} = {server_url}")
 
   if not server_url.startswith('http'):
     print(f"Reading: {server_url}")
@@ -434,6 +486,17 @@ def pad_server_name(opts):
   return opts
 
 opts = pad_server_name(opts)
+
+if opts['mode'] == 'update':
+  report(f"Original server")
+report(f"{opts['s1']} = {opts['url1']}")
+
+if opts['mode'] == 'update':
+  report(f"\nUpdated server")
+report(f"{opts['s2']} = {opts['url2']}")
+
+if opts['mode'] == 'update':
+  report(f"\nmode='update'; Backward compatible differences will be treated as warnings.\n")
 
 datasets_s0 = None
 if opts['s1'] == 'jf' and opts['s2'] == 'nl' and opts['compare_data'] is True:

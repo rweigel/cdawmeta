@@ -129,6 +129,8 @@
     "WI_EM_3DP": ["VALID", "GAP"],
     "WI_PM_3DP": ["VALID", "E_RANGE", "GAP"]
   },
+  "omitVariables_needed_at_one_time": {
+  },
   "omitSubset": {
     "AEROCUBE-6-A_DOSIMETER_L2": ["Epoch_10Hz"],
     "AEROCUBE-6-B_DOSIMETER_L2": ["Epoch_10Hz"],
@@ -151,11 +153,6 @@
     "VOYAGER2_2S_MAG": ["Epoch"]
   },
   "omitAll": {
-    "ALOUETTE2_AV_QUI": null,
-    "APOLLO12_SWS_1HR": null,
-    "APOLLO12_SWS_28S": null,
-    "APOLLO15_SWS_1HR": null,
-    "APOLLO15_SWS_28S": null,
     "C2_PP_EFW": null,
     "C3_PP_EFW": null,
     "C4_PP_EFW": null,
@@ -193,24 +190,10 @@
     "ICON_L2-6_EUV": null,
     "ICON_L2-7_IVM-A": null,
     "ICON_L2-7_IVM-B": null,
-    "I1_AV2_OTT": null,
-    "I1_AV2_ULA": null,
-    "I1_AV_ODG": null,
-    "I1_AV_ORR": null,
-    "I1_AV_RES": null,
-    "I1_AV_ULA": null,
-    "I2_AV_ODG": null,
-    "I2_AV_RES": null,
-    "I2_AV_SNT": null,
-    "I2_AV_SYO": null,
     "MGS_MAG_LOW": null,
     "MGS_MAG_HIGH": null,
     "MSL_RAD_OBS-L2": null,
     "MSL_RAD_OBS-L1": null,
-    "MVN_STA_L2_DA-1R64E": null,
-    "MMS4_EDI_BRST_L2_AMB": null,
-    "MMS4_FPI_BRST_L2_DES-MOMS": null,
-    "MMS4_FPI_BRST_L2_DES-PARTMOMS": null,
     "PMC-TURBO_L1_BOLIDE_VBC": null,
     "PO_H2_TIM": null,
     "RBSP-A-RBSPICE_LEV-3-PAP_TOFXEHE": null,
@@ -237,15 +220,38 @@
     "TIMED_WINDVECTORSNCAR_TIDI": null,
     "TWINS2_AT_DEF": null
   },
+  "omitAll_needed_at_one_time": {
+    "ALOUETTE2_AV_QUI": null,
+    "APOLLO12_SWS_1HR": null,
+    "APOLLO12_SWS_28S": null,
+    "APOLLO15_SWS_1HR": null,
+    "APOLLO15_SWS_28S": null,
+    "I1_AV2_OTT": null,
+    "I1_AV2_ULA": null,
+    "I1_AV_ODG": null,
+    "I1_AV_ORR": null,
+    "I1_AV_RES": null,
+    "I1_AV_ULA": null,
+    "I2_AV_ODG": null,
+    "I2_AV_RES": null,
+    "I2_AV_SNT": null,
+    "I2_AV_SYO": null,
+    "MMS4_EDI_BRST_L2_AMB": null,
+    "MMS4_FPI_BRST_L2_DES-MOMS": null,
+    "MMS4_FPI_BRST_L2_DES-PARTMOMS": null,
+    "MVN_STA_L2_DA-1R64E": null
+  },
   "omitAllPattern": {
+    "REACH-.*": null,
+    "SOLO_L2_SWA-EAS1-NM3D-.*": null
+  },
+  "omitAllPattern_needed_at_one_time": {
     "C[1-4]_CP_CIS.*": null,
     "C[1-4]_CP_EDI.*": null,
     "C[1-4]_CP_EFW.*": null,
     "C[1-4]_CP_FGM_5VPS": null,
     "C[1-4]_CP_RAP.*": null,
     "C[1-4]_CP_STA.*": null,
-    "C[1-4]_CP_WHI.*": null,
-    "REACH-.*": null,
-    "SOLO_L2_SWA-EAS1-NM3D-.*": null
+    "C[1-4]_CP_WHI.*": null
   }
 }

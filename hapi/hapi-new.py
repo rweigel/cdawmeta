@@ -2,6 +2,15 @@ import os
 import re
 import json
 
+# Set to True to omit datasets that are not in Nand's metadata
+omit_datasets = False
+
+# Set to false to reduce number of mismatch warnings
+strip_description = False
+
+# Remove ---> in description
+remove_arrows = False
+
 from cdawmeta.write_json import write_json
 
 base_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
@@ -70,17 +79,27 @@ def omit_dataset(id, issues, depend_0=None):
 
   if depend_0 is None:
     if id in issues['omitAll'].keys():
-      print(id)
-      print(f"  Warning: Dropping dataset {id} b/c it is not in Nand's list")
-      return True
+      if omit_datasets:
+        print(id)
+        print(f"    Warning: Dropping dataset {id} b/c it is not in Nand's list")
+        return True
+      else:
+        print(id)
+        print(f"    Warning: Keeping dataset {id} even though it is not in Nand's list")
+        return False
     for pattern in issues['omitAllPattern']:
       if re.search(pattern, id):
-        print(id)
-        print(f"  Warning: Dropping dataset {id} b/c it is not in Nand's list")
-        return True
+        if omit_datasets:
+          print(id)
+          print(f"    Warning: Dropping dataset {id} b/c it is not in Nand's list")
+          return True
+        else:
+          print(id)
+          print(f"    Warning: Keeping dataset {id} even though it is not in Nand's list")
+          return False
   else:
     if id in issues['omitSubset'].keys() and depend_0 in issues['omitSubset'][id]:
-      print(f"  Warning: Dropping dataset associated with \"{depend_0}\" b/c it is not in Nand's list")
+      print(f"    Warning: Dropping variables associated with DEPEND_0 = \"{depend_0}\" b/c this DEPEND_0 is not in Nand's list")
       return True
   return False
 
@@ -215,7 +234,7 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
   length = cdftimelen(cdf_type)
 
   if length == None:
-    print(f"  Unhandled DEPEND_0 type: '{cdf_type}'. Dropping variables associated with DEPEND_0 '{depend_0_name}'")
+    print(f"    Unhandled DEPEND_0 type: '{cdf_type}'. Dropping variables associated with DEPEND_0 '{depend_0_name}'")
     return None
 
   parameters = [
@@ -235,7 +254,7 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
 
     type = cdf2hapitype(variable['VarDescription']['DataType'])
     if type == None:
-      print(f"  Error: Unhandled DataType: {variable['VarDescription']['DataType']}")
+      print(f"    Error: Unhandled DataType: {variable['VarDescription']['DataType']}")
       return None
 
     VAR_TYPE = variable['VarAttributes']['VAR_TYPE']
@@ -258,12 +277,12 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
         NumElements = variable['VarDescription']['NumElements']
 
       if PadValue is None and FillValue is None and NumElements is None:
-        print(f'  Error: Dropping variable "{name}" because string parameter and no PadValue, FillValue, or NumElements given to allow length to be determined.')
+        print(f'    Error: Dropping variable "{name}" because string parameter and no PadValue, FillValue, or NumElements given to allow length to be determined.')
         continue
 
       if NumElements is None:
         if PadValue != None and FillValue != None and PadValue != FillValue:
-          print(f'  Error: Dropping variable "{name}" because PadValue and FillValue lengths differ.')
+          print(f'    Error: Dropping variable "{name}" because PadValue and FillValue lengths differ.')
           continue
 
       if PadValue != None:
@@ -290,7 +309,6 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
     if 'DimSizes' in variable['VarDescription']:
       parameter['size'] = variable['VarDescription']['DimSizes']
 
-
     CATDESC = ""
     if 'CATDESC' in variable['VarAttributes']:
       CATDESC = variable['VarAttributes']['CATDESC']
@@ -309,8 +327,11 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
       parameter['description'] = CATDESC
       parameter['x_description'] = f"CATDESC: {CATDESC}; VAR_NOTES: {VAR_NOTES}"
 
-    # TODO: parameter['description'] = parameter['description'].strip()
-    #       Not done now to reduce number of mismatches with Nand.
+    if strip_description:
+      parameter['description'] = parameter['description'].strip()
+
+    if remove_arrows:
+      parameter['description'] = parameter['description'].replace('--->', '')
 
     def trim(label):
       if isinstance(label, str):
@@ -349,16 +370,24 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
     if 'UNITS' in variable['VarAttributes']:
       parameter['units'] = variable['VarAttributes']['UNITS']
 
+    if print_info:
+      virtual = parameter.get('x_cdf_is_virtual', False)
+      virtual = f' (virtual: {virtual})'
+      print(f"    {parameter['name']}{virtual}")
+      print('     size = {}'.format(parameter.get('size', None)))
+      print('     x_label = {}'.format(parameter.get('x_label', None)))
+
     parameter['bins'] = []
     DEPEND_xs = ['DEPEND_1','DEPEND_2','DEPEND_3']
     for DEPEND_x in DEPEND_xs:
       if DEPEND_x in variable['VarAttributes']:
         DEPEND_x_NAME = variable['VarAttributes'][DEPEND_x]
         if not DEPEND_x_NAME in all_variables:
-          print(f"  Error: {DEPEND_x} '{DEPEND_x_NAME}' for variable '{name}' is not a variable. Omitting {name}.")
+          if print_info:
+            print(f"     Error: {DEPEND_x} '{DEPEND_x_NAME}' for variable '{name}' is not a variable. Omitting {name}.")
           continue
 
-        bin_object = bins(DEPEND_x_NAME, all_variables[DEPEND_x_NAME])
+        bin_object = bins(DEPEND_x, DEPEND_x_NAME, all_variables[DEPEND_x_NAME], print_info=print_info)
         if bin_object is not None:
           parameter['bins'].append(bin_object)
 
@@ -367,11 +396,13 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
     else:
       for bins_object in parameter['bins']:
         if bins_object is None:
-          #print(f"  Warning: One of the bins objects for {name} is None.")
+          if print_info:
+            print(f"    Warning: One of the bins objects for {name} is None.")
           del parameter['bins']
 
       if 'size' in parameter and len(parameter['size']) != len(parameter['bins']):
-        #print(f"  Warning: number of bins objects that could be created ({len(parameter['bins'])}) for {name} does not match len(size) = len({parameter['size']}).")
+        if print_info:
+          print(f"     Error: Number of non-DEPEND_0 DEPENDs ({len(parameter['bins'])}) for {name} != len(DimSizes) = len({parameter['size']}).")
         del parameter['bins']
 
       if 'size' not in parameter and 'bins' in parameter:
@@ -380,21 +411,14 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
         # then DimSizes can't be written into the CDF file for that variable
         # (because the variable has no associated data). In this case,
         # we need to get the DimSizes from the DEPEND variable.
-        print(f"  Error: Omitting bins for parameter {name} because no DimSizes attribute found.")
-
-    if print_info:
-      virtual = parameter.get('x_cdf_is_virtual', '')
-      if virtual != '':
-        virtual = f'({virtual})'
-      print(f"  {parameter['name']} {virtual}")
-      print('   size = {}'.format(parameter.get('size', None)))
-      print('   x_label = {}'.format(parameter.get('x_label', None)))
+        if print_info:
+          print(f"     Error: Omitting bins for parameter {name} it has no DimSizes attribute.")
 
     parameters.append(parameter)
 
   return parameters
 
-def bins(DEPEND_x_NAME, DEPEND_x):
+def bins(DEPEND_x_key, DEPEND_x_NAME, DEPEND_x, print_info=False):
 
   hapitype = cdf2hapitype(DEPEND_x['VarDescription']['DataType'])
 
@@ -409,6 +433,8 @@ def bins(DEPEND_x_NAME, DEPEND_x):
 
   if RecVariance == "VARY":
     # Nand does not create bins for this case
+    if print_info:
+      print(f"     Warning: RecVariance = 'VARY' for {DEPEND_x_key} variable named '{DEPEND_x_NAME}'. Not creating bins b/c Nand does not for this case.")
     return None
   else:
     # TODO: Check for multi-dimensional
@@ -419,12 +445,14 @@ def bins(DEPEND_x_NAME, DEPEND_x):
       if 'VAR_TYPE' in DEPEND_x['VarAttributes']:
         DEPEND_x_VAR_TYPE = DEPEND_x['VarAttributes']['VAR_TYPE']
       else:
-        print(f"  Error: No VAR_TYPE for depend variable '{DEPEND_x_NAME}'")
+        if print_info:
+          print(f"     Error: No VAR_TYPE for depend variable '{DEPEND_x_NAME}'")
         return None
 
       if cdf2hapitype(DEPEND_x_VAR_TYPE) in ['data', 'support_data']:
         if not "UNIT_PTR" in DEPEND_x['VarAttributes']:
-          print(f"  Error: No UNITS or UNIT_PTR for depend variable '{DEPEND_x_NAME}' with VAR_TYPE '{DEPEND_x_VAR_TYPE}'")
+          if print_info:
+            print(f"     Error: No UNITS or UNIT_PTR for depend variable '{DEPEND_x_NAME}' with VAR_TYPE '{DEPEND_x_VAR_TYPE}'")
 
     if 'VarData' in DEPEND_x:
       bins_object = {
@@ -434,7 +462,8 @@ def bins(DEPEND_x_NAME, DEPEND_x):
                     }
       return bins_object
     else:
-      print(f"  Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
+      if print_info:
+        print(f"     Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
       return None
 
 def split_variables(datasets, issues):
@@ -470,7 +499,7 @@ def split_variables(datasets, issues):
 
         if depend_0_name not in dataset['_master_restructured']['_variables']:
           print(dataset['id'])
-          print(f'  Error: Dropping variable "{name}" because it has a DEPEND_0 "{depend_0_name}" that is not in dataset')
+          print(f'  Error: Dropping variable "{name}" because it has a DEPEND_0 ("{depend_0_name}") that is not in dataset')
           continue
 
         if depend_0_name not in depend_0_dict:
@@ -507,11 +536,13 @@ def create_infos(datasets, issues):
     depend_0_names = []
     for depend_0_name, depend_0_variables in depend_0s:
 
+      print(f"  Checking DEPEND_0: '{depend_0_name}'")
+
       if omit_dataset(dataset['id'], issues, depend_0=depend_0_name):
         continue
 
       if depend_0_name not in dataset['_master_restructured']['_variables'].keys():
-        print(f"  Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.")
+        print(f"    Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.")
         continue
 
       DEPEND_0_VAR_TYPE = dataset['_master_restructured']['_variables'][depend_0_name]['VarAttributes']['VAR_TYPE']
@@ -521,15 +552,15 @@ def create_infos(datasets, issues):
         VAR_TYPES.append(variable['VarAttributes']['VAR_TYPE'])
       VAR_TYPES = set(VAR_TYPES)
 
-      print(f"  DEPEND_0 Name/VAR_TYPE: '{depend_0_name}'/'{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
+      print(f"    VAR_TYPE: '{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
 
       if DEPEND_0_VAR_TYPE == 'ignore_data':
-        print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
+        print(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
         continue
 
       if 'data' not in VAR_TYPES and not keep_dataset(dataset['id'], issues, depend_0=depend_0_name):
         # In general, Nand drops these, but not always
-        print(f"  Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
+        print(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
         continue
 
       all_variables = dataset['_master_restructured']['_variables']
@@ -537,9 +568,9 @@ def create_infos(datasets, issues):
       if parameters == None:
         dataset['_variables_split'][depend_0_name] = None
         if len(depend_0s) == 1:
-          print(f"  Due to last error, omitting dataset with DEPEND_0 = {depend_0_name}")
+          print(f"    Due to last error, omitting dataset with DEPEND_0 = {depend_0_name}")
         else:
-          print(f"  Due to last error, omitting sub-dataset with DEPEND_0 = {depend_0_name}")
+          print(f"    Due to last error, omitting sub-dataset with DEPEND_0 = {depend_0_name}")
         continue
 
       depend_0_names.append(depend_0_name)
@@ -549,6 +580,8 @@ def create_infos(datasets, issues):
     #print(depend_0_names)
 
     for depend_0_name in depend_0_names:
+
+      print(f"  Creating HAPI dataset for DEPEND_0: '{depend_0_name}'")
 
       depend_0_variables = dataset['_variables_split'][depend_0_name]
 
@@ -597,9 +630,12 @@ def write_infos(infos, info_dir):
 
 issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
 print(f'Reading: {issues_file}')
-with open(issues_file) as f:
-  issues = json.load(f)
-print(f'Read: {issues_file}')
+try:
+  with open(issues_file) as f:
+    issues = json.load(f)
+    print(f'Read: {issues_file}')
+except Exception as e:
+  exit(f"Error: Could not read {issues_file} file: {e}")
 
 print(f'Reading: {in_file}')
 with open(in_file, 'r', encoding='utf-8') as f:
@@ -609,6 +645,7 @@ print(f'Read: {in_file}')
 write_json(create_catalog(datasets), catalog_file)
 
 infos = create_infos(datasets, issues)
+
 write_json(infos, catalog_all_file)
 
 write_infos(infos, info_dir)
