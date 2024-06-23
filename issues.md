@@ -27,8 +27,7 @@ but the master has 'Position' misspelled and right whitespace padding:
 Given I am using masters, this is unexpected.
 
 
-6\. My code (which uses the JSON representation of the master CDFs) claims that the units for `ISS_SP_FPMU/TCC` is the ASCII `null`. 
-I see `"UNITS":"\u0000"` in a.json from
+6\. My code (which uses the JSON representation of the master CDFs) claims that the units for `ISS_SP_FPMU/TCC` is the ASCII `null`. I see `"UNITS":"\u0000"` in a.json from
 
 ```
 curl "https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/iss_sp_fpmu_00000000_v01.json" > a.json
@@ -49,7 +48,7 @@ However, I don't see `"UNITS":"\u0000"` in the `VarAttributes` for `TCC` when I 
 
 and
 
-4. `DEPEND_{1,2,3}` variable names that are not variables in the dataset. 
+4. `DEPEND_{1,2,3}` variable names that are not variables in the dataset.
 
     For example:
 
