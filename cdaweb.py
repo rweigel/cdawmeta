@@ -8,15 +8,8 @@
 import os
 import json
 
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('--include', help="Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)")
-args = parser.parse_args()
-
-file_list = False
-max_workers = 4      # Number of threads to use for downloading
-cache_control = True # Use Cache-Control response headers for expiration, if available
-expire_after = None  # Set to 0 to force re-download (is HEAD performed first to see if file has changed?)
+allxml = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
+filews = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
 
 timeouts = {
   'allxml': 30,
@@ -25,35 +18,58 @@ timeouts = {
   'file_list': 120
 }
 
-allxml = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
-filews = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
+cache_root = os.path.join(os.path.dirname(__file__), 'data', 'cache')
+files = {
+  'out': os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.json'),
+  'err': os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.errors.log'),
+  'log': os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.log')
+}
 
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('--include', help="Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)")
-args = parser.parse_args()
+if os.path.exists(files['err']):
+  os.remove(files['err'])
+err_fh = open(files['err'], "a")
 
-cache_dir = os.path.join(os.path.dirname(__file__), 'data', 'cache')
-out_file = os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.json')
-err_file = os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.errors.log')
-log_file = os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.log')
+if os.path.exists(files['log']):
+  os.remove(files['log'])
+log_fh = open(files['log'], "a")
 
-if os.path.exists(err_file):
-  os.remove(err_file)
-err_fh = open(err_file, "a")
+def cli():
+  clkws = {
+    "include": {
+      "help": "Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)"
+    },
+    "workers": {
+      "type": int,
+      "help": "Number of threads to use for downloading",
+      "default": 4
+    },
+    "expire_after": {
+      "type": int,
+      "help": "Expire cache after this many seconds",
+      "default": 0
+    },
+    "file_list": {
+      "action": "store_true",
+      "help": "Include file list in catalog.json"
+    }
+  }
 
-if os.path.exists(log_file):
-  os.remove(log_file)
-log_fh = open(log_file, "a")
+  import argparse
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--include', **clkws['include'])
+  parser.add_argument('--workers', **clkws['workers'])
+  parser.add_argument('--expire_after', **clkws['expire_after'])
+  parser.add_argument('--file_list', **clkws['file_list'])
+  return parser.parse_args()
 
 def xprint(msg, error=False):
   print(msg)
   log_fh.write(f"{msg}\n")
-  if max_workers > 1:
+  if args.workers > 1:
     log_fh.flush()
   if error:
     err_fh.write(f"{msg.lstrip()}\n")
-    if max_workers > 1:
+    if args.workers > 1:
       err_fh.flush()
 
 def omit(id):
@@ -71,14 +87,14 @@ def get(function, datasets, cache_dir):
 
   session = CachedSession(cache_dir)
 
-  if max_workers == 1:
+  if args.workers == 1:
     for dataset in datasets:
       function(dataset, session, cache_dir)
   else:
     from concurrent.futures import ThreadPoolExecutor
     def call(dataset):
       function(dataset, session, cache_dir)
-    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
       pool.map(call, datasets)
 
 def CachedSession(cache_dir):
@@ -88,14 +104,28 @@ def CachedSession(cache_dir):
 
   # Cache dir
   copts = {
-    "use_cache_dir": True,          # Save files in the default user cache dir
-    "cache_control": True,          # Use Cache-Control response headers for expiration, if available
-    "expire_after": expire_after,   # Expire responses after expire_after if no cache control header
-    "allowable_codes": [200],       # Cache responses with these status codes
-    "stale_if_error": True,         # In case of request errors, use stale cache data if possible
+    # Save files in the default user cache dir
+    "use_cache_dir": True,
+
+    # Use Cache-Control response headers for expiration, if available
+    "cache_control": True,
+
+    # Expire responses after expire_after if no cache control header
+    "expire_after": args.expire_after,
+
+    # Cache responses with these status codes
+    "allowable_codes": [200],
+
+    # In case of request errors, use stale cache data if possible
+    "stale_if_error": True,
+
     "serializer": "json",
-    "backend": "filesystem",        # This causes caching to not work unless decode_content = False
-    "decode_content": True          # https://github.com/requests-cache/requests-cache/issues/963
+
+    # This causes caching to not work unless decode_content = False
+    "backend": "filesystem",
+
+    # https://github.com/requests-cache/requests-cache/issues/963
+    "decode_content": True
   }
 
   return requests_cache.CachedSession(cache_dir, **copts)
@@ -276,17 +306,19 @@ def add_file_list(datasets, cache_dir):
   cache_dir = os.path.join(os.path.dirname(__file__), 'data/cache/files')
   get(get_file_list, datasets, cache_dir)
 
-datasets = create_datasets(cache_dir)
-add_master(datasets, cache_dir)
-add_spase(datasets, cache_dir)
+args = cli()
 
-if file_list:
+datasets = create_datasets(cache_root)
+add_master(datasets, cache_root)
+add_spase(datasets, cache_root)
+
+if args.file_list:
   add_file_list(datasets, cache_dir)
 
 xprint(f'# of datasets: {len(datasets)}')
 
 from cdawmeta.write_json import write_json
-write_json(datasets, out_file)
+write_json(datasets, files['out'])
 
 err_fh.close()
 log_fh.close()
