@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--include', help="Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)")
 args = parser.parse_args()
 
+file_list = False
 max_workers = 4      # Number of threads to use for downloading
 cache_control = True # Use Cache-Control response headers for expiration, if available
 expire_after = None  # Set to 0 to force re-download (is HEAD performed first to see if file has changed?)
@@ -21,7 +22,7 @@ timeouts = {
   'allxml': 30,
   'master': 30,
   'spase': 30,
-  'file_list': 60
+  'file_list': 120
 }
 
 allxml = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
@@ -34,6 +35,26 @@ args = parser.parse_args()
 
 cache_dir = os.path.join(os.path.dirname(__file__), 'data', 'cache')
 out_file = os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.json')
+err_file = os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.errors.log')
+log_file = os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.log')
+
+if os.path.exists(err_file):
+  os.remove(err_file)
+err_fh = open(err_file, "a")
+
+if os.path.exists(log_file):
+  os.remove(log_file)
+log_fh = open(log_file, "a")
+
+def xprint(msg, error=False):
+  print(msg)
+  log_fh.write(f"{msg}\n")
+  if max_workers > 1:
+    log_fh.flush()
+  if error:
+    err_fh.write(f"{msg.lstrip()}\n")
+    if max_workers > 1:
+      err_fh.flush()
 
 def omit(id):
   import re
@@ -80,17 +101,17 @@ def CachedSession(cache_dir):
   return requests_cache.CachedSession(cache_dir, **copts)
 
 def print_resp_info(resp, url):
-  print(f'Got: {url}')
+  xprint(f'Got: {url}')
   req_cache_headers = {k: v for k, v in resp.request.headers.items() if k in ['If-None-Match', 'If-Modified-Since']}
   res_cache_headers = {k: v for k, v in resp.headers.items() if k in ['ETag', 'Last-Modified', 'Cache-Control', 'Vary']}
-  print(f"  Status Code: {resp.status_code}")
-  print(f"  From cache:  {resp.from_cache}")
-  print(f"  Request Cache-Related Headers:")
+  xprint(f"  Status code: {resp.status_code}")
+  xprint(f"  From cache: {resp.from_cache}")
+  xprint(f"  Request Cache-Related Headers:")
   for k, v in req_cache_headers.items():
-    print(f"    {k}: {v}")
-  print(f"  Response Cache-Related Headers:")
+    xprint(f"    {k}: {v}")
+  xprint(f"  Response Cache-Related Headers:")
   for k, v in res_cache_headers.items():
-    print(f"    {k}: {v}")
+    xprint(f"    {k}: {v}")
 
 def create_datasets(cache_dir):
 
@@ -102,11 +123,11 @@ def create_datasets(cache_dir):
   session = CachedSession(cache_dir)
   url = allxml
 
-  print("Getting: " + url)
+  xprint("Get: " + url)
   try:
     resp = session.get(url, timeout=timeouts['allxml'])
   except:
-    print("Error getting " + url)
+    xprint("Error getting " + url, error=True)
     exit(1)
   print_resp_info(resp, url)
 
@@ -126,11 +147,13 @@ def create_datasets(cache_dir):
     dataset = {'id': id, '_allxml': dataset_allxml}
 
     if not 'mastercdf' in dataset_allxml:
-      print('No mastercdf for ' + id)
+      msg = f'{id}: No mastercdf in all.xml dataset node'
+      xprint(msg, error=True)
       continue
 
     if not '@ID' in dataset_allxml['mastercdf']:
-      print('No ID attribute for mastercdf for ' + id)
+      msg = f'{id}: No ID attribute in all.xml mastercdf node'
+      xprint(msg, error=True)
       continue
 
     datasets.append(dataset)
@@ -148,12 +171,15 @@ def add_master(datasets, cache_dir):
     mastercdf = dataset['_allxml']['mastercdf']['@ID']
     url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
 
-    print('Get: ' + url)
+    xprint('Get: ' + url)
     try:
       resp = session.get(url, timeout=timeouts['master'])
     except:
-      print("Error getting " + url)
-      exit(1)
+      msg = f"{dataset}: Error getting {url}"
+      xprint(msg, error=True)
+      dataset['_master_data'] = None
+      return
+
     print_resp_info(resp, url)
 
     dataset['_master_data'] = resp.json()
@@ -162,8 +188,10 @@ def add_master(datasets, cache_dir):
 
     files = list(dataset['_master_data'].keys())
     if len(files) > 1:
-      print("Aborting. Expected only one file key in _master object for " + dataset['id'])
-      exit(1)
+      msg = f"{dataset['id']}: More than one file key in master CDF JSON"
+      xprint(msg)
+      dataset['_master_data'] = None
+      return
 
   cache_dir = os.path.join(cache_dir, 'masters')
   get(get_master, datasets, cache_dir)
@@ -182,18 +210,16 @@ def add_spase(datasets, cache_dir):
         return None
 
       files = list(dataset['_master_data'].keys())
-      if len(files) > 1:
-        print("Expected only one file key in _master object.")
-        exit(1)
 
       global_attributes = dataset['_master_data'][files[0]]['CDFglobalAttributes']
       for attribute in global_attributes:
         if 'spase_DatasetResourceID' in attribute:
-          id = attribute['spase_DatasetResourceID'][0]['0']
-          if not url.startswith('spase://'):
-            print(f"Error: spase_DatasetResourceID = '{id}' does not start with 'spase://' for '{dataset['id']}'")
+          spase_id = attribute['spase_DatasetResourceID'][0]['0']
+          if spase_id and not spase_id.startswith('spase://'):
+            msg = f"{dataset['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
+            xprint(msg, error=True)
             return None
-          return id.replace('spase://', 'https://hpde.io/') + '.json';
+          return spase_id.replace('spase://', 'https://hpde.io/') + '.json';
 
     url = spase_url(dataset)
     del dataset['_master_data']
@@ -201,19 +227,20 @@ def add_spase(datasets, cache_dir):
     if url is None:
       dataset['_spase'] = None
       return
-    if not url.startswith('spase'):
-      dataset['_spase'] = None
-      return
 
-    print('Got: ' + url)
+    xprint('Get: ' + url)
     try:
       resp = session.get(url, timeout=timeouts['spase'])
     except:
-      print(f"{dataset['id']}: Error getting '{url}'")
+      msg = f"{dataset['id']}: Error getting '{url}'"
+      xprint(msg, error=True)
       return
+
     if resp.status_code != 200:
-      print(f"{dataset['id']}: HTTP status != 200 ({resp.status_code}) when getting '{url}'")
+      msg = f"{dataset['id']}: HTTP status != 200 ({resp.status_code}) when getting '{url}'"
+      xprint(msg, error=True)
       return
+
     print_resp_info(resp, url)
 
     dataset['_spase'] = cache_dir + "/" + resp.cache_key + ".json"
@@ -229,15 +256,19 @@ def add_file_list(datasets, cache_dir):
     stop = dataset['_allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z";
     url = filews + dataset["id"] + "/orig_data/" + start + "," + stop
 
-    print("Get: " + url)
+    xprint("Get: " + url)
     try:
       resp = session.get(url, timeout=timeouts['file_list'], headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
     except:
-      print(f"{dataset['id']}: Error getting '{url}'")
+      msg = f"{dataset['id']}: Error getting '{url}'"
+      xprint(msg, error=True)
       return
+
     if resp.status_code != 200:
-      print(f"HTTP status code {resp.status_code} when getting '{url}'")
+      msg = f"HTTP status code {resp.status_code} when getting '{url}'"
+      xprint(msg, error=True)
       return
+
     print_resp_info(resp, url)
 
     dataset['_file_list'] = cache_dir + "/" + resp.cache_key + ".json"
@@ -248,9 +279,14 @@ def add_file_list(datasets, cache_dir):
 datasets = create_datasets(cache_dir)
 add_master(datasets, cache_dir)
 add_spase(datasets, cache_dir)
-add_file_list(datasets, cache_dir)
 
-print(f'# of datasets: {len(datasets)}')
+if file_list:
+  add_file_list(datasets, cache_dir)
+
+xprint(f'# of datasets: {len(datasets)}')
 
 from cdawmeta.write_json import write_json
 write_json(datasets, out_file)
+
+err_fh.close()
+log_fh.close()
