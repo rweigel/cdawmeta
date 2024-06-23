@@ -37,7 +37,7 @@ cdaweb: cdaweb.py
 	make data/cdaweb.json INCLUDE='$(INCLUDE)'
 
 data/cdaweb.json:
-	python cdaweb.py --include '$(INCLUDE)' | tee data/cdaweb.log
+	python cdaweb.py --include '$(INCLUDE)'
 ################################################################################
 
 ################################################################################
