@@ -8,6 +8,8 @@
   "Description": "DESCRIP",
   "description": "DESCRIP",
   "Display_Type": "DISPLAY_TYPE",
+  "DISPLAYTYPE": "DISPLAY_TYPE",
+  "fill": "FILLVAL",
   "Frame": "FRAME",
   "LABl_PTR_1": "LABL_PTR_1",
   "long_name": "Long_Name",
