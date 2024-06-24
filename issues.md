@@ -61,3 +61,15 @@ and
 
 
 8\. [The logfile](http://mag.gmu.edu/git-data/cdawmeta/data/cdaweb.errors.log) has many errors associated with the fact that `spase_DatasetResourceID` does not start with `spase://`. I think an empty space is placed there because a SPASE record does not exist, which may be there to make validation pass on a validator that only checks for a non-empty string. It also has many `404` errors for URLs to `hpde.io` based on `spase_DatasetResourceID`.
+
+9\.
+
+From https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html, "ISTP attribute names must be capitalized". I find "sig_digits" and "SI_conv" confusing because it seems that it is an ISTP attribute name. Are some of the names on this page not ISTP attributes?
+
+Also, a while back I mentioned the mixed usage of SI_conv and SI_conversion at https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html. Which is it?
+
+10\.
+
+Missing VarAttributes in ela_sun in ELA_L1_STATE_DEFN
+Missing VarAttributes in elb_sun in ELB_L1_STATE_DEFN
+Missing VarAttributes in STE_spectra_LABL_1 in STB_L1_STE

@@ -1,4 +1,4 @@
-# Put links in header to, e.g., 
+# Put links in header to, e.g.,
 # https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html#FILLVAL
 
 def omit(id):
@@ -8,41 +8,40 @@ def omit(id):
   return False
 
 import os
+import json
 
 base_dir    = os.path.join(os.path.dirname(__file__), '../data')
 all_input   = os.path.join(base_dir, 'cdaweb.json')
 file_body   = os.path.join(base_dir, 'tables/cdaweb.table.body.json')
 file_header = os.path.join(base_dir, 'tables/cdaweb.table.head.json')
+file_counts = os.path.join(os.path.dirname(__file__), 'table-cdaweb.counts.csv')
+file_fixes  = os.path.join(os.path.dirname(__file__), 'table-cdaweb.fixes.json')
 
 apply_fixes = True
 use_all_attributes = True
 
+if apply_fixes:
+  print(f'Reading: {file_fixes}')
+  with open(file_fixes) as f:
+    fixes = json.load(f)
+  print(f'Read: {file_fixes}')
+
+def write_counts(attribute_names):
+  import collections
+  counts = dict(collections.Counter(attribute_names))
+  counts_sorted = sorted(counts.items(), key=lambda i: i[0].lower())
+  print(f'Writing: {file_counts}')
+  with open(file_counts, 'w', encoding='utf-8') as f:
+    f.write("Attribute, Count\n")
+    for count in counts_sorted:
+      f.write(f"{count[0]}, {count[1]}\n")
+  print(f'Wrote: {file_counts}')
+
 def all_attribute_table(datasets):
 
-  fixes = {
-    "MonoTon": "MONOTON",
-    "Bin_Location": "BIN_LOCATION",
-    "Time_Base": "TIME_BASE",
-    "Time_Scale": "TIME_SCALE",
-    "Calib_input": "CALIB_INPUT",
-    "Calib_software": "CALIB_SOFTWARE",
-    "SI_conv": "SI_CONVERSION",
-    "SI_conversion": "SI_CONVERSION",
-    "long_name": "Long_Name",
-    "valid_range": "VALID_RANGE",
-    "Resolution": "RESOLUTION",
-    "LABl_PTR_1": "LABL_PTR_1",
-    "SC_id": "SC_ID",
-    "Description": "DESCRIP",
-    "description": "DESCRIP",
-    "units": "UNITS",
-    "Bin_Location": "BIN_LOCATION",
-    "Bin_location": "BIN_LOCATION",
-    "SCALETYPE": "SCALETYP",
-    "ScaleType": "SCALETYP",
-  }
-
   def all_attributes(datasets):
+
+    attribute_names = []
 
     attributes = {
                   'VarDescription': {
@@ -96,12 +95,14 @@ def all_attribute_table(datasets):
               print("Missing " + attribute_type + " in " + name + " in " + dataset['id'])
               continue
             for attribute in variable[attribute_type]:
+              attribute_names.append(attribute)
               if apply_fixes:
                 if attribute not in fixes:
                   attributes[attribute_type][attribute] = None
               else:
                 attributes[attribute_type][attribute] = None
 
+    write_counts(attribute_names)
     return attributes
 
   attributes = all_attributes(datasets)
@@ -146,7 +147,6 @@ def all_attribute_table(datasets):
 
   return header, table
 
-import json
 with open(all_input, 'r', encoding='utf-8') as f:
   datasets = json.load(f)
 
