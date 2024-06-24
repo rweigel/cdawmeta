@@ -5,9 +5,9 @@ base_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'data'
 in_file  = os.path.normpath(os.path.join(base_dir, 'cdaweb.json'))
 out_dir  = os.path.join(base_dir, 'spase')
 
-spase_units_file = os.path.join(out_dir, 'spase-units.txt')
-master_units_file = os.path.join(out_dir, 'master-units.txt')
-master2spase_units_file = os.path.join(out_dir, 'master2spase-units.txt')
+spase_units_file = os.path.join(os.path.dirname(__file__), 'spase-units.txt')
+master_units_file = os.path.join(os.path.dirname(__file__), 'master-units.txt')
+master2spase_units_file = os.path.join(os.path.dirname(__file__), 'master2spase-units.txt')
 
 rel_path = in_file.replace(base_dir,'data')
 print(f'Reading: {rel_path}')
