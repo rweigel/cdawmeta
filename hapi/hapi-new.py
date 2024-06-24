@@ -402,7 +402,11 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
 
       if 'size' in parameter and len(parameter['size']) != len(parameter['bins']):
         if print_info:
-          print(f"     Error: Number of non-DEPEND_0 DEPENDs ({len(parameter['bins'])}) for {name} != len(DimSizes) = len({parameter['size']}).")
+          msg = "Number of non-DEPEND_0 DEPENDs ({len(parameter['bins'])}) for {name} != len(DimSizes) = len({parameter['size']})."
+          if virtual:
+            print(f"     Error?: {msg}")
+          else:
+            print(f"     Error: {msg}")
         del parameter['bins']
 
       if 'size' not in parameter and 'bins' in parameter:
@@ -412,7 +416,11 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
         # (because the variable has no associated data). In this case,
         # we need to get the DimSizes from the DEPEND variable.
         if print_info:
-          print(f"     Error: Omitting bins for parameter {name} it has no DimSizes attribute.")
+          msg = "Omitting bins for parameter {name} it has no DimSizes attribute."
+          if virtual:
+            print(f"     Error?: {msg}")
+          else:
+            print(f"     Error: {msg}")
 
     parameters.append(parameter)
 

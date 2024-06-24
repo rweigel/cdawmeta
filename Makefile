@@ -21,7 +21,7 @@ clean:
 	-rm -rf data/*
 
 rsync-to-mag:
-	rsync -avz data weigel@mag.gmu.edu:www/git-data/cdawmeta
+	rsync -avz --delete data weigel@mag.gmu.edu:www/git-data/cdawmeta
 
 rsync-from-mag:
 	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ data
