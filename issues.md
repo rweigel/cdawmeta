@@ -68,8 +68,18 @@ From https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html, "ISTP attribute nam
 
 Also, a while back I mentioned the mixed usage of SI_conv and SI_conversion at https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html. Which is it?
 
+https://github.com/rweigel/cdawmeta/blob/main/table/table-cdaweb.counts.csv
+
+https://github.com/rweigel/cdawmeta/blob/main/table/table-cdaweb.fixes.json
+
 10\.
 
+These were issues that were not encountered when creating the SQL table at https://hapi-server.org/meta/cdaweb/:
+
+```
 Missing VarAttributes in ela_sun in ELA_L1_STATE_DEFN
 Missing VarAttributes in elb_sun in ELB_L1_STATE_DEFN
 Missing VarAttributes in STE_spectra_LABL_1 in STB_L1_STE
+```
+
+Note that these were not caught in the HAPI generation code because these variables are not used.
