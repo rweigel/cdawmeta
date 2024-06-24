@@ -20,8 +20,11 @@ all:
 clean:
 	-rm -rf data/*
 
-rsync:
+rsync-to-mag:
 	rsync -avz data weigel@mag.gmu.edu:www/git-data/cdawmeta
+
+rsync-from-mag:
+	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ data
 
 compare:
 	make cdaweb INCLUDE='$(INCLUDE)'
