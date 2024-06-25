@@ -8,6 +8,8 @@
 import os
 import json
 
+import cdawmeta
+
 allxml = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
 filews = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
 
@@ -19,19 +21,14 @@ timeouts = {
 }
 
 cache_root = os.path.join(os.path.dirname(__file__), 'data', 'cache')
-files = {
-  'out': os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.json'),
-  'err': os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.errors.log'),
-  'log': os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.log')
+file_out = os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.json')
+
+log_config = {
+  'file_log': os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.log'),
+  'file_error': os.path.join(os.path.dirname(__file__), 'data', 'cdaweb.errors.log'),
+  'format': '%(message)s'
 }
-
-if os.path.exists(files['err']):
-  os.remove(files['err'])
-err_fh = open(files['err'], "a")
-
-if os.path.exists(files['log']):
-  os.remove(files['log'])
-log_fh = open(files['log'], "a")
+logger = cdawmeta.util.logger(**log_config)
 
 def cli():
   clkws = {
@@ -61,16 +58,6 @@ def cli():
   parser.add_argument('--expire_after', **clkws['expire_after'])
   parser.add_argument('--file_list', **clkws['file_list'])
   return parser.parse_args()
-
-def xprint(msg, error=False):
-  print(msg)
-  log_fh.write(f"{msg}\n")
-  if args.workers > 1:
-    log_fh.flush()
-  if error:
-    err_fh.write(f"{msg.lstrip()}\n")
-    if args.workers > 1:
-      err_fh.flush()
 
 def omit(id):
   import re
@@ -102,6 +89,9 @@ def CachedSession(cache_dir):
   # https://requests-cache.readthedocs.io/en/stable/#settings
   # https://requests-cache.readthedocs.io/en/stable/user_guide/headers.html
 
+  import logging
+  logging.getLogger('requests_cache').setLevel(logging.CRITICAL)
+
   # Cache dir
   copts = {
     # Save files in the default user cache dir
@@ -131,17 +121,17 @@ def CachedSession(cache_dir):
   return requests_cache.CachedSession(cache_dir, **copts)
 
 def print_resp_info(resp, url):
-  xprint(f'Got: {url}')
+  logger.info(f'Got: {url}')
   req_cache_headers = {k: v for k, v in resp.request.headers.items() if k in ['If-None-Match', 'If-Modified-Since']}
   res_cache_headers = {k: v for k, v in resp.headers.items() if k in ['ETag', 'Last-Modified', 'Cache-Control', 'Vary']}
-  xprint(f"  Status code: {resp.status_code}")
-  xprint(f"  From cache: {resp.from_cache}")
-  xprint(f"  Request Cache-Related Headers:")
+  logger.info(f"  Status code: {resp.status_code}")
+  logger.info(f"  From cache: {resp.from_cache}")
+  logger.info(f"  Request Cache-Related Headers:")
   for k, v in req_cache_headers.items():
-    xprint(f"    {k}: {v}")
-  xprint(f"  Response Cache-Related Headers:")
+    logger.info(f"    {k}: {v}")
+  logger.info(f"  Response Cache-Related Headers:")
   for k, v in res_cache_headers.items():
-    xprint(f"    {k}: {v}")
+    logger.info(f"    {k}: {v}")
 
 def create_datasets(cache_dir):
 
@@ -153,11 +143,11 @@ def create_datasets(cache_dir):
   session = CachedSession(cache_dir)
   url = allxml
 
-  xprint("Get: " + url)
+  logger.info("Get: " + url)
   try:
     resp = session.get(url, timeout=timeouts['allxml'])
   except:
-    xprint("Error getting " + url, error=True)
+    logger.error("Error getting " + url, error=True)
     exit(1)
   print_resp_info(resp, url)
 
@@ -178,12 +168,12 @@ def create_datasets(cache_dir):
 
     if not 'mastercdf' in dataset_allxml:
       msg = f'{id}: No mastercdf in all.xml dataset node'
-      xprint(msg, error=True)
+      logger.error(msg)
       continue
 
     if not '@ID' in dataset_allxml['mastercdf']:
       msg = f'{id}: No ID attribute in all.xml mastercdf node'
-      xprint(msg, error=True)
+      logger.error(msg)
       continue
 
     datasets.append(dataset)
@@ -201,12 +191,12 @@ def add_master(datasets, cache_dir):
     mastercdf = dataset['_allxml']['mastercdf']['@ID']
     url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
 
-    xprint('Get: ' + url)
+    logger.info('Get: ' + url)
     try:
       resp = session.get(url, timeout=timeouts['master'])
     except:
       msg = f"{dataset}: Error getting {url}"
-      xprint(msg, error=True)
+      logger.error(msg)
       dataset['_master_data'] = None
       return
 
@@ -218,8 +208,8 @@ def add_master(datasets, cache_dir):
 
     files = list(dataset['_master_data'].keys())
     if len(files) > 1:
-      msg = f"{dataset['id']}: More than one file key in master CDF JSON"
-      xprint(msg)
+      msg = f"Error - {dataset['id']}: More than one file key in master CDF JSON"
+      logger.error(msg)
       dataset['_master_data'] = None
       return
 
@@ -247,7 +237,7 @@ def add_spase(datasets, cache_dir):
           spase_id = attribute['spase_DatasetResourceID'][0]['0']
           if spase_id and not spase_id.startswith('spase://'):
             msg = f"{dataset['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
-            xprint(msg, error=True)
+            logger.error(msg)
             return None
           return spase_id.replace('spase://', 'https://hpde.io/') + '.json';
 
@@ -258,17 +248,17 @@ def add_spase(datasets, cache_dir):
       dataset['_spase'] = None
       return
 
-    xprint('Get: ' + url)
+    logger.info('Get: ' + url)
     try:
       resp = session.get(url, timeout=timeouts['spase'])
     except:
-      msg = f"{dataset['id']}: Error getting '{url}'"
-      xprint(msg, error=True)
+      msg = f"Error - {dataset['id']}: Error getting '{url}'"
+      logger.error(msg)
       return
 
     if resp.status_code != 200:
       msg = f"{dataset['id']}: HTTP status != 200 ({resp.status_code}) when getting '{url}'"
-      xprint(msg, error=True)
+      logger.error(msg)
       return
 
     print_resp_info(resp, url)
@@ -286,17 +276,17 @@ def add_file_list(datasets, cache_dir):
     stop = dataset['_allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z";
     url = filews + dataset["id"] + "/orig_data/" + start + "," + stop
 
-    xprint("Get: " + url)
+    logger.info("Get: " + url)
     try:
       resp = session.get(url, timeout=timeouts['file_list'], headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
     except:
       msg = f"{dataset['id']}: Error getting '{url}'"
-      xprint(msg, error=True)
+      logger.error(msg)
       return
 
     if resp.status_code != 200:
       msg = f"HTTP status code {resp.status_code} when getting '{url}'"
-      xprint(msg, error=True)
+      logger.error(msg)
       return
 
     print_resp_info(resp, url)
@@ -315,10 +305,6 @@ add_spase(datasets, cache_root)
 if args.file_list:
   add_file_list(datasets, cache_dir)
 
-xprint(f'# of datasets: {len(datasets)}')
+logger.info(f'# of datasets: {len(datasets)}')
 
-from cdawmeta.write_json import write_json
-write_json(datasets, files['out'])
-
-err_fh.close()
-log_fh.close()
+cdawmeta.util.write_json(datasets, file_out)

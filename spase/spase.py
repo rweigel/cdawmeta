@@ -42,18 +42,21 @@ master_units = []
 spase_units = []
 master_units_dict = {}
 for dataset in datasets:
-  if '_spase' not in dataset or dataset['_spase'] is None:
-    print(f"No SPASE for: {dataset['id']}")
-    continue
-  with open(dataset['_spase'], 'r', encoding='utf-8') as f:
-    print(f"Reading: {dataset['_spase'].replace(base_dir,'data')}")
-    dataset['_spase'] = json.load(f)["_decoded_content"]
 
   print(f"Dataset: {dataset['id']}")
+  if '_spase' not in dataset or dataset['_spase'] is None:
+    print(f"  Error - No SPASE for: {dataset['id']}")
+    continue
+  with open(dataset['_spase'], 'r', encoding='utf-8') as f:
+    #print(f"Reading: {dataset['_spase'].replace(base_dir,'data')}")
+    dataset['_spase_content'] = json.load(f)["_decoded_content"]
 
-  Parameter = get_path(dataset['_spase'], ['Spase', 'NumericalData','Parameter'])
+  print(f"  SPASE: {dataset['_spase']}")
+  print(f"  Master: {dataset['_master']}")
+
+  Parameter = get_path(dataset['_spase_content'], ['Spase', 'NumericalData','Parameter'])
   if Parameter is None:
-    print(f"No Spase/NumericalData/Parameter in {dataset['id']}")
+    print(f"  Error - No Spase/NumericalData/Parameter node in {dataset['id']}")
     continue
 
   parameter_dict = array_to_dict(Parameter)
@@ -64,22 +67,24 @@ for dataset in datasets:
 
   for id in list(variables.keys()):
     if 'VarAttributes' not in variables[id]:
-      print(f"No VarAttributes in {dataset['id']}")
+      print(f"  Error in master - No VarAttributes in {dataset['id']}")
       continue
     if 'VAR_TYPE' not in variables[id]['VarAttributes']:
-      print(f"No VarAttributes/VAR_TYPE in {dataset['id']}")
+      print(f"  Error in master - No VarAttributes/VAR_TYPE in {dataset['id']}")
       continue
 
     if variables[id]['VarAttributes']['VAR_TYPE'] == 'data':
-      if id not in parameters:
-        print(f" {id} not in SPASE")
-        continue
 
       print(f" {id}")
 
+      if id not in parameters:
+        print(f"  Error in SPASE - Parameter with id = {id} not in SPASE")
+        continue
+
+
       if 'UNITS' in variables[id]['VarAttributes']:
         UNITS = variables[id]['VarAttributes']['UNITS']
-        print(f"  master/UNITS: {UNITS}")
+        print(f"  master/UNITS: '{UNITS}'")
         master_units.append(UNITS)
         if not UNITS in master_units_dict:
           master_units_dict[UNITS] = []
@@ -91,20 +96,20 @@ for dataset in datasets:
         Units = parameters[id]['Units']
         if UNITS is not None:
           master_units_dict[UNITS].append(Units)
-        print(f"  spase/Units:  {Units}")
+        print(f"  spase/Units:  '{Units}'")
         spase_units.append(Units)
       else:
         print("  spase/Units: No <Units> element")
 
       if 'COORDINATE_SYSTEM' in variables[id]['VarAttributes']:
         csys = variables[id]['VarAttributes']['COORDINATE_SYSTEM']
-        print(f"  master/COORDINATE_SYSTEM: {csys}")
+        print(f"  master/COORDINATE_SYSTEM: '{csys}'")
       else:
         print(f"  master/COORDINATE_SYSTEM: No COORDINATE_SYSTEM attribute")
 
       if 'CoordinateSystem' in parameters[id]:
         csys = parameters[id]['CoordinateSystem']
-        print(f"  spase/CoordinateSystem:   {csys}")
+        print(f"  spase/CoordinateSystem:   '{csys}'")
       else:
         print(f"  spase/CoordinateSystem:   No <CoordinateSystem> element")
 

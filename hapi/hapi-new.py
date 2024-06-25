@@ -11,7 +11,7 @@ strip_description = False
 # Remove ---> in description
 remove_arrows = False
 
-from cdawmeta.write_json import write_json
+from cdawmeta.util.write_json import write_json
 
 base_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
 in_file  = os.path.join(base_dir, 'cdaweb.json')

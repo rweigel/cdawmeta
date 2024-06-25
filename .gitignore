@@ -2,3 +2,5 @@ data/
 table/table-ui/
 cdawmeta.egg-info/
 cdawmeta/__pycache__/
+__pycache__/
+.vscode/

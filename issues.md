@@ -1,4 +1,4 @@
-The following notes are based on results from the [`cdawmeta` package]( https://github.com/rweigel/cdawmeta/), which was developed for creating metadata for the new CDAWeb HAPI server. The code in this package produces metadata stored in http://mag.gmu.edu/git-data/cdawmeta/data/ and the searchable [CDAWeb](https://hapi-server.org/meta/cdaweb/) and [HAPI](https://hapi-server.org/meta/hapi/) metadata tables.
+The following notes are based on results from the [`cdawmeta` package](https://github.com/rweigel/cdawmeta/), which was developed for creating metadata for the new CDAWeb HAPI server. The code in this package produces metadata stored in http://mag.gmu.edu/git-data/cdawmeta/data/ and the searchable [CDAWeb](https://hapi-server.org/meta/cdaweb/) and [HAPI](https://hapi-server.org/meta/hapi/) metadata tables.
 
 1\. These `FILLVALs` are suspect:
 
