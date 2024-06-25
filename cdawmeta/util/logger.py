@@ -2,7 +2,8 @@ def logger(format=u'%(asctime)sZ %(message)s',
            file_log=None,
            file_error=None,
            rm_existing=True,
-           utc_timestamps=True):
+           utc_timestamps=True,
+           rm_string=None):
 
   #'format': '(%(process)d) %(asctime)s %(name)s (line %(lineno)s) | %(levelname)s %(message)s'
 
@@ -13,17 +14,28 @@ def logger(format=u'%(asctime)sZ %(message)s',
   import logging
   import logging.config
 
+  class CustomFormatter(logging.Formatter):
+    def __init__(self, rm_string=rm_string, *args, **kwargs):
+      super(CustomFormatter, self).__init__(*args, **kwargs)
+      self.rm_string = rm_string
+
+    def format(self, record):
+      res = super(CustomFormatter, self).format(record)
+      if self.rm_string is None:
+        return res
+      return res.replace(self.rm_string, '')
+
   if file_log is None:
     frame = inspect.stack()[1]
     module = inspect.getmodule(frame[0])
     file_log = os.path.splitext(module.__file__)[0] + ".log"
-    if rm_existing and os.path.exists(file_log):
-      os.remove(file_log)
 
   if file_error is None:
     file_error = os.path.splitext(file_log)[0] + ".errors.log"
-    if rm_existing and os.path.exists(file_error):
-      os.remove(file_error)
+
+  if rm_existing and os.path.exists(file_error):
+    os.remove(file_log)
+    os.remove(file_error)
 
   class _ExcludeErrorsFilter(logging.Filter):
     def filter(self, record):
@@ -45,7 +57,7 @@ def logger(format=u'%(asctime)sZ %(message)s',
       'formatters': {
           # Modify log message format here or replace with your custom formatter class
           'my_formatter': {
-              'format': format
+            'format': format
           }
       },
       'handlers': {
@@ -94,5 +106,10 @@ def logger(format=u'%(asctime)sZ %(message)s',
       },
   }
 
+
   logging.config.dictConfig(config)
+
+  for handler in logging.getLogger().handlers:
+    handler.setFormatter(CustomFormatter(rm_string=rm_string))
+
   return logging.getLogger(__name__)

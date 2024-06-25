@@ -8,7 +8,7 @@ omit_datasets = False
 # Set to false to reduce number of mismatch warnings
 strip_description = False
 
-# Remove ---> in description
+# Remove "--->" in description
 remove_arrows = False
 
 from cdawmeta.util.write_json import write_json
