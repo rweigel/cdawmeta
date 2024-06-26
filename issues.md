@@ -44,9 +44,11 @@ However, I don't see `"UNITS":"\u0000"` in the `VarAttributes` for `TCC` when I 
 
 2. `VAR_TYPE` (39 cases - this can also be seen in the [CDAWeb metadata table](https://hapi-server.org/meta/cdaweb/#VAR_TYPE=''))
 
-3. `DimSizes` (I throw an error if a `DimsSizes` is not given for a parameter with a `DEPEND_{1,2,3}` because most do. I'm not sure if this is an error.)
+3. `DimSizes` (I throw an error if a `DimSizes` is not given for a parameter with a `DEPEND_{1,2,3}` because most do. I'm not sure if this is an error.)
 
-   For example [SOLO_L2_RPW-LFR-SURV-BP2/BP2_RE_N_F0](https://hapi-server.org/meta/cdaweb/#VariableName='BP2_RE_N_F0')
+   For example [mms1_hpca_hplus_data_quality](https://hapi-server.org/meta/cdaweb/#VariableName=mms1_hpca_hplus_data_quality)
+
+   In this case, `NumDims=0`, but there is a `DEPEND_1`.
 
 and
 

@@ -30,12 +30,14 @@ def logger(format=u'%(asctime)sZ %(message)s',
     module = inspect.getmodule(frame[0])
     file_log = os.path.splitext(module.__file__)[0] + ".log"
 
-  if file_error is None:
+  if file_error:
     file_error = os.path.splitext(file_log)[0] + ".errors.log"
 
-  if rm_existing and os.path.exists(file_error):
-    os.remove(file_log)
-    os.remove(file_error)
+  if rm_existing:
+    if os.path.exists(file_log):
+      os.remove(file_log)
+    if file_error and os.path.exists(file_error):
+      os.remove(file_error)
 
   class _ExcludeErrorsFilter(logging.Filter):
     def filter(self, record):
@@ -44,6 +46,14 @@ def logger(format=u'%(asctime)sZ %(message)s',
 
   if utc_timestamps:
     logging.Formatter.converter = time.gmtime
+
+  handlers = [
+            'console_stderr',
+            'console_stdout',
+            'file_DEBUG'
+          ]
+  if file_error:
+    handlers.append('file_ERROR')
 
   # Based on https://stackoverflow.com/a/66728490
   config = {
@@ -97,15 +107,11 @@ def logger(format=u'%(asctime)sZ %(message)s',
           # In general, this should be kept at 'NOTSET'.
           # Otherwise it would interfere with the log levels set for each handler.
           'level': 'NOTSET',
-          'handlers': [
-            'console_stderr',
-            'file_ERROR',
-            'console_stdout',
-            'file_DEBUG'
-          ]
-      },
+          'handlers': handlers
+      }
   }
-
+  if not file_error:
+    del config['handlers']['file_ERROR']
 
   logging.config.dictConfig(config)
 

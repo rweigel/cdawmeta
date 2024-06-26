@@ -2,6 +2,8 @@ import os
 import re
 import json
 
+import cdawmeta
+
 # Set to True to omit datasets that are not in Nand's metadata
 omit_datasets = False
 
@@ -11,15 +13,21 @@ strip_description = False
 # Remove "--->" in description
 remove_arrows = False
 
-from cdawmeta.util.write_json import write_json
-
-base_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
+root_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+base_dir = os.path.join(root_dir, 'data')
+info_dir = os.path.join(base_dir, 'hapi', 'info')
 in_file  = os.path.join(base_dir, 'cdaweb.json')
 
-catalog_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'hapi', 'catalog.json')
-catalog_all_file = os.path.join(os.path.join(base_dir, 'hapi'), 'catalog-all.json')
+catalog_file = os.path.join(base_dir, 'hapi', 'catalog.json')
+catalog_all_file = os.path.join(base_dir, 'hapi', 'catalog-all.json')
 
-info_dir = os.path.join(os.path.dirname(__file__), '..', 'data', 'hapi', 'info')
+log_config = {
+  'file_log': os.path.join(base_dir, 'hapi', 'catalog.log'),
+  'file_error': False,
+  'format': '%(message)s',
+  'rm_string': root_dir + '/'
+}
+logger = cdawmeta.util.logger(**log_config)
 
 def order_depend0s(id, depend0_names, issues):
 
@@ -30,8 +38,8 @@ def order_depend0s(id, depend0_names, issues):
 
   for depend0_name in order_wanted:
     if not depend0_name in depend0_names:
-      print(f'Error: {id}\n  DEPEND_0 {depend0_name} in new order list is not a depend0 in dataset ({depend0_names})')
-      print(f'  Exiting with code 1')
+      logger.error(f'Error: {id}\n  DEPEND_0 {depend0_name} in new order list is not a depend0 in dataset ({depend0_names})')
+      logger.error(f'  Exiting with code 1')
       exit(1)
 
   if False:
@@ -53,25 +61,25 @@ def order_variables(id, variables, issues):
   order_wanted = issues['variableOrder'][id]
   order_given = variables.keys()
   if len(order_wanted) != len(order_wanted):
-    print(f'Error: {id}\n  Number of variables in new order list ({len(order_wanted)}) does not match number found in dataset ({len(order_given)})')
-    print(f'  New order:   {order_wanted}')
-    print(f'  Given order: {list(order_given)}')
-    print(f'  Exiting with code 1')
+    logger.error(f'Error: {id}\n  Number of variables in new order list ({len(order_wanted)}) does not match number found in dataset ({len(order_given)})')
+    logger.error(f'  New order:   {order_wanted}')
+    logger.error(f'  Given order: {list(order_given)}')
+    logger.error(f'  Exiting with code 1')
     exit(1)
 
   if sorted(order_wanted) != sorted(order_wanted):
-    print(f'Error: {id}\n  Mismatch in variable names between new order list and dataset')
-    print(f'  New order:   {order_wanted}')
-    print(f'  Given order: {list(order_given)}')
-    print(f'  Exiting with code 1')
+    logger.error(f'Error: {id}\n  Mismatch in variable names between new order list and dataset')
+    logger.error(f'  New order:   {order_wanted}')
+    logger.error(f'  Given order: {list(order_given)}')
+    logger.error(f'  Exiting with code 1')
     exit(1)
 
   return {k: variables[k] for k in order_wanted}
 
 def keep_dataset(id, issues, depend_0=None):
   if id in issues['keepSubset'].keys() and depend_0 == issues['keepSubset'][id]:
-    print(id)
-    print(f"  Warning: Keeping dataset associated with \"{depend_0}\" b/c it is in Nand's list")
+    logger.info(id)
+    logger.info(f"  Warning: Keeping dataset associated with \"{depend_0}\" b/c it is in Nand's list")
     return True
   return False
 
@@ -80,26 +88,26 @@ def omit_dataset(id, issues, depend_0=None):
   if depend_0 is None:
     if id in issues['omitAll'].keys():
       if omit_datasets:
-        print(id)
-        print(f"    Warning: Dropping dataset {id} b/c it is not in Nand's list")
+        logger.info(id)
+        logger.info(f"    Warning: Dropping dataset {id} b/c it is not in Nand's list")
         return True
       else:
-        print(id)
-        print(f"    Warning: Keeping dataset {id} even though it is not in Nand's list")
+        logger.info(id)
+        logger.info(f"    Warning: Keeping dataset {id} even though it is not in Nand's list")
         return False
     for pattern in issues['omitAllPattern']:
       if re.search(pattern, id):
         if omit_datasets:
-          print(id)
-          print(f"    Warning: Dropping dataset {id} b/c it is not in Nand's list")
+          logger.info(id)
+          logger.info(f"    Warning: Dropping dataset {id} b/c it is not in Nand's list")
           return True
         else:
-          print(id)
-          print(f"    Warning: Keeping dataset {id} even though it is not in Nand's list")
+          logger.info(id)
+          logger.info(f"    Warning: Keeping dataset {id} even though it is not in Nand's list")
           return False
   else:
     if id in issues['omitSubset'].keys() and depend_0 in issues['omitSubset'][id]:
-      print(f"    Warning: Dropping variables associated with DEPEND_0 = \"{depend_0}\" b/c this DEPEND_0 is not in Nand's list")
+      logger.info(f"    Warning: Dropping variables associated with DEPEND_0 = \"{depend_0}\" b/c this DEPEND_0 is not in Nand's list")
       return True
   return False
 
@@ -120,8 +128,8 @@ def omit_variable(id, variable_name, issues):
       del issues['omitVariables'][key]
 
   if id in issues['omitVariables'].keys() and variable_name in issues['omitVariables'][id]:
-    print(id)
-    print(f"  Warning: Dropping variable \"{variable_name}\" b/c it is not in Nand's list")
+    logger.info(id)
+    logger.info(f"  Warning: Dropping variable \"{variable_name}\" b/c it is not in Nand's list")
     return True
   return False
 
@@ -157,14 +165,14 @@ def add_sample_start_stop(datasets):
   for dataset in datasets:
 
     if not "_file_list" in dataset:
-      print("No _file_list for " + dataset["id"])
+      logger.info("No _file_list for " + dataset["id"])
       continue
 
     with open(dataset['_file_list'], 'r', encoding='utf-8') as f:
       dataset['_file_list_data'] = json.load(f)["_decoded_content"]
 
     if not "FileDescription" in dataset["_file_list_data"]:
-      print("No file list for " + dataset["id"])
+      logger.info("No file list for " + dataset["id"])
       continue
 
     range = extract_sample_start_stop(dataset["_file_list_data"])
@@ -234,7 +242,7 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
   length = cdftimelen(cdf_type)
 
   if length == None:
-    print(f"    Unhandled DEPEND_0 type: '{cdf_type}'. Dropping variables associated with DEPEND_0 '{depend_0_name}'")
+    logger.info(f"    Warning: Unhandled DEPEND_0 type: '{cdf_type}'. Dropping variables associated with DEPEND_0 '{depend_0_name}'")
     return None
 
   parameters = [
@@ -254,7 +262,7 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
 
     type = cdf2hapitype(variable['VarDescription']['DataType'])
     if type == None:
-      print(f"    Error: Unhandled DataType: {variable['VarDescription']['DataType']}")
+      logger.error(f"    Error: Unhandled DataType: {variable['VarDescription']['DataType']}")
       return None
 
     VAR_TYPE = variable['VarAttributes']['VAR_TYPE']
@@ -277,12 +285,12 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
         NumElements = variable['VarDescription']['NumElements']
 
       if PadValue is None and FillValue is None and NumElements is None:
-        print(f'    Error: Dropping variable "{name}" because string parameter and no PadValue, FillValue, or NumElements given to allow length to be determined.')
+        logger.error(f'    Error: Dropping variable "{name}" because string parameter and no PadValue, FillValue, or NumElements given to allow length to be determined.')
         continue
 
       if NumElements is None:
         if PadValue != None and FillValue != None and PadValue != FillValue:
-          print(f'    Error: Dropping variable "{name}" because PadValue and FillValue lengths differ.')
+          logger.error(f'    Error: Dropping variable "{name}" because PadValue and FillValue lengths differ.')
           continue
 
       if PadValue != None:
@@ -373,9 +381,9 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
     if print_info:
       virtual = parameter.get('x_cdf_is_virtual', False)
       virtual = f' (virtual: {virtual})'
-      print(f"    {parameter['name']}{virtual}")
-      print('     size = {}'.format(parameter.get('size', None)))
-      print('     x_label = {}'.format(parameter.get('x_label', None)))
+      logger.info(f"    {parameter['name']}{virtual}")
+      logger.info('     size = {}'.format(parameter.get('size', None)))
+      logger.info('     x_label = {}'.format(parameter.get('x_label', None)))
 
     parameter['bins'] = []
     DEPEND_xs = ['DEPEND_1','DEPEND_2','DEPEND_3']
@@ -384,7 +392,7 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
         DEPEND_x_NAME = variable['VarAttributes'][DEPEND_x]
         if not DEPEND_x_NAME in all_variables:
           if print_info:
-            print(f"     Error: {DEPEND_x} '{DEPEND_x_NAME}' for variable '{name}' is not a variable. Omitting {name}.")
+            logger.error(f"     Error: {DEPEND_x} '{DEPEND_x_NAME}' for variable '{name}' is not a variable. Omitting {name}.")
           continue
 
         bin_object = bins(DEPEND_x, DEPEND_x_NAME, all_variables[DEPEND_x_NAME], print_info=print_info)
@@ -397,16 +405,16 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
       for bins_object in parameter['bins']:
         if bins_object is None:
           if print_info:
-            print(f"    Warning: One of the bins objects for {name} is None.")
+            logger.info(f"    Warning: One of the bins objects for {name} is None.")
           del parameter['bins']
 
       if 'size' in parameter and len(parameter['size']) != len(parameter['bins']):
         if print_info:
-          msg = "Number of non-DEPEND_0 DEPENDs ({len(parameter['bins'])}) for {name} != len(DimSizes) = len({parameter['size']})."
+          msg = f"Number of non-DEPEND_0 DEPENDs ({len(parameter['bins'])}) for {name} != len(DimSizes) = len({parameter['size']})."
           if virtual:
-            print(f"     Error?: {msg}")
+            logger.info(f"     Warning: Not implemented: {msg}")
           else:
-            print(f"     Error: {msg}")
+            logger.info(f"     Warning: Not implemented: {msg}")
         del parameter['bins']
 
       if 'size' not in parameter and 'bins' in parameter:
@@ -416,11 +424,11 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, print
         # (because the variable has no associated data). In this case,
         # we need to get the DimSizes from the DEPEND variable.
         if print_info:
-          msg = "Omitting bins for parameter {name} it has no DimSizes attribute."
+          msg = f"Omitting bins for parameter {name} it has no DimSizes attribute."
           if virtual:
-            print(f"     Error?: {msg}")
+            logger.error(f"     Error?: {msg}")
           else:
-            print(f"     Error: {msg}")
+            logger.error(f"     Error?: {msg}")
 
     parameters.append(parameter)
 
@@ -442,7 +450,7 @@ def bins(DEPEND_x_key, DEPEND_x_NAME, DEPEND_x, print_info=False):
   if RecVariance == "VARY":
     # Nand does not create bins for this case
     if print_info:
-      print(f"     Warning: RecVariance = 'VARY' for {DEPEND_x_key} variable named '{DEPEND_x_NAME}'. Not creating bins b/c Nand does not for this case.")
+      logger.info(f"     Warning: RecVariance = 'VARY' for {DEPEND_x_key} variable named '{DEPEND_x_NAME}'. Not creating bins b/c Nand does not for this case.")
     return None
   else:
     # TODO: Check for multi-dimensional
@@ -454,13 +462,13 @@ def bins(DEPEND_x_key, DEPEND_x_NAME, DEPEND_x, print_info=False):
         DEPEND_x_VAR_TYPE = DEPEND_x['VarAttributes']['VAR_TYPE']
       else:
         if print_info:
-          print(f"     Error: No VAR_TYPE for depend variable '{DEPEND_x_NAME}'")
+          logger.error(f"     Error: No VAR_TYPE for depend variable '{DEPEND_x_NAME}'")
         return None
 
       if cdf2hapitype(DEPEND_x_VAR_TYPE) in ['data', 'support_data']:
         if not "UNIT_PTR" in DEPEND_x['VarAttributes']:
           if print_info:
-            print(f"     Error: No UNITS or UNIT_PTR for depend variable '{DEPEND_x_NAME}' with VAR_TYPE '{DEPEND_x_VAR_TYPE}'")
+            logger.error(f"     Error: No UNITS or UNIT_PTR for depend variable '{DEPEND_x_NAME}' with VAR_TYPE '{DEPEND_x_VAR_TYPE}'")
 
     if 'VarData' in DEPEND_x:
       bins_object = {
@@ -471,7 +479,7 @@ def bins(DEPEND_x_key, DEPEND_x_NAME, DEPEND_x, print_info=False):
       return bins_object
     else:
       if print_info:
-        print(f"     Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
+        logger.info(f"     Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
       return None
 
 def split_variables(datasets, issues):
@@ -490,13 +498,13 @@ def split_variables(datasets, issues):
       variable_meta = dataset['_master_restructured']['_variables'][name]
 
       if 'VarAttributes' not in variable_meta:
-        print(dataset['id'])
-        print(f'  Error: Dropping variable "{name}" b/c it has no VarAttributes')
+        logger.error(dataset['id'])
+        logger.error(f'  Error: Dropping variable "{name}" b/c it has no VarAttributes')
         continue
 
       if 'VAR_TYPE' not in variable_meta['VarAttributes']:
-        print(dataset['id'])
-        print(f'  Error: Dropping variable "{name}" b/c it has no has no VAR_TYPE')
+        logger.error(dataset['id'])
+        logger.error(f'  Error: Dropping variable "{name}" b/c it has no has no VAR_TYPE')
         continue
 
       if omit_variable(dataset['id'], name, issues):
@@ -506,8 +514,8 @@ def split_variables(datasets, issues):
         depend_0_name = variable_meta['VarAttributes']['DEPEND_0']
 
         if depend_0_name not in dataset['_master_restructured']['_variables']:
-          print(dataset['id'])
-          print(f'  Error: Dropping variable "{name}" because it has a DEPEND_0 ("{depend_0_name}") that is not in dataset')
+          logger.error(dataset['id'])
+          logger.error(f'  Error: Dropping variable "{name}" because it has a DEPEND_0 ("{depend_0_name}") that is not in dataset')
           continue
 
         if depend_0_name not in depend_0_dict:
@@ -534,23 +542,24 @@ def create_infos(datasets, issues):
     if omit_dataset(dataset['id'], issues):
       continue
 
-    print(dataset['id'] + ": subsetting and creating /info")
+    logger.info(dataset['id'] + ": subsetting and creating /info")
     n = 0
     depend_0s = dataset['_variables_split'].items()
     plural = "s" if len(depend_0s) > 1 else ""
-    print(f"  {len(depend_0s)} DEPEND_0{plural}")
+    logger.info(f"  {len(depend_0s)} DEPEND_0{plural}")
 
     # First pass - drop datasets with problems and create list of DEPEND_0 names
     depend_0_names = []
     for depend_0_name, depend_0_variables in depend_0s:
 
-      print(f"  Checking DEPEND_0: '{depend_0_name}'")
+      logger.info(f"  Checking DEPEND_0: '{depend_0_name}'")
 
       if omit_dataset(dataset['id'], issues, depend_0=depend_0_name):
         continue
 
       if depend_0_name not in dataset['_master_restructured']['_variables'].keys():
-        print(f"    Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.")
+        logger.error(dataset['id'])
+        logger.error(f"    Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0.")
         continue
 
       DEPEND_0_VAR_TYPE = dataset['_master_restructured']['_variables'][depend_0_name]['VarAttributes']['VAR_TYPE']
@@ -560,15 +569,15 @@ def create_infos(datasets, issues):
         VAR_TYPES.append(variable['VarAttributes']['VAR_TYPE'])
       VAR_TYPES = set(VAR_TYPES)
 
-      print(f"    VAR_TYPE: '{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
+      logger.info(f"    VAR_TYPE: '{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
 
       if DEPEND_0_VAR_TYPE == 'ignore_data':
-        print(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
+        logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
         continue
 
       if 'data' not in VAR_TYPES and not keep_dataset(dataset['id'], issues, depend_0=depend_0_name):
         # In general, Nand drops these, but not always
-        print(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
+        logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
         continue
 
       all_variables = dataset['_master_restructured']['_variables']
@@ -576,9 +585,9 @@ def create_infos(datasets, issues):
       if parameters == None:
         dataset['_variables_split'][depend_0_name] = None
         if len(depend_0s) == 1:
-          print(f"    Due to last error, omitting dataset with DEPEND_0 = {depend_0_name}")
+          logger.info(f"    Due to last error, omitting dataset with DEPEND_0 = {depend_0_name}")
         else:
-          print(f"    Due to last error, omitting sub-dataset with DEPEND_0 = {depend_0_name}")
+          logger.info(f"    Due to last error, omitting sub-dataset with DEPEND_0 = {depend_0_name}")
         continue
 
       depend_0_names.append(depend_0_name)
@@ -589,7 +598,7 @@ def create_infos(datasets, issues):
 
     for depend_0_name in depend_0_names:
 
-      print(f"  Creating HAPI dataset for DEPEND_0: '{depend_0_name}'")
+      logger.info(f"  Creating HAPI dataset for DEPEND_0: '{depend_0_name}'")
 
       depend_0_variables = dataset['_variables_split'][depend_0_name]
 
@@ -627,33 +636,35 @@ def create_catalog(datasets):
 
 def write_infos(infos, info_dir):
   if not os.path.exists(info_dir):
-    print(f'Creating {info_dir}')
+    logger.info(f'Creating {info_dir}')
     os.makedirs(info_dir, exist_ok=True)
 
   for info in infos:
     file_name = info['id'] + '.json'
     file_name = os.path.join(info_dir, file_name)
-    write_json(info, file_name)
+    cdawmeta.util.write_json(info, file_name)
 
 
 issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
-print(f'Reading: {issues_file}')
+logger.info(f'Reading: {issues_file}')
 try:
   with open(issues_file) as f:
     issues = json.load(f)
-    print(f'Read: {issues_file}')
+    logger.info(f'Read: {issues_file}')
 except Exception as e:
   exit(f"Error: Could not read {issues_file} file: {e}")
 
-print(f'Reading: {in_file}')
+logger.info(f'Reading: {in_file}')
 with open(in_file, 'r', encoding='utf-8') as f:
   datasets = json.load(f)
-print(f'Read: {in_file}')
+logger.info(f'Read: {in_file}')
 
-write_json(create_catalog(datasets), catalog_file)
+cdawmeta.util.write_json(create_catalog(datasets), catalog_file, logger=logger)
 
 infos = create_infos(datasets, issues)
 
-write_json(infos, catalog_all_file)
+cdawmeta.util.write_json(infos, catalog_all_file, logger=logger)
 
+logger.info(f"Writing {len(infos)} info files to {info_dir}")
 write_infos(infos, info_dir)
+logger.info(f"Wrote {len(infos)} info files to {info_dir}")

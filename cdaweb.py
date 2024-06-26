@@ -47,7 +47,8 @@ def cli():
     },
     "file_list": {
       "action": "store_true",
-      "help": "Include file list in catalog.json"
+      "help": "Include file list in catalog.json",
+      "default": True
     }
   }
 
@@ -302,8 +303,9 @@ datasets = create_datasets(cache_root)
 add_master(datasets, cache_root)
 add_spase(datasets, cache_root)
 
+
 if args.file_list:
-  add_file_list(datasets, cache_dir)
+  add_file_list(datasets, cache_root)
 
 logger.info(f'# of datasets: {len(datasets)}')
 
