@@ -12,7 +12,7 @@ The following notes are based on results from the [`cdawmeta` package](https://g
 2\. Nand often has `FILL=-2.14748006E9` for `integer` type variables. To see the occurrences, [search the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `-2.14748006E9`. I suspect the reason is similar to that in item 3. below. I also see Nand having a fill of `99999.9` when the master has `100000.0` and also NaN when the master has `-1e+31`. ([Search on the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `99999.9` and `NaN`).
 
 
-3\. There are many instances where Nand's server has a type of `double`, but I get `integer` based on CDF master metadata. The reason may be that Nand is using different non-CDF master metadata. I am unsure if CDAWeb corrects errors in non-master CDFs, but I could see it causing problems with people who read CDFs posted at CDAWeb directly without using the master (many do). To see the occurrences, search [the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `double`.
+3\. There are many instances where Nand's server has a type of `double`, but I get `integer` based on CDF master metadata. The reason may be that Nand is using different non-CDF master metadata. My understanding is that CDAWeb does not correct errors in non-master CDFs, but I could see it causing problems with people who read CDFs posted at CDAWeb directly without using the master (many do). To see the occurrences, search [the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `double`.
 
 
 4\. Not all data variables have a `DEPEND_0` in [`BAR_2L_L2_HKPG`](https://hapi-server.org/meta/cdaweb/#datasetID=BAR_2L_L2_HKPG)
