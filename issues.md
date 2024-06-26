@@ -64,7 +64,7 @@ and
    The explanation is that [`PO_H2_TIM` has a variable named `H_Epoch`](https://hapi-server.org/meta/cdaweb/#datasetID=PO_H2_TIM) (upper case "E").
 
 
-8\. [The logfile](http://mag.gmu.edu/git-data/cdawmeta/data/cdaweb.errors.log) has many errors associated with the fact that `spase_DatasetResourceID` does not start with `spase://`. I think an empty space is placed there because a SPASE record does not exist, which may be there to make validation pass on a validator that only checks for a non-empty string. There are also many `404` errors for URLs to `hpde.io` based on `spase_DatasetResourceID`.
+8\. [The logfile](http://mag.gmu.edu/git-data/cdawmeta/data/cdaweb.errors.log) has many errors associated with the fact that `spase_DatasetResourceID` does not start with `spase://`. I think an empty space is placed there because a SPASE record does not exist, which may be there to make validation pass when using a validator that only checks for a non-empty string. There are also many `404` errors for URLs to `hpde.io` based on `spase_DatasetResourceID`.
 
 9\.
 
@@ -80,15 +80,15 @@ Using [table-cdaweb.counts.csv](https://github.com/rweigel/cdawmeta/blob/main/ta
 
 There does not appear to be a consistent convention for `UNITS`. All of the unique units found in CDF masters are in [master-units.txt](https://github.com/rweigel/cdawmeta/blob/main/spase/master-units.txt).
 
-It looks like the SPASE developers modified many of the units, but they too don't use a consistent convention. The left-hand column of [master2spase-units.txt](https://github.com/rweigel/cdawmeta/blob/main/spase/master2spase-units.txt) has unique units in CDAWeb masters. The right-hand side shows how they have been represented in SPASE.
+It looks like the SPASE developers modified many of the units, but they, too, don't use a consistent convention. The left-hand column of [master2spase-units.txt](https://github.com/rweigel/cdawmeta/blob/main/spase/master2spase-units.txt) has unique units in CDAWeb masters. The right-hand side shows how they have been represented in SPASE.
 
-It seems most sensible to simply use a consistent convention in the master CDFs (given that they are "masters"). Without this, the HAPI code and the SPASE code that generates metadata from master CDFs would not need special replacement tables that need maintenance.
+It seems most sensible to use a consistent convention in the master CDFs (given that they are "masters"). Without this, the HAPI and SPASE codes that generate metadata from master CDFs would not need special replacement tables that need maintenance.
 
 We've discussed before the idea of adding an ISTP attribute such as `UNITS_STANDARD` that would represent units according to an existing standard such as `udunits2`.
 
 11\.
 
-These were issues that were not encountered when creating the SQL table at https://hapi-server.org/meta/cdaweb/:
+These were issues that were encountered when creating the SQL table 
 
 ```
 Missing VarAttributes in ela_sun in ELA_L1_STATE_DEFN
