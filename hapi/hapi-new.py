@@ -400,31 +400,50 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
     if 'UNITS' in variable['VarAttributes']:
       parameter['units'] = variable['VarAttributes']['UNITS']
 
+    if 'UNITS_PTR' in variable['VarAttributes']:
+      if print_info:
+        # Seems this is never used.
+        logger.info(f"    Warning: Not implemented: UNITS_PTR = '{variable['VarAttributes']['UNITS_PTR']}' not used")
+
     if print_info:
       virtual = parameter.get('x_cdf_is_virtual', False)
       virtual = f' (virtual: {virtual})'
       logger.info(f"    {parameter['name']}{virtual}")
       logger.info('     size = {}'.format(parameter.get('size', None)))
       logger.info('     x_label = {}'.format(parameter.get('x_label', None)))
-      check_display_type(variable, print_info=True)
+      check_display_type(dsid, name, variable, print_info=True)
 
     if 'DimSizes' in variable['VarDescription']:
       bins_object = bins(name, variable, all_variables, dsid, print_info=print_info)
       if bins_object is not None:
         parameter['bins'] = bins_object
+      if print_info:
+        if bins_object is not None:
+          for idx, bin in enumerate(bins_object):
+            bin_copy = bin.copy()
+            if 'centers' in bin and len(bin['centers']) > 10:
+              bin_copy['centers'] = f'{bin["centers"][0]} ... {bin["centers"][-1]}'  
+            logger.info(f"     bins[{idx}] = {bin_copy}")
 
     parameters.append(parameter)
 
   return parameters
 
 
-def check_display_type(variable, print_info=False):
+def check_display_type(dsid, name, variable, print_info=False):
 
   valid = False
   if 'DISPLAY_TYPE' in variable['VarAttributes']:
     DISPLAY_TYPE = variable['VarAttributes']['DISPLAY_TYPE']
+    DISPLAY_TYPE = DISPLAY_TYPE.split(">")[0]
+
     display_types_known = ['time_series','spectrogram','stack_plot','image','no_plot','orbit', 'plasmagram', 'skymap']
 
+    if DISPLAY_TYPE not in display_types_known:
+      if print_info:
+        msg = f"     Error: DISPLAY_TYPE = '{DISPLAY_TYPE}' is not in {display_types_known}. Will attempt to infer."
+        logger.error(msg)
+        set_error(dsid, name, msg)
     if print_info:
       if DISPLAY_TYPE == ' ':
         logger.info(f"     Warning: DISPLAY_TYPE = '{DISPLAY_TYPE}'")
@@ -458,16 +477,8 @@ def bins(name, variable, all_variables, dsid, print_info=False):
     logger.info(f"     NumDims: {NumDims}")
     logger.info(f"     DimSizes: {DimSizes}")
     logger.info(f"     DimVariances: {DimVariances}")
-    if NumDims != len(DimSizes):
-      msg = f"     Error: Mismatch: NumDims = {NumDims} != len(DimSizes) = {len(DimSizes)}"
-      logger.error(msg)
-      set_error(dsid, name, msg)
-    if NumDims != len(DimVariances):
-      msg = f"     Error: Mismatch: NumDims = {NumDims} != len(DimVariances) = {len(DimVariances)}"
-      logger.error(msg)
-      set_error(dsid, name, msg)
 
-  x_error = False
+  x_error = None
   xs = {'DEPEND': [], 'LABL_PTR': []}
   for prefix in ['DEPEND', 'LABL_PTR']:
     for x in [1, 2, 3]:
@@ -475,69 +486,95 @@ def bins(name, variable, all_variables, dsid, print_info=False):
         x_NAME = variable['VarAttributes'][f'{prefix}_{x}']
         xs[prefix].append(x_NAME)
         if not x_NAME in all_variables:
-          x_error = True
+          x_error = "Bad DEPEND reference"
           if print_info:
-            msg = f"Error: '{name}' has {prefix}_{x} named '{x_NAME}', which is not a variable. Not creating bins."
+            msg = f"Error: Bad DEPEND reference: '{name}' has {prefix}_{x} named '{x_NAME}', which is not a variable. Not creating bins."
             logger.error(f"     {msg}")
             set_error(dsid, name, msg)
 
     if len(xs[prefix]) > len(DimSizes):
       if print_info:
-        msg = f"     Error: '{name}' has a {prefix}_{x} and len(DimSizes) = {len(DimSizes)}."
+        msg = f"     Error: Too many DEPENDs: '{name}' has a {prefix}_{x} and len(DimSizes) = {len(DimSizes)}."
         logger.error(msg)
         set_error(dsid, name, msg)
-
       else:
         xs[prefix].append(None)
 
-  if print_info:
-    def n_not_none(xs):
-      return len([x for x in xs if x is not None])
+  def n_not_none(xs):
+    return len([x for x in xs if x is not None])
 
+  if print_info:
     for prefix in ['DEPEND', 'LABL_PTR']:
       if n_not_none(xs[prefix]) > 0:
         logger.info("     " + f"{prefix}" + "_{1,2,3}: " + f"{xs[prefix]}")
 
-    if DimVariances.count('VARY') != n_not_none(xs['DEPEND']):
-      msg = f"     Warning: DimVariances has {DimVariances.count('VARY')} VARY elements != number of DEPEND_{1,2,3} ({n_not_none(xs['DEPEND'])}"
+    #else:
+      #if n_vary > 0:
+      #logger.error("Vary OK")
+      #set_error(dsid, name, "Vary OK")
+
+  if NumDims != len(DimSizes):
+    if print_info:
+      msg = f"     Error: DimSizes mismatch: NumDims = {NumDims} != len(DimSizes) = {len(DimSizes)}"
       logger.error(msg)
       set_error(dsid, name, msg)
 
-    if len(DimVariances) > n_not_none(xs['DEPEND']):
-      logger.info(f"     Warning: len(DimSizes) = {len(DimSizes)} > n_not_none(xs['DEPEND']) = {n_not_none(xs['DEPEND'])}")
+  if len(DimSizes) != len(DimVariances):
+    if print_info:
+      msg = f"     Error: DimVariances mismatch: len(DimSizes) = {DimSizes} != len(DimVariances) = {len(DimVariances)}"
+      logger.error(msg)
+      set_error(dsid, name, msg)
 
-  if x_error:
+  n_vary = DimVariances.count('VARY')
+  if n_vary != n_not_none(xs['DEPEND']):
+    if print_info:
+      msg = f"     Error: DimVariances has {n_vary} VARY elements != number of DEPEND_{{1,2,3}} ({n_not_none(xs['DEPEND'])})"
+      logger.error(msg)
+      set_error(dsid, name, msg)
     return None
 
+  if x_error is not None:
+    if print_info:
+      msg = f"     Error: Not creating bins because of {x_error}"
+      logger.error(msg)
+      set_error(dsid, name, msg)
+    return None
+
+  if n_not_none(xs['DEPEND']) != len(DimSizes):
+    if print_info:
+      logger.info(f"     Warning: Not implemented: Not creating bins because number of DEPENDs ({n_not_none(xs['DEPEND'])}) != len(DimSizes) ({len(DimSizes)})")
+    return None
+
+
   bins_objects = []
-  for DEPEND_x in xs['DEPEND']:
-    if DEPEND_x is not None:
-      bins_object = create_bins(name, '', DEPEND_x, all_variables[DEPEND_x], dsid, print_info=print_info)
+  for x in range(len(xs['DEPEND'])):
+    DEPEND_x_NAME = xs['DEPEND'][x]
+    if DEPEND_x_NAME is not None:
+      hapitype = cdf2hapitype(all_variables[DEPEND_x_NAME]['VarDescription']['DataType'])
+      if not (hapitype == 'integer' or hapitype == 'double'):
+        msg = f"DEPEND_{x} = '{DEPEND_x_NAME}' DataType is not an integer or float. Omitting bins for {name}."
+        if print_info:
+          logger.info(f"     Warning: Not implemented: {msg}")
+        return None
+
+      bins_object = create_bins(dsid, name, x, DEPEND_x_NAME, all_variables[DEPEND_x_NAME], print_info=print_info)
       if bins_object is None:
         return None
       bins_objects.append(bins_object)
 
   return bins_objects
 
-def create_bins(name, DEPEND_x_key, DEPEND_x_NAME, DEPEND_x, dsid, print_info=False):
-
-  hapitype = cdf2hapitype(DEPEND_x['VarDescription']['DataType'])
+def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, print_info=False):
 
   RecVariance = "NOVARY"
   if "RecVariance" in DEPEND_x['VarDescription']:
     RecVariance = DEPEND_x['VarDescription']["RecVariance"]
     #print("DEPEND_1 has RecVariance = " + RecVariance)
 
-  if not (hapitype == 'integer' or hapitype == 'double'):
-    msg = f"'{DEPEND_x_NAME}' is not an integer or double. Omitting bins for {name}."
-    if print_info:
-      logger.info(f"     Warning: Not implemented: {msg}")
-    return None
-
   if RecVariance == "VARY":
     # Nand does not create bins for this case
     if print_info:
-      logger.info(f"     Warning: {dsid}/{name} has {DEPEND_x_NAME} = '{DEPEND_x_key}' which has RecVariance = 'VARY' . Not creating bins b/c Nand does not for this case.")
+      logger.info(f"     Warning: Not implemented: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY' . Not creating bins b/c Nand does not for this case.")
     return None
   else:
     # TODO: Check for multi-dimensional
@@ -545,21 +582,27 @@ def create_bins(name, DEPEND_x_key, DEPEND_x_NAME, DEPEND_x, dsid, print_info=Fa
     if "UNITS" in DEPEND_x['VarAttributes']:
       units = DEPEND_x['VarAttributes']["UNITS"]
     else:
+      if "UNIT_PTR" in DEPEND_x['VarAttributes']:
+        if print_info:
+          msg = f"     Error: Not implemented: DEPEND_{x} = '{DEPEND_x_NAME}' has UNIT_PTR = '{DEPEND_x['VarAttributes']['UNIT_PTR']}'. Not using."
+          logger.error(msg)
+          set_error(dsid, name, msg)
+
       if 'VAR_TYPE' in DEPEND_x['VarAttributes']:
         DEPEND_x_VAR_TYPE = DEPEND_x['VarAttributes']['VAR_TYPE']
       else:
         if print_info:
-          msg = f"     Error: '{name}' has '{DEPEND_x_NAME}' with no VAR_TYPE. Not creating bins."
+          msg = f"     Error: DEPEND_{x} = '{DEPEND_x_NAME}' has no VAR_TYPE. Not creating bins."
           logger.error(msg)
           set_error(dsid, name, msg)
         return None
+
       if DEPEND_x_VAR_TYPE in ['data', 'support_data']:
         if not "UNIT_PTR" in DEPEND_x['VarAttributes']:
           if print_info:
-            msg = f"     Error: '{name}' has depend variable '{DEPEND_x_NAME}' with VAR_TYPE '{DEPEND_x_VAR_TYPE}' and no UNITS or UNIT_PTR."
+            msg = f"     Error: DEPEND_{x} = '{DEPEND_x_NAME}' has VAR_TYPE '{DEPEND_x_VAR_TYPE}' and no UNITS or UNIT_PTR."
             logger.error(msg)
             set_error(dsid, name, msg)
-
 
     if 'VarData' in DEPEND_x:
       bins_object = {
