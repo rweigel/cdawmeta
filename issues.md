@@ -12,7 +12,7 @@ The following notes are based on results from the [`cdawmeta` package](https://g
 2\. Nand often has `FILL=-2.14748006E9` for `integer` type variables. To see the occurrences, [search the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `-2.14748006E9`. I suspect the reason is similar to that in item 3. below. I also see Nand having a fill of `99999.9` when the master has `100000.0` and also NaN when the master has `-1e+31`. ([Search on the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `99999.9` and `NaN`).
 
 
-3\. There are many instances where Nand's server has a type of `double`, but I get `integer` based on CDF master metadata. The reason may be that Nand is using different non-CDF master metadata. I am unsure if CDAWeb corrects errors in non-master CDFs, but I could see it causing problems with people who read CDFs posted at CDAWeb directly without using the master (many do). To see the occurrences, search [the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `double`.
+3\. There are many instances where Nand's server has a type of `double`, but I get `integer` based on CDF master metadata. The reason may be that Nand is using different non-CDF master metadata. My understanding is that CDAWeb does not correct errors in non-master CDFs, but I could see it causing problems with people who read CDFs posted at CDAWeb directly without using the master (many do). To see the occurrences, search [the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `double`.
 
 
 4\. Not all data variables have a `DEPEND_0` in [`BAR_2L_L2_HKPG`](https://hapi-server.org/meta/cdaweb/#datasetID=BAR_2L_L2_HKPG)
@@ -64,7 +64,7 @@ and
    The explanation is that [`PO_H2_TIM` has a variable named `H_Epoch`](https://hapi-server.org/meta/cdaweb/#datasetID=PO_H2_TIM) (upper case "E").
 
 
-8\. [The logfile](http://mag.gmu.edu/git-data/cdawmeta/data/cdaweb.errors.log) has many errors associated with the fact that `spase_DatasetResourceID` does not start with `spase://`. I think an empty space is placed there because a SPASE record does not exist, which may be there to make validation pass on a validator that only checks for a non-empty string. There are also many `404` errors for URLs to `hpde.io` based on `spase_DatasetResourceID`.
+8\. [The logfile](http://mag.gmu.edu/git-data/cdawmeta/data/cdaweb.errors.log) has many errors associated with the fact that `spase_DatasetResourceID` does not start with `spase://`. I think an empty space is placed there because a SPASE record does not exist, which may be there to make validation pass when using a validator that only checks for a non-empty string. There are also many `404` errors for URLs to `hpde.io` based on `spase_DatasetResourceID`.
 
 9\.
 
@@ -72,17 +72,17 @@ From https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html, "ISTP attribute nam
 
 Also, a while back I mentioned the mixed usage of `SI_conv` and `SI_conversion` at https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html. Which is it?
 
-To create the SQL table of CDAWeb metadata, I had to treat certain attribute names as equivalent (SQL column names are case insensitive, so one cannot create a column named `A` if a column named `a` is not allowed.).
+To create the [SQL table of CDAWeb metadata](https://hapi-server.org/meta/cdaweb/), I had to treat certain attribute names as equivalent (SQL column names are case insensitive, so one cannot create a column named `A` if a column named `a` is not allowed.).
 
-Using [table-cdaweb.counts.csv](https://github.com/rweigel/cdawmeta/blob/main/table/table-cdaweb.counts.csv), I renamed many CDF attributes that differed by case or looked to be misspelled for equivalent to another more-used attribute name. The reaming mapping is in ([table-cdaweb.fixes.json](https://github.com/rweigel/cdawmeta/blob/main/table/table-cdaweb.fixes.json)).
+Using [table-cdaweb.counts.csv](https://github.com/rweigel/cdawmeta/blob/main/table/table-cdaweb.counts.csv), I renamed many CDF attributes that differed by case (to address SQL column name constraint) or looked to be misspelled for equivalent to another more-used attribute name. The reaming mapping is in ([table-cdaweb.fixes.json](https://github.com/rweigel/cdawmeta/blob/main/table/table-cdaweb.fixes.json)).
 
 10\.
 
 There does not appear to be a consistent convention for `UNITS`. All of the unique units found in CDF masters are in [master-units.txt](https://github.com/rweigel/cdawmeta/blob/main/spase/master-units.txt).
 
-It looks like the SPASE developers modified many of the units, but they too don't use a consistent convention. The left-hand column of [master2spase-units.txt](https://github.com/rweigel/cdawmeta/blob/main/spase/master2spase-units.txt) has unique units in CDAWeb masters. The right-hand side shows how they have been represented in SPASE.
+It looks like the SPASE developers modified many of the units, but they, too, don't use a consistent convention. The left-hand column of [master2spase-units.txt](https://github.com/rweigel/cdawmeta/blob/main/spase/master2spase-units.txt) has unique units in CDAWeb masters. The right-hand side shows how they have been represented in SPASE.
 
-It seems most sensible to simply use a consistent convention in the master CDFs (given that they are "masters"). Without this, the HAPI code and the SPASE code that generates metadata from master CDFs would not need special replacement tables that need maintenance.
+It seems most sensible to use a consistent convention in the master CDFs (given that they are "masters"). Without this, the HAPI and SPASE codes that generate metadata from master CDFs would not need special replacement tables that need maintenance.
 
 We've discussed before the idea of adding an ISTP attribute such as `UNITS_STANDARD` that would represent units according to an existing standard such as `udunits2`.
 
