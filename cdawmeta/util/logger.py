@@ -39,6 +39,12 @@ def logger(format=u'%(asctime)sZ %(message)s',
     if file_error and os.path.exists(file_error):
       os.remove(file_error)
 
+  from . import mkdir as mkdir
+  if file_log:
+    mkdir(os.path.dirname(file_log))
+  if file_error:
+    mkdir(os.path.dirname(file_error))
+
   class _ExcludeErrorsFilter(logging.Filter):
     def filter(self, record):
       """Only lets through log messages with log level below ERROR ."""

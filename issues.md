@@ -88,16 +88,12 @@ We've discussed before the idea of adding an ISTP attribute such as `UNITS_STAND
 
 11\.
 
-These were issues that were not encountered when creating the SQL table at https://hapi-server.org/meta/cdaweb/:
-
-```
-Missing VarAttributes in ela_sun in ELA_L1_STATE_DEFN
-Missing VarAttributes in elb_sun in ELB_L1_STATE_DEFN
-Missing VarAttributes in STE_spectra_LABL_1 in STB_L1_STE
-```
-
-Note that these were not caught in the HAPI generation code because these variables are not used.
+Are the `Error?:` cases in [catalog-all.log](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/catalog-all.log) errors?
 
 12\.
 
-Are the `Error?:` cases in [catalog-all.log](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/catalog-all.log) errors?
+SOLO is not listed at https://cdaweb.gsfc.nasa.gov/
+
+14\.
+
+No file list for DAWN_HELIO1DAY_POSITION

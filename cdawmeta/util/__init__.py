@@ -1,7 +1,9 @@
 from . import mkdir as mkdir
 from . import logger as logger
-from . import write_json as write_json
+from . import write as write
+from . import read as read
 
 mkdir = mkdir.mkdir
 logger = logger.logger
-write_json = write_json.write_json
+write = write.write
+read = read.read
