@@ -13,6 +13,8 @@ strip_description = False
 # Remove "--->" in description
 remove_arrows = False
 
+show_display_type_issues = False
+
 root_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 base_dir = os.path.join(root_dir, 'data')
 info_dir = os.path.join(base_dir, 'hapi', 'info')
@@ -403,7 +405,7 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
     if 'UNITS_PTR' in variable['VarAttributes']:
       if print_info:
         # Seems this is never used.
-        logger.info(f"    Warning: Not implemented: UNITS_PTR = '{variable['VarAttributes']['UNITS_PTR']}' not used")
+        logger.info(f"    Warning: NotImplemented[0]: UNITS_PTR = '{variable['VarAttributes']['UNITS_PTR']}' not used")
 
     if print_info:
       virtual = parameter.get('x_cdf_is_virtual', False)
@@ -440,14 +442,14 @@ def check_display_type(dsid, name, variable, print_info=False):
     display_types_known = ['time_series','spectrogram','stack_plot','image','no_plot','orbit', 'plasmagram', 'skymap']
 
     if DISPLAY_TYPE not in display_types_known:
-      if print_info:
+      if print_info and show_display_type_issues:
         msg = f"     Error: DISPLAY_TYPE = '{DISPLAY_TYPE}' is not in {display_types_known}. Will attempt to infer."
         logger.error(msg)
         set_error(dsid, name, msg)
     if print_info:
-      if DISPLAY_TYPE == ' ':
+      if DISPLAY_TYPE == ' ' and show_display_type_issues:
         logger.info(f"     Warning: DISPLAY_TYPE = '{DISPLAY_TYPE}'")
-      elif DISPLAY_TYPE.strip() == '':
+      elif DISPLAY_TYPE.strip() == '' and show_display_type_issues:
         logger.info(f"     Warning: DISPLAY_TYPE.strip() = ''")
 
     found = False
@@ -458,7 +460,7 @@ def check_display_type(dsid, name, variable, print_info=False):
         if print_info:
           logger.info(f"     DISPLAY_TYPE = '{DISPLAY_TYPE}'")
         break
-    if not found and print_info:
+    if not found and print_info and show_display_type_issues:
       logger.info(f"     Warning: DISPLAY_TYPE.lower() = '{DISPLAY_TYPE}' does not start with one of {display_types_known}")
   elif variable['VarAttributes'].get('VAR_TYPE') == 'data':
     if print_info:
@@ -469,9 +471,9 @@ def check_display_type(dsid, name, variable, print_info=False):
 
 def bins(name, variable, all_variables, dsid, print_info=False):
 
-  NumDims = variable['VarDescription'].get('NumDims', None)
-  DimSizes = variable['VarDescription'].get('DimSizes', None)
-  DimVariances = variable['VarDescription'].get('DimVariances', None)
+  NumDims = variable['VarDescription'].get('NumDims', 0)
+  DimSizes = variable['VarDescription'].get('DimSizes', [])
+  DimVariances = variable['VarDescription'].get('DimVariances', [])
 
   if print_info:
     logger.info(f"     NumDims: {NumDims}")
@@ -494,7 +496,7 @@ def bins(name, variable, all_variables, dsid, print_info=False):
 
     if len(xs[prefix]) > len(DimSizes):
       if print_info:
-        msg = f"     Error: Too many DEPENDs: '{name}' has a {prefix}_{x} and len(DimSizes) = {len(DimSizes)}."
+        msg = f"     Error: Too many DEPENDs: '{name}' has a len(DEPEND_{{1,2,3}}) = {len(xs[prefix])} and len(DimSizes) = {len(DimSizes)}."
         logger.error(msg)
         set_error(dsid, name, msg)
       else:
@@ -525,14 +527,6 @@ def bins(name, variable, all_variables, dsid, print_info=False):
       logger.error(msg)
       set_error(dsid, name, msg)
 
-  n_vary = DimVariances.count('VARY')
-  if n_vary != n_not_none(xs['DEPEND']):
-    if print_info:
-      msg = f"     Error: DimVariances has {n_vary} VARY elements != number of DEPEND_{{1,2,3}} ({n_not_none(xs['DEPEND'])})"
-      logger.error(msg)
-      set_error(dsid, name, msg)
-    return None
-
   if x_error is not None:
     if print_info:
       msg = f"     Error: Not creating bins because of {x_error}"
@@ -542,9 +536,8 @@ def bins(name, variable, all_variables, dsid, print_info=False):
 
   if n_not_none(xs['DEPEND']) != len(DimSizes):
     if print_info:
-      logger.info(f"     Warning: Not implemented: Not creating bins because number of DEPENDs ({n_not_none(xs['DEPEND'])}) != len(DimSizes) ({len(DimSizes)})")
+      logger.info(f"     Warning: NotImplemented[1]: Not creating bins because number of DEPENDs ({n_not_none(xs['DEPEND'])}) != len(DimSizes) ({len(DimSizes)})")
     return None
-
 
   bins_objects = []
   for x in range(len(xs['DEPEND'])):
@@ -554,7 +547,7 @@ def bins(name, variable, all_variables, dsid, print_info=False):
       if not (hapitype == 'integer' or hapitype == 'double'):
         msg = f"DEPEND_{x} = '{DEPEND_x_NAME}' DataType is not an integer or float. Omitting bins for {name}."
         if print_info:
-          logger.info(f"     Warning: Not implemented: {msg}")
+          logger.info(f"     Warning: NotImplemented[2]: {msg}")
         return None
 
       bins_object = create_bins(dsid, name, x, DEPEND_x_NAME, all_variables[DEPEND_x_NAME], print_info=print_info)
@@ -572,9 +565,8 @@ def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, print_info=False):
     #print("DEPEND_1 has RecVariance = " + RecVariance)
 
   if RecVariance == "VARY":
-    # Nand does not create bins for this case
     if print_info:
-      logger.info(f"     Warning: Not implemented: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY' . Not creating bins b/c Nand does not for this case.")
+      logger.info(f"     Warning: NotImplemented[3]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY' . Not creating bins b/c Nand does not for this case.")
     return None
   else:
     # TODO: Check for multi-dimensional
@@ -584,7 +576,7 @@ def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, print_info=False):
     else:
       if "UNIT_PTR" in DEPEND_x['VarAttributes']:
         if print_info:
-          msg = f"     Error: Not implemented: DEPEND_{x} = '{DEPEND_x_NAME}' has UNIT_PTR = '{DEPEND_x['VarAttributes']['UNIT_PTR']}'. Not using."
+          msg = f"     Error: NotImplemented[4]: DEPEND_{x} = '{DEPEND_x_NAME}' has UNIT_PTR = '{DEPEND_x['VarAttributes']['UNIT_PTR']}'. Not using."
           logger.error(msg)
           set_error(dsid, name, msg)
 
@@ -844,6 +836,6 @@ for did, vars in set_error.errors.items():
     continue
   for vid, msg in vars.items():
     msg = "\n".join(msg)
-    errors += f"{did}: {msg}\n"
+    errors += f"{did}/{vid}: {msg}\n"
 
 cdawmeta.util.write(catalog_err_file, errors, logger=logger)
