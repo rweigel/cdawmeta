@@ -14,7 +14,7 @@ import deepdiff
 import cdawmeta
 
 allxml = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
-filews = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
+wsbase = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
 
 timeouts = {
   'allxml': 30,
@@ -40,17 +40,17 @@ def cli():
     },
     "no_file_list": {
       "action": "store_true",
-      "help": "Exlude file list in catalog.json",
+      "help": "Exclude _file_list in catalog.json (_file_list, _sample_{file,url} are not created)",
       "default": False
     },
     "no_spase": {
       "action": "store_true",
-      "help": "Exclude file list in catalog.json",
+      "help": "Exclude _spase in catalog.json",
       "default": False
     },
-    "no_diffs": {
+    "diffs": {
       "action": "store_true",
-      "help": "Do not compute response diffs",
+      "help": "Compute response diffs",
       "default": False
     }
   }
@@ -71,6 +71,9 @@ def omit(id):
     return True
   else:
     return False
+
+def rel_path(path):
+  return path.replace(script_dir + '/', '')
 
 def get(function, datasets, cache_dir):
 
@@ -137,9 +140,9 @@ def print_resp_info(resp, url, cache):
   msg += f'\nGot: {url}\n'
   msg += f"  Status code: {resp.status_code}\n"
   msg += f"  From cache: {resp.from_cache}\n"
-  msg += f"  Current cache file: {cache['file']}\n"
+  msg += f"  Current cache file: {rel_path(cache['file'])}\n"
   if 'file_last' in cache:
-    msg += f"  Last cache file:    {cache['file_last']}\n"
+    msg += f"  Last cache file:    {rel_path(cache['file_last'])}\n"
   msg += f"  Request Cache-Related Headers:\n"
   for k, v in req_cache_headers.items():
     msg += f"    {k}: {v}\n"
@@ -164,7 +167,7 @@ def cache_info(cache_dir, cache_key):
 
   _return = {"file": cache_file}
 
-  if args.no_diffs == False:
+  if args.diffs == True:
     if os.path.exists(cache_file):
       try:
         now = cdawmeta.util.read(cache_file, logger=logger)
@@ -270,7 +273,12 @@ def add_master(datasets, cache_dir):
     cache= cache_info(cache_dir, resp.cache_key)
     print_resp_info(resp, url, cache)
 
-    dataset['_master'] = cache['file']
+    dataset['_master'] = rel_path(cache['file'])
+    dataset['_master_urls'] = {
+      'cdf': mastercdf,
+      'json': url,
+      'skt': mastercdf.replace('.cdf', '.skt').replace('0MASTERS', '0SKELTABLES')
+    }
     dataset['_master_data'] = json_dict
 
     files = list(dataset['_master_data'].keys())
@@ -327,7 +335,8 @@ def add_spase(datasets, cache_dir):
     cache = cache_info(cache_dir, resp.cache_key)
     print_resp_info(resp, url, cache)
 
-    dataset['_spase'] = cache['file']
+    dataset['_spase_url'] = url
+    dataset['_spase'] = rel_path(cache['file'])
 
   cache_dir = os.path.join(cache_dir, 'spase')
   get(get_spase, datasets, cache_dir)
@@ -338,24 +347,51 @@ def add_file_list(datasets, cache_dir):
 
     start = dataset['_allxml']['@timerange_start'].replace(" ", "T").replace("-","").replace(":","") + "Z";
     stop = dataset['_allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z";
-    url = filews + dataset["id"] + "/orig_data/" + start + "," + stop
+    url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop
 
     logger.info("Get: " + url)
     try:
       resp = session.get(url, timeout=timeouts['file_list'], headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
       resp.raise_for_status()
+      json_dict = resp.json()
     except Exception as e:
       msg = f"Error[orig_data]: {dataset['id']}: {e}"
       logger.error(msg)
       return
 
+    if not 'FileDescription' in json_dict:
+      msg = f"Error[orig_data]: {dataset['id']}: No FileDescription key"
+      logger.error(msg)
+
+    if len(json_dict['FileDescription']) == 0:
+      msg = f"Error[orig_data]: {dataset['id']}: FileDescription array is empty"
+      logger.error(msg)
+
     cache = cache_info(cache_dir, resp.cache_key)
     print_resp_info(resp, url, cache)
 
-    dataset['_file_list'] = cache['file']
+    dataset['_samples'] = add_samples(dataset['id'], json_dict)
+    dataset['_file_list_url'] = url
+    dataset['_file_list'] = rel_path(cache['file'])
 
-  cache_dir = os.path.join(os.path.dirname(__file__), 'data/cache/files')
+  cache_dir = os.path.join(script_dir, 'data/cache/files')
   get(get_file_list, datasets, cache_dir)
+
+def add_samples(id, file_list):
+
+  def reformat_dt(dt):
+    dt = dt.replace(" ", "T").replace("-","").replace(":","")
+    return dt.split(".")[0] + "Z"
+
+  last_file = file_list['FileDescription'][-1]
+  start = reformat_dt(last_file['StartTime'])
+  stop = reformat_dt(last_file['EndTime'])
+  _samples = {
+    'file': last_file['Name'],
+    'url': f"{wsbase}/datasets/{id}/{start},{stop}/ALL-VARIABLES?format=cdf",
+    'plot': f"{wsbase}/datasets/{id}/{start},{stop}/ALL-VARIABLES?format=png"
+  }
+  return _samples
 
 args = cli()
 
@@ -366,13 +402,15 @@ else:
   partial_ext = '.partial'
   partial_dir = 'partial'
 
+script_dir = os.path.dirname(__file__)
 base_name = f'cdaweb{partial_ext}'
-cache_root = os.path.join(os.path.dirname(__file__), 'data', 'cache')
-file_out = os.path.join(os.path.dirname(__file__), 'data', partial_dir, f'{base_name}.json')
+cache_root = os.path.join(script_dir, 'data', 'cache')
+file_out = os.path.join(script_dir, 'data', partial_dir, f'{base_name}.json')
 log_config = {
-  'file_log': os.path.join(os.path.dirname(__file__), 'data', partial_dir, f'{base_name}.log'),
-  'file_error': os.path.join(os.path.dirname(__file__), 'data', partial_dir, f'{base_name}.errors.log'),
-  'format': '%(message)s'
+  'file_log': os.path.join(script_dir, 'data', partial_dir, f'{base_name}.log'),
+  'file_error': os.path.join(script_dir, 'data', partial_dir, f'{base_name}.errors.log'),
+  'format': '%(message)s',
+  'rm_string': script_dir + '/'
 }
 logger = cdawmeta.util.logger(**log_config)
 

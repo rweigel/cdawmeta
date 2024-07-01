@@ -1,17 +1,27 @@
-def add_master_restructured(datasets, set_error):
+def sort_keys(obj):
+  return {key: obj[key] for key in sorted(obj)}
+
+def array_to_dict(array):
+  obj = {}
+  for element in array:
+    key = list(element.keys())[0]
+    obj[key] = element[key]
+  return obj
+
+def add_master_restructured(root_dir, datasets, logger, set_error):
   for idx, dataset in enumerate(datasets):
 
     if '_master' not in dataset:
       msg = f'Error: No _master in {dataset["id"]}. Omitting dataset.'
-      print(msg)
+      logger.error(msg)
       set_error(dataset["id"], None, msg)
       datasets[idx] = None
       continue
 
-    _master_restructured = restructure_master(dataset, set_error)
+    _master_restructured = restructure_master(root_dir, dataset, logger, set_error)
     if _master_restructured is None:
       msg = f'Error: Could not restructure variables for {dataset["id"]}. Omitting dataset.'
-      print(msg)
+      logger.error(msg)
       set_error(dataset["id"], None, msg)
       datasets[idx] = None
       continue
@@ -20,8 +30,7 @@ def add_master_restructured(datasets, set_error):
 
   return [i for i in datasets if i is not None]
 
-
-def restructure_master(dataset, set_error):
+def restructure_master(root_dir, dataset, logger, set_error):
 
   """
   Convert dict with arrays of objects to objects with objects. For example
@@ -44,19 +53,21 @@ def restructure_master(dataset, set_error):
       }
     }
   """
+  import os
   import json
 
   try:
-    with open(dataset['_master'], 'r', encoding='utf-8') as f:
+    master_file = os.path.join(root_dir, dataset['_master'])
+    with open(master_file, 'r', encoding='utf-8') as f:
       _master_data = json.load(f)["_decoded_content"]
   except:
     msg = f"Error: Could not open {dataset['id']} master file."
-    print(msg)
+    logger.error(msg)
     set_error(dataset["id"], None, msg)
     return None
 
   _master_restructured = {
-    'globals': restructure_globals(dataset["id"], _master_data, set_error)
+    'globals': restructure_globals(dataset["id"], _master_data, logger, set_error)
   }
 
   file = list(_master_data.keys())[0]
@@ -68,10 +79,10 @@ def restructure_master(dataset, set_error):
 
     variable_keys = list(variable.keys())
     if len(variable_keys) > 1:
-      msg = "Expected only one variable key in variable object."
-      print(msg)
+      msg = "Expected only one variable key in variable object. Exiting witih code 1."
+      logger.error(msg)
       set_error(dataset["id"], None, msg)
-      exit(0)
+      exit(1)
 
     variable_name = variable_keys[0]
     variable_array = variable[variable_name]
@@ -90,20 +101,7 @@ def restructure_master(dataset, set_error):
 
   return _master_restructured
 
-
-def sort_keys(obj):
-  return {key: obj[key] for key in sorted(obj)}
-
-
-def array_to_dict(array):
-  obj = {}
-  for element in array:
-    key = list(element.keys())[0]
-    obj[key] = element[key]
-  return obj
-
-
-def restructure_globals(dsid, _master_data, set_error):
+def restructure_globals(dsid, _master_data, logger, set_error):
 
   file = list(_master_data.keys())[0]
 
@@ -114,7 +112,7 @@ def restructure_globals(dsid, _master_data, set_error):
     gkey = list(_global.keys())
     if len(gkey) > 1:
       msg = "Expected only one key in _global object."
-      print(msg)
+      logger.error(msg)
       set_error(dsid, None, msg)
     gvals = _global[gkey[0]]
     text = []

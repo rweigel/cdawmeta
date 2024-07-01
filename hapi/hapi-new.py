@@ -7,13 +7,13 @@ import cdawmeta
 # Set to True to omit datasets that are not in Nand's metadata
 omit_datasets = False
 
-# Set to false to reduce number of mismatch warnings
+# Set to false to reduce number of warnings due to mismatch with Nand's metadata
 strip_description = False
 
 # Remove "--->" in description
 remove_arrows = False
 
-show_display_type_issues = False
+log_display_type_issues = False
 
 root_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 base_dir = os.path.join(root_dir, 'data')
@@ -149,7 +149,6 @@ def omit_variable(id, variable_name, issues):
     return True
   return False
 
-
 def add_sample_start_stop(datasets):
 
   def extract_sample_start_stop(file_list):
@@ -184,8 +183,8 @@ def add_sample_start_stop(datasets):
       logger.info("No _file_list for " + dataset["id"])
       continue
 
-    with open(dataset['_file_list'], 'r', encoding='utf-8') as f:
-      dataset['_file_list_data'] = json.load(f)["_decoded_content"]
+    file_list_path = os.path.join(root_dir, dataset["_file_list"])
+    dataset['_file_list_data'] = cdawmeta.util.read(file_list_path)["_decoded_content"]
 
     if not "FileDescription" in dataset["_file_list_data"]:
       logger.info("No file list for " + dataset["id"])
@@ -220,7 +219,6 @@ def add_info(datasets):
         'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{dataset["id"][0]}.html#{dataset["id"]}',
         'contact': contact
     }
-
 
 def cdf2hapitype(cdf_type):
 
@@ -431,7 +429,6 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
 
   return parameters
 
-
 def check_display_type(dsid, name, variable, print_info=False):
 
   valid = False
@@ -442,14 +439,14 @@ def check_display_type(dsid, name, variable, print_info=False):
     display_types_known = ['time_series','spectrogram','stack_plot','image','no_plot','orbit', 'plasmagram', 'skymap']
 
     if DISPLAY_TYPE not in display_types_known:
-      if print_info and show_display_type_issues:
+      if print_info and log_display_type_issues:
         msg = f"     Error: DISPLAY_TYPE = '{DISPLAY_TYPE}' is not in {display_types_known}. Will attempt to infer."
         logger.error(msg)
         set_error(dsid, name, msg)
     if print_info:
-      if DISPLAY_TYPE == ' ' and show_display_type_issues:
+      if DISPLAY_TYPE == ' ' and log_display_type_issues:
         logger.info(f"     Warning: DISPLAY_TYPE = '{DISPLAY_TYPE}'")
-      elif DISPLAY_TYPE.strip() == '' and show_display_type_issues:
+      elif DISPLAY_TYPE.strip() == '' and log_display_type_issues:
         logger.info(f"     Warning: DISPLAY_TYPE.strip() = ''")
 
     found = False
@@ -460,7 +457,7 @@ def check_display_type(dsid, name, variable, print_info=False):
         if print_info:
           logger.info(f"     DISPLAY_TYPE = '{DISPLAY_TYPE}'")
         break
-    if not found and print_info and show_display_type_issues:
+    if not found and print_info and log_display_type_issues:
       logger.info(f"     Warning: DISPLAY_TYPE.lower() = '{DISPLAY_TYPE}' does not start with one of {display_types_known}")
   elif variable['VarAttributes'].get('VAR_TYPE') == 'data':
     if print_info:
@@ -655,11 +652,10 @@ def split_variables(datasets, issues):
 
     dataset['_variables_split'] = depend_0_dict
 
-
 def create_catalog_all(datasets, issues):
 
   from cdawmeta.restructure_master import add_master_restructured
-  datasets = add_master_restructured(datasets, set_error)
+  datasets = add_master_restructured(root_dir, datasets, logger, set_error)
 
   add_info(datasets)
   add_sample_start_stop(datasets)
@@ -763,7 +759,6 @@ def create_catalog_all(datasets, issues):
 
   return catalog_all
 
-
 def write_infos(catalog_all, info_dir):
   if not os.path.exists(info_dir):
     logger.info(f'Creating {info_dir}')
@@ -783,12 +778,12 @@ else:
   partial = '.partial'
   partial_dir = 'partial'
 
-in_file  = os.path.join(base_dir, partial_dir, f'cdaweb{partial}.json')
-
 base_name = f'catalog{partial}'
+in_file  = os.path.join(base_dir, partial_dir, f'cdaweb{partial}.json')
 catalog_file = os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.json')
 catalog_err_file = os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.errors.txt')
 catalog_all_file = os.path.join(base_dir, 'hapi', partial_dir, f'catalog-all{partial}.json')
+issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
 
 log_config = {
   'file_log': os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.log'),
@@ -798,19 +793,15 @@ log_config = {
 }
 logger = cdawmeta.util.logger(**log_config)
 
-issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
-logger.info(f'Reading: {issues_file}')
 try:
-  with open(issues_file) as f:
-    issues = json.load(f)
-    logger.info(f'Read: {issues_file}')
+  issues = cdawmeta.util.read(issues_file, logger=logger)
 except Exception as e:
   exit(f"Error: Could not read {issues_file} file: {e}")
 
-logger.info(f'Reading: {in_file}')
-with open(in_file, 'r', encoding='utf-8') as f:
-  datasets = json.load(f)
-logger.info(f'Read: {in_file}')
+try:
+  datasets = cdawmeta.util.read(in_file, logger=logger)
+except Exception as e:
+  exit(f"Error: Could not read {in_file} file: {e}")
 n_cdaweb = len(datasets)
 
 logger.info(f'Creating HAPI catalog-all from {n_cdaweb} CDAWeb datasets')
