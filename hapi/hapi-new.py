@@ -655,7 +655,7 @@ def split_variables(datasets, issues):
 def create_catalog_all(datasets, issues):
 
   from cdawmeta.restructure_master import add_master_restructured
-  datasets = add_master_restructured(root_dir, datasets, logger, set_error)
+  datasets = add_master_restructured(root_dir, datasets, logger=logger, set_error=set_error)
 
   add_info(datasets)
   add_sample_start_stop(datasets)

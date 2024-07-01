@@ -25,7 +25,7 @@ with open(in_file, 'r', encoding='utf-8') as f:
 logger.info(f'Read: {in_file}')
 
 from cdawmeta.restructure_master import add_master_restructured
-datasets = add_master_restructured(datasets)
+datasets = add_master_restructured(root_dir, datasets)
 
 def get_path(obj, path):
   for key in path:
@@ -55,7 +55,8 @@ for dataset in datasets:
   if '_spase' not in dataset or dataset['_spase'] is None:
     logger.error(f"  Error - No SPASE for: {dataset['id']}")
     continue
-  with open(dataset['_spase'], 'r', encoding='utf-8') as f:
+  fname = os.path.join(root_dir, dataset['_spase'])
+  with open(fname, 'r', encoding='utf-8') as f:
     #print(f"Reading: {dataset['_spase'].replace(base_dir,'data')}")
     dataset['_spase_content'] = json.load(f)["_decoded_content"]
 
@@ -81,45 +82,47 @@ for dataset in datasets:
       logger.error(f"  Error in master - No VarAttributes/VAR_TYPE in {dataset['id']}")
       continue
 
-    if variables[id]['VarAttributes']['VAR_TYPE'] == 'data':
+    logger.info(f" {id}")
 
-      logger.info(f" {id}")
+    if id not in parameters:
+      logger.error(f"  Error in SPASE - Parameter {dataset['id']}/{id} not in SPASE")
+      continue
 
-      if id not in parameters:
-        logger.error(f"  Error in SPASE - Parameter {dataset['id']}/{id} not in SPASE")
-        continue
+    for si_conversion in ['SI_conversion', 'SI_CONV', 'SI_conv']:
+      if si_conversion in variables[id]['VarAttributes']:
+        conv = variables[id]['VarAttributes'][si_conversion]
+        logger.info(f"  master/SI_CONVERSION: '{conv}' (called {si_conversion})")
 
+    if 'UNITS' in variables[id]['VarAttributes']:
+      UNITS = variables[id]['VarAttributes']['UNITS']
+      logger.info(f"  master/UNITS: '{UNITS}'")
+      master_units.append(UNITS)
+      if not UNITS in master_units_dict:
+        master_units_dict[UNITS] = []
+    else:
+      UNITS = None
+      logger.info("  master/UNITS: No UNITS attribute")
 
-      if 'UNITS' in variables[id]['VarAttributes']:
-        UNITS = variables[id]['VarAttributes']['UNITS']
-        logger.info(f"  master/UNITS: '{UNITS}'")
-        master_units.append(UNITS)
-        if not UNITS in master_units_dict:
-          master_units_dict[UNITS] = []
-      else:
-        UNITS = None
-        logger.info("  master/UNITS: No UNITS attribute")
+    if 'Units' in parameters[id]:
+      Units = parameters[id]['Units']
+      if UNITS is not None:
+        master_units_dict[UNITS].append(Units)
+      logger.info(f"  spase/Units:  '{Units}'")
+      spase_units.append(Units)
+    else:
+      logger.info("  spase/Units: No <Units> element")
 
-      if 'Units' in parameters[id]:
-        Units = parameters[id]['Units']
-        if UNITS is not None:
-          master_units_dict[UNITS].append(Units)
-        logger.info(f"  spase/Units:  '{Units}'")
-        spase_units.append(Units)
-      else:
-        logger.info("  spase/Units: No <Units> element")
+    if 'COORDINATE_SYSTEM' in variables[id]['VarAttributes']:
+      csys = variables[id]['VarAttributes']['COORDINATE_SYSTEM']
+      logger.info(f"  master/COORDINATE_SYSTEM: '{csys}'")
+    else:
+      logger.info(f"  master/COORDINATE_SYSTEM: No COORDINATE_SYSTEM attribute")
 
-      if 'COORDINATE_SYSTEM' in variables[id]['VarAttributes']:
-        csys = variables[id]['VarAttributes']['COORDINATE_SYSTEM']
-        logger.info(f"  master/COORDINATE_SYSTEM: '{csys}'")
-      else:
-        logger.info(f"  master/COORDINATE_SYSTEM: No COORDINATE_SYSTEM attribute")
-
-      if 'CoordinateSystem' in parameters[id]:
-        csys = parameters[id]['CoordinateSystem']
-        logger.info(f"  spase/CoordinateSystem:   '{csys}'")
-      else:
-        logger.info(f"  spase/CoordinateSystem:   No <CoordinateSystem> element")
+    if 'CoordinateSystem' in parameters[id]:
+      csys = parameters[id]['CoordinateSystem']
+      logger.info(f"  spase/CoordinateSystem:   '{csys}'")
+    else:
+      logger.info(f"  spase/CoordinateSystem:   No <CoordinateSystem> element")
 
 master_units = '\n'.join(set(master_units))
 spase_units = '\n'.join(set(spase_units))
@@ -137,19 +140,11 @@ def write_file(filename, content):
 write_file(spase_units_file, spase_units)
 write_file(master_units_file, master_units)
 
-logger.info("Unique UNITS in masters")
-logger.info(master_units)
-logger.info(70*"-")
-logger.info("Unique Units in SPASE")
-logger.info(spase_units)
-
-logger.info(70*"-")
-logger.info("Unique UNITS -> Units mapping")
 content = ''
+from collections import Counter
 for key in master_units_dict:
-  uniques = list(set(master_units_dict[key]))
+  uniques = dict(Counter(master_units_dict[key]))
   if len(uniques) > 0:
-    logger.info(f"'{key}': {uniques}")
     content += f"'{key}': {uniques}\n"
 
 write_file(master2spase_units_file, content)

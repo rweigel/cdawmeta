@@ -1,252 +1,291 @@
-(cm^2 s MeV)^-1
-1/(cm^2 sec ster MeV)
-nT**2/Hz
-erg/cc
-Re
-(m^2 s sr GeV/n)^-1
-cm^-3
-s^3/km^6
-s^3/(km^3 cm^3)
-W/m^2
-#/(keV-cm2-ster-sec)
-#/(cm^2*ster*eV*s)
-kV
-eV
-1/(cm**2 s sr MeV)
-eV/(cm^2*s*sr*eV)
-MK
-cts/9ms
-(cm^2 s sr q^-1)^-1
-(OK>=2)
-µA
-eV/(cm^2-s-sr-eV)
-Hours
-eV/cm^2-s
-deg
-% of He+ E-Flux
-(mV/m)^2/Hz
-% of He2 Fluence
-m/s
-rad
-s^3/cm^6
-q
-(3=L)
-% of He1 Fluence
-1/(cm^2 sec ster MeV/n)
-keV/(cm^2 s sr keV)
-(cm^2 sr s eV)^-1
-degrees
-(cm^2 s sr MeV/n)^-1
-db>bgnd
-(km/s)^2
-None
-(0=Log,1=Linear)
-nT Re^2
-K
-nPa
-degree
-#/cm2-sec
-km
-#/[cc*(cm/s)^3*str]
-nT/Sec
-mW/m^2
-Counts/Day
-erg/(cm^3 s)
-ionic charge
-V
-Seconds
-MHz
-Earth Radii
-MeV/n
-s-1 cm-2 ster-1 keV-1
-log10((V/m)**2/Hz)
-(0=Eu,1=Ez)
-(0=OK,1=poor)
-% of H+ E-Flux
-Earth radii
-hour
-1/(cm^2 s sr)
-radians
-1/(cm^2 min sr)
-µGy/min
-(m^2 s sr MeV/n)^-1
-(0=Bu,1=Bv,2=Bz)
-1/(cm2 Sr sec MeV/nucleon)
-hr
-nT^2 Hz^-1
-1/sec-cm**2-ster
-eV/(cm^2 s sr)
-EarthRadii_G
-s!E-1!Ncm!E-2!Nster!E-1!NkeV!E-1!N
-days
-(cm^2 s sr MeV)^-1
-hours
-(m^2 s sr)^-1
-volts
-% of O+ Fluence
-(0=U,1=V,2=W/Spin)
-1/(cm**2 s sr MeV/n)
-Kelvin
-1/sec-cm**2-ster-MeV
-/cc
-(0=off)
-A
-(cm^2 s sr eV)^-1
-#/(cm^2*s)
-1/(Mev-cm^2-s-sr)
-°C
-fA
-0.1nT
-Rv
-(0=OK,1=Other)
-d
-1/(cm2 s ster MeV/n)
-km/sec
-Ratio
-sr
-(cm^2 s)^-1
-V^2 m^-2 Hz^-1
-nT^1/2 Re
-microVolt/Hz**0.5
-(nT)^2/Hz
-#/cc
-EarthRadii
-Component.K
-#/cm3
-#/(cm^2-s-keV/e-sr)
+1/(MeV-cm^2-s-sr)
+ps
+pA
+ergs/(cm^2 s)
+#/cm^2-sec
+CDF_Epoch
+pixel
+#/cm^3
 dB
-(2=Auroral)
-(0=def)
-cm^-2 s^-1
-log10(nT**2/Hz)
-°K
-mW/(m^2 sr)
-Degree
-Fractional Error
-min^-1
-nT^2/Hz
-cm^-6_sec^3
-(10=OK)
-°/s
-eV/(cm^2 s sr eV)
-1/(cm^2 s sr MeV/nuc.)
-seconds
-C
-deg K
-us
-mV/M
-mbar
-nT
-(m/s)^2
-pA/cm^-2
+sector index
+(m^2 s sr MeV)^-1
+V^2 m^-2 Hz^-1
+unitless
+km/sec
+µSv/min
 nT^2
+nPa
+cm^2 sr MeV
+nT Re^2
+eV/cm^3
+% of H+ Fluence
+1/(cm2 Sr sec MeV/nucleon)
+log10((V/m)**2/Hz)
+MHz
+mA
+fA
+eV/(cm^2*s*sr*eV)
+A
+cts/9ms
+Volts
+% of O+ Fluence
+(0=off)
+(cm^2 s sr MeV/n)^-1
+mW/(m^2 sr)
+Counts/Day
+°K
+(cm^2 s sr q^-1)^-1
+none
+eV/(cm^2 s sr)
+(0=Eu,1=Ez)
+1/(cm^2-s-sr)
+sr
+10°
+1/(cm^2 min sr)
 (cm^2 s sr eV)^-2
 m^-3
-0.01nT
-# of spins
-R
-1/(sec sr cm^2 MeV/n)
-s^-1
-% of He++ E-Flux
-(nT V/m)/Hz
-Counts/hour
 % of O+ E-Flux
-1/sec-cm**2-ster-MeV/n
-Hz
-ergs/s-cm^2
-#/cm^3
-% of H+ Fluence
-cm^-3 (cm/s)^-3
-ergs/cc
-eV/sr/s
-1/(MeV-cm^2-s-sr)
-RE
-cm/s
-h
-1/cc
-keV/cm^2-sec
-dB>bgnd
-(cm^2 s sr MeV)^-1)
-keV
-(V/m)^2/Hz
-(V/M)**2/Hz
-cm^2 s^-1
-Counts
+s^3/cm^6
+Hours
+(°K)^2
 #/{cc*(cm/s)^3}
-counts
-min
-Deg
-1/(s sr cm^2 MeV/n)
-mrad
-pPa
-unitless
-µV/m
-kR
-n/cc
-pA
-nA
-µSv/min
-1/(cm2 s ster MeV)
-V^2/m^2/Hz
-254/i_max R
-# cm^-3
-eV/[cm^2*s*sr*eV]
-uJ m^-2 s^-1
-µW/m^2
-mA
-eV/(cm^2*s)
-10°
-(0=good)
-microV/SQRT(Hz)
-MeV
-km/s
-V/m
-ergs/(cm^2 s)
-(0=stnd,1=Atten)
-Volts
-uA
+alpha/(keV-cm2-ster-sec)
+EarthRadii
+1/sec-cm**2-ster
+ergs/s-cm^2
+None
+Degrees
+Counts per spin
+1/(cm^2 sec ster MeV)
+(cm^2 s sr)^-1
+ergs/cc
+cm^-6 s^3
 no/cc
-(source level)
-(km/s)^3/cm^3
-ergs/cm^2
-(0=out,1=in)
+UT
+kR
+(nT V/m)/Hz
+MK
+GV
+mW/m^2
+eV/(cm^2 s)
+wpix#
+(cm^2 s sr eV)^-1
+radians
+#/cm2-sec
+1/cm^3
+V/m
+hour
+num
+(m^2 s sr GeV/n)^-1
+uA
+(0=def)
+1/cc
+deg K
+(V/m)^2/Hz
+mbar
+log(cm^-3)
+(0=Log,1=Linear)
+1/(s sr cm^2 MeV/n)
+1/(cm^2 sec ster MeV/n)
+log10(nT**2/Hz)
+0.01nT
+MeV
+(cm^3 s)^-2
+°C
+eV/c^2
 
          
-T
-log(cm^-3)
-G
-1/cm^3
-eV/cm^3
-eV/c^2
-particle flux unit=1/(cm^2-s-sr-keV)
-mV
-ua
-1/(cm^2 s sr MeV)
-pdyne-au/cm^2
-(0=Eu,1=Ev,2=Ez)
-Torr
-Pa
-1/(cm^2-s-sr)
-s
-mV/m
-(cm^2 s sr)^-1
-#/cm^2-sec
-cm^-6 s^3
-rad/s
-(0=OK,1=Poor)
-none
-(m^2 s sr GeV)^-1
-alpha/(keV-cm2-ster-sec)
-photon cm^-2 s^-1
-Degrees
-cm**-3
-1/(sec sr cm^2 MeV)
-(cm^2 s sr keV)^-1
-R_E
-V^2/Hz
-(0=OK)
-kHz
+seconds
+# of spins
+Component.K
+rad
+s^3/km^6
+ticks
+% of He+ E-Flux
+nT**2/Hz
 °
-ev
+ua
+eV/cm^2-s
+UTC
+sec
+(m^2 s sr)^-1
 (V/m)(V/m)/Hz
-Counts per spin
+cm^-3 (cm/s)^-3
+flag
+1/(cm^2 s sr MeV/nuc.)
+nT/Hz^1/2
+(cm^2 s sr keV)^-1
+(OK>=2)
+eV/sr/s
+(km/s)/(km/s)
+(0=good,255=bad or missing)
+ergs/cm^2
+Counts
+#/(cm^2*ster*eV*s)
+°/s
+T
+microV/SQRT(Hz)
+GeV
+V^2/m^2/Hz
+(cm^2 sr s)^-1
+cm^-6_sec^3
+a
+degree
+deg/s^2
+GeV/n
+(0=OK,1=poor)
+cm^2 s^-1
+eV/q
+1/(cm^2 s sr)
+V
+(10=OK)
+erg/cc
+cm^2 sr
+% of He1 Fluence
+(cm^2 s MeV)^-1
+pA/cm^-2
+eV/(cm^2 s sr eV)
+degrees
+Seconds
+nA
+(m/s)^2
+(0=Bu,1=Bv,2=Bz)
+#/cc
+rad/s
+#/(cm^2*s)
+µA
+(V/M)**2/Hz
+#/cm3
+keV
+Earth radii
+V^2/Hz
+% of H+ E-Flux
+Fractional Error
+particle flux unit=1/(cm^2-s-sr-keV)
+year
+(0=OK)
+(nT)^2/Hz
+uJ m^-2 s^-1
+hours
+m/s
+keV/(cm^2 s sr keV)
+RE
+s
+R_E
+(2=Auroral)
+1/(sec sr cm^2 MeV/n)
+# cm^-3
+km
+kV
+pPa
+(0=out,1=in)
+days
+Counts/hour
+u/e
+µW/m^2
+cm/s
+(cm^2 s sr MeV)^-1)
+Deg
+cm^2 s sr eV
+W/m^2
+(0=OK,1=Other)
+(km/s)^3/cm^3
+(0=OK,1=Poor)
+Kelvin
+Milliseconds
+(m^2 s sr GeV)^-1
+1/(Mev-cm^2-s-sr)
+keV/cm^2-sec
+db>bgnd
+(0=good)
+% of Flux
+#/(keV-cm2-ster-sec)
+s!E-1!Ncm!E-2!Nster!E-1!NkeV!E-1!N
+(cm^2 sr s eV)^-1
+#/(cm^2-s-keV/e-sr)
+Hz
+1/(sec sr cm^2 MeV)
+s^3/(km^3 cm^3)
+1/(cm2 s ster MeV/n)
+minutes
+us
+ev
+nT^2/Hz
+(0=Eu,1=Ev,2=Ez)
+% of He++ E-Flux
+n/cc
+min
+R
+Rv
+Ratio
+1/sec-cm**2-ster-MeV/n
+erg/(cm^3 s)
+eV/(cm^2-s-sr-eV)
+microVolt/Hz**0.5
+eV
+(source level)
+K
+deg
+G
+cm^-2 s^-1
+#/[cc*(cm/s)^3*str]
+Re
+Degree
+(mV/m)^2/Hz
+ms
+min^-1
+254/i_max R
+1/(cm^2 s sr MeV)
+/cc
+(3=L)
+C
+msec
+MeV/n
+1/(cm**2 s sr MeV)
+cm^-3
+nT^2 Hz^-1
+volts
+1/(cm2 s ster MeV)
+mV
+Torr
+(cm^3 s)^-1
+h
+(m^2 s sr MeV/n)^-1
+photon cm^-2 s^-1
+pdyne-au/cm^2
+eV/(cm^2*s)
+µGy/min
+eV/[cm^2*s*sr*eV]
+Earth Radii
+nT/Sec
+mV/m
+mV/M
+0.1nT
+(cm^2 s sr MeV)^-1
+km/s
+constant
+ionic charge
+hpix#
+q
+(0=U,1=V,2=W/Spin)
+kHz
+ns
+s-1 cm-2 ster-1 keV-1
+(0=stnd,1=Atten)
+(cm^2 s)^-1
+s^-1
+EarthRadii_G
+1/(cm**2 s sr MeV/n)
+hr
+nT^1/2 Re
+% of He2 Fluence
+cm**-3
+1/sec-cm**2-ster-MeV
+µV/m
+(km/s)^2
+Pa
+d
+dB>bgnd
+nT
+counts
+mrad
