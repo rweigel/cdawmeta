@@ -388,8 +388,8 @@ def add_samples(id, file_list):
   stop = reformat_dt(last_file['EndTime'])
   _samples = {
     'file': last_file['Name'],
-    'url': f"{wsbase}/datasets/{id}/{start},{stop}/ALL-VARIABLES?format=cdf",
-    'plot': f"{wsbase}/datasets/{id}/{start},{stop}/ALL-VARIABLES?format=png"
+    'url': f"{wsbase}{id}/data/{start},{stop}/ALL-VARIABLES?format=cdf",
+    'plot': f"{wsbase}{id}/data/{start},{stop}/ALL-VARIABLES?format=png"
   }
   return _samples
 
