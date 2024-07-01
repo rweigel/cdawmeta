@@ -10,11 +10,12 @@ def omit(id):
 import os
 import json
 
-base_dir    = os.path.join(os.path.dirname(__file__), '../data')
+root_dir    = os.path.join(os.path.dirname(__file__), '..')
+base_dir    = os.path.join(root_dir, 'data')
 all_input   = os.path.join(base_dir, 'cdaweb.json')
 file_body   = os.path.join(base_dir, 'tables/cdaweb.table.body.json')
 file_header = os.path.join(base_dir, 'tables/cdaweb.table.head.json')
-file_counts = os.path.join(os.path.dirname(__file__), 'table-cdaweb.counts.csv')
+file_counts = os.path.join(os.path.dirname(__file__), 'table-cdaweb.fixes.counts.csv')
 file_fixes  = os.path.join(os.path.dirname(__file__), 'table-cdaweb.fixes.json')
 
 apply_fixes = True
@@ -151,9 +152,11 @@ with open(all_input, 'r', encoding='utf-8') as f:
   datasets = json.load(f)
 
 from cdawmeta.restructure_master import add_master_restructured
-datasets = add_master_restructured(datasets)
+datasets = add_master_restructured(root_dir, datasets)
 
+print("Creating table")
 header, table = all_attribute_table(datasets)
+print("Created table")
 
 print(f'Writing: {file_header}')
 os.makedirs(os.path.dirname(file_header), exist_ok=True)
