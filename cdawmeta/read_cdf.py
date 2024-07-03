@@ -1,21 +1,101 @@
+import os
 import cdflib
 import cdawmeta
 
-def read_cdf(file, parameters, start=None, stop=None):
+def url2file(url):
+  return url.replace("https://cdaweb.gsfc.nasa.gov/", "")
 
-  def url2file(url):
-    return url.replace("https://cdaweb.gsfc.nasa.gov/pub/data/", "")
+def open_cdf(file, logger=None, use_cache=True, cache_dir=None):
 
   if file.startswith('http'):
-    print(f"Get: {file}")
-    begin = cdawmeta.util.tick()
-    file = cdawmeta.get_file(file, url2file=url2file)
-    print(f"  Got: {cdawmeta.util.tock(begin):.2f}s {file}")
+    kwargs = {
+      'url2file': url2file,
+      'logger': logger,
+      'use_cache': use_cache,
+      'cache_dir': cache_dir
+    }
+    file_path = cdawmeta.util.get_file(file, **kwargs)
+    if file_path is None:
+      return None
+
+  try:
+    cdffile = cdflib.CDF(file_path)
+    return cdffile
+  except Exception as e:
+    if logger is not None:
+      logger.error(f"Error opening {file_path}: {e}")
+    return None
+
+def read_cdf_depend_0s(file, _return='names', logger=None, use_cache=True, cache_dir=None):
+
+  cdffile = open_cdf(file, logger=logger, use_cache=use_cache, cache_dir=None)
+  if cdffile is None:
+    return None
+
+  meta = {}
+  depend_0s = []
+  info = cdffile.cdf_info()
+  rVariables = info.rVariables
+  zVariables = info.zVariables
+  for variable in rVariables + zVariables:
+    meta = cdffile.varattsget(variable=variable)
+    if 'DEPEND_0' in meta:
+      depend_0s.append(meta['DEPEND_0'])
+
+  depend_0s = list(set(depend_0s))
+  if _return == 'names':
+    return depend_0s
+
+  if _return == 'data':
+    data = {}
+    for depend_0 in depend_0s:
+      try:
+        data[depend_0] = cdffile.varget(variable=depend_0)
+      except Exception as e:
+        if logger is not None:
+          logger.error(f"Error reading {depend_0}: {e}")
+        data[depend_0] = None
+    return data
+
+def read_cdf_meta(file, subset=False, logger=None, use_cache=True):
+
+  cdffile = open_cdf(file, logger=logger, use_cache=use_cache)
+  if cdffile is None:
+    return None
+
+  meta = {}
+  depend_0s = []
+  info = cdffile.cdf_info()
+  rVariables = info.rVariables
+  zVariables = info.zVariables
+  for variable in rVariables + zVariables:
+    meta[variable] = cdffile.varattsget(variable=variable)
+    if subset and 'DEPEND_0' in meta[variable]:
+      depend_0s.append(meta[variable]['DEPEND_0'])
+
+  if subset:
+    depend_0s = list(set(depend_0s))
+    meta_subsetted = {}
+    for depend_0 in depend_0s:
+      meta_subsetted[depend_0] = {}
+      for variable in rVariables + zVariables:
+        if 'DEPEND_0' in meta[variable] and meta[variable]['DEPEND_0'] == depend_0:
+          meta_subsetted[depend_0][variable] = meta[variable]
+          for key in meta[variable]:
+            if 'PTR' in key:
+              meta_subsetted[depend_0][variable][key] = cdffile.varget(variable=meta[variable][key])
+    return meta_subsetted
+
+  return meta
+
+def read_cdf(file, parameters, start=None, stop=None, logger=None, use_cache=True):
 
   meta = []
   data = []
 
-  cdffile  = cdflib.CDF(file)
+  cdffile = open_cdf(file, logger=logger, use_cache=use_cache)
+  if cdffile is None:
+    return None
 
   depend_0s = []
   parameters = parameters.split(",")

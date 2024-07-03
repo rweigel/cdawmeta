@@ -24,7 +24,7 @@ rsync-to-mag:
 	rsync -avz --delete data weigel@mag.gmu.edu:www/git-data/cdawmeta
 
 rsync-from-mag:
-	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ data
+	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ .
 
 compare:
 	make cdaweb INCLUDE='$(INCLUDE)'

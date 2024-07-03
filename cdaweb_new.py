@@ -93,13 +93,13 @@ def CachedSession(cache_dir):
 
   return requests_cache.CachedSession(cache_dir, **copts)
 
-def print_resp_info(resp, url, cache):
+def print_resp_info(resp, url, cache, logger=None):
   # Combine into single string to deal with parallel processing
 
   req_cache_headers = {k: v for k, v in resp.request.headers.items() if k in ['If-None-Match', 'If-Modified-Since']}
   res_cache_headers = {k: v for k, v in resp.headers.items() if k in ['ETag', 'Last-Modified', 'Cache-Control', 'Vary']}
   msg = ""
-  msg += f'\nGot: {url}\n'
+  msg += f'Got: {url}\n'
   msg += f"  Status code: {resp.status_code}\n"
   msg += f"  From cache: {resp.from_cache}\n"
   msg += f"  Current cache file: {rel_path(cache['file'])}\n"
@@ -118,7 +118,9 @@ def print_resp_info(resp, url, cache):
       msg += f"  Cache diff:\n    "
       json_indented = "\n    ".join(cache['diff'].to_json(indent=2).split('\n'))
       msg += f"{json_indented}\n"
-  logger.info(msg)
+  if logger is not None:
+    logger.info(msg)
+  return msg
 
 def cache_info(cache_dir, cache_key):
 
@@ -153,19 +155,19 @@ def cache_info(cache_dir, cache_key):
 
   return _return
 
-def create_datasets(cache_dir, logger):
-
+def datasets(data_dir, logger):
   """
   Create a list of datasets; each element has content of dataset node in
   all.xml. An info and id node is also added.
   """
-  cache_dir = os.path.join(cache_dir, 'all')
+  cache_dir = os.path.join(data_dir, 'cache', 'all')
   session = CachedSession(cache_dir)
   url = allxml
 
   logger.info("Get: " + url)
   try:
     resp = session.get(url, timeout=timeouts['allxml'])
+    logger.info("Got: " + url)
   except:
     logger.error(f"Error getting {url}. Cannot continue")
     exit(1)
@@ -180,7 +182,6 @@ def create_datasets(cache_dir, logger):
   cache = cache_info(cache_dir, resp.cache_key)
   print_resp_info(resp, url, cache)
 
-  create_datasets.n = len(all_dict['sites']['datasite'][0]['dataset'])
   datasets = []
   for dataset_allxml in all_dict['sites']['datasite'][0]['dataset']:
 
@@ -210,134 +211,95 @@ def create_datasets(cache_dir, logger):
 
   return datasets
 
-def add_master(datasets, cache_dir):
+def fetch(url, id, what, headers=None, timeout=20, update=False, data_dir=None, logger=None):
 
-  """
-  Add a _master key to each dataset containing JSON from master CDF
-  """
+  cache_dir = os.path.join(data_dir, 'cache', what)
+  file_out_json = os.path.join(data_dir, what, f"{id}.json")
+  file_out_pkl = os.path.join(data_dir, what, f"{id}.pkl")
 
-  def get_master(dataset, session, cache_dir):
+  if update == False and os.path.exists(file_out_pkl):
+    return cdawmeta.util.read(file_out_pkl, logger=logger)
 
-    mastercdf = dataset['_allxml']['mastercdf']['@ID']
-    url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
+  session = CachedSession(cache_dir)
 
+  if logger is not None:
     logger.info('Get: ' + url)
-    try:
-      resp = session.get(url, timeout=timeouts['master'])
-      resp.raise_for_status()
-      json_dict = resp.json()
-    except Exception as e:
-      msg = f"Error[master]: {dataset['id']}: {e}"
+
+  _master = {}
+  try:
+    resp = session.get(url, headers=headers, timeout=timeout)
+    resp.raise_for_status()
+    json_dict = resp.json()
+  except Exception as e:
+    msg = f"Error[{what}]: {id}: {e}"
+    if logger is not None:
       logger.error(msg)
-      dataset['_master_data'] = None
-      return
+    _master['error'] = msg
+    return _master
 
-    cache = cache_info(cache_dir, resp.cache_key)
-    print_resp_info(resp, url, cache)
+  files = list(json_dict.keys())
+  if len(files) > 1:
+    msg = f"Error[master]: {id}: More than one file key in master CDF JSON"
+    logger.error(msg)
+    _master['error'] = msg
+    return _master
 
-    dataset['_master'] = rel_path(cache['file'])
-    dataset['_master_urls'] = {
-      'cdf': mastercdf,
-      'json': url,
-      'skt': mastercdf.replace('.cdf', '.skt').replace('0MASTERS', '0SKELTABLES')
-    }
-    dataset['_master_data'] = json_dict
+  cache = cache_info(cache_dir, resp.cache_key)
 
-    files = list(dataset['_master_data'].keys())
-    if len(files) > 1:
-      msg = f"Error[master]: {dataset['id']}: More than one file key in master CDF JSON"
-      logger.error(msg)
-      dataset['_master_data'] = None
-      return
+  _master['id'] = id
+  _master['info'] = print_resp_info(resp, url, cache, logger=logger)
+  _master['cache'] = rel_path(cache['file'])
+  _master['url'] = url
+  _master['data'] = json_dict
 
-  cache_dir = os.path.join(cache_dir, 'masters')
-  get(get_master, datasets, cache_dir)
+  try:
+    cdawmeta.util.write(file_out_json, _master, logger=logger)
+  except Exception as e:
+    logger.error(f"Error writing {file_out_json}: {e}")
 
-def add_spase(datasets, cache_dir):
+  try:
+    cdawmeta.util.write(file_out_pkl, _master, logger=logger)
+  except Exception as e:
+    logger.error(f"Error writing {file_out_pkl}: {e}")
 
-  """
-  Add a _spase key to each dataset containing JSON from master CDF
-  """
+  return _master
 
-  def get_spase(dataset, session, cache_dir):
+def master(dataset, timeout=20, update=False, data_dir=None, logger=None):
 
-    def spase_url(dataset):
+  mastercdf = dataset['_allxml']['mastercdf']['@ID']
+  url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
 
-      if '_master_data' not in dataset:
+  return fetch(url, dataset['id'], 'master', timeout=timeout, update=update, data_dir=data_dir, logger=logger)
+
+def spase(_master, timeout=20, update=True, data_dir=None, logger=None):
+
+  id = _master['id']
+  if 'data' not in _master:
+    return None
+
+  files = list(_master['data'].keys())
+
+  global_attributes = _master['data'][files[0]]['CDFglobalAttributes']
+  for attribute in global_attributes:
+    if 'spase_DatasetResourceID' in attribute:
+      spase_id = attribute['spase_DatasetResourceID'][0]['0']
+      if spase_id and not spase_id.startswith('spase://'):
+        msg = f"Error[master]: {_master['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
+        logger.error(msg)
         return None
+      url = spase_id.replace('spase://', 'https://hpde.io/') + '.json';
 
-      files = list(dataset['_master_data'].keys())
+  return fetch(url, id, 'spase', timeout=timeout, update=update, data_dir=data_dir, logger=logger)
 
-      global_attributes = dataset['_master_data'][files[0]]['CDFglobalAttributes']
-      for attribute in global_attributes:
-        if 'spase_DatasetResourceID' in attribute:
-          spase_id = attribute['spase_DatasetResourceID'][0]['0']
-          if spase_id and not spase_id.startswith('spase://'):
-            msg = f"Error[master]: {dataset['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
-            logger.error(msg)
-            return None
-          return spase_id.replace('spase://', 'https://hpde.io/') + '.json';
+def orig_data(dataset, timeout=20, update=True, data_dir=None, logger=None):
 
-    url = spase_url(dataset)
-    del dataset['_master_data']
+  start = dataset['_allxml']['@timerange_start'].replace(" ", "T").replace("-","").replace(":","") + "Z";
+  stop = dataset['_allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z";
+  url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop
 
-    if url is None:
-      dataset['_spase'] = None
-      dataset['_spase_url'] = url
-      return
+  headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
 
-    logger.info('Get: ' + url)
-    try:
-      resp = session.get(url, timeout=timeouts['spase'])
-      resp.raise_for_status()
-    except Exception as e:
-      msg = f"Error[master/spase]: {dataset['id']}: {e}"
-      logger.error(msg)
-      return
-
-    cache = cache_info(cache_dir, resp.cache_key)
-    print_resp_info(resp, url, cache)
-
-    dataset['_spase'] = rel_path(cache['file'])
-
-  cache_dir = os.path.join(cache_dir, 'spase')
-  get(get_spase, datasets, cache_dir)
-
-def add_file_list(datasets, cache_dir):
-
-  def get_file_list(dataset, session, cache_dir):
-
-    start = dataset['_allxml']['@timerange_start'].replace(" ", "T").replace("-","").replace(":","") + "Z";
-    stop = dataset['_allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z";
-    url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop
-
-    logger.info("Get: " + url)
-    try:
-      resp = session.get(url, timeout=timeouts['file_list'])
-      resp.raise_for_status()
-      json_dict = resp.json()
-    except Exception as e:
-      msg = f"Error[orig_data]: {dataset['id']}: {e}"
-      logger.error(msg)
-      return
-
-    if not 'FileDescription' in json_dict:
-      msg = f"Error[orig_data]: {dataset['id']}: No FileDescription key"
-      logger.error(msg)
-
-    if len(json_dict['FileDescription']) == 0:
-      msg = f"Error[orig_data]: {dataset['id']}: FileDescription array is empty"
-      logger.error(msg)
-
-    cache = cache_info(cache_dir, resp.cache_key)
-    print_resp_info(resp, url, cache)
-
-    dataset['_samples'] = add_samples(dataset['id'], json_dict)
-    dataset['_file_list_url'] = url
-    dataset['_file_list'] = rel_path(cache['file'])
-
-  cache_dir = os.path.join(script_dir, 'data/cache/files')
-  get(get_file_list, datasets, cache_dir)
+  return fetch(url, dataset['id'], 'orig_data', headers=headers, timeout=timeout, update=update, data_dir=data_dir, logger=logger)
 
 def add_samples(id, file_list):
 
@@ -354,6 +316,20 @@ def add_samples(id, file_list):
     'plot': f"{wsbase}{id}/data/{start},{stop}/ALL-VARIABLES?format=png"
   }
   return _samples
+
+def metadata(id, update=True, data_dir=None, logger=None):
+  datasets_ = datasets(data_dir, logger=logger)
+  for dataset in datasets_:
+    if dataset['id'] == id:
+      _master = master(dataset, update=update, logger=logger, data_dir=data_dir)
+      _spase = spase(_master, update=update, logger=logger, data_dir=data_dir)
+      _orig_data = orig_data(dataset, update=update, logger=logger, data_dir=data_dir)
+      return _orig_data
+  return None
+
+def ids(data_dir=None, logger=None):
+  datasets_ = datasets(data_dir, logger=logger)
+  return [dataset['id'] for dataset in datasets_]
 
 if __name__ == '__main__':
 
@@ -406,7 +382,7 @@ if __name__ == '__main__':
 
   script_dir = os.path.dirname(__file__)
   base_name = f'cdaweb{partial_ext}'
-  cache_root = os.path.join(script_dir, 'data', 'cache')
+  data_dir = os.path.join(script_dir, 'data')
   file_out = os.path.join(script_dir, 'data', partial_dir, f'{base_name}.json')
   log_config = {
     'file_log': os.path.join(script_dir, 'data', partial_dir, f'{base_name}.log'),
@@ -415,6 +391,10 @@ if __name__ == '__main__':
     'rm_string': script_dir + '/'
   }
   logger = cdawmeta.util.logger(**log_config)
+  #ids(logger=logger, data_dir=data_dir)
+  _metadata = metadata('AC_H2_MFI', update=True, logger=logger, data_dir=data_dir)
+  print(json.dumps(_metadata, indent=2))
+  exit()
 
   datasets = create_datasets(cache_root)
   add_master(datasets, cache_root)
@@ -438,8 +418,3 @@ if __name__ == '__main__':
     logger.error(f"Error writing {file_out}: {e}")
     exit(1)
 
-  try:
-    cdawmeta.util.write(file_out.replace(".json", ".pkl"), datasets, logger=logger)
-  except Exception as e:
-    logger.error(f"Error writing {file_out}: {e}")
-    exit(1)
