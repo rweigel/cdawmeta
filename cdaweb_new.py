@@ -155,35 +155,11 @@ def cache_info(cache_dir, cache_key):
 
   return _return
 
-def datasets(data_dir, logger):
-  """
-  Create a list of datasets; each element has content of dataset node in
-  all.xml. An info and id node is also added.
-  """
-  cache_dir = os.path.join(data_dir, 'cache', 'all')
-  session = CachedSession(cache_dir)
-  url = allxml
+def datasets(url, timeout=20, update=False, data_dir=None, logger=None):
 
-  logger.info("Get: " + url)
-  try:
-    resp = session.get(url, timeout=timeouts['allxml'])
-    logger.info("Got: " + url)
-  except:
-    logger.error(f"Error getting {url}. Cannot continue")
-    exit(1)
-
-  try:
-    allxml_text = resp.text
-    all_dict = xmltodict.parse(allxml_text);
-  except:
-    logger.error(f"Error parsing {url}. Cannot continue")
-    exit(1)
-
-  cache = cache_info(cache_dir, resp.cache_key)
-  print_resp_info(resp, url, cache)
-
+  json_dict = fetch(url, 'all', 'all', timeout=timeout, update=update, data_dir=data_dir, logger=logger)
   datasets = []
-  for dataset_allxml in all_dict['sites']['datasite'][0]['dataset']:
+  for dataset_allxml in json_dict['data']['sites']['datasite'][0]['dataset']:
 
     id = dataset_allxml['@serviceprovider_ID']
 
@@ -229,18 +205,15 @@ def fetch(url, id, what, headers=None, timeout=20, update=False, data_dir=None, 
   try:
     resp = session.get(url, headers=headers, timeout=timeout)
     resp.raise_for_status()
-    json_dict = resp.json()
+    if resp.headers['Content-Type'] == 'text/xml':
+      text = resp.text
+      json_dict = xmltodict.parse(text);
+    else:
+      json_dict = resp.json()
   except Exception as e:
     msg = f"Error[{what}]: {id}: {e}"
     if logger is not None:
       logger.error(msg)
-    _master['error'] = msg
-    return _master
-
-  files = list(json_dict.keys())
-  if len(files) > 1:
-    msg = f"Error[master]: {id}: More than one file key in master CDF JSON"
-    logger.error(msg)
     _master['error'] = msg
     return _master
 
@@ -301,13 +274,13 @@ def orig_data(dataset, timeout=20, update=True, data_dir=None, logger=None):
 
   return fetch(url, dataset['id'], 'orig_data', headers=headers, timeout=timeout, update=update, data_dir=data_dir, logger=logger)
 
-def add_samples(id, file_list):
+def samples(_orig_data):
 
   def reformat_dt(dt):
     dt = dt.replace(" ", "T").replace("-","").replace(":","")
     return dt.split(".")[0] + "Z"
 
-  last_file = file_list['FileDescription'][-1]
+  last_file = _orig_data['data']['FileDescription'][-1]
   start = reformat_dt(last_file['StartTime'])
   stop = reformat_dt(last_file['EndTime'])
   _samples = {
@@ -317,15 +290,26 @@ def add_samples(id, file_list):
   }
   return _samples
 
-def metadata(id, update=True, data_dir=None, logger=None):
-  datasets_ = datasets(data_dir, logger=logger)
+def metadata(id, update=True, include_spase=True, include_orig_data=True, data_dir=None, logger=None):
+
+  datasets_ = datasets(allxml, timeout=20, update=update, data_dir=data_dir, logger=logger)
+  found = False
   for dataset in datasets_:
     if dataset['id'] == id:
-      _master = master(dataset, update=update, logger=logger, data_dir=data_dir)
-      _spase = spase(_master, update=update, logger=logger, data_dir=data_dir)
-      _orig_data = orig_data(dataset, update=update, logger=logger, data_dir=data_dir)
-      return _orig_data
-  return None
+      found = True
+      break
+
+  if not found:
+    return None
+
+  dataset['master'] = master(dataset, update=update, logger=logger, data_dir=data_dir)
+  if include_orig_data:
+    dataset['orig_data'] = orig_data(dataset, update=update, logger=logger, data_dir=data_dir)
+    dataset['samples'] = samples(dataset['orig_data'])
+  if include_spase:
+    dataset['spase'] = spase(dataset['master'], update=update, logger=logger, data_dir=data_dir)
+
+  return dataset
 
 def ids(data_dir=None, logger=None):
   datasets_ = datasets(data_dir, logger=logger)
@@ -391,23 +375,10 @@ if __name__ == '__main__':
     'rm_string': script_dir + '/'
   }
   logger = cdawmeta.util.logger(**log_config)
-  #ids(logger=logger, data_dir=data_dir)
+  #_ids = ids(logger=logger, data_dir=data_dir)
   _metadata = metadata('AC_H2_MFI', update=True, logger=logger, data_dir=data_dir)
-  print(json.dumps(_metadata, indent=2))
+  #print(json.dumps(_metadata, indent=2))
   exit()
-
-  datasets = create_datasets(cache_root)
-  add_master(datasets, cache_root)
-
-  if args.no_spase is False:
-    add_spase(datasets, cache_root)
-  else:
-    logger.info("Skipping SPASE b/c of command line --no_spase argument")
-
-  if args.no_file_list is False:
-    add_file_list(datasets, cache_root)
-  else:
-    logger.info("Skipping creation of file list b/c of command line --no_file_list argument")
 
   logger.info(f'# of datasets in all.xml: {create_datasets.n}')
   logger.info(f'# of datasets handled:    {len(datasets)}')
