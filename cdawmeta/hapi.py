@@ -45,6 +45,16 @@ def set_error(id, name, msg):
     set_error.errors[id][name].append(msg.lstrip())
 set_error.errors = {}
 
+def sort_keys(obj):
+  return {key: obj[key] for key in sorted(obj)}
+
+def array_to_dict(array):
+  obj = {}
+  for element in array:
+    key = list(element.keys())[0]
+    obj[key] = element[key]
+  return obj
+
 def order_depend0s(id, depend0_names, issues):
 
   if id not in issues['depend0Order'].keys():
@@ -605,52 +615,113 @@ def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, print_info=False):
         logger.info(f"     Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
       return None
 
-def split_variables(datasets, issues):
+def split_variables(id, variables, issues):
   """
   Create _variables_split dict. Each key is the name of the DEPEND_0
   variable. Each value is a dict of variables that reference that DEPEND_0
   """
 
-  for dataset in datasets:
+  depend_0_dict = {}
 
-    depend_0_dict = {}
+  names = variables.keys()
+  for name in names:
 
-    names = dataset['_master_restructured']['_variables'].keys()
-    for name in names:
+    variable_meta = variables[name]
 
-      variable_meta = dataset['_master_restructured']['_variables'][name]
+    if 'VarAttributes' not in variable_meta:
+      logger.error(dataset['id'])
+      msg = f"  Error: Dropping variable '{name}' b/c it has no VarAttributes"
+      logger.error(msg)
+      continue
 
-      if 'VarAttributes' not in variable_meta:
-        logger.error(dataset['id'])
-        msg = f"  Error: Dropping variable '{name}' b/c it has no VarAttributes"
+    if 'VAR_TYPE' not in variable_meta['VarAttributes']:
+      logger.error(dataset['id'])
+      msg = f"  Error: Dropping variable '{name}' b/c it has no has no VAR_TYPE"
+      logger.error(msg)
+      set_error(dataset['id'], name, msg)
+      continue
+
+    if omit_variable(id, name, issues):
+      continue
+
+    if 'DEPEND_0' in variable_meta['VarAttributes']:
+      depend_0_name = variable_meta['VarAttributes']['DEPEND_0']
+
+      if depend_0_name not in variables:
+        logger.error(id)
+        msg = f"  Error: Dropping '{name}' b/c it has a DEPEND_0 ('{depend_0_name}') that is not in dataset"
         logger.error(msg)
+        set_error(id, name, msg)
         continue
 
-      if 'VAR_TYPE' not in variable_meta['VarAttributes']:
-        logger.error(dataset['id'])
-        msg = f"  Error: Dropping variable '{name}' b/c it has no has no VAR_TYPE"
+      if depend_0_name not in depend_0_dict:
+        depend_0_dict[depend_0_name] = {}
+      depend_0_dict[depend_0_name][name] = variable_meta
+
+  return depend_0_dict
+
+def restructure_master(id, master, logger=None, set_error=None):
+
+  """
+  Convert dict with arrays of objects to objects with objects. For example
+    { "Epoch": [ 
+        {"VarDescription": [{"DataType": "CDF_TIME_TT2000"}, ...] },
+        {"VarAttributes": [{"CATDESC": "Default time"}, ...] }
+      ]
+    }
+  is converted and written to _variables as
+    {
+      "Epoch": {
+        "VarDescription": {
+          "DataType": "CDF_TIME_TT2000",
+          ...
+        },
+        "VarAttributes": {
+          "CATDESC": "Default time",
+          ...
+        }
+      }
+    }
+  """
+
+  file = list(master.keys())[0]
+
+  variables = master[file]['CDFVariables']
+  variables_new = {}
+
+  for variable in variables:
+
+    variable_keys = list(variable.keys())
+    if len(variable_keys) > 1:
+      if logger is not None:
+        msg = "Expected only one variable key in variable object. Exiting witih code 1."
         logger.error(msg)
-        set_error(dataset['id'], name, msg)
-        continue
+      if set_error is not None:
+        set_error(id, None, msg)
+      exit(1)
 
-      if omit_variable(dataset['id'], name, issues):
-        continue
+    variable_name = variable_keys[0]
+    variable_array = variable[variable_name]
+    variable_dict = array_to_dict(variable_array)
 
-      if 'DEPEND_0' in variable_meta['VarAttributes']:
-        depend_0_name = variable_meta['VarAttributes']['DEPEND_0']
+    for key, value in variable_dict.items():
 
-        if depend_0_name not in dataset['_master_restructured']['_variables']:
-          logger.error(dataset['id'])
-          msg = f"  Error: Dropping '{name}' b/c it has a DEPEND_0 ('{depend_0_name}') that is not in dataset"
-          logger.error(msg)
-          set_error(dataset['id'], name, msg)
-          continue
+      if key == 'VarData':
+        variable_dict[key] = value
+      else:
+        variable_dict[key] = sort_keys(array_to_dict(value))
 
-        if depend_0_name not in depend_0_dict:
-          depend_0_dict[depend_0_name] = {}
-        depend_0_dict[depend_0_name][name] = variable_meta
+    variables_new[variable_name] = variable_dict
 
-    dataset['_variables_split'] = depend_0_dict
+  return variables_new
+
+def hapi(metadata_, issues):
+
+  id = 'AC_H2_MFI'
+  vars_rest = restructure_master(metadata_[id]['master']['data'])
+  # Add _variables_split dict to each dataset.
+  vars_split = split_variables(id, vars_rest, issues)
+  return vars_split
 
 def create_catalog_all(datasets, issues):
 
@@ -769,64 +840,65 @@ def write_infos(catalog_all, info_dir):
     file_name = os.path.join(info_dir, file_name)
     cdawmeta.util.write(file_name, catalog['info'])
 
-args = cli()
+if __name__ == '__main__':
+  args = cli()
 
-if args.partial == False:
-  partial = ''
-  partial_dir = ''
-else:
-  partial = '.partial'
-  partial_dir = 'partial'
+  if args.partial == False:
+    partial = ''
+    partial_dir = ''
+  else:
+    partial = '.partial'
+    partial_dir = 'partial'
 
-base_name = f'catalog{partial}'
-in_file  = os.path.join(base_dir, partial_dir, f'cdaweb{partial}.json')
-catalog_file = os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.json')
-catalog_err_file = os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.errors.txt')
-catalog_all_file = os.path.join(base_dir, 'hapi', partial_dir, f'catalog-all{partial}.json')
-issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
+  base_name = f'catalog{partial}'
+  in_file  = os.path.join(base_dir, partial_dir, f'cdaweb{partial}.json')
+  catalog_file = os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.json')
+  catalog_err_file = os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.errors.txt')
+  catalog_all_file = os.path.join(base_dir, 'hapi', partial_dir, f'catalog-all{partial}.json')
+  issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
 
-log_config = {
-  'file_log': os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.log'),
-  'file_error': False,
-  'format': '%(message)s',
-  'rm_string': root_dir + '/'
-}
-logger = cdawmeta.util.logger(**log_config)
+  log_config = {
+    'file_log': os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.log'),
+    'file_error': False,
+    'format': '%(message)s',
+    'rm_string': root_dir + '/'
+  }
+  logger = cdawmeta.util.logger(**log_config)
 
-try:
-  issues = cdawmeta.util.read(issues_file, logger=logger)
-except Exception as e:
-  exit(f"Error: Could not read {issues_file} file: {e}")
+  try:
+    issues = cdawmeta.util.read(issues_file, logger=logger)
+  except Exception as e:
+    exit(f"Error: Could not read {issues_file} file: {e}")
 
-try:
-  datasets = cdawmeta.util.read(in_file, logger=logger)
-except Exception as e:
-  exit(f"Error: Could not read {in_file} file: {e}")
-n_cdaweb = len(datasets)
+  try:
+    datasets = cdawmeta.util.read(in_file, logger=logger)
+  except Exception as e:
+    exit(f"Error: Could not read {in_file} file: {e}")
+  n_cdaweb = len(datasets)
 
-logger.info(f'Creating HAPI catalog-all from {n_cdaweb} CDAWeb datasets')
-catalog_all = create_catalog_all(datasets, issues)
-logger.info(f'Created catalog-all')
-logger.info(f"Created {len(catalog_all)} HAPI datasets from {n_cdaweb} CDAWeb datasets")
+  logger.info(f'Creating HAPI catalog-all from {n_cdaweb} CDAWeb datasets')
+  catalog_all = create_catalog_all(datasets, issues)
+  logger.info(f'Created catalog-all')
+  logger.info(f"Created {len(catalog_all)} HAPI datasets from {n_cdaweb} CDAWeb datasets")
 
-cdawmeta.util.write(catalog_all_file, catalog_all, logger=logger)
+  cdawmeta.util.write(catalog_all_file, catalog_all, logger=logger)
 
-logger.info(f"Writing {len(catalog_all)} /info files to {info_dir}")
-write_infos(catalog_all, info_dir)
-logger.info(f"Wrote {len(catalog_all)} /info files to {info_dir}")
+  logger.info(f"Writing {len(catalog_all)} /info files to {info_dir}")
+  write_infos(catalog_all, info_dir)
+  logger.info(f"Wrote {len(catalog_all)} /info files to {info_dir}")
 
-# Remove 'info' key from each dataset
-for dataset in catalog_all:
-  del dataset['info']
-cdawmeta.util.write(catalog_file, catalog_all, logger=logger)
+  # Remove 'info' key from each dataset
+  for dataset in catalog_all:
+    del dataset['info']
+  cdawmeta.util.write(catalog_file, catalog_all, logger=logger)
 
-errors = ""
-for did, vars in set_error.errors.items():
-  if type(vars) == str:
-    errors += f"{did}: {vars}\n"
-    continue
-  for vid, msg in vars.items():
-    msg = "\n".join(msg)
-    errors += f"{did}/{vid}: {msg}\n"
+  errors = ""
+  for did, vars in set_error.errors.items():
+    if type(vars) == str:
+      errors += f"{did}: {vars}\n"
+      continue
+    for vid, msg in vars.items():
+      msg = "\n".join(msg)
+      errors += f"{did}/{vid}: {msg}\n"
 
-cdawmeta.util.write(catalog_err_file, errors, logger=logger)
+  cdawmeta.util.write(catalog_err_file, errors, logger=logger)

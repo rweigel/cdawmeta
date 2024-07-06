@@ -4,11 +4,12 @@ def write(fname, data, logger=None):
   import cdawmeta
   cdawmeta.util.mkdir(os.path.dirname(fname), logger=logger)
 
+  if logger is not None:
+    logger.info(f"Writing {fname}")
+
   if '.pkl' == os.path.splitext(fname)[1]:
     import pickle
     try:
-      if logger is not None:
-        logger.info(f"Writing {fname}")
       with open(fname, 'wb') as f:
         pickle.dump(data, f)
       if logger is not None:
@@ -29,9 +30,6 @@ def write(fname, data, logger=None):
       if logger is not None:
         logger.error(msg)
       raise e
-
-  if logger is not None:
-    logger.info(f"Writing {fname}")
 
   try:
     f = open(fname, 'w', encoding='utf-8')
