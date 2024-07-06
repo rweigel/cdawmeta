@@ -159,77 +159,6 @@ def omit_variable(id, variable_name, issues):
     return True
   return False
 
-def add_sample_start_stop(datasets):
-
-  def extract_sample_start_stop(file_list):
-
-    if isinstance(file_list["FileDescription"], dict):
-      file_list["FileDescription"] = [file_list["FileDescription"]]
-
-    num_files = len(file_list["FileDescription"])
-    if num_files == 0:
-      sampleFile = None
-    if num_files == 1:
-      sampleFile = file_list["FileDescription"][0]
-    elif num_files == 2:
-      sampleFile = file_list["FileDescription"][1]
-    else:
-      sampleFile = file_list["FileDescription"][-2]
-
-    if sampleFile is not None:
-      sampleStartDate = sampleFile["StartTime"]
-      sampleStopDate = sampleFile["EndTime"]
-
-    range = {
-              "sampleStartDate": sampleStartDate,
-              "sampleStopDate": sampleStopDate
-            }
-
-    return range
-
-  for dataset in datasets:
-
-    if not "_file_list" in dataset:
-      logger.info("No _file_list for " + dataset["id"])
-      continue
-
-    file_list_path = os.path.join(root_dir, dataset["_file_list"])
-    dataset['_file_list_data'] = cdawmeta.util.read(file_list_path)["_decoded_content"]
-
-    if not "FileDescription" in dataset["_file_list_data"]:
-      logger.info("No file list for " + dataset["id"])
-      continue
-
-    range = extract_sample_start_stop(dataset["_file_list_data"])
-    dataset["info"]["sampleStartDate"] = range["sampleStartDate"]
-    dataset["info"]["sampleStopDate"] = range["sampleStopDate"]
-
-    del dataset["_file_list_data"]
-
-def add_info(datasets):
-
-  for dataset in datasets:
-
-    _allxml = dataset['_allxml']
-
-    startDate = _allxml['@timerange_start'].replace(' ', 'T') + 'Z';
-    stopDate = _allxml['@timerange_stop'].replace(' ', 'T') + 'Z';
-
-    contact = ''
-    if 'data_producer' in _allxml:
-      if '@name' in _allxml['data_producer']:
-        contact = _allxml['data_producer']['@name']
-      if '@affiliation' in _allxml['data_producer']:
-        contact = contact + " @ " + _allxml['data_producer']['@affiliation']
-
-
-    dataset['info'] = {
-        'startDate': startDate,
-        'stopDate': stopDate,
-        'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{dataset["id"][0]}.html#{dataset["id"]}',
-        'contact': contact
-    }
-
 def cdf2hapitype(cdf_type):
 
   if cdf_type in ['CDF_CHAR', 'CDF_UCHAR']:
@@ -259,7 +188,7 @@ def cdftimelen(cdf_type):
 
   return None
 
-def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid, print_info=False):
+def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid, logger=None, print_info=False):
   depend_0_variable = all_variables[depend_0_name]
 
   cdf_type = depend_0_variable['VarDescription']['DataType']
@@ -281,8 +210,6 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
                     'x_cdf_depend_0_name': depend_0_name
                   }
                 ]
-
-  #print(json.dumps(variables, indent=2))
 
   for name, variable in depend_0_variables.items():
 
@@ -359,11 +286,11 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
 
     if VAR_NOTES == CATDESC:
       parameter['description'] = f"{CATDESC}"
-    elif CATDESC != "" and VAR_NOTES == "":
+    elif CATDESC.strip() != "" and VAR_NOTES.strip() == "":
       parameter['description'] = f"{CATDESC}"
-    elif VAR_NOTES != "" and CATDESC == "":
+    elif VAR_NOTES.strip() != "" and CATDESC.strip() == "":
       parameter['description'] = f"{CATDESC}"
-    elif CATDESC != "" and VAR_NOTES != "":
+    elif CATDESC.strip() != "" and VAR_NOTES.strip() != "":
       parameter['description'] = CATDESC
       parameter['x_description'] = f"CATDESC: {CATDESC}; VAR_NOTES: {VAR_NOTES}"
 
@@ -421,10 +348,10 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
       logger.info(f"    {parameter['name']}{virtual}")
       logger.info('     size = {}'.format(parameter.get('size', None)))
       logger.info('     x_label = {}'.format(parameter.get('x_label', None)))
-      check_display_type(dsid, name, variable, print_info=True)
+      check_display_type(dsid, name, variable, logger=logger, print_info=True)
 
     if 'DimSizes' in variable['VarDescription']:
-      bins_object = bins(name, variable, all_variables, dsid, print_info=print_info)
+      bins_object = bins(name, variable, all_variables, dsid, logger=logger, print_info=print_info)
       if bins_object is not None:
         parameter['bins'] = bins_object
       if print_info:
@@ -439,7 +366,7 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
 
   return parameters
 
-def check_display_type(dsid, name, variable, print_info=False):
+def check_display_type(dsid, name, variable, logger=None, print_info=False):
 
   valid = False
   if 'DISPLAY_TYPE' in variable['VarAttributes']:
@@ -476,7 +403,66 @@ def check_display_type(dsid, name, variable, print_info=False):
 
   return valid
 
-def bins(name, variable, all_variables, dsid, print_info=False):
+def info_head(master):
+
+  id = master['id']
+  _allxml = master['_allxml']
+
+  startDate = _allxml['@timerange_start'].replace(' ', 'T') + 'Z';
+  stopDate = _allxml['@timerange_stop'].replace(' ', 'T') + 'Z';
+
+  contact = ''
+  if 'data_producer' in _allxml:
+    if '@name' in _allxml['data_producer']:
+      contact = _allxml['data_producer']['@name']
+    if '@affiliation' in _allxml['data_producer']:
+      contact = contact + " @ " + _allxml['data_producer']['@affiliation']
+
+  info = {
+      'startDate': startDate,
+      'stopDate': stopDate,
+      'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{id[0]}.html#{id}',
+      'contact': contact
+  }
+
+  return info
+
+def sample_start_stop(metadatum, logger=None):
+
+  if not "orig_data" in metadatum:
+    logger.info("No orig_data for " + metadatum["id"])
+    return None
+
+  orig_data = metadatum["orig_data"]['data']
+  if not "FileDescription" in orig_data:
+    logger.info("No orig_data for " + metadatum["id"])
+    return None
+
+  if isinstance(orig_data["FileDescription"], dict):
+    orig_data["FileDescription"] = [orig_data["FileDescription"]]
+
+  num_files = len(orig_data["FileDescription"])
+  if num_files == 0:
+    sampleFile = None
+  if num_files == 1:
+    sampleFile = orig_data["FileDescription"][0]
+  elif num_files == 2:
+    sampleFile = orig_data["FileDescription"][1]
+  else:
+    sampleFile = orig_data["FileDescription"][-2]
+
+  if sampleFile is not None:
+    sampleStartDate = sampleFile["StartTime"]
+    sampleStopDate = sampleFile["EndTime"]
+
+  range = {
+            "sampleStartDate": sampleStartDate,
+            "sampleStopDate": sampleStopDate
+          }
+
+  return range
+
+def bins(name, variable, all_variables, dsid, logger=None, print_info=False):
 
   NumDims = variable['VarDescription'].get('NumDims', 0)
   DimSizes = variable['VarDescription'].get('DimSizes', [])
@@ -557,14 +543,14 @@ def bins(name, variable, all_variables, dsid, print_info=False):
           logger.info(f"     Warning: NotImplemented[2]: {msg}")
         return None
 
-      bins_object = create_bins(dsid, name, x, DEPEND_x_NAME, all_variables[DEPEND_x_NAME], print_info=print_info)
+      bins_object = create_bins(dsid, name, x, DEPEND_x_NAME, all_variables[DEPEND_x_NAME], logger=logger, print_info=print_info)
       if bins_object is None:
         return None
       bins_objects.append(bins_object)
 
   return bins_objects
 
-def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, print_info=False):
+def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, logger=None, print_info=False):
 
   RecVariance = "NOVARY"
   if "RecVariance" in DEPEND_x['VarDescription']:
@@ -715,120 +701,121 @@ def restructure_master(id, master, logger=None, set_error=None):
 
   return variables_new
 
-def hapi(metadata_, issues):
+def hapi(metadata_, issues, data_dir=None, logger=None):
 
   id = 'AC_H2_MFI'
-  vars_rest = restructure_master(metadata_[id]['master']['data'])
-  # Add _variables_split dict to each dataset.
+
+  if omit_dataset(id, issues):
+    return None
+
+  sample = sample_start_stop(metadata_[id], logger=logger)
+
+  vars_rest = restructure_master(id, metadata_[id]['master']['data'])
   vars_split = split_variables(id, vars_rest, issues)
-  return vars_split
+  print(json.dumps(vars_rest, indent=2))
+  logger.info(id + ": subsetting and creating /info")
+  n = 0
+  depend_0s = vars_split.items()
+  plural = "s" if len(depend_0s) > 1 else ""
+  logger.info(f"  {len(depend_0s)} DEPEND_0{plural}")
 
-def create_catalog_all(datasets, issues):
+  # First pass - drop datasets with problems and create list of DEPEND_0 names
+  depend_0_names = []
+  for depend_0_name, depend_0_variables in depend_0s:
 
-  from cdawmeta.restructure_master import add_master_restructured
-  datasets = add_master_restructured(root_dir, datasets, logger=logger, set_error=set_error)
+    logger.info(f"  Checking DEPEND_0: '{depend_0_name}'")
 
-  add_info(datasets)
-  add_sample_start_stop(datasets)
-
-  # Add _variables_split dict to each dataset.
-  split_variables(datasets, issues)
-
-  catalog_all = []
-  for dataset in datasets:
-
-    if omit_dataset(dataset['id'], issues):
+    if omit_dataset(id, issues, depend_0=depend_0_name):
       continue
 
-    logger.info(dataset['id'] + ": subsetting and creating /info")
-    n = 0
-    depend_0s = dataset['_variables_split'].items()
-    plural = "s" if len(depend_0s) > 1 else ""
-    logger.info(f"  {len(depend_0s)} DEPEND_0{plural}")
+    if depend_0_name not in vars_split.keys():
+      logger.error(id)
+      msg = f"    Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0."
+      logger.error(msg)
+      set_error(id, depend_0_name, msg)
+      continue
 
-    # First pass - drop datasets with problems and create list of DEPEND_0 names
-    depend_0_names = []
-    for depend_0_name, depend_0_variables in depend_0s:
+    DEPEND_0_VAR_TYPE = vars_rest[depend_0_name]['VarAttributes']['VAR_TYPE']
 
-      logger.info(f"  Checking DEPEND_0: '{depend_0_name}'")
+    VAR_TYPES = []
+    for name, variable in depend_0_variables.items():
+      VAR_TYPES.append(variable['VarAttributes']['VAR_TYPE'])
+    VAR_TYPES = set(VAR_TYPES)
 
-      if omit_dataset(dataset['id'], issues, depend_0=depend_0_name):
-        continue
+    logger.info(f"    VAR_TYPE: '{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
 
-      if depend_0_name not in dataset['_master_restructured']['_variables'].keys():
-        logger.error(dataset['id'])
-        msg = f"    Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0."
-        logger.error(msg)
-        set_error(dataset['id'], depend_0_name, msg)
-        continue
+    if DEPEND_0_VAR_TYPE == 'ignore_data':
+      logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
+      continue
 
-      DEPEND_0_VAR_TYPE = dataset['_master_restructured']['_variables'][depend_0_name]['VarAttributes']['VAR_TYPE']
+    if 'data' not in VAR_TYPES and not keep_dataset(id, issues, depend_0=depend_0_name):
+      # In general, Nand drops these, but not always
+      logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
+      continue
 
-      VAR_TYPES = []
-      for name, variable in depend_0_variables.items():
-        VAR_TYPES.append(variable['VarAttributes']['VAR_TYPE'])
-      VAR_TYPES = set(VAR_TYPES)
-
-      logger.info(f"    VAR_TYPE: '{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
-
-      if DEPEND_0_VAR_TYPE == 'ignore_data':
-        logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
-        continue
-
-      if 'data' not in VAR_TYPES and not keep_dataset(dataset['id'], issues, depend_0=depend_0_name):
-        # In general, Nand drops these, but not always
-        logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
-        continue
-
-      all_variables = dataset['_master_restructured']['_variables']
-      parameters = variables2parameters(depend_0_name, depend_0_variables, all_variables, dataset['id'], print_info=False)
-      if parameters == None:
-        dataset['_variables_split'][depend_0_name] = None
-        if len(depend_0s) == 1:
-          logger.info(f"    Due to last error, omitting dataset with DEPEND_0 = {depend_0_name}")
-        else:
-          logger.info(f"    Due to last error, omitting sub-dataset with DEPEND_0 = {depend_0_name}")
-        continue
-
-      depend_0_names.append(depend_0_name)
-
-    #print(depend_0_names)
-    depend_0_names = order_depend0s(dataset['id'], depend_0_names, issues)
-    #print(depend_0_names)
-
-    for depend_0_name in depend_0_names:
-
-      logger.info(f"  Creating HAPI dataset for DEPEND_0: '{depend_0_name}'")
-
-      depend_0_variables = dataset['_variables_split'][depend_0_name]
-
-      subset = ''
-      if len(depend_0_names) > 1:
-        subset = '@' + str(n)
-
-      depend_0_variables = order_variables(dataset['id'] + subset, depend_0_variables, issues)
-
-      all_variables = dataset['_master_restructured']['_variables']
-      parameters = variables2parameters(depend_0_name, depend_0_variables, all_variables, dataset['id'], print_info=True)
-
-      dataset_new = {
-        'id': dataset['id'] + subset,
-        'description': None,
-        'info': {
-          **dataset['info'],
-          'parameters': parameters
-        }
-      }
-
-      if dataset['_allxml'].get('description') and dataset['_allxml']['description'].get('@short'):
-        dataset_new['description'] = dataset['_allxml']['description'].get('@short')
+    parameters = variables2parameters(depend_0_name, depend_0_variables, vars_rest, id, print_info=False)
+    if parameters == None:
+      vars_split[depend_0_name] = None
+      if len(depend_0s) == 1:
+        logger.info(f"    Due to last error, omitting dataset with DEPEND_0 = {depend_0_name}")
       else:
-        del dataset_new['description']
+        logger.info(f"    Due to last error, omitting sub-dataset with DEPEND_0 = {depend_0_name}")
+      continue
 
-      catalog_all.append(dataset_new)
-      n = n + 1
+    depend_0_names.append(depend_0_name)
 
-  return catalog_all
+  #print(depend_0_names)
+  depend_0_names = order_depend0s(id, depend_0_names, issues)
+  #print(depend_0_names)
+
+  catalog = []
+  for depend_0_name in depend_0_names:
+
+    logger.info(f"  Creating HAPI dataset for DEPEND_0: '{depend_0_name}'")
+
+    depend_0_variables = vars_split[depend_0_name]
+
+    subset = ''
+    if len(depend_0_names) > 1:
+      subset = '@' + str(n)
+
+    depend_0_variables = order_variables(id + subset, depend_0_variables, issues)
+
+    #all_variables = dataset['_master_restructured']['_variables']
+    parameters = variables2parameters(depend_0_name, depend_0_variables, vars_rest, id, logger=logger, print_info=True)
+
+    dataset_new = {
+      'id': id + subset,
+      'description': None,
+      'info': {
+        **info_head(metadata_[id]),
+        "sampleStartDate": None,
+        "sampleStopDate": None,
+        'parameters': parameters
+      }
+    }
+
+    if sample is not None:
+      dataset_new['info']['sampleStartDate'] = sample['sampleStartDate']
+      dataset_new['info']['sampleStopDate'] = sample['sampleStopDate']
+    else:
+      del dataset_new['info']['sampleStartDate']
+      del dataset_new['info']['sampleStopDate']
+
+    if metadata_[id]['_allxml'].get('description') and metadata_[id]['_allxml']['description'].get('@short'):
+      dataset_new['description'] = metadata_[id]['_allxml']['description'].get('@short')
+    else:
+      del dataset_new['description']
+
+    file_name =f'{id}.json'
+    file_name = os.path.join(data_dir, 'hapi', file_name)
+    cdawmeta.util.write(file_name, dataset_new)
+
+    catalog.append(dataset_new)
+    n = n + 1
+
+  return catalog
+
 
 def write_infos(catalog_all, info_dir):
   if not os.path.exists(info_dir):

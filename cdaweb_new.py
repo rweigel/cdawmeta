@@ -99,8 +99,9 @@ try:
 except Exception as e:
   exit(f"Error: Could not read {issues_file} file: {e}")
 
-rest = cdawmeta.hapi(metadata_, issues)
-print(rest)
+
+rest = cdawmeta.hapi(metadata_, issues, data_dir=args.data_dir, logger=logger)
+print(json.dumps(rest, indent=2))
 exit()
 #print(json.dumps(metadata_, indent=2))
 #logger.info(f'# of datasets in all.xml: {create_datasets.n}')
