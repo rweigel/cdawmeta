@@ -7,7 +7,7 @@ def cli(script):
     "max_workers": {
       "type": int,
       "help": "Number of threads to use for downloading",
-      "default": 4
+      "default": 3
     },
     "embed_data": {
       "action": "store_true",

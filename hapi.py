@@ -8,4 +8,4 @@ metadata = cdawmeta.hapi(**args)
 
 if args['id'] is not None:
   import json
-  print(json.dumps(metadata, indent=2))
+  #print(json.dumps(metadata, indent=2))

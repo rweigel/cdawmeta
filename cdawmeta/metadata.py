@@ -5,7 +5,10 @@ import xmltodict
 import deepdiff
 
 from . import util
-from . import DATA_DIR
+
+# These are set in call to metadata()
+DATA_DIR = None
+logger = None
 
 allurl = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
 wsbase = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
@@ -21,9 +24,12 @@ def logger_config():
   }
   return config
 
-logger = util.logger(**logger_config())
-
 def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False, timeouts=None, no_spase=True, no_orig_data=True):
+
+  global DATA_DIR
+  global logger
+  from . import DATA_DIR
+  logger = util.logger(**logger_config())
 
   if timeouts is None:
     timeouts = {

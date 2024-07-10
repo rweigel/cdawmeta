@@ -16,8 +16,11 @@ remove_arrows = False
 log_display_type_issues = False
 
 from . import util
-from . import DATA_DIR
-INFO_DIR = os.path.join(DATA_DIR, 'hapi', 'info')
+
+# These are set hapi()
+DATA_DIR = None
+INFO_DIR = None
+logger = None
 
 def logger_config():
 
@@ -31,27 +34,34 @@ def logger_config():
 
   return config
 
-logger = util.logger(**logger_config())
-
 def hapi(id=None, update=True, diffs=None, max_workers=None, no_orig_data=False):
+
+  global DATA_DIR
+  global INFO_DIR
+  global logger
+  from . import DATA_DIR
+  INFO_DIR = os.path.join(DATA_DIR, 'hapi', 'info')
+  logger = util.logger(**logger_config())
 
   file_name = os.path.join(INFO_DIR, f'{id}.json')
   if update == False and os.path.exists(file_name):
     logger.info(f'Using cache because update = False and found cached file {file_name}')
     return cdawmeta.util.read(file_name, logger=logger)
 
-  metadata_ = cdawmeta.metadata(id=id,  diffs=diffs, max_workers=max_workers, update=update, no_orig_data=no_orig_data)
+  metadata_cdaweb = cdawmeta.metadata(id=id,  diffs=diffs, max_workers=max_workers, update=update, no_orig_data=no_orig_data)
 
   # Loop over metadata_ and call _hapi for each id
   metadata_hapi = []
-  for id in metadata_.keys():
+  for id in metadata_cdaweb.keys():
     if id.startswith('AIM'):
       continue
-    metadata_hapi.append(_hapi(metadata_[id]))
+    datasets = _hapi(metadata_cdaweb[id])
+    for dataset in datasets:
+      metadata_hapi.append(dataset)
 
   if id is None:
     # Write all errors to a single file if all datasets were requested.
-    # Could also write errors to individual dataset files.
+    # (Could also write errors to individual dataset files.)
     errors = ""
     for did, vars in set_error.errors.items():
       if type(vars) == str:
@@ -60,7 +70,14 @@ def hapi(id=None, update=True, diffs=None, max_workers=None, no_orig_data=False)
       for vid, msg in vars.items():
         msg = "\n".join(msg)
         errors += f"{did}/{vid}: {msg}\n"
-    cdawmeta.util.write(os.path.join(cdawmeta.DATA_DIR, 'hapi', 'cdaweb2hapi.errors.log'), errors)
+    cdawmeta.util.write(os.path.join(INFO_DIR, 'cdaweb2hapi.errors.log'), errors)
+
+    fname = os.path.join(INFO_DIR, 'catalog-all.json')
+    cdawmeta.util.write(fname, metadata_hapi, logger=logger)
+    for metadatum in metadata_hapi:
+      del metadatum['info']
+    fname = os.path.join(INFO_DIR, 'catalog.json')
+    cdawmeta.util.write(fname, metadata_hapi, logger=logger)
 
   return metadata_hapi
 
