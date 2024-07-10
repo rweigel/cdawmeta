@@ -1,9 +1,11 @@
-def logger(format=u'%(asctime)sZ %(message)s',
+def logger(name=None,
+           format=u'%(asctime)sZ %(message)s',
            file_log=None,
            file_error=None,
            rm_existing=True,
            utc_timestamps=True,
-           rm_string=None):
+           rm_string=None,
+           disable_existing_loggers=False):
 
   #'format': '(%(process)d) %(asctime)s %(name)s (line %(lineno)s) | %(levelname)s %(message)s'
 
@@ -25,12 +27,15 @@ def logger(format=u'%(asctime)sZ %(message)s',
         return res
       return res.replace(self.rm_string, '')
 
+  if name is None:
+    name = __name__
+
   if file_log is None:
     frame = inspect.stack()[1]
     module = inspect.getmodule(frame[0])
     file_log = os.path.splitext(module.__file__)[0] + ".log"
 
-  if file_error:
+  if file_error is None:
     file_error = os.path.splitext(file_log)[0] + ".errors.log"
 
   if rm_existing:
@@ -56,15 +61,15 @@ def logger(format=u'%(asctime)sZ %(message)s',
   handlers = [
             'console_stderr',
             'console_stdout',
-            'file_DEBUG'
+            'file_stdout'
           ]
   if file_error:
-    handlers.append('file_ERROR')
+    handlers.append('file_stderr')
 
   # Based on https://stackoverflow.com/a/66728490
   config = {
       'version': 1,
-      'disable_existing_loggers': True,
+      'disable_existing_loggers': disable_existing_loggers,
       'filters': {
           'exclude_errors': {
               '()': _ExcludeErrorsFilter
@@ -73,7 +78,7 @@ def logger(format=u'%(asctime)sZ %(message)s',
       'formatters': {
           # Modify log message format here or replace with your custom formatter class
           'my_formatter': {
-            'format': format
+            'format': f'{name}: {format}'
           }
       },
       'handlers': {
@@ -84,7 +89,7 @@ def logger(format=u'%(asctime)sZ %(message)s',
               'formatter': 'my_formatter',
               'stream': sys.stderr
           },
-          'file_ERROR': {
+          'file_stderr': {
               # Sends all log messages to a file
               'class': 'logging.FileHandler',
               'level': 'ERROR',
@@ -100,7 +105,7 @@ def logger(format=u'%(asctime)sZ %(message)s',
               'filters': ['exclude_errors'],
               'stream': sys.stdout
           },
-          'file_DEBUG': {
+          'file_stdout': {
               # Sends all log messages to a file
               'class': 'logging.FileHandler',
               'level': 'DEBUG',
@@ -109,19 +114,30 @@ def logger(format=u'%(asctime)sZ %(message)s',
               'encoding': 'utf8'
           }
       },
-      'root': {
+      'loggers': {
+          name: {
+              'level': 'DEBUG',
+              'handlers': handlers
+          }
+      },
+      'xroot': {
           # In general, this should be kept at 'NOTSET'.
           # Otherwise it would interfere with the log levels set for each handler.
           'level': 'NOTSET',
           'handlers': handlers
       }
   }
-  if not file_error:
-    del config['handlers']['file_ERROR']
 
+  print(f'Logging output to: {file_log}')
+  if file_error:
+    print(f'Logging errors to: {file_error}')
+  else:
+    del config['handlers']['file_stderr']
+
+#  _logger = logging.getLogger(name)
   logging.config.dictConfig(config)
 
-  for handler in logging.getLogger().handlers:
-    handler.setFormatter(CustomFormatter(rm_string=rm_string))
+  #for handler in _logger.handlers:
+  #  handler.setFormatter(CustomFormatter(rm_string=rm_string))
 
-  return logging.getLogger(__name__)
+  return logging.getLogger(name)

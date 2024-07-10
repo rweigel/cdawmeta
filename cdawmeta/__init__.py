@@ -1,4 +1,14 @@
+import os
+import tempfile
+if os.path.exists('/tmp'):
+  DATA_DIR = '/tmp/cdaweb'
+else:
+  DATA_DIR = os.path.join(tempfile.gettempdir(), 'cdaweb')
+del os, tempfile
+
 from cdawmeta import util
+
+from cdawmeta.cli import cli
 
 from cdawmeta.f2c_specifier import f2c_specifier
 from cdawmeta.write_csv import write_csv
@@ -12,3 +22,4 @@ from cdawmeta.read_ws import read_ws
 from cdawmeta.metadata import metadata
 
 from cdawmeta.hapi import hapi
+

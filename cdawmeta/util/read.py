@@ -2,6 +2,9 @@ def read(fname, logger=None):
   import os
   import json
 
+  if not os.path.isabs(fname):
+    fname = os.path.abspath(fname)
+
   if logger is not None:
     logger.info(f"Reading {fname}")
 

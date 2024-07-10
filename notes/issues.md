@@ -28,7 +28,6 @@ but the master has 'Position' misspelled and right whitespace padding:
 
 Given I am using masters, this is unexpected. Is this something that Nand corrects in his code, and if so, why was the correction not made in the master?
 
-
 6\. My code (which uses the JSON representation of the master CDFs) claims that the units for `ISS_SP_FPMU/TCC` is the ASCII `null`. I see `"UNITS":"\u0000"` in a.json from
 
 ```

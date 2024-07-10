@@ -2,6 +2,10 @@ def write(fname, data, logger=None):
   import os
 
   import cdawmeta
+
+  if not os.path.isabs(fname):
+    fname = os.path.abspath(fname)
+
   cdawmeta.util.mkdir(os.path.dirname(fname), logger=logger)
 
   if logger is not None:

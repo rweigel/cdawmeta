@@ -15,24 +15,199 @@ remove_arrows = False
 
 log_display_type_issues = False
 
-root_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
-base_dir = os.path.join(root_dir, 'data')
-info_dir = os.path.join(base_dir, 'hapi', 'info')
+from . import util
+from . import DATA_DIR
+INFO_DIR = os.path.join(DATA_DIR, 'hapi', 'info')
 
-def cli():
-  clkws = {
-    "partial": {
-      "action": "store_true",
-      "help": "Read catalog.partial.json instead of catalog.json",
-      "default": False
-    }
+def logger_config():
+
+  config = {
+    'name': 'hapi.py',
+    'file_log': os.path.join(DATA_DIR, 'hapi', f'cdaweb2hapi.log'),
+    'file_error': False,
+    'format': '%(message)s',
+    'rm_string': DATA_DIR + '/'
   }
 
-  import argparse
-  parser = argparse.ArgumentParser()
-  for k, v in clkws.items():
-    parser.add_argument(f'--{k}', **v)
-  return parser.parse_args()
+  return config
+
+logger = util.logger(**logger_config())
+
+def hapi(id=None, update=True, diffs=None, max_workers=None, no_orig_data=False):
+
+  file_name = os.path.join(INFO_DIR, f'{id}.json')
+  if update == False and os.path.exists(file_name):
+    logger.info(f'Using cache because update = False and found cached file {file_name}')
+    return cdawmeta.util.read(file_name, logger=logger)
+
+  metadata_ = cdawmeta.metadata(id=id,  diffs=diffs, max_workers=max_workers, update=update, no_orig_data=no_orig_data)
+
+  # Loop over metadata_ and call _hapi for each id
+  metadata_hapi = []
+  for id in metadata_.keys():
+    if id.startswith('AIM'):
+      continue
+    metadata_hapi.append(_hapi(metadata_[id]))
+
+  if id is None:
+    # Write all errors to a single file if all datasets were requested.
+    # Could also write errors to individual dataset files.
+    errors = ""
+    for did, vars in set_error.errors.items():
+      if type(vars) == str:
+        errors += f"{did}: {vars}\n"
+        continue
+      for vid, msg in vars.items():
+        msg = "\n".join(msg)
+        errors += f"{did}/{vid}: {msg}\n"
+    cdawmeta.util.write(os.path.join(cdawmeta.DATA_DIR, 'hapi', 'cdaweb2hapi.errors.log'), errors)
+
+  return metadata_hapi
+
+def _hapi(metadatum):
+
+  id = metadatum['id']
+
+  issues = _issues()
+  if omit_dataset(id, issues):
+    return None
+
+  sample = sample_start_stop(metadatum)
+
+  if not 'data' in metadatum["master"]:
+    fname = os.path.join(cdawmeta.DATA_DIR, metadatum["master"]['data-cache'].replace(".json", ".pkl"))
+    master = cdawmeta.util.read(fname, logger=logger)['data']
+  else:
+    master = metadatum["master"]['data']
+
+  vars_rest = restructure_master(id, master)
+  vars_split = split_variables(id, vars_rest, issues)
+
+  if logger:
+    logger.info(id + ": subsetting and creating /info")
+
+  n = 0
+  depend_0s = vars_split.items()
+  plural = "s" if len(depend_0s) > 1 else ""
+  if logger:
+    logger.info(f"  {len(depend_0s)} DEPEND_0{plural}")
+
+  # First pass - drop datasets with problems and create list of DEPEND_0 names
+  depend_0_names = []
+  for depend_0_name, depend_0_variables in depend_0s:
+
+    if logger:
+      logger.info(f"  Checking DEPEND_0: '{depend_0_name}'")
+
+    if omit_dataset(id, issues, depend_0=depend_0_name):
+      continue
+
+    if depend_0_name not in vars_split.keys():
+      msg = f"    Error: DEPEND_0 = '{depend_0_name}' is referenced by a "
+      msg += f"variable, but it is not a variable. Omitting variables that have this DEPEND_0."
+      logger.error(id)
+      logger.error(msg)
+      set_error(id, depend_0_name, msg)
+      continue
+
+    DEPEND_0_VAR_TYPE = vars_rest[depend_0_name]['VarAttributes']['VAR_TYPE']
+
+    VAR_TYPES = []
+    for name, variable in depend_0_variables.items():
+      VAR_TYPES.append(variable['VarAttributes']['VAR_TYPE'])
+    VAR_TYPES = set(VAR_TYPES)
+
+    if logger:
+      logger.info(f"    VAR_TYPE: '{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
+
+    if DEPEND_0_VAR_TYPE == 'ignore_data':
+      if logger:
+        logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
+      continue
+
+    if 'data' not in VAR_TYPES and not keep_dataset(id, issues, depend_0=depend_0_name):
+      # In general, Nand drops these, but not always
+      if logger:
+        logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
+      continue
+
+    parameters = variables2parameters(depend_0_name, depend_0_variables, vars_rest, id, print_info=False)
+    if parameters == None:
+      vars_split[depend_0_name] = None
+      if logger:
+        if len(depend_0s) == 1:
+          logger.info(f"    Due to last error, omitting dataset with DEPEND_0 = {depend_0_name}")
+        else:
+          logger.info(f"    Due to last error, omitting sub-dataset with DEPEND_0 = {depend_0_name}")
+      continue
+
+    depend_0_names.append(depend_0_name)
+
+  #print(depend_0_names)
+  depend_0_names = order_depend0s(id, depend_0_names, issues)
+  #print(depend_0_names)
+
+  catalog = []
+  for depend_0_name in depend_0_names:
+
+    if logger:
+      logger.info(f"  Creating HAPI dataset for DEPEND_0: '{depend_0_name}'")
+
+    depend_0_variables = vars_split[depend_0_name]
+
+    subset = ''
+    if len(depend_0_names) > 1:
+      subset = '@' + str(n)
+
+    depend_0_variables = order_variables(id + subset, depend_0_variables, issues)
+
+    #all_variables = dataset['_master_restructured']['_variables']
+    parameters = variables2parameters(depend_0_name, depend_0_variables, vars_rest, id, print_info=True)
+
+    dataset_new = {
+      'id': id + subset,
+      'description': None,
+      'info': {
+        **info_head(metadatum),
+        "sampleStartDate": None,
+        "sampleStopDate": None,
+        'parameters': parameters
+      }
+    }
+
+    if sample is not None:
+      dataset_new['info']['sampleStartDate'] = sample['sampleStartDate']
+      dataset_new['info']['sampleStopDate'] = sample['sampleStopDate']
+    else:
+      del dataset_new['info']['sampleStartDate']
+      del dataset_new['info']['sampleStopDate']
+
+    if metadatum['allxml'].get('description') and metadatum['allxml']['description'].get('@short'):
+      dataset_new['description'] = metadatum['allxml']['description'].get('@short')
+    else:
+      del dataset_new['description']
+
+    file_name = os.path.join(INFO_DIR, f'{id}.json')
+    cdawmeta.util.write(file_name, dataset_new['info'], logger=logger)
+    file_name = os.path.join(INFO_DIR, f'{id}.pkl')
+    cdawmeta.util.write(file_name, dataset_new['info'], logger=logger)
+
+    catalog.append(dataset_new)
+    n = n + 1
+
+  return catalog
+
+def _issues():
+  if _issues.issues is not None:
+    #print(_issues.issues)
+    return _issues.issues
+  issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
+  try:
+    _issues.issues = cdawmeta.util.read(issues_file, logger=logger)
+  except Exception as e:
+    exit(f"Error: Could not read {issues_file} file: {e}")
+  return _issues.issues
+_issues.issues = None
 
 def set_error(id, name, msg):
   if not id in set_error.errors:
@@ -64,8 +239,9 @@ def order_depend0s(id, depend0_names, issues):
 
   for depend0_name in order_wanted:
     if not depend0_name in depend0_names:
-      logger.error(f'Error: {id}\n  DEPEND_0 {depend0_name} in new order list is not a depend0 in dataset ({depend0_names})')
-      logger.error(f'  Exiting with code 1')
+      if logger:
+        logger.error(f'Error: {id}\n  DEPEND_0 {depend0_name} in new order list is not a depend0 in dataset ({depend0_names})')
+        logger.error(f'  Exiting with code 1')
       exit(1)
 
   if False:
@@ -87,10 +263,11 @@ def order_variables(id, variables, issues):
   order_wanted = issues['variableOrder'][id]
   order_given = variables.keys()
   if len(order_wanted) != len(order_wanted):
-    logger.error(f'Error: {id}\n  Number of variables in new order list ({len(order_wanted)}) does not match number found in dataset ({len(order_given)})')
-    logger.error(f'  New order:   {order_wanted}')
-    logger.error(f'  Given order: {list(order_given)}')
-    logger.error(f'  Exiting with code 1')
+    if logger:
+      logger.error(f'Error: {id}\n  Number of variables in new order list ({len(order_wanted)}) does not match number found in dataset ({len(order_given)})')
+      logger.error(f'  New order:   {order_wanted}')
+      logger.error(f'  Given order: {list(order_given)}')
+      logger.error(f'  Exiting with code 1')
     exit(1)
 
   if sorted(order_wanted) != sorted(order_wanted):
@@ -104,8 +281,9 @@ def order_variables(id, variables, issues):
 
 def keep_dataset(id, issues, depend_0=None):
   if id in issues['keepSubset'].keys() and depend_0 == issues['keepSubset'][id]:
-    logger.info(id)
-    logger.info(f"  Warning: Keeping dataset associated with \"{depend_0}\" b/c it is in Nand's list")
+    if logger:
+      logger.info(id)
+      logger.info(f"  Warning: Keeping dataset associated with \"{depend_0}\" b/c it is in Nand's list")
     return True
   return False
 
@@ -154,8 +332,9 @@ def omit_variable(id, variable_name, issues):
       del issues['omitVariables'][key]
 
   if id in issues['omitVariables'].keys() and variable_name in issues['omitVariables'][id]:
-    logger.info(id)
-    logger.info(f"  Warning: Dropping variable \"{variable_name}\" b/c it is not in Nand's list")
+    if logger:
+      logger.info(id)
+      logger.info(f"  Warning: Dropping variable \"{variable_name}\" b/c it is not in Nand's list")
     return True
   return False
 
@@ -188,7 +367,7 @@ def cdftimelen(cdf_type):
 
   return None
 
-def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid, logger=None, print_info=False):
+def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid, print_info=False):
   depend_0_variable = all_variables[depend_0_name]
 
   cdf_type = depend_0_variable['VarDescription']['DataType']
@@ -284,6 +463,12 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
     if 'VAR_NOTES' in variable['VarAttributes']:
       VAR_NOTES = variable['VarAttributes']['VAR_NOTES']
 
+    if isinstance(CATDESC, list):
+      CATDESC = '\n'.join(CATDESC)
+
+    if isinstance(VAR_NOTES, list):
+      VAR_NOTES = '\n'.join(VAR_NOTES)
+
     if VAR_NOTES == CATDESC:
       parameter['description'] = f"{CATDESC}"
     elif CATDESC.strip() != "" and VAR_NOTES.strip() == "":
@@ -348,10 +533,10 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
       logger.info(f"    {parameter['name']}{virtual}")
       logger.info('     size = {}'.format(parameter.get('size', None)))
       logger.info('     x_label = {}'.format(parameter.get('x_label', None)))
-      check_display_type(dsid, name, variable, logger=logger, print_info=True)
+      check_display_type(dsid, name, variable, print_info=True)
 
     if 'DimSizes' in variable['VarDescription']:
-      bins_object = bins(name, variable, all_variables, dsid, logger=logger, print_info=print_info)
+      bins_object = bins(name, variable, all_variables, dsid, print_info=print_info)
       if bins_object is not None:
         parameter['bins'] = bins_object
       if print_info:
@@ -366,18 +551,28 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
 
   return parameters
 
-def check_display_type(dsid, name, variable, logger=None, print_info=False):
+def check_display_type(dsid, name, variable, print_info=False):
 
   valid = False
   if 'DISPLAY_TYPE' in variable['VarAttributes']:
     DISPLAY_TYPE = variable['VarAttributes']['DISPLAY_TYPE']
     DISPLAY_TYPE = DISPLAY_TYPE.split(">")[0]
 
-    display_types_known = ['time_series','spectrogram','stack_plot','image','no_plot','orbit', 'plasmagram', 'skymap']
+    display_types_known = [
+      'time_series',
+      'spectrogram',
+      'stack_plot',
+      'image',
+      'no_plot',
+      'orbit',
+      'plasmagram',
+      'skymap'
+    ]
 
     if DISPLAY_TYPE not in display_types_known:
       if print_info and log_display_type_issues:
-        msg = f"     Error: DISPLAY_TYPE = '{DISPLAY_TYPE}' is not in {display_types_known}. Will attempt to infer."
+        msg = f"     Error: DISPLAY_TYPE = '{DISPLAY_TYPE}' is not in "
+        msg += f"{display_types_known}. Will attempt to infer."
         logger.error(msg)
         set_error(dsid, name, msg)
     if print_info:
@@ -406,17 +601,17 @@ def check_display_type(dsid, name, variable, logger=None, print_info=False):
 def info_head(master):
 
   id = master['id']
-  _allxml = master['_allxml']
+  allxml = master['allxml']
 
-  startDate = _allxml['@timerange_start'].replace(' ', 'T') + 'Z';
-  stopDate = _allxml['@timerange_stop'].replace(' ', 'T') + 'Z';
+  startDate = allxml['@timerange_start'].replace(' ', 'T') + 'Z';
+  stopDate = allxml['@timerange_stop'].replace(' ', 'T') + 'Z';
 
   contact = ''
-  if 'data_producer' in _allxml:
-    if '@name' in _allxml['data_producer']:
-      contact = _allxml['data_producer']['@name']
-    if '@affiliation' in _allxml['data_producer']:
-      contact = contact + " @ " + _allxml['data_producer']['@affiliation']
+  if 'data_producer' in allxml:
+    if '@name' in allxml['data_producer']:
+      contact = allxml['data_producer']['@name']
+    if '@affiliation' in allxml['data_producer']:
+      contact = contact + " @ " + allxml['data_producer']['@affiliation']
 
   info = {
       'startDate': startDate,
@@ -427,13 +622,18 @@ def info_head(master):
 
   return info
 
-def sample_start_stop(metadatum, logger=None):
+def sample_start_stop(metadatum):
 
   if not "orig_data" in metadatum:
     logger.info("No orig_data for " + metadatum["id"])
     return None
 
-  orig_data = metadatum["orig_data"]['data']
+  if not 'data' in metadatum["orig_data"]:
+    fname = os.path.join(cdawmeta.DATA_DIR, metadatum["orig_data"]['data-cache'].replace(".json", ".pkl"))
+    orig_data = cdawmeta.util.read(fname, logger=logger)['data']
+  else:
+    orig_data = metadatum["orig_data"]['data']
+
   if not "FileDescription" in orig_data:
     logger.info("No orig_data for " + metadatum["id"])
     return None
@@ -462,13 +662,13 @@ def sample_start_stop(metadatum, logger=None):
 
   return range
 
-def bins(name, variable, all_variables, dsid, logger=None, print_info=False):
+def bins(name, variable, all_variables, dsid, print_info=False):
 
   NumDims = variable['VarDescription'].get('NumDims', 0)
   DimSizes = variable['VarDescription'].get('DimSizes', [])
   DimVariances = variable['VarDescription'].get('DimVariances', [])
 
-  if print_info:
+  if print_info and logger is not None:
     logger.info(f"     NumDims: {NumDims}")
     logger.info(f"     DimSizes: {DimSizes}")
     logger.info(f"     DimVariances: {DimVariances}")
@@ -483,13 +683,15 @@ def bins(name, variable, all_variables, dsid, logger=None, print_info=False):
         if not x_NAME in all_variables:
           x_error = "Bad DEPEND reference"
           if print_info:
-            msg = f"Error: Bad DEPEND reference: '{name}' has {prefix}_{x} named '{x_NAME}', which is not a variable. Not creating bins."
+            msg = f"Error: Bad DEPEND reference: '{name}' has {prefix}_{x} "
+            msg += f"named '{x_NAME}', which is not a variable. Not creating bins."
             logger.error(f"     {msg}")
             set_error(dsid, name, msg)
 
     if len(xs[prefix]) > len(DimSizes):
       if print_info:
-        msg = f"     Error: Too many DEPENDs: '{name}' has a len(DEPEND_{{1,2,3}}) = {len(xs[prefix])} and len(DimSizes) = {len(DimSizes)}."
+        msg = f"     Error: Too many DEPENDs: '{name}' has a len(DEPEND_{{1,2,3}}) "
+        msg += f"{len(xs[prefix])} and len(DimSizes) = {len(DimSizes)}."
         logger.error(msg)
         set_error(dsid, name, msg)
       else:
@@ -510,13 +712,15 @@ def bins(name, variable, all_variables, dsid, logger=None, print_info=False):
 
   if NumDims != len(DimSizes):
     if print_info:
-      msg = f"     Error: DimSizes mismatch: NumDims = {NumDims} != len(DimSizes) = {len(DimSizes)}"
+      msg = f"     Error: DimSizes mismatch: NumDims = {NumDims} "
+      msg += "!= len(DimSizes) = {len(DimSizes)}"
       logger.error(msg)
       set_error(dsid, name, msg)
 
   if len(DimSizes) != len(DimVariances):
     if print_info:
-      msg = f"     Error: DimVariances mismatch: len(DimSizes) = {DimSizes} != len(DimVariances) = {len(DimVariances)}"
+      msg = f"     Error: DimVariances mismatch: len(DimSizes) = {DimSizes} "
+      msg += "!= len(DimVariances) = {len(DimVariances)}"
       logger.error(msg)
       set_error(dsid, name, msg)
 
@@ -537,20 +741,23 @@ def bins(name, variable, all_variables, dsid, logger=None, print_info=False):
     DEPEND_x_NAME = xs['DEPEND'][x]
     if DEPEND_x_NAME is not None:
       hapitype = cdf2hapitype(all_variables[DEPEND_x_NAME]['VarDescription']['DataType'])
-      if not (hapitype == 'integer' or hapitype == 'double'):
+      if hapitype in ['integer', 'double']:
+        bins_object = create_bins(dsid, name, x, DEPEND_x_NAME, all_variables[DEPEND_x_NAME], print_info=print_info)
+      else:
         msg = f"DEPEND_{x} = '{DEPEND_x_NAME}' DataType is not an integer or float. Omitting bins for {name}."
         if print_info:
           logger.info(f"     Warning: NotImplemented[2]: {msg}")
+          logger.info(f"     Warning: NotImplemented[2]: {DEPEND_x_NAME}['VarData'] = {all_variables[DEPEND_x_NAME]['VarData']}")
         return None
+        #bins_object = {'label': all_variables[DEPEND_x_NAME]['VarData']}
 
-      bins_object = create_bins(dsid, name, x, DEPEND_x_NAME, all_variables[DEPEND_x_NAME], logger=logger, print_info=print_info)
       if bins_object is None:
         return None
       bins_objects.append(bins_object)
 
   return bins_objects
 
-def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, logger=None, print_info=False):
+def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, print_info=False):
 
   RecVariance = "NOVARY"
   if "RecVariance" in DEPEND_x['VarDescription']:
@@ -559,7 +766,7 @@ def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, logger=None, print_info=
 
   if RecVariance == "VARY":
     if print_info:
-      logger.info(f"     Warning: NotImplemented[3]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY' . Not creating bins b/c Nand does not for this case.")
+      logger.info(f"     Warning: NotImplemented[3]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY'. Not creating bins b/c Nand does not for this case.")
     return None
   else:
     # TODO: Check for multi-dimensional
@@ -569,7 +776,8 @@ def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, logger=None, print_info=
     else:
       if "UNIT_PTR" in DEPEND_x['VarAttributes']:
         if print_info:
-          msg = f"     Error: NotImplemented[4]: DEPEND_{x} = '{DEPEND_x_NAME}' has UNIT_PTR = '{DEPEND_x['VarAttributes']['UNIT_PTR']}'. Not using."
+          msg = f"     Error: NotImplemented[4]: DEPEND_{x} = '{DEPEND_x_NAME}'"
+          msg += f"has UNIT_PTR = '{DEPEND_x['VarAttributes']['UNIT_PTR']}'. Not using."
           logger.error(msg)
           set_error(dsid, name, msg)
 
@@ -585,7 +793,8 @@ def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, logger=None, print_info=
       if DEPEND_x_VAR_TYPE in ['data', 'support_data']:
         if not "UNIT_PTR" in DEPEND_x['VarAttributes']:
           if print_info:
-            msg = f"     Error: DEPEND_{x} = '{DEPEND_x_NAME}' has VAR_TYPE '{DEPEND_x_VAR_TYPE}' and no UNITS or UNIT_PTR."
+            msg = f"     Error: DEPEND_{x} = '{DEPEND_x_NAME}' has VAR_TYPE "
+            msg += f"'{DEPEND_x_VAR_TYPE}' and no UNITS or UNIT_PTR."
             logger.error(msg)
             set_error(dsid, name, msg)
 
@@ -615,16 +824,16 @@ def split_variables(id, variables, issues):
     variable_meta = variables[name]
 
     if 'VarAttributes' not in variable_meta:
-      logger.error(dataset['id'])
+      logger.error(id)
       msg = f"  Error: Dropping variable '{name}' b/c it has no VarAttributes"
       logger.error(msg)
       continue
 
     if 'VAR_TYPE' not in variable_meta['VarAttributes']:
-      logger.error(dataset['id'])
       msg = f"  Error: Dropping variable '{name}' b/c it has no has no VAR_TYPE"
+      logger.error(id)
       logger.error(msg)
-      set_error(dataset['id'], name, msg)
+      set_error(id, name, msg)
       continue
 
     if omit_variable(id, name, issues):
@@ -634,8 +843,8 @@ def split_variables(id, variables, issues):
       depend_0_name = variable_meta['VarAttributes']['DEPEND_0']
 
       if depend_0_name not in variables:
-        logger.error(id)
         msg = f"  Error: Dropping '{name}' b/c it has a DEPEND_0 ('{depend_0_name}') that is not in dataset"
+        logger.error(id)
         logger.error(msg)
         set_error(id, name, msg)
         continue
@@ -646,7 +855,7 @@ def split_variables(id, variables, issues):
 
   return depend_0_dict
 
-def restructure_master(id, master, logger=None, set_error=None):
+def restructure_master(id, master):
 
   """
   Convert dict with arrays of objects to objects with objects. For example
@@ -679,11 +888,9 @@ def restructure_master(id, master, logger=None, set_error=None):
 
     variable_keys = list(variable.keys())
     if len(variable_keys) > 1:
-      if logger is not None:
-        msg = "Expected only one variable key in variable object. Exiting witih code 1."
-        logger.error(msg)
-      if set_error is not None:
-        set_error(id, None, msg)
+      set_error(id, None, msg)
+      msg = "Expected only one variable key in variable object. Exiting witih code 1."
+      logger.error(msg)
       exit(1)
 
     variable_name = variable_keys[0]
@@ -700,192 +907,3 @@ def restructure_master(id, master, logger=None, set_error=None):
     variables_new[variable_name] = variable_dict
 
   return variables_new
-
-def hapi(metadata_, issues, data_dir=None, logger=None):
-
-  id = 'AC_H2_MFI'
-
-  if omit_dataset(id, issues):
-    return None
-
-  sample = sample_start_stop(metadata_[id], logger=logger)
-
-  vars_rest = restructure_master(id, metadata_[id]['master']['data'])
-  vars_split = split_variables(id, vars_rest, issues)
-  print(json.dumps(vars_rest, indent=2))
-  logger.info(id + ": subsetting and creating /info")
-  n = 0
-  depend_0s = vars_split.items()
-  plural = "s" if len(depend_0s) > 1 else ""
-  logger.info(f"  {len(depend_0s)} DEPEND_0{plural}")
-
-  # First pass - drop datasets with problems and create list of DEPEND_0 names
-  depend_0_names = []
-  for depend_0_name, depend_0_variables in depend_0s:
-
-    logger.info(f"  Checking DEPEND_0: '{depend_0_name}'")
-
-    if omit_dataset(id, issues, depend_0=depend_0_name):
-      continue
-
-    if depend_0_name not in vars_split.keys():
-      logger.error(id)
-      msg = f"    Error: DEPEND_0 = '{depend_0_name}' is referenced by a variable, but it is not a variable. Omitting variables that have this DEPEND_0."
-      logger.error(msg)
-      set_error(id, depend_0_name, msg)
-      continue
-
-    DEPEND_0_VAR_TYPE = vars_rest[depend_0_name]['VarAttributes']['VAR_TYPE']
-
-    VAR_TYPES = []
-    for name, variable in depend_0_variables.items():
-      VAR_TYPES.append(variable['VarAttributes']['VAR_TYPE'])
-    VAR_TYPES = set(VAR_TYPES)
-
-    logger.info(f"    VAR_TYPE: '{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
-
-    if DEPEND_0_VAR_TYPE == 'ignore_data':
-      logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
-      continue
-
-    if 'data' not in VAR_TYPES and not keep_dataset(id, issues, depend_0=depend_0_name):
-      # In general, Nand drops these, but not always
-      logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
-      continue
-
-    parameters = variables2parameters(depend_0_name, depend_0_variables, vars_rest, id, print_info=False)
-    if parameters == None:
-      vars_split[depend_0_name] = None
-      if len(depend_0s) == 1:
-        logger.info(f"    Due to last error, omitting dataset with DEPEND_0 = {depend_0_name}")
-      else:
-        logger.info(f"    Due to last error, omitting sub-dataset with DEPEND_0 = {depend_0_name}")
-      continue
-
-    depend_0_names.append(depend_0_name)
-
-  #print(depend_0_names)
-  depend_0_names = order_depend0s(id, depend_0_names, issues)
-  #print(depend_0_names)
-
-  catalog = []
-  for depend_0_name in depend_0_names:
-
-    logger.info(f"  Creating HAPI dataset for DEPEND_0: '{depend_0_name}'")
-
-    depend_0_variables = vars_split[depend_0_name]
-
-    subset = ''
-    if len(depend_0_names) > 1:
-      subset = '@' + str(n)
-
-    depend_0_variables = order_variables(id + subset, depend_0_variables, issues)
-
-    #all_variables = dataset['_master_restructured']['_variables']
-    parameters = variables2parameters(depend_0_name, depend_0_variables, vars_rest, id, logger=logger, print_info=True)
-
-    dataset_new = {
-      'id': id + subset,
-      'description': None,
-      'info': {
-        **info_head(metadata_[id]),
-        "sampleStartDate": None,
-        "sampleStopDate": None,
-        'parameters': parameters
-      }
-    }
-
-    if sample is not None:
-      dataset_new['info']['sampleStartDate'] = sample['sampleStartDate']
-      dataset_new['info']['sampleStopDate'] = sample['sampleStopDate']
-    else:
-      del dataset_new['info']['sampleStartDate']
-      del dataset_new['info']['sampleStopDate']
-
-    if metadata_[id]['_allxml'].get('description') and metadata_[id]['_allxml']['description'].get('@short'):
-      dataset_new['description'] = metadata_[id]['_allxml']['description'].get('@short')
-    else:
-      del dataset_new['description']
-
-    file_name =f'{id}.json'
-    file_name = os.path.join(data_dir, 'hapi', file_name)
-    cdawmeta.util.write(file_name, dataset_new)
-
-    catalog.append(dataset_new)
-    n = n + 1
-
-  return catalog
-
-
-def write_infos(catalog_all, info_dir):
-  if not os.path.exists(info_dir):
-    logger.info(f'Creating {info_dir}')
-    os.makedirs(info_dir, exist_ok=True)
-
-  for catalog in catalog_all:
-    file_name = catalog['id'] + '.json'
-    file_name = os.path.join(info_dir, file_name)
-    cdawmeta.util.write(file_name, catalog['info'])
-
-if __name__ == '__main__':
-  args = cli()
-
-  if args.partial == False:
-    partial = ''
-    partial_dir = ''
-  else:
-    partial = '.partial'
-    partial_dir = 'partial'
-
-  base_name = f'catalog{partial}'
-  in_file  = os.path.join(base_dir, partial_dir, f'cdaweb{partial}.json')
-  catalog_file = os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.json')
-  catalog_err_file = os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.errors.txt')
-  catalog_all_file = os.path.join(base_dir, 'hapi', partial_dir, f'catalog-all{partial}.json')
-  issues_file = os.path.join(os.path.dirname(__file__), "hapi-nl-issues.json")
-
-  log_config = {
-    'file_log': os.path.join(base_dir, 'hapi', partial_dir, f'{base_name}.log'),
-    'file_error': False,
-    'format': '%(message)s',
-    'rm_string': root_dir + '/'
-  }
-  logger = cdawmeta.util.logger(**log_config)
-
-  try:
-    issues = cdawmeta.util.read(issues_file, logger=logger)
-  except Exception as e:
-    exit(f"Error: Could not read {issues_file} file: {e}")
-
-  try:
-    datasets = cdawmeta.util.read(in_file, logger=logger)
-  except Exception as e:
-    exit(f"Error: Could not read {in_file} file: {e}")
-  n_cdaweb = len(datasets)
-
-  logger.info(f'Creating HAPI catalog-all from {n_cdaweb} CDAWeb datasets')
-  catalog_all = create_catalog_all(datasets, issues)
-  logger.info(f'Created catalog-all')
-  logger.info(f"Created {len(catalog_all)} HAPI datasets from {n_cdaweb} CDAWeb datasets")
-
-  cdawmeta.util.write(catalog_all_file, catalog_all, logger=logger)
-
-  logger.info(f"Writing {len(catalog_all)} /info files to {info_dir}")
-  write_infos(catalog_all, info_dir)
-  logger.info(f"Wrote {len(catalog_all)} /info files to {info_dir}")
-
-  # Remove 'info' key from each dataset
-  for dataset in catalog_all:
-    del dataset['info']
-  cdawmeta.util.write(catalog_file, catalog_all, logger=logger)
-
-  errors = ""
-  for did, vars in set_error.errors.items():
-    if type(vars) == str:
-      errors += f"{did}: {vars}\n"
-      continue
-    for vid, msg in vars.items():
-      msg = "\n".join(msg)
-      errors += f"{did}/{vid}: {msg}\n"
-
-  cdawmeta.util.write(catalog_err_file, errors, logger=logger)
