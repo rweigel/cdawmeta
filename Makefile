@@ -27,8 +27,8 @@ rsync-from-mag:
 	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ .
 
 compare:
-	make cdaweb INCLUDE='$(INCLUDE)'
-	make hapi-new
+	make cdaweb
+	make hapi
 	make hapi-nl
 	python hapi/compare.py --include '$(INCLUDE)' | tee data/hapi/compare.log
 
@@ -40,15 +40,15 @@ cdaweb: cdaweb.py
 	make data/cdaweb.json INCLUDE='$(INCLUDE)'
 
 data/cdaweb.json:
-	python cdaweb.py --include '$(INCLUDE)'
+	python cdaweb.py --id '$(INCLUDE)'
 ################################################################################
 
 ################################################################################
-hapi-new:
+hapi:
 	make data/hapi/catalog-all.json
 
-data/hapi/catalog-all.json: cdawmeta.egg-info data/cdaweb.json hapi/hapi-new.py hapi/hapi-nl-issues.json
-	python hapi/hapi-new.py | tee data/hapi/catalog-all.log
+data/hapi/catalog-all.json: cdawmeta.egg-info data/cdaweb.json hapi/hapi.py hapi/hapi-nl-issues.json
+	python hapi.py
 ################################################################################
 
 ################################################################################

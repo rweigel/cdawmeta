@@ -924,3 +924,28 @@ def restructure_master(id, master):
     variables_new[variable_name] = variable_dict
 
   return variables_new
+
+def restructure_globals(dsid, _master_data, logger=None, set_error=None):
+
+  file = list(_master_data.keys())[0]
+
+  globals = _master_data[file]['CDFglobalAttributes']
+  globals_r = {}
+
+  for _global in globals:
+    gkey = list(_global.keys())
+    if len(gkey) > 1:
+      if logger is not None:
+        msg = "Expected only one key in _global object."
+        logger.error(msg)
+      if set_error is not None:
+        set_error(dsid, None, msg)
+    gvals = _global[gkey[0]]
+    text = []
+    for gval in gvals:
+      line = gval[list(gval.keys())[0]];
+      text.append(str(line))
+
+    globals_r[gkey[0]] = "\n".join(text)
+
+  return globals_r
