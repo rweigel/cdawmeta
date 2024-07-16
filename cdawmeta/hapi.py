@@ -48,9 +48,9 @@ def hapi(id=None, update=True, diffs=None, max_workers=None, no_orig_data=False)
     logger.info(f'Using cache because update = False and found cached file {file_name}')
     return cdawmeta.util.read(file_name, logger=logger)
 
-  metadata_cdaweb = cdawmeta.metadata(id=id,  diffs=diffs, max_workers=max_workers, update=update, no_orig_data=no_orig_data)
+  metadata_cdaweb = cdawmeta.metadata(id=id, diffs=diffs, max_workers=max_workers, update=update, no_orig_data=no_orig_data)
 
-  # Loop over metadata_ and call _hapi for each id
+  # Loop over metadata_ and call _hapi() for each id
   metadata_hapi = []
   for id in metadata_cdaweb.keys():
     if id.startswith('AIM'):
@@ -59,7 +59,7 @@ def hapi(id=None, update=True, diffs=None, max_workers=None, no_orig_data=False)
     for dataset in datasets:
       metadata_hapi.append(dataset)
 
-  if id is None:
+  if True or id is None:
     # Write all errors to a single file if all datasets were requested.
     # (Could also write errors to individual dataset files.)
     errors = ""
@@ -70,14 +70,16 @@ def hapi(id=None, update=True, diffs=None, max_workers=None, no_orig_data=False)
       for vid, msg in vars.items():
         msg = "\n".join(msg)
         errors += f"{did}/{vid}: {msg}\n"
-    cdawmeta.util.write(os.path.join(INFO_DIR, 'cdaweb2hapi.errors.log'), errors)
+    cdawmeta.util.write(os.path.join(DATA_DIR, 'hapi', 'cdaweb2hapi.errors.log'), errors)
 
-    fname = os.path.join(INFO_DIR, 'catalog-all.json')
+    fname = os.path.join(DATA_DIR, 'hapi', 'catalog-all.json')
     cdawmeta.util.write(fname, metadata_hapi, logger=logger)
-    for metadatum in metadata_hapi:
+    from copy import deepcopy
+    metadata_hapi_copy = deepcopy(metadata_hapi)
+    for metadatum in metadata_hapi_copy:
       del metadatum['info']
-    fname = os.path.join(INFO_DIR, 'catalog.json')
-    cdawmeta.util.write(fname, metadata_hapi, logger=logger)
+    fname = os.path.join(DATA_DIR, 'hapi', 'catalog.json')
+    cdawmeta.util.write(fname, metadata_hapi_copy, logger=logger)
 
   return metadata_hapi
 
@@ -466,6 +468,16 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
     if 'VIRTUAL' in variable['VarAttributes']:
       parameter['x_cdf_is_virtual'] = variable['VarAttributes']['VIRTUAL'].lower()
 
+    not_implemented = ['DELTA_PLUS', 'DELTA_MINUS',
+                       'DELTA_PLUS_VAR', 'DELTA_MINUS_VAR'
+                       'DELTA_PLUS_VARx', 'DELTA_MINUS_VARx']
+    for attrib in not_implemented:
+      if attrib in variable['VarAttributes']:
+        attrib_val = variable['VarAttributes'][attrib]
+        msg =f"    Error: NotImplemented[0]: {attrib} = '{attrib_val}' not used"
+        logger.error(msg)
+        set_error(dsid, name, msg)
+
     if 'DEPEND_0' in variable['VarAttributes']:
       parameter['x_cdf_depend_0'] = variable['VarAttributes']['DEPEND_0']
 
@@ -641,7 +653,7 @@ def info_head(master):
 
 def sample_start_stop(metadatum):
 
-  if not "orig_data" in metadatum:
+  if "data-cache" not in metadatum['orig_data']:
     logger.info("No orig_data for " + metadatum["id"])
     return None
 
