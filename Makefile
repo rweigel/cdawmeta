@@ -10,8 +10,6 @@
 # If an update is needed due only to a source code change, use
 #   make all
 
-ID=.*
-
 all:
 	make hapi
 	make hapi-nl
@@ -30,17 +28,17 @@ compare:
 	make cdaweb
 	make hapi
 	make hapi-nl
-	python hapi/compare.py --include '$(ID)' | tee data/hapi/compare.log
+	python hapi/compare.py | tee data/hapi/compare.log
 
 cdawmeta.egg-info:
 	pip install -e .
 
 ################################################################################
 cdaweb: cdaweb.py
-	make data/cdaweb.json ID='$(ID)'
+	make data/cdaweb.json
 
 data/cdaweb.json: cdawmeta.egg-info
-	python cdaweb.py --id '$(ID)'
+	python cdaweb.py --data_dir ./data
 ################################################################################
 
 ################################################################################
@@ -48,7 +46,7 @@ hapi:
 	make data/hapi/catalog-all.json
 
 data/hapi/catalog-all.json: cdawmeta.egg-info data/cdaweb.json hapi/hapi.py cdawmeta/hapi-nl-issues.json
-	python hapi.py
+	python hapi.py --data_dir ./data
 ################################################################################
 
 ################################################################################

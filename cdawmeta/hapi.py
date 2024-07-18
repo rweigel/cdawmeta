@@ -43,35 +43,28 @@ def hapi(id=None, update=True, diffs=None, max_workers=None, no_orig_data=False)
   INFO_DIR = os.path.join(DATA_DIR, 'hapi', 'info')
   logger = util.logger(**logger_config())
 
-  file_name = os.path.join(INFO_DIR, f'{id}.json')
-  if update == False and os.path.exists(file_name):
-    logger.info(f'Using cache because update = False and found cached file {file_name}')
-    return cdawmeta.util.read(file_name, logger=logger)
+  if id is not None:
+    file_name = os.path.join(INFO_DIR, f'{id}.json')
+    if update == False and os.path.exists(file_name):
+      logger.info(f'Using cache because update = False and found cached file {file_name}')
+      return cdawmeta.util.read(file_name, logger=logger)
 
-  metadata_cdaweb = cdawmeta.metadata(id=id, diffs=diffs, max_workers=max_workers, update=update, no_orig_data=no_orig_data)
+  metadata_cdaweb = cdawmeta.metadata(id=id, update=update, diffs=diffs, max_workers=max_workers, no_orig_data=no_orig_data)
 
-  # Loop over metadata_ and call _hapi() for each id
+  # Loop over metadata_cdaweb and call _hapi() for each id
   metadata_hapi = []
-  for id in metadata_cdaweb.keys():
-    if id.startswith('AIM'):
+  for dsid in metadata_cdaweb.keys():
+    if dsid.startswith('AIM'):
       continue
-    datasets = _hapi(metadata_cdaweb[id])
+    datasets = _hapi(metadata_cdaweb[dsid], no_orig_data=no_orig_data)
     for dataset in datasets:
       metadata_hapi.append(dataset)
 
-  if True or id is None:
-    # Write all errors to a single file if all datasets were requested.
-    # (Could also write errors to individual dataset files.)
-    errors = ""
-    for did, vars in set_error.errors.items():
-      if type(vars) == str:
-        errors += f"{did}: {vars}\n"
-        continue
-      for vid, msg in vars.items():
-        msg = "\n".join(msg)
-        errors += f"{did}/{vid}: {msg}\n"
-    cdawmeta.util.write(os.path.join(DATA_DIR, 'hapi', 'cdaweb2hapi.errors.log'), errors)
+  write_errors()
 
+  if id is None:
+
+    # Write catalog-all.json and catalog.json
     fname = os.path.join(DATA_DIR, 'hapi', 'catalog-all.json')
     cdawmeta.util.write(fname, metadata_hapi, logger=logger)
     from copy import deepcopy
@@ -83,7 +76,7 @@ def hapi(id=None, update=True, diffs=None, max_workers=None, no_orig_data=False)
 
   return metadata_hapi
 
-def _hapi(metadatum):
+def _hapi(metadatum, no_orig_data=False):
 
   id = metadatum['id']
 
@@ -91,7 +84,9 @@ def _hapi(metadatum):
   if omit_dataset(id, issues):
     return None
 
-  sample = sample_start_stop(metadatum)
+  sample = None
+  if no_orig_data == False:
+    sample = sample_start_stop(metadatum)
 
   if not 'data' in metadatum["master"]:
     fname = os.path.join(cdawmeta.DATA_DIR, metadatum["master"]['data-cache'].replace(".json", ".pkl"))
@@ -99,78 +94,62 @@ def _hapi(metadatum):
   else:
     master = metadatum["master"]['data']
 
-  vars_rest = restructure_master(id, master)
-  vars_split = split_variables(id, vars_rest, issues)
+  # Restructure master so keys are variable names
+  vars_restr = restructure_master(id, master)
+  # Split variables to be under their DEPEND_0
+  vars_split = split_variables(id, vars_restr, issues)
 
-  if logger:
-    logger.info(id + ": subsetting and creating /info")
+  logger.info(id + ": subsetting and creating /info")
 
   n = 0
   depend_0s = vars_split.items()
   plural = "s" if len(depend_0s) > 1 else ""
-  if logger:
-    logger.info(f"  {len(depend_0s)} DEPEND_0{plural}")
+  logger.info(f"  {len(depend_0s)} DEPEND_0{plural}")
 
   # First pass - drop datasets with problems and create list of DEPEND_0 names
   depend_0_names = []
   for depend_0_name, depend_0_variables in depend_0s:
 
-    if logger:
-      logger.info(f"  Checking DEPEND_0: '{depend_0_name}'")
+    logger.info(f"  Checking DEPEND_0: '{depend_0_name}'")
 
     if omit_dataset(id, issues, depend_0=depend_0_name):
       continue
 
-    if depend_0_name not in vars_split.keys():
-      msg = f"    Error: DEPEND_0 = '{depend_0_name}' is referenced by a "
-      msg += f"variable, but it is not a variable. Omitting variables that have this DEPEND_0."
-      logger.error(id)
-      logger.error(msg)
-      set_error(id, depend_0_name, msg)
-      continue
-
-    DEPEND_0_VAR_TYPE = vars_rest[depend_0_name]['VarAttributes']['VAR_TYPE']
+    DEPEND_0_VAR_TYPE = vars_restr[depend_0_name]['VarAttributes']['VAR_TYPE']
 
     VAR_TYPES = []
     for name, variable in depend_0_variables.items():
       VAR_TYPES.append(variable['VarAttributes']['VAR_TYPE'])
     VAR_TYPES = set(VAR_TYPES)
 
-    if logger:
-      logger.info(f"    VAR_TYPE: '{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
+    logger.info(f"    VAR_TYPE: '{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}")
 
     if DEPEND_0_VAR_TYPE == 'ignore_data':
-      if logger:
-        logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
+      logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because it has VAR_TYPE='ignore_data'.")
       continue
 
     if 'data' not in VAR_TYPES and not keep_dataset(id, issues, depend_0=depend_0_name):
       # In general, Nand drops these, but not always
-      if logger:
-        logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE='data'.")
+      logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE = 'data'.")
       continue
 
-    parameters = variables2parameters(depend_0_name, depend_0_variables, vars_rest, id, print_info=False)
+    parameters = variables2parameters(depend_0_name, depend_0_variables, vars_restr, id, print_info=False)
     if parameters == None:
       vars_split[depend_0_name] = None
-      if logger:
-        if len(depend_0s) == 1:
-          logger.info(f"    Due to last error, omitting dataset with DEPEND_0 = {depend_0_name}")
-        else:
-          logger.info(f"    Due to last error, omitting sub-dataset with DEPEND_0 = {depend_0_name}")
+      if len(depend_0s) == 1:
+        logger.info(f"    Due to last error, omitting dataset with DEPEND_0 = {depend_0_name}")
+      else:
+        logger.info(f"    Due to last error, omitting sub-dataset with DEPEND_0 = {depend_0_name}")
       continue
 
     depend_0_names.append(depend_0_name)
 
-  #print(depend_0_names)
   depend_0_names = order_depend0s(id, depend_0_names, issues)
-  #print(depend_0_names)
 
   catalog = []
   for depend_0_name in depend_0_names:
 
-    if logger:
-      logger.info(f"  Creating HAPI dataset for DEPEND_0: '{depend_0_name}'")
+    logger.info(f"  Creating HAPI dataset for DEPEND_0 = '{depend_0_name}'")
 
     depend_0_variables = vars_split[depend_0_name]
 
@@ -180,8 +159,7 @@ def _hapi(metadatum):
 
     depend_0_variables = order_variables(id + subset, depend_0_variables, issues)
 
-    #all_variables = dataset['_master_restructured']['_variables']
-    parameters = variables2parameters(depend_0_name, depend_0_variables, vars_rest, id, print_info=True)
+    parameters = variables2parameters(depend_0_name, depend_0_variables, vars_restr, id, print_info=True)
 
     dataset_new = {
       'id': id + subset,
@@ -227,27 +205,6 @@ def _issues():
     exit(f"Error: Could not read {issues_file} file: {e}")
   return _issues.issues
 _issues.issues = None
-
-def set_error(id, name, msg):
-  if not id in set_error.errors:
-    set_error.errors[id] = {}
-  if name is None:
-    set_error.errors[id] = msg.lstrip()
-  else:
-    if not name in set_error.errors[id]:
-      set_error.errors[id][name] = []
-    set_error.errors[id][name].append(msg.lstrip())
-set_error.errors = {}
-
-def sort_keys(obj):
-  return {key: obj[key] for key in sorted(obj)}
-
-def array_to_dict(array):
-  obj = {}
-  for element in array:
-    key = list(element.keys())[0]
-    obj[key] = element[key]
-  return obj
 
 def order_depend0s(id, depend0_names, issues):
 
@@ -386,7 +343,131 @@ def cdftimelen(cdf_type):
 
   return None
 
+def check_display_type(dsid, name, variable, print_info=False):
+
+  valid = False
+  if 'DISPLAY_TYPE' in variable['VarAttributes']:
+    DISPLAY_TYPE = variable['VarAttributes']['DISPLAY_TYPE']
+    DISPLAY_TYPE = DISPLAY_TYPE.split(">")[0]
+
+    if DISPLAY_TYPE == ' ':
+      if print_info:
+        msg = f"     Warning: DISPLAY_TYPE = '{DISPLAY_TYPE}'"
+        logger.error(msg)
+        set_error(dsid, name, msg)
+      return False
+
+    if DISPLAY_TYPE.strip() == '':
+      if print_info:
+        msg = f"     Warning: DISPLAY_TYPE.strip() = ''"
+        logger.error(msg)
+        set_error(dsid, name, msg)
+      return False
+
+    display_types_known = [
+      'time_series',
+      'spectrogram',
+      'stack_plot',
+      'image',
+      'no_plot',
+      'orbit',
+      'plasmagram',
+      'skymap'
+    ]
+
+    if DISPLAY_TYPE not in display_types_known:
+      if print_info:
+        msg = f"     Error: DISPLAY_TYPE = '{DISPLAY_TYPE}' is not in "
+        msg += f"{display_types_known}. Will attempt to infer."
+        logger.error(msg)
+        set_error(dsid, name, msg)
+
+    found = False
+    for display_type in display_types_known:
+      if DISPLAY_TYPE.lower().startswith(display_type):
+        found = True
+        valid = True
+        if print_info:
+          logger.info(f"     DISPLAY_TYPE = '{DISPLAY_TYPE}'")
+        break
+    if not found and print_info:
+      logger.info(f"     Warning: DISPLAY_TYPE.lower() = '{DISPLAY_TYPE}' does not start with one of {display_types_known}")
+  elif variable['VarAttributes'].get('VAR_TYPE') == 'data':
+    if print_info:
+      logger.error('     Error: No DISPLAY_TYPE attribute for variable with VAR_TYPE = data')
+    valid = False
+
+  return valid
+
+def info_head(master):
+
+  id = master['id']
+  allxml = master['allxml']
+
+  startDate = allxml['@timerange_start'].replace(' ', 'T') + 'Z';
+  stopDate = allxml['@timerange_stop'].replace(' ', 'T') + 'Z';
+
+  contact = ''
+  if 'data_producer' in allxml:
+    if '@name' in allxml['data_producer']:
+      contact = allxml['data_producer']['@name']
+    if '@affiliation' in allxml['data_producer']:
+      contact = contact + " @ " + allxml['data_producer']['@affiliation']
+
+  info = {
+      'startDate': startDate,
+      'stopDate': stopDate,
+      'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{id[0]}.html#{id}',
+      'contact': contact
+  }
+
+  return info
+
+def sample_start_stop(metadatum):
+
+  if "orig_data" not in metadatum:
+    logger.info("No orig_data for " + metadatum["id"])
+    return None
+  if "data-cache" not in metadatum['orig_data']:
+    logger.info("No orig_data['data-cache'] for " + metadatum["id"])
+    return None
+
+  if not 'data' in metadatum["orig_data"]:
+    fname = os.path.join(cdawmeta.DATA_DIR, metadatum["orig_data"]['data-cache'].replace(".json", ".pkl"))
+    orig_data = cdawmeta.util.read(fname, logger=logger)['data']
+  else:
+    orig_data = metadatum["orig_data"]['data']
+
+  if not "FileDescription" in orig_data:
+    logger.info("No orig_data for " + metadatum["id"])
+    return None
+
+  if isinstance(orig_data["FileDescription"], dict):
+    orig_data["FileDescription"] = [orig_data["FileDescription"]]
+
+  num_files = len(orig_data["FileDescription"])
+  if num_files == 0:
+    sampleFile = None
+  if num_files == 1:
+    sampleFile = orig_data["FileDescription"][0]
+  elif num_files == 2:
+    sampleFile = orig_data["FileDescription"][1]
+  else:
+    sampleFile = orig_data["FileDescription"][-2]
+
+  if sampleFile is not None:
+    sampleStartDate = sampleFile["StartTime"]
+    sampleStopDate = sampleFile["EndTime"]
+
+  range = {
+            "sampleStartDate": sampleStartDate,
+            "sampleStopDate": sampleStopDate
+          }
+
+  return range
+
 def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid, print_info=False):
+
   depend_0_variable = all_variables[depend_0_name]
 
   cdf_type = depend_0_variable['VarDescription']['DataType']
@@ -411,15 +492,25 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
 
   for name, variable in depend_0_variables.items():
 
+    VAR_TYPE = extract_var_type(dsid, name, variable, x=None, print_info=print_info)
+
+    if VAR_TYPE == None:
+      # Should not happen because variable will be dropped in split_variables
+      continue
+
+    if VAR_TYPE != 'data':
+      continue
+
+    virtual = 'VIRTUAL' in variable['VarAttributes']
+    if print_info:
+      virtual_txt = f' (virtual: {virtual})'
+      logger.info(f"    {name}{virtual_txt}")
+
     type = cdf2hapitype(variable['VarDescription']['DataType'])
     if type == None:
       msg = f"    Error: '{name}' has unhandled DataType: {variable['VarDescription']['DataType']}. Dropping variable."
       set_error(dsid, name, msg)
       logger.error(msg)
-      return None
-
-    VAR_TYPE = variable['VarAttributes']['VAR_TYPE']
-    if VAR_TYPE != 'data':
       continue
 
     length = None
@@ -457,26 +548,30 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
       if NumElements != None:
         length = int(NumElements)
 
+    if False:
+      not_implemented = ['DELTA_PLUS', 'DELTA_MINUS',
+                        'DELTA_PLUS_VAR', 'DELTA_MINUS_VAR'
+                        'DELTA_PLUS_VARx', 'DELTA_MINUS_VARx']
+      for attrib in not_implemented:
+        if attrib in variable['VarAttributes']:
+          attrib_val = variable['VarAttributes'][attrib]
+          msg =f"    Error: NotImplemented[0]: {attrib} = '{attrib_val}' not used"
+          logger.error(msg)
+          set_error(dsid, name, msg)
+
     parameter = {
       "name": name,
-      "type": type
+      "type": type,
+      "units": extract_units(dsid, name, variable, x=None, print_info=print_info),
+      "x_cdf_is_virtual": virtual
     }
+
+    ptrs = extract_ptrs(dsid, name, all_variables, print_info=print_info)
+    parameter['description'] = extract_description(dsid, name, variable, print_info=print_info)
+    parameter['x_label'] = extract_label(dsid, name, variable, ptrs, print_info=print_info)
 
     if length is not None:
       parameter['length'] = length
-
-    if 'VIRTUAL' in variable['VarAttributes']:
-      parameter['x_cdf_is_virtual'] = variable['VarAttributes']['VIRTUAL'].lower()
-
-    not_implemented = ['DELTA_PLUS', 'DELTA_MINUS',
-                       'DELTA_PLUS_VAR', 'DELTA_MINUS_VAR'
-                       'DELTA_PLUS_VARx', 'DELTA_MINUS_VARx']
-    for attrib in not_implemented:
-      if attrib in variable['VarAttributes']:
-        attrib_val = variable['VarAttributes'][attrib]
-        msg =f"    Error: NotImplemented[0]: {attrib} = '{attrib_val}' not used"
-        logger.error(msg)
-        set_error(dsid, name, msg)
 
     if 'DEPEND_0' in variable['VarAttributes']:
       parameter['x_cdf_depend_0'] = variable['VarAttributes']['DEPEND_0']
@@ -484,88 +579,34 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
     if 'DimSizes' in variable['VarDescription']:
       parameter['size'] = variable['VarDescription']['DimSizes']
 
-    CATDESC = ""
-    if 'CATDESC' in variable['VarAttributes']:
-      CATDESC = variable['VarAttributes']['CATDESC']
-
-    VAR_NOTES = ""
-    if 'VAR_NOTES' in variable['VarAttributes']:
-      VAR_NOTES = variable['VarAttributes']['VAR_NOTES']
-
-    if isinstance(CATDESC, list):
-      CATDESC = '\n'.join(CATDESC)
-
-    if isinstance(VAR_NOTES, list):
-      VAR_NOTES = '\n'.join(VAR_NOTES)
-
-    if VAR_NOTES == CATDESC:
-      parameter['description'] = f"{CATDESC}"
-    elif CATDESC.strip() != "" and VAR_NOTES.strip() == "":
-      parameter['description'] = f"{CATDESC}"
-    elif VAR_NOTES.strip() != "" and CATDESC.strip() == "":
-      parameter['description'] = f"{CATDESC}"
-    elif CATDESC.strip() != "" and VAR_NOTES.strip() != "":
-      parameter['description'] = CATDESC
-      parameter['x_description'] = f"CATDESC: {CATDESC}; VAR_NOTES: {VAR_NOTES}"
-
-    if strip_description:
-      parameter['description'] = parameter['description'].strip()
-
-    if remove_arrows:
-      parameter['description'] = parameter['description'].replace('--->', '')
-
-    def trim(label):
-      if isinstance(label, str):
-        return label.strip()
-      for i in range(0, len(label)):
-        label[i] = label[i].strip()
-      return label
-
-    if 'size' in parameter:
-      label = []
-      for i in range(0, len(parameter['size'])):
-        label.append([])
-        labl_ptr_name = f'LABL_PTR_{i+1}'
-        if labl_ptr_name in variable['VarAttributes']:
-          labl_ptr_name = variable['VarAttributes'][labl_ptr_name]
-          if labl_ptr_name in all_variables:
-            #print(all_variables[labl_ptr_name])
-            if 'VarData' in all_variables[labl_ptr_name]:
-              #print(labl_ptr_name)
-              #print(all_variables[labl_ptr_name]['VarData'])
-              label[i] = trim(str(all_variables[labl_ptr_name]['VarData']))
-      parameter['x_label'] = label
-      if len(parameter['size']) == 1:
-        parameter['x_label'] = label[0]
-
-    if 'LABLAXIS' in variable['VarAttributes']:
-      parameter['x_label'] = trim(variable['VarAttributes']['LABLAXIS'])
-
     fill = None
     if 'FILLVAL' in variable['VarAttributes']:
-      fill = variable['VarAttributes']['FILLVAL']
+      fill = str(variable['VarAttributes']['FILLVAL'])
     if fill is not None:
       parameter['fill'] = fill
 
-    parameter['units'] = None
-    if 'UNITS' in variable['VarAttributes']:
-      parameter['units'] = variable['VarAttributes']['UNITS']
-
-    if 'UNITS_PTR' in variable['VarAttributes']:
-      if print_info:
-        # Seems this is never used.
-        logger.info(f"    Warning: NotImplemented[0]: UNITS_PTR = '{variable['VarAttributes']['UNITS_PTR']}' not used")
-
     if print_info:
-      virtual = parameter.get('x_cdf_is_virtual', False)
-      virtual = f' (virtual: {virtual})'
-      logger.info(f"    {parameter['name']}{virtual}")
+      if 'DISPLAY_TYPE' in variable['VarAttributes']:
+        logger.info(f"     DISPLAY_TYPE = {variable['VarAttributes']['DISPLAY_TYPE']}")
+      if log_display_type_issues:
+        check_display_type(dsid, name, variable, print_info=True)
       logger.info('     size = {}'.format(parameter.get('size', None)))
       logger.info('     x_label = {}'.format(parameter.get('x_label', None)))
-      check_display_type(dsid, name, variable, print_info=True)
+      logger.info("     units = '{}'".format(parameter.get('units', None)))
 
-    if 'DimSizes' in variable['VarDescription']:
-      bins_object = bins(name, variable, all_variables, dsid, print_info=print_info)
+    n_values = 0
+    if ptrs['DEPEND_VALUES'] is not None:
+      parameter['x_cdf_depend_values'] = ptrs['DEPEND_VALUES']
+      n_values = len([x for x in ptrs["DEPEND_VALUES"] if x is not None])
+
+    if ptrs['DEPEND'] is not None and n_values != 0:
+      if print_info:
+        msg = '     Error: NotImplemented: Some DEPEND_VALUES are not None and ignored.'
+        logger.error(msg)
+        set_error(dsid, name, msg)
+
+    if ptrs['DEPEND'] is not None and n_values == 0:
+      bins_object = bins(dsid, name, all_variables, ptrs['DEPEND'], print_info=print_info)
       if bins_object is not None:
         parameter['bins'] = bins_object
       if print_info:
@@ -580,164 +621,208 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
 
   return parameters
 
-def check_display_type(dsid, name, variable, print_info=False):
+def extract_description(dsid, name, variable, x=None, print_info=False):
 
-  valid = False
-  if 'DISPLAY_TYPE' in variable['VarAttributes']:
-    DISPLAY_TYPE = variable['VarAttributes']['DISPLAY_TYPE']
-    DISPLAY_TYPE = DISPLAY_TYPE.split(">")[0]
+  # TODO: This was written to match Nand's logic and reduce number of mis-matches.
+  #       This should be modified to use FIELDNAM.
+  desc = ""
 
-    display_types_known = [
-      'time_series',
-      'spectrogram',
-      'stack_plot',
-      'image',
-      'no_plot',
-      'orbit',
-      'plasmagram',
-      'skymap'
-    ]
+  CATDESC = ""
+  if 'CATDESC' in variable['VarAttributes']:
+    CATDESC = variable['VarAttributes']['CATDESC']
+    if isinstance(CATDESC, list):
+      CATDESC = '\n'.join(CATDESC)
 
-    if DISPLAY_TYPE not in display_types_known:
-      if print_info and log_display_type_issues:
-        msg = f"     Error: DISPLAY_TYPE = '{DISPLAY_TYPE}' is not in "
-        msg += f"{display_types_known}. Will attempt to infer."
+  VAR_NOTES = ""
+  if 'VAR_NOTES' in variable['VarAttributes']:
+    VAR_NOTES = variable['VarAttributes']['VAR_NOTES']
+    if isinstance(VAR_NOTES, list):
+      VAR_NOTES = '\n'.join(VAR_NOTES)
+
+  FIELDNAM = ""
+  if 'FIELDNAM' in variable['VarAttributes']:
+    FIELDNAM = variable['VarAttributes']['FIELDNAM']
+    if isinstance(FIELDNAM, list):
+      FIELDNAM = '\n'.join(FIELDNAM)
+
+  if VAR_NOTES == CATDESC:
+    desc = f"{CATDESC}"
+  elif CATDESC.strip() != "" and VAR_NOTES.strip() == "":
+    desc = f"{CATDESC}"
+  elif VAR_NOTES.strip() != "" and CATDESC.strip() == "":
+    desc = f"{CATDESC}"
+  elif CATDESC.strip() != "" and VAR_NOTES.strip() != "":
+    desc = CATDESC
+    xdesc = f"CATDESC: {CATDESC}; VAR_NOTES: {VAR_NOTES}"
+
+  if strip_description:
+    desc = desc.strip()
+
+  if remove_arrows:
+    desc = desc.replace('--->', '')
+
+  return desc
+
+def extract_ptrs(dsid, name, all_variables, print_info=False):
+
+  variable = all_variables[name]
+  DimSizes = variable['VarDescription'].get('DimSizes', [])
+  ptrs = {}
+  for prefix in ['DEPEND', 'LABL_PTR', 'COMPONENT']:
+    ptrs[prefix] = [None, None, None]
+    ptrs[prefix+"_VALID"] = [None, None, None]
+    ptrs[prefix+"_VALUES"] = [None, None, None]
+    for x in [1, 2, 3]:
+      if f'{prefix}_{x}' in variable['VarAttributes']:
+        x_NAME = variable['VarAttributes'][f'{prefix}_{x}']
+        if not x_NAME in all_variables:
+          ptrs[prefix+"_VALID"][x-1] = False
+          if print_info:
+            msg = f"Error: Bad {prefix} reference: '{name}' has {prefix}_{x} "
+            msg += f"named '{x_NAME}', which is not a variable."
+            logger.error(f"     {msg}")
+            set_error(dsid, name, msg)
+        elif prefix == 'LABL_PTR' or (prefix == 'DEPEND' and 'string' == cdf2hapitype(all_variables[x_NAME]['VarDescription']['DataType'])):
+          if 'VarData' in all_variables[x_NAME]:
+            ptrs[prefix+"_VALID"][x-1] = True
+            ptrs[prefix][x-1] = x_NAME
+            values = trim(all_variables[x_NAME]['VarData'])
+            ptrs[prefix+"_VALUES"][x-1] = values
+            if print_info:
+              logger.info(f"     {prefix}_{x}: {x_NAME}")
+              logger.info(f"     {prefix}_{x} trimmed values: {values}")
+          else:
+            ptrs[prefix+"_VALID"][x-1] = False
+            if print_info:
+              if prefix == 'LABL_PTR':
+                msg = f"Error: {x_NAME} has no VarData"
+              else:
+                msg = f"Error: {x_NAME} is a string type but has no VarData"
+              logger.error(f"     {msg}")
+              set_error(dsid, name, msg)
+        else:
+          ptrs[prefix+"_VALID"][x-1] = True
+          ptrs[prefix][x-1] = x_NAME
+          if print_info:
+            logger.info(f"     {prefix}_{x}: {x_NAME}")
+
+    n_valid = len([x for x in ptrs[prefix+"_VALID"] if x is True])
+    n_invalid = len([x for x in ptrs[prefix+"_VALID"] if x is False])
+    n_found = len([x for x in ptrs[prefix+"_VALID"] if x is not None])
+    if n_invalid > 0:
+      ptrs[prefix] = None
+      msg = f"Error: '{name}' has {n_invalid} invalid elements."
+      logger.error(f"     {msg}")
+      set_error(dsid, name, msg)
+    elif prefix != 'COMPONENT':
+      if n_valid != len(DimSizes):
+        ptrs[prefix] = None
+        if False and print_info:
+          # Not necessarily an error for DEPEND. Depends on DISPLAY_TYPE.
+          # https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html
+          msg = f"ISTP Error: '{name}' has {n_valid} valid elements {prefix}_{{1,2,3}}, but need "
+          msg += f"len(DimSizes) = {len(DimSizes)}."
+          logger.error(f"     {msg}")
+          set_error(dsid, name, msg)
+      if n_found != 0 and n_found != len(DimSizes):
+        ptrs[prefix] = None
+        if False and print_info:
+          # Not necessarily an error for DEPEND. Depends on DISPLAY_TYPE.
+          # https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html
+          msg = f"ISTP Error: Wrong number of {prefix}s: '{name}' has {n_found} of "
+          msg += f"{prefix}_{{1,2,3}} and len(DimSizes) = {len(DimSizes)}."
+          logger.error(f"     {msg}")
+          set_error(dsid, name, msg)
+
+    if n_found == 0:
+      ptrs[prefix] = None
+      ptrs[prefix+"_VALUES"] = None
+
+    if ptrs[prefix] is not None:
+      ptrs[prefix] = ptrs[prefix][0:len(DimSizes)]
+      ptrs[prefix+"_VALUES"] = ptrs[prefix+"_VALUES"][0:len(DimSizes)]
+
+      if len(ptrs[prefix]) == 0:
+        ptrs[prefix] = None
+        ptrs[prefix+"_VALUES"] = None
+
+  return ptrs
+
+def extract_label(dsid, name, variable, ptrs, x=None, print_info=False):
+
+  if 'LABLAXIS' in variable['VarAttributes']:
+    msgx = ""
+    if x is not None:
+      msgx = f"DEPEND_{x} "
+    if print_info:
+      logger.info(f"     {msgx}LABLAXIS = {variable['VarAttributes']['LABLAXIS']}")
+    if ptrs['LABL_PTR'] is not None:
+      if print_info:
+        msg = f"Warning: For {msgx}variable '{name}', LABL_PTR = {ptrs['LABL_PTR']} and LABLAXIS = "
+        msg += f"{variable['VarAttributes']['LABLAXIS']}. Using LABLAXIS."
+        logger.info(f"     {msg}")
+    return trim(variable['VarAttributes']['LABLAXIS'])
+
+  if ptrs['LABL_PTR'] is not None:
+    if len(ptrs['LABL_PTR_VALUES']) == 1:
+      ptrs['LABL_PTR_VALUES'] = ptrs['LABL_PTR_VALUES'][0]
+    return ptrs['LABL_PTR_VALUES']
+
+  return None
+
+def extract_var_type(dsid, name, variable, x=None, print_info=None):
+
+  if 'VAR_TYPE' in variable['VarAttributes']:
+    return variable['VarAttributes']['VAR_TYPE']
+  else:
+    if print_info:
+      msgx = ""
+      if x is not None:
+        msgx = f"DEPEND_{x} "
+      msg = f"     Error: ISTP: {msgx}variable has no VAR_TYPE."
+      logger.error(msg)
+      set_error(dsid, name, msg)
+    return None
+
+def extract_units(dsid, name, variable, x=None, print_info=None):
+
+  msgx = ""
+  if x is not None:
+    msgx = f"DEPEND_{x} "
+
+  units = None
+  if "UNITS" in variable['VarAttributes']:
+    units = variable['VarAttributes']["UNITS"]
+  else:
+    if "UNIT_PTR" in variable['VarAttributes']:
+      if print_info:
+        msg = f"     Error: NotImplemented: {msgx}variable '{name}'"
+        msg += f"has UNIT_PTR = '{variable['VarAttributes']['UNIT_PTR']}'. Not using."
         logger.error(msg)
         set_error(dsid, name, msg)
-    if print_info:
-      if DISPLAY_TYPE == ' ' and log_display_type_issues:
-        logger.info(f"     Warning: DISPLAY_TYPE = '{DISPLAY_TYPE}'")
-      elif DISPLAY_TYPE.strip() == '' and log_display_type_issues:
-        logger.info(f"     Warning: DISPLAY_TYPE.strip() = ''")
 
-    found = False
-    for display_type in display_types_known:
-      if DISPLAY_TYPE.lower().startswith(display_type):
-        found = True
-        valid = True
+    VAR_TYPE = extract_var_type(dsid, name, variable, x=x, print_info=print_info)
+    if VAR_TYPE is not None and VAR_TYPE in ['data', 'support_data']:
+      if not "UNIT_PTR" in variable['VarAttributes']:
         if print_info:
-          logger.info(f"     DISPLAY_TYPE = '{DISPLAY_TYPE}'")
-        break
-    if not found and print_info and log_display_type_issues:
-      logger.info(f"     Warning: DISPLAY_TYPE.lower() = '{DISPLAY_TYPE}' does not start with one of {display_types_known}")
-  elif variable['VarAttributes'].get('VAR_TYPE') == 'data':
-    if print_info:
-      logger.error('     Error: No DISPLAY_TYPE attribute for variable with VAR_TYPE = data')
-    valid = False
+          msg = f"     Error: ISTP: {msgx}variable '{name}' has VAR_TYPE "
+          msg += f"'{VAR_TYPE}' and no UNITS or UNIT_PTR."
+          logger.error(msg)
+          set_error(dsid, name, msg)
 
-  return valid
+  return units
 
-def info_head(master):
+def bins(dsid, name, all_variables, depend_xs, print_info=False):
 
-  id = master['id']
-  allxml = master['allxml']
-
-  startDate = allxml['@timerange_start'].replace(' ', 'T') + 'Z';
-  stopDate = allxml['@timerange_stop'].replace(' ', 'T') + 'Z';
-
-  contact = ''
-  if 'data_producer' in allxml:
-    if '@name' in allxml['data_producer']:
-      contact = allxml['data_producer']['@name']
-    if '@affiliation' in allxml['data_producer']:
-      contact = contact + " @ " + allxml['data_producer']['@affiliation']
-
-  info = {
-      'startDate': startDate,
-      'stopDate': stopDate,
-      'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{id[0]}.html#{id}',
-      'contact': contact
-  }
-
-  return info
-
-def sample_start_stop(metadatum):
-
-  if "data-cache" not in metadatum['orig_data']:
-    logger.info("No orig_data for " + metadatum["id"])
-    return None
-
-  if not 'data' in metadatum["orig_data"]:
-    fname = os.path.join(cdawmeta.DATA_DIR, metadatum["orig_data"]['data-cache'].replace(".json", ".pkl"))
-    orig_data = cdawmeta.util.read(fname, logger=logger)['data']
-  else:
-    orig_data = metadatum["orig_data"]['data']
-
-  if not "FileDescription" in orig_data:
-    logger.info("No orig_data for " + metadatum["id"])
-    return None
-
-  if isinstance(orig_data["FileDescription"], dict):
-    orig_data["FileDescription"] = [orig_data["FileDescription"]]
-
-  num_files = len(orig_data["FileDescription"])
-  if num_files == 0:
-    sampleFile = None
-  if num_files == 1:
-    sampleFile = orig_data["FileDescription"][0]
-  elif num_files == 2:
-    sampleFile = orig_data["FileDescription"][1]
-  else:
-    sampleFile = orig_data["FileDescription"][-2]
-
-  if sampleFile is not None:
-    sampleStartDate = sampleFile["StartTime"]
-    sampleStopDate = sampleFile["EndTime"]
-
-  range = {
-            "sampleStartDate": sampleStartDate,
-            "sampleStopDate": sampleStopDate
-          }
-
-  return range
-
-def bins(name, variable, all_variables, dsid, print_info=False):
-
+  variable = all_variables[name]
   NumDims = variable['VarDescription'].get('NumDims', 0)
   DimSizes = variable['VarDescription'].get('DimSizes', [])
   DimVariances = variable['VarDescription'].get('DimVariances', [])
 
-  if print_info and logger is not None:
+  if print_info:
     logger.info(f"     NumDims: {NumDims}")
     logger.info(f"     DimSizes: {DimSizes}")
     logger.info(f"     DimVariances: {DimVariances}")
-
-  x_error = None
-  xs = {'DEPEND': [], 'LABL_PTR': []}
-  for prefix in ['DEPEND', 'LABL_PTR']:
-    for x in [1, 2, 3]:
-      if f'{prefix}_{x}' in variable['VarAttributes']:
-        x_NAME = variable['VarAttributes'][f'{prefix}_{x}']
-        xs[prefix].append(x_NAME)
-        if not x_NAME in all_variables:
-          x_error = "Bad DEPEND reference"
-          if print_info:
-            msg = f"Error: Bad DEPEND reference: '{name}' has {prefix}_{x} "
-            msg += f"named '{x_NAME}', which is not a variable. Not creating bins."
-            logger.error(f"     {msg}")
-            set_error(dsid, name, msg)
-
-    if len(xs[prefix]) > len(DimSizes):
-      if print_info:
-        msg = f"     Error: Too many DEPENDs: '{name}' has a len(DEPEND_{{1,2,3}}) "
-        msg += f"{len(xs[prefix])} and len(DimSizes) = {len(DimSizes)}."
-        logger.error(msg)
-        set_error(dsid, name, msg)
-      else:
-        xs[prefix].append(None)
-
-  def n_not_none(xs):
-    return len([x for x in xs if x is not None])
-
-  if print_info:
-    for prefix in ['DEPEND', 'LABL_PTR']:
-      if n_not_none(xs[prefix]) > 0:
-        logger.info("     " + f"{prefix}" + "_{1,2,3}: " + f"{xs[prefix]}")
-
-    #else:
-      #if n_vary > 0:
-      #logger.error("Vary OK")
-      #set_error(dsid, name, "Vary OK")
 
   if NumDims != len(DimSizes):
     if print_info:
@@ -745,6 +830,7 @@ def bins(name, variable, all_variables, dsid, print_info=False):
       msg += "!= len(DimSizes) = {len(DimSizes)}"
       logger.error(msg)
       set_error(dsid, name, msg)
+    return None
 
   if len(DimSizes) != len(DimVariances):
     if print_info:
@@ -752,26 +838,15 @@ def bins(name, variable, all_variables, dsid, print_info=False):
       msg += "!= len(DimVariances) = {len(DimVariances)}"
       logger.error(msg)
       set_error(dsid, name, msg)
-
-  if x_error is not None:
-    if print_info:
-      msg = f"     Error: Not creating bins because of {x_error}"
-      logger.error(msg)
-      set_error(dsid, name, msg)
-    return None
-
-  if n_not_none(xs['DEPEND']) != len(DimSizes):
-    if print_info:
-      logger.info(f"     Warning: NotImplemented[1]: Not creating bins because number of DEPENDs ({n_not_none(xs['DEPEND'])}) != len(DimSizes) ({len(DimSizes)})")
     return None
 
   bins_objects = []
-  for x in range(len(xs['DEPEND'])):
-    DEPEND_x_NAME = xs['DEPEND'][x]
+  for x in range(len(depend_xs)):
+    DEPEND_x_NAME = depend_xs[x]
     if DEPEND_x_NAME is not None:
       hapitype = cdf2hapitype(all_variables[DEPEND_x_NAME]['VarDescription']['DataType'])
       if hapitype in ['integer', 'double']:
-        bins_object = create_bins(dsid, name, x, DEPEND_x_NAME, all_variables[DEPEND_x_NAME], print_info=print_info)
+        bins_object = create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=print_info)
       else:
         msg = f"DEPEND_{x} = '{DEPEND_x_NAME}' DataType is not an integer or float. Omitting bins for {name}."
         if print_info:
@@ -786,58 +861,42 @@ def bins(name, variable, all_variables, dsid, print_info=False):
 
   return bins_objects
 
-def create_bins(dsid, name, x, DEPEND_x_NAME, DEPEND_x, print_info=False):
+def create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
 
+  # TODO: Check for multi-dimensional DEPEND_x
+  DEPEND_x = all_variables[DEPEND_x_NAME]
   RecVariance = "NOVARY"
   if "RecVariance" in DEPEND_x['VarDescription']:
     RecVariance = DEPEND_x['VarDescription']["RecVariance"]
-    #print("DEPEND_1 has RecVariance = " + RecVariance)
+    if print_info:
+      logger.info(f"     DEPEND_{x} has RecVariance = " + RecVariance)
 
   if RecVariance == "VARY":
     if print_info:
       logger.info(f"     Warning: NotImplemented[3]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY'. Not creating bins b/c Nand does not for this case.")
     return None
+
+  VAR_TYPE = extract_var_type(dsid, name, DEPEND_x, x=x, print_info=print_info)
+  if VAR_TYPE is None:
+    if print_info:
+      logger.error(f"     Error: ISTP: DEPEND_{x} = {DEPEND_x_NAME} has no VAR_TYPE. Not creating bins.")
+    return None
+
+  ptrs = extract_ptrs(dsid, DEPEND_x_NAME, all_variables, print_info=print_info)
+
+  if 'VarData' in DEPEND_x:
+    bins_object = {
+                    "name": DEPEND_x_NAME,
+                    "description": extract_description(dsid, name, DEPEND_x, x=x, print_info=print_info),
+                    "x_label": extract_label(dsid, name, DEPEND_x, ptrs, x=x, print_info=print_info),
+                    "units": extract_units(dsid, name, DEPEND_x, x=x, print_info=print_info),
+                    "centers": DEPEND_x["VarData"]
+                  }
+    return bins_object
   else:
-    # TODO: Check for multi-dimensional
-    units = ""
-    if "UNITS" in DEPEND_x['VarAttributes']:
-      units = DEPEND_x['VarAttributes']["UNITS"]
-    else:
-      if "UNIT_PTR" in DEPEND_x['VarAttributes']:
-        if print_info:
-          msg = f"     Error: NotImplemented[4]: DEPEND_{x} = '{DEPEND_x_NAME}'"
-          msg += f"has UNIT_PTR = '{DEPEND_x['VarAttributes']['UNIT_PTR']}'. Not using."
-          logger.error(msg)
-          set_error(dsid, name, msg)
-
-      if 'VAR_TYPE' in DEPEND_x['VarAttributes']:
-        DEPEND_x_VAR_TYPE = DEPEND_x['VarAttributes']['VAR_TYPE']
-      else:
-        if print_info:
-          msg = f"     Error: DEPEND_{x} = '{DEPEND_x_NAME}' has no VAR_TYPE. Not creating bins."
-          logger.error(msg)
-          set_error(dsid, name, msg)
-        return None
-
-      if DEPEND_x_VAR_TYPE in ['data', 'support_data']:
-        if not "UNIT_PTR" in DEPEND_x['VarAttributes']:
-          if print_info:
-            msg = f"     Error: DEPEND_{x} = '{DEPEND_x_NAME}' has VAR_TYPE "
-            msg += f"'{DEPEND_x_VAR_TYPE}' and no UNITS or UNIT_PTR."
-            logger.error(msg)
-            set_error(dsid, name, msg)
-
-    if 'VarData' in DEPEND_x:
-      bins_object = {
-                      "name": DEPEND_x_NAME,
-                      "units": units,
-                      "centers": DEPEND_x["VarData"]
-                    }
-      return bins_object
-    else:
-      if print_info:
-        logger.info(f"     Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
-      return None
+    if print_info:
+      logger.info(f"     Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
+    return None
 
 def split_variables(id, variables, issues):
   """
@@ -961,3 +1020,47 @@ def restructure_globals(dsid, _master_data, logger=None, set_error=None):
     globals_r[gkey[0]] = "\n".join(text)
 
   return globals_r
+
+def set_error(id, name, msg):
+  if not id in set_error.errors:
+    set_error.errors[id] = {}
+  if name is None:
+    set_error.errors[id] = msg.lstrip()
+  else:
+    if not name in set_error.errors[id]:
+      set_error.errors[id][name] = []
+    set_error.errors[id][name].append(msg.lstrip())
+set_error.errors = {}
+
+def write_errors():
+  # Write all errors to a single file if all datasets were requested. Errors
+  # were already written to log file, but here we need to do additional formatting
+  # that is more difficult if errors were written as they occur.
+  errors = ""
+  for dsid, vars in set_error.errors.items():
+    if type(vars) == str:
+      errors += f"{dsid}: {vars}\n"
+      continue
+    errors += f"{dsid}:\n"
+    for vid, msgs in vars.items():
+      errors += f"  {vid}:\n"
+      for msg in msgs:
+        errors += f"    {msg}\n"
+  cdawmeta.util.write(os.path.join(DATA_DIR, 'hapi', 'cdaweb2hapi.errors.log'), errors)
+
+def trim(label):
+  if isinstance(label, str):
+    return label.strip()
+  for i in range(0, len(label)):
+    label[i] = str(label[i]).strip()
+  return label
+
+def sort_keys(obj):
+  return {key: obj[key] for key in sorted(obj)}
+
+def array_to_dict(array):
+  obj = {}
+  for element in array:
+    key = list(element.keys())[0]
+    obj[key] = element[key]
+  return obj

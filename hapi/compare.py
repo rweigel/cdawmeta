@@ -129,15 +129,15 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
         m = min(n_params_s2, n_params_s1)
         if list(keys_s1)[0:m] != list(keys_s2)[0:m]:
           report(f"n_params_{opts['s2']} = {n_params_s2} != n_params_{opts['s1']} = {n_params_s1} {extra}",'fail')
-          report(f"  Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
-          report(f"  Error because first {m} parameters are not identical.",'info')
+          report(f"   Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
+          report(f"   Error because first {m} parameters are not identical.",'info')
         else:
           if opts['mode'] == 'update':
             msg = f"n_params_{opts['s2']} = {n_params_s2} != n_params_{opts['s1']} = {n_params_s1} {extra}"
             report(msg,'warn')
           else:
             report(msg,'fail')
-          report(f"  Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
+          report(f"   Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
           if n_params_s2 > n_params_s1:
             report(f"First {m} parameters are identical, mode = 'update', and n_params_{opts['s2']} > n_params_{opts['s1']}",'warn')
           else:
@@ -170,7 +170,7 @@ def compare_info(dsid, info_s2, info_s1):
   if n_keys_s2 != n_keys_s1:
     #print(f"{dsid}")
     report(f'n_keys_{opts["s2"]} = {n_keys_s2} != n_keys_{opts["s1"]} = {n_keys_s1}','fail')
-    report(f"  Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
+    report(f"   Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
   else:
     common_keys = set(keys_s2) & set(keys_s1)
     for key in common_keys:
@@ -463,11 +463,11 @@ def report(msg, msg_type=None, pad='    '):
 
   prefix = ""
   if msg_type == 'pass':
-    prefix = pad + "✓ "
+    prefix = pad + "PASS "
   if msg_type == 'fail':
-    prefix = pad + "✗ "
+    prefix = pad + "FAIL "
   if msg_type == 'warn':
-    prefix = pad + "⚠ "
+    prefix = pad + "WARN "
   if msg_type == 'info':
     prefix = "  "
 

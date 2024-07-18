@@ -76,9 +76,11 @@ def logger(name=None,
           }
       },
       'formatters': {
-          # Modify log message format here or replace with your custom formatter class
-          'my_formatter': {
+          'console_formatter': {
             'format': f'{name}: {format}'
+          },
+          'file_formatter': {
+            'format': f'{format}'
           }
       },
       'handlers': {
@@ -86,14 +88,14 @@ def logger(name=None,
               # Sends log messages with log level ERROR or higher to stderr
               'class': 'logging.StreamHandler',
               'level': 'ERROR',
-              'formatter': 'my_formatter',
+              'formatter': 'console_formatter',
               'stream': sys.stderr
           },
           'file_stderr': {
               # Sends all log messages to a file
               'class': 'logging.FileHandler',
               'level': 'ERROR',
-              'formatter': 'my_formatter',
+              'formatter': 'file_formatter',
               'filename': file_error,
               'encoding': 'utf8'
           },
@@ -101,7 +103,7 @@ def logger(name=None,
               # Sends log messages with log level lower than ERROR to stdout
               'class': 'logging.StreamHandler',
               'level': 'DEBUG',
-              'formatter': 'my_formatter',
+              'formatter': 'console_formatter',
               'filters': ['exclude_errors'],
               'stream': sys.stdout
           },
@@ -109,7 +111,7 @@ def logger(name=None,
               # Sends all log messages to a file
               'class': 'logging.FileHandler',
               'level': 'DEBUG',
-              'formatter': 'my_formatter',
+              'formatter': 'file_formatter',
               'filename': file_log,
               'encoding': 'utf8'
           }
@@ -120,7 +122,7 @@ def logger(name=None,
               'handlers': handlers
           }
       },
-      'xroot': {
+      'root': {
           # In general, this should be kept at 'NOTSET'.
           # Otherwise it would interfere with the log levels set for each handler.
           'level': 'NOTSET',
@@ -128,16 +130,18 @@ def logger(name=None,
       }
   }
 
-  print(f'Logging output to: {file_log}')
+  if name is not None:
+    msgx = f"for {name} "
+  print(f'Logging output {msgx}to: {file_log}')
   if file_error:
-    print(f'Logging errors to: {file_error}')
+    print(f'Logging errors {msgx}to: {file_error}')
   else:
     del config['handlers']['file_stderr']
 
-#  _logger = logging.getLogger(name)
   logging.config.dictConfig(config)
 
-  #for handler in _logger.handlers:
-  #  handler.setFormatter(CustomFormatter(rm_string=rm_string))
+  _logger = logging.getLogger(name)
+  for handler in _logger.handlers:
+    handler.setFormatter(CustomFormatter(rm_string=rm_string))
 
   return logging.getLogger(name)
