@@ -284,7 +284,7 @@ def master(dataset, restructure=True, timeout=20, update=False, diffs=False):
 
   _master = fetch(url, dataset['id'], 'master', timeout=timeout, update=update, diffs=diffs)
   if restructure == True:
-    restructure_master(_master['data'], logger=logger)
+    _master['data'] = restructure_master(_master['data'], logger=logger)
   return _master
 
 def spase(_master, timeout=20, update=True, diffs=False):
@@ -368,10 +368,13 @@ def restructure_master(_master, logger=None):
       obj[key] = element[key]
     return obj
 
+  # TODO: Check that only one key.
   file = list(_master.keys())[0]
 
+  fileinfo_r = array_to_dict(_master[file]['CDFFileInfo'])
+
   variables = _master[file]['CDFVariables']
-  variables_new = {}
+  variables_r = {}
 
   for variable in variables:
 
@@ -392,7 +395,7 @@ def restructure_master(_master, logger=None):
       else:
         variable_dict[key] = sort_keys(array_to_dict(value))
 
-    variables_new[variable_name] = variable_dict
+    variables_r[variable_name] = variable_dict
 
   globals = _master[file]['CDFglobalAttributes']
   globals_r = {}
@@ -411,7 +414,11 @@ def restructure_master(_master, logger=None):
 
     globals_r[gkey[0]] = "\n".join(text)
 
-  _master[file]['CDFFileInfo'] = array_to_dict(_master[file]['CDFFileInfo'])
+  _master = {
+              file: file,
+              'CDFFileInfo': fileinfo_r,
+              'CDFglobalAttributes': globals_r,
+              'CDFVariables': variables_r
+            }
 
-  _master[file]['CDFglobalAttributes'] = globals_r
-  _master[file]['CDFVariables'] = variables_new
+  return _master

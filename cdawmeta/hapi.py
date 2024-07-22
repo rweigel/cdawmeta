@@ -89,11 +89,10 @@ def _hapi(metadatum, no_orig_data=False):
   if no_orig_data == False:
     sample = extract_sample_start_stop(metadatum)
 
-  metadatum_cdaweb = cdawmeta.metadata(id=id, embed_data=True, update=False, no_orig_data=True)
+  metadatum_cdaweb = cdawmeta.metadata(id=id, embed_data=True, update=False, no_spase=True, no_orig_data=True)
   master = metadatum_cdaweb[id]["master"]['data']
 
-  file = list(master.keys())[0]
-  variables = master[file]['CDFVariables']
+  variables = master['CDFVariables']
   # Split variables to be under their DEPEND_0
   vars_split = split_variables(id, variables, issues)
 
