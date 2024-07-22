@@ -10,6 +10,8 @@
 # If an update is needed due only to a source code change, use
 #   make all
 
+ARGS=''
+
 all:
 	make hapi
 	make hapi-nl
@@ -25,8 +27,7 @@ rsync-from-mag:
 	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ .
 
 compare:
-	make cdaweb
-	make hapi
+	make hapi ARGS='--no_orig_data'
 	make hapi-nl
 	python hapi/compare.py | tee data/hapi/compare.log
 
@@ -43,10 +44,10 @@ data/cdaweb.json: cdawmeta.egg-info
 
 ################################################################################
 hapi:
-	make data/hapi/catalog-all.json
+	make data/hapi/catalog-all.json $(ARGS)
 
-data/hapi/catalog-all.json: cdawmeta.egg-info data/cdaweb.json hapi/hapi.py cdawmeta/hapi-nl-issues.json
-	python hapi.py --data_dir ./data
+data/hapi/catalog-all.json: cdawmeta.egg-info data/cdaweb.json hapi.py cdawmeta/hapi-nl-issues.json
+	python hapi.py --data_dir ./data $(ARGS)
 ################################################################################
 
 ################################################################################

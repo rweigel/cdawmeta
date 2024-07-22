@@ -149,6 +149,7 @@ def print_request_log(resp, url, cache):
     msg += f"  Last cache file:    {rel_path(DATA_DIR, cache['file_last'])}\n"
   msg += f"  Request Cache-Related Headers:\n"
   for k, v in req_cache_headers.items():
+    print(k,v)
     msg += f"    {k}: {v}\n"
   msg += f"  Response Cache-Related Headers:\n"
   for k, v in res_cache_headers.items():
@@ -250,6 +251,9 @@ def fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
 
 def datasets(timeout=20, update=False):
 
+  if update == False and datasets.datasets is not None:
+    return datasets.datasets
+
   json_dict = fetch(allurl, 'all', 'all', timeout=timeout, update=update)
   _datasets = {}
   for dataset_allxml in json_dict['data']['sites']['datasite'][0]['dataset']:
@@ -275,7 +279,9 @@ def datasets(timeout=20, update=False):
 
     _datasets[id] = dataset
 
+  datasets.datasets = _datasets
   return _datasets
+datasets.datasets = None
 
 def master(dataset, restructure=True, timeout=20, update=False, diffs=False):
 

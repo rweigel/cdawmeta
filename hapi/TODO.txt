@@ -1,0 +1,506 @@
+Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-bw.json
+Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-bw.json
+Reading: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
+Read: /Users/weigel/git/hapi/cdaweb-hapi/data/hapi-nl.json
+
+** Bob - document why
+IBEX_H3_ENA_LO_R06_STATE_VECTORS not in bw
+
+* Jeremy - If in log, figure out why this happens
+AMPTECCE_H0_MEPA@0
+  nnl = 20 != nbw = 15 for bw DEPEND_0  = Epoch
+  Differences: {'TOF_oxygen_Edrift', 'TOF_iron_Edrift', 'TOF_helium_Edrift', 'HIRES_ION_protons_Edrift', 'TOF_protons_Edrift'}
+AMPTECCE_H0_MEPA@1
+  nnl = 29 != nbw = 33 for bw DEPEND_0  = Epoch_1
+  Differences: {'TOF_oxygen_Edrift', 'TOF_protons_Edrift', 'TOF_iron_Edrift', 'TOF_helium_Edrift'}
+AMPTECCE_H0_MEPA@3
+  nnl = 7 != nbw = 8 for bw DEPEND_0  = Epoch_3
+  Differences: {'HIRES_ION_protons_Edrift'}
+
+* Bob - check that masters fixed
+BAR_2L_L2_HKPG
+  nnl = 45 != nbw = 2 for bw DEPEND_0  = Epoch
+  Differences: {'T12_TermTemp', 'T14_TermCap', 'V9_Solar2', 'termStatus', 'V10_Solar3', 'timeOffset', 'V1_Battery', 'modemCounter', 'weeks', 'T2_ChargeCont', 'V3_POS_DPU', 'I0_TotalLoad', 'T15_CCStat', 'I3_POS_DPU', 'T5_DPU', 'numOfSats', 'T13_TermBatt', 'V11_Solar4', 'T9_Solar2', 'I7_NEG_DPU', 'V2_Solar1', 'I1_TotalSolar', 'T10_Solar3', 'T8_Solar1', 'I5_Modem', 'T1_Mag', 'V5_Modem', 'cmdCounter', 'T0_Scint', 'T11_Solar4', 'I4_POS_XRayDet', 'T3_Battery', 'dcdCounter', 'T7_Structure', 'T4_PowerConv', 'V6_NEG_XRayDet', 'V0_VoltAtLoad', 'V8_Mag', 'T6_Modem', 'I6_NEG_XRayDet', 'I2_Solar1', 'V7_NEG_DPU', 'V4_POS_XRayDet'}
+
+DMSP-F16_SSIES-3_THERMAL-PLASMA
+  nnl = 31 != nbw = 54 for bw DEPEND_0  = Epoch
+  Differences: {'alt_tt', 'frachequal', 'mlt', 'mlt_tt', 'corrpaqual', 'sza_tt', 'mlat', 'glon_tt', 'glat_tt', 'vxqual', 'idmqual', 'vyqual', 'sza', 'glat', 'rpainfo', 'alt', 'tempqual', 'glon', 'frachqual', 'fracoqual', 'mlat_tt', 'densqual', 'vzqual'}
+DMSP-F17_SSIES-3_THERMAL-PLASMA
+  nnl = 31 != nbw = 54 for bw DEPEND_0  = Epoch
+  Differences: {'alt_tt', 'frachequal', 'mlt', 'mlt_tt', 'corrpaqual', 'sza_tt', 'mlat', 'glon_tt', 'glat_tt', 'vxqual', 'idmqual', 'vyqual', 'sza', 'glat', 'rpainfo', 'alt', 'tempqual', 'glon', 'frachqual', 'fracoqual', 'mlat_tt', 'densqual', 'vzqual'}
+DMSP-F18_SSIES-3_THERMAL-PLASMA
+  nnl = 31 != nbw = 54 for bw DEPEND_0  = Epoch
+  Differences: {'alt_tt', 'frachequal', 'mlt', 'mlt_tt', 'corrpaqual', 'sza_tt', 'mlat', 'glon_tt', 'glat_tt', 'vxqual', 'idmqual', 'vyqual', 'sza', 'glat', 'rpainfo', 'alt', 'tempqual', 'glon', 'frachqual', 'fracoqual', 'mlat_tt', 'densqual', 'vzqual'}
+
+* Jeremy look into
+ELA_L1_STATE_DEFN@1
+  nnl = 2 != nbw = 5 for bw DEPEND_0  = ela_att_time
+  Differences: {'ela_att_solution_date', 'ela_spin_orbnorm_angle', 'ela_spin_sun_angle'}
+ELB_L1_STATE_DEFN@1
+  nnl = 2 != nbw = 5 for bw DEPEND_0  = elb_att_time
+  Differences: {'elb_att_solution_date', 'elb_spin_sun_angle', 'elb_spin_orbnorm_angle'}
+
+* Jeremy look into
+ELA_L1_EPDEF
+  nnl = 7 != nbw = 9 for bw DEPEND_0  = ela_pef_time
+  Differences: {'ela_pef', 'ela_pef_sectnum'}
+ELA_L1_EPDIF
+  nnl = 6 != nbw = 8 for bw DEPEND_0  = ela_pif_time
+  Differences: {'ela_pif_sectnum', 'ela_pif'}
+
+* Jeremy - look into
+ERG_PWE_OFA_L2_SPEC@0
+  nnl = 2 != nbw = 14 for bw DEPEND_0  = epoch_e132
+  Differences: {'ti_original_e132', 'lpf_e132', 'wpt_ac_gain_e132', 'swpia_cnt_e132', 'ch_e132', 'cal_table_id_e132', 'sampling_rate_e132', 'cmp_e132', 'quality_flag_e132', 'main_amp_gain_e132', 'ti_corrected_e132', 'obs_cal_e132'}
+ERG_PWE_OFA_L2_SPEC@1
+  nnl = 2 != nbw = 14 for bw DEPEND_0  = epoch_b132
+  Differences: {'swpia_cnt_b132', 'main_amp_gain_b132', 'ch_b132', 'sampling_rate_b132', 'ti_corrected_b132', 'obs_cal_b132', 'cal_table_id_b132', 'cmp_b132', 'mscpa_gain_b132', 'ti_original_b132', 'quality_flag_b132', 'lpf_b132'}
+ERG_PWE_HFA_L2_SPEC_HIGH
+  nnl = 2 != nbw = 29 for bw DEPEND_0  = Epoch
+  Differences: {'spectra_er', 'spectra_e_ar', 'spectra_esum', 'mscpa_gain', 'spectra_eu', 'spectra_ev', 'spectra_eu_ev_d2', 'ch1_gain', 'spectra_el', 'spectra_eu_ev', 'spectra_eu_ev_d1', 'spectra_e_mix', 'ch1_in', 'spectra_bgamma', 'wav_stat', 'wpt_ac_gain', 'ch2_gain', 'obs_stat', 'spectra_eu_bg_d2', 'ave_stat', 'spectra_ev_bg_d1', 'spectra_ev_bg', 'spectra_eu_bg', 'e_mix_content', 'spectra_eu_bg_d1', 'spectra_ev_bg_d2', 'ch2_in'}
+ERG_PWE_HFA_L2_SPEC_LOW
+  nnl = 2 != nbw = 29 for bw DEPEND_0  = Epoch
+  Differences: {'spectra_er', 'spectra_e_ar', 'spectra_esum', 'mscpa_gain', 'spectra_eu', 'spectra_ev', 'spectra_eu_ev_d2', 'ch1_gain', 'spectra_el', 'spectra_eu_ev', 'spectra_eu_ev_d1', 'spectra_e_mix', 'ch1_in', 'spectra_bgamma', 'wav_stat', 'wpt_ac_gain', 'ch2_gain', 'obs_stat', 'spectra_eu_bg_d2', 'ave_stat', 'spectra_ev_bg_d1', 'spectra_ev_bg', 'spectra_eu_bg', 'e_mix_content', 'spectra_eu_bg_d1', 'spectra_ev_bg_d2', 'ch2_in'}
+ERG_PWE_HFA_L2_SPEC_MONIT
+  nnl = 2 != nbw = 28 for bw DEPEND_0  = Epoch
+  Differences: {'spectra_er', 'spectra_e_ar', 'spectra_esum', 'mscpa_gain', 'spectra_eu', 'spectra_ev', 'spectra_eu_ev_d2', 'ch1_gain', 'spectra_el', 'spectra_eu_ev', 'spectra_eu_ev_d1', 'spectra_e_mix', 'ch1_in', 'spectra_bgamma', 'wav_stat', 'wpt_ac_gain', 'obs_stat', 'spectra_eu_bg_d2', 'ave_stat', 'spectra_ev_bg_d1', 'spectra_ev_bg', 'spectra_eu_bg', 'e_mix_content', 'spectra_eu_bg_d1', 'spectra_ev_bg_d2', 'ch2_in'}
+
+* Bob - determine why
+FA_ESA_L2_EEB
+  nl has bins for data but bw does not
+FA_ESA_L2_EEB
+  nl has bins for eflux but bw does not
+FA_ESA_L2_EEB
+  bw has bins for pitch_angle_median but nl does not
+FA_ESA_L2_EEB
+  bw has bins for energy_median but nl does not
+FA_ESA_L2_EEB
+  nl has bins for pitch_angle but bw does not
+FA_ESA_L2_EES
+  nl has bins for data but bw does not
+FA_ESA_L2_EES
+  nl has bins for eflux but bw does not
+FA_ESA_L2_EES
+  bw has bins for pitch_angle_median but nl does not
+FA_ESA_L2_EES
+  bw has bins for energy_median but nl does not
+FA_ESA_L2_EES
+  nl has bins for pitch_angle but bw does not
+FA_ESA_L2_IEB
+  nl has bins for data but bw does not
+FA_ESA_L2_IEB
+  nl has bins for eflux but bw does not
+FA_ESA_L2_IEB
+  bw has bins for pitch_angle_median but nl does not
+FA_ESA_L2_IEB
+  bw has bins for energy_median but nl does not
+FA_ESA_L2_IEB
+  nl has bins for pitch_angle but bw does not
+FA_ESA_L2_IES
+  nl has bins for data but bw does not
+FA_ESA_L2_IES
+  nl has bins for eflux but bw does not
+FA_ESA_L2_IES
+  bw has bins for pitch_angle_median but nl does not
+FA_ESA_L2_IES
+  bw has bins for energy_median but nl does not
+FA_ESA_L2_IES
+  nl has bins for pitch_angle but bw does not
+
+* Jeremy - look into
+IBEX_H3_ENA_LO_R17_CG_SP_RAM_1YR
+  nnl = 73 != nbw = 138 for bw DEPEND_0  = Epoch
+  Differences: {'Cnts8', 'Ener5', 'Cnts4', 'Ener7', 'Cnts5', 'Ffsn6', 'Ener3', 'Fexp2', 'Ffsn4', 'Ener2', 'Ffsn5', 'Cnts1', 'Fsnr1', 'Ffsn7', 'Flux3', 'Numb1', 'Fexp6', 'Fsnr8', 'Ffsn2', 'Numb7', 'Fvar7', 'Fvar6', 'Cnts2', 'Fsnr6', 'Numb4', 'Flux1', 'Fexp3', 'Fsnr2', 'Fsnr3', 'Ener6', 'Fexp5', 'Flux8', 'Fvar5', 'Ener1', 'Numb8', 'Ener4', 'Ffsn3', 'Ffsn8', 'Numb5', 'Fvar4', 'Fexp4', 'Fexp1', 'Flux5', 'Numb2', 'Fvar8', 'Fvar1', 'Numb3', 'Flux2', 'Fexp8', 'Cnts6', 'Flux4', 'Cnts7', 'mapnum', 'Fvar3', 'Fsnr4', 'Fsnr7', 'Flux6', 'Numb6', 'Cnts3', 'Fexp7', 'Ener8', 'Flux7', 'Fsnr5', 'Fvar2', 'Ffsn1'}
+
+ICON_L2-1_MIGHTI-A_LOS-WIND-GREEN not in nl
+MVN_INSITU_KP-4SEC
+  nnl = 159 != nbw = 175 for bw DEPEND_0  = epoch
+  Differences: {'NGIMS_O_density_data_quality', 'NGIMS_Ion_density_data_quality_30plus', 'NGIMS_Ion_density_data_quality_14plus', 'Inbound_Outbound_Flag', 'NGIMS_Ion_density_data_quality_17plus', 'NGIMS_Ion_density_data_quality_32plus', 'NGIMS_He_density_data_quality', 'NGIMS_CO2_density_data_quality', 'NGIMS_Ion_density_data_quality_28plus', 'NGIMS_Ion_density_data_quality_44plus', 'NGIMS_Ion_density_data_quality_12plus', 'NGIMS_N2_density_data_quality', 'NGIMS_Ion_density_data_quality_16plus', 'NGIMS_Ar_density_data_quality', 'NGIMS_CO_density_data_quality', 'NGIMS_NO_density_data_quality'}
+PO_K0_EFI
+  nnl = 11 != nbw = 13 for bw DEPEND_0  = Epoch
+  Differences: {'GSE_ANGLE_Z', 'GSE_ANGLE_XY'}
+PO_H0_PWI@0
+  Order differs for bw DEPEND_0 = Epoch
+  nl: ['Time', 'MCAE_Elec', 'Fce', 'MCAE_Antenna', 'MCAB_Antenna']
+  bw: ['Time', 'Fce', 'MCAE_Antenna', 'MCAB_Antenna', 'MCAE_Elec']
+PO_H1_PWI@0
+  nnl = 9 != nbw = 8 for bw DEPEND_0  = Epoch
+  Differences: {'SFRA_Antenna', 'SFR4_Corr', 'SFR1Phase', 'SFR5A', 'SFR4B', 'SFR5B', 'SFR1_Corr', 'SFR1A', 'SFRB_Antenna', 'SFR4A', 'SFR5Phase', 'SFR1B', 'SFR4Phase', 'SFR_Mode', 'SFR5_Corr'}
+PO_H1_PWI@1
+  nnl = 5 != nbw = 9 for bw DEPEND_0  = Epoch4
+  Differences: {'SFR5B', 'SFR4A', 'SFR3A', 'SFR3_Corr', 'SFR3B', 'SFR4_Corr', 'SFR5A', 'SFR4B', 'SFR5Phase', 'SFR3Phase', 'SFR4Phase', 'SFR5_Corr'}
+PO_H1_PWI@2
+  Order differs for bw DEPEND_0 = Epoch3
+  nl: ['Time', 'SFR2A', 'SFR2B', 'SFR2Phase', 'SFR2_Corr']
+  bw: ['Time', 'SFR3A', 'SFR3B', 'SFR3Phase', 'SFR3_Corr']
+PO_H1_PWI@3
+  nnl = 8 != nbw = 5 for bw DEPEND_0  = Epoch2
+  Differences: {'SFRA_Antenna', 'SFR1_Corr', 'SFR1Phase', 'SFR1A', 'SFR2A', 'SFRB_Antenna', 'SFR1B', 'SFR2_Corr', 'SFR2B', 'SFR2Phase', 'SFR_Mode'}
+PO_H1_PWI@5 not in nl
+PO_H4_PWI@0
+  nnl = 6 != nbw = 8 for bw DEPEND_0  = Epoch
+  Differences: {'HFWR_Bx2K', 'Gain1', 'HFWR_Ey2K', 'HFWR_Ez2K', 'HFWR_Bz2K', 'HFWR_By2K', 'MGain', 'HFWR_Ex2K', 'Gain3', 'Gain2'}
+PO_H4_PWI@1
+  nnl = 7 != nbw = 5 for bw DEPEND_0  = Epoch0
+  Differences: {'HFWR_Bx2K', 'Gain1', 'HFWR_Ez2K', 'HFWR_Ey2K', 'HFWR_Bz2K', 'HFWR_By2K', 'MGain', 'HFWR_Ex2K', 'Gain3', 'Gain2'}
+PO_H8_PWI
+  nnl = 18 != nbw = 20 for bw DEPEND_0  = Epoch
+  Differences: {'Gain1', 'MGain'}
+PO_H9_PWI
+  nnl = 11 != nbw = 12 for bw DEPEND_0  = Epoch
+  Differences: {'WBR_Mag'}
+PO_LEVEL1_UVI
+  nnl = 4 != nbw = 8 for bw DEPEND_0  = EPOCH      
+  Differences: {'SYSTEM     ', 'OBSEQNUM   ', 'GAIN       ', 'INT_IMAGE_LF51', 'FRAMERATE  ', 'INT_IMAGE_Movie51', 'INT_IMAGE_51', 'UVIMODE    ', 'DOORPOS    ', 'FILTER     '}
+PSP_FLD_L2_TDS_WF@1
+  nnl = 60 != nbw = 62 for bw DEPEND_0  = epoch
+  Differences: {'PSP_FLD_L2_TDS_WF_Burst_Type_Name', 'PSP_FLD_L2_TDS_WF_Burst_Quality_Algorithm_Name'}
+PSP_ISOIS-EPILO_L2-IC@0
+  nnl = 32 != nbw = 41 for bw DEPEND_0  = Epoch_ChanC
+  Differences: {'RTN_ChanP_L22', 'RTN_ChanP_L11', 'HCI_ChanP_L33', 'HGC_R_ChanP', 'HCI_ChanC_L66', 'HGC_R_ChanC', 'RTN_ChanC_L22', 'HCI_ChanC_L77', 'He4_CountRate_ChanC', 'HCI_ChanP_L66', 'He4_Flux_ChanC', 'HCI_ChanC', 'HCI_ChanP_L22', 'HCI_ChanP_L11', 'HGC_Lat_ChanC', 'RTN_ChanC_L55', 'O_CountRate_ChanC', 'HCI_R_ChanP', 'He4_CountRate_ChanC_avg', 'RTN_ChanP', 'O_Counts_ChanC', 'HCI_Lat_ChanC', 'HCI_ChanP', 'HCI_ChanC_L22', 'RTN_ChanC_L00', 'H_CountRate_ChanP_avg', 'RTN_ChanC', 'HCI_Lon_ChanC', 'HCI_ChanC_L11', 'HCI_ChanP_L00', 'RTN_ChanP_L33', 'H_Flux_ChanP_avg', 'RTN_ChanP_L55', 'HCI_ChanC_L44', 'HCI_R_ChanC', 'O_CountRate_ChanC_avg', 'HCI_ChanP_L77', 'RTN_ChanP_L00', 'RTN_ChanP_L77', 'He3_Counts_ChanC', 'SA_ChanC', 'RTN_ChanP_L66', 'RTN_ChanC_L77', 'HCI_ChanC_L00', 'RTN_ChanC_L44', 'H_CountRate_ChanP', 'Fe_CountRate_ChanC', 'H_Flux_ChanP', 'Fe_Counts_ChanC', 'He4_Counts_ChanC', 'SA_ChanP', 'HCI_ChanP_L55', 'HCI_Lon_ChanP', 'He3_CountRate_ChanC', 'HCI_ChanC_L55', 'PA_ChanC', 'H_Counts_ChanP', 'Fe_CountRate_ChanC_avg', 'He4_Flux_ChanC_avg', 'RTN_ChanC_L33', 'HCI_Lat_ChanP', 'HGC_Lat_ChanP', 'HGC_Lon_ChanP', 'HGC_Lon_ChanC', 'He3_CountRate_ChanC_avg', 'RTN_ChanC_L66', 'PA_ChanP', 'RTN_ChanC_L11', 'HCI_ChanC_L33', 'RTN_ChanP_L44', 'HCI_ChanP_L44'}
+PSP_ISOIS-EPILO_L2-IC@1
+  nnl = 32 != nbw = 42 for bw DEPEND_0  = Epoch_ChanD
+  Differences: {'RTN_ChanR_L55', 'RTN_ChanD_L00', 'RTN_ChanR_L77', 'RTN_ChanR', 'PA_ChanR', 'C_CountRate_ChanD', 'HCI_ChanR_L22', 'HCI_Lon_ChanR', 'HGC_Lat_ChanR', 'H_Flux_ChanR', 'RTN_ChanD_L11', 'Ne_CountRate_ChanD', 'RTN_ChanD_L33', 'C_Counts_ChanD', 'Mg_Counts_ChanD', 'HCI_ChanD_L00', 'N_Counts_ChanD', 'HCI_ChanD', 'HGC_Lon_ChanR', 'RTN_ChanD', 'H_Flux_ChanR_avg', 'H_CountRate_ChanR', 'RTN_ChanD_L66', 'H_CountRate_ChanR_avg', 'HCI_ChanR_L55', 'HGC_Lat_ChanD', 'RTN_ChanR_L00', 'HCI_ChanR_L33', 'HCI_ChanR_L44', 'RTN_ChanR_L11', 'RTN_ChanR_L22', 'HCI_ChanR', 'Ne_CountRate_ChanD_avg', 'HGC_R_ChanR', 'SA_ChanR', 'HCI_ChanR_L66', 'HCI_ChanD_L77', 'Ne_Counts_ChanD', 'HCI_Lat_ChanD', 'HCI_Lon_ChanD', 'HCI_ChanR_L00', 'HGC_Lon_ChanD', 'RTN_ChanD_L55', 'Si_Counts_ChanD', 'HCI_R_ChanR', 'Si_CountRate_ChanD', 'HCI_ChanD_L66', 'HCI_R_ChanD', 'HCI_ChanD_L33', 'HCI_Lat_ChanR', 'RTN_ChanD_L22', 'RTN_ChanR_L33', 'H_Counts_ChanR', 'RTN_ChanR_L66', 'N_CountRate_ChanD', 'RTN_ChanR_L44', 'RTN_ChanD_L77', 'Mg_CountRate_ChanD_avg', 'Si_CountRate_ChanD_avg', 'Mg_CountRate_ChanD', 'HCI_ChanD_L55', 'HGC_R_ChanD', 'HCI_ChanR_L11', 'HCI_ChanD_L44', 'N_CountRate_ChanD_avg', 'PA_ChanD', 'RTN_ChanD_L44', 'C_CountRate_ChanD_avg', 'HCI_ChanD_L22', 'HCI_ChanR_L77', 'SA_ChanD', 'HCI_ChanD_L11'}
+PSP_ISOIS-EPILO_L2-IC@2
+  Order differs for bw DEPEND_0 = Epoch_ChanP
+  nl: ['Time', 'H_CountRate_ChanT_avg', 'H_Flux_ChanT_avg', 'H_Counts_ChanT', 'H_CountRate_ChanT', 'H_Flux_ChanT', 'HCI_ChanT', 'HCI_ChanT_L00', 'HCI_ChanT_L11', 'HCI_ChanT_L22', 'HCI_ChanT_L33', 'HCI_ChanT_L44', 'HCI_ChanT_L55', 'HCI_ChanT_L66', 'HCI_ChanT_L77', 'HCI_R_ChanT', 'HCI_Lat_ChanT', 'HCI_Lon_ChanT', 'HGC_R_ChanT', 'HGC_Lat_ChanT', 'HGC_Lon_ChanT', 'PA_ChanT', 'RTN_ChanT', 'RTN_ChanT_L00', 'RTN_ChanT_L11', 'RTN_ChanT_L22', 'RTN_ChanT_L33', 'RTN_ChanT_L44', 'RTN_ChanT_L55', 'RTN_ChanT_L66', 'RTN_ChanT_L77', 'SA_ChanT']
+  bw: ['Time', 'H_CountRate_ChanP_avg', 'H_Flux_ChanP_avg', 'H_Counts_ChanP', 'H_CountRate_ChanP', 'H_Flux_ChanP', 'HCI_ChanP', 'HCI_ChanP_L00', 'HCI_ChanP_L11', 'HCI_ChanP_L22', 'HCI_ChanP_L33', 'HCI_ChanP_L44', 'HCI_ChanP_L55', 'HCI_ChanP_L66', 'HCI_ChanP_L77', 'HCI_R_ChanP', 'HCI_Lat_ChanP', 'HCI_Lon_ChanP', 'HGC_R_ChanP', 'HGC_Lat_ChanP', 'HGC_Lon_ChanP', 'PA_ChanP', 'RTN_ChanP', 'RTN_ChanP_L00', 'RTN_ChanP_L11', 'RTN_ChanP_L22', 'RTN_ChanP_L33', 'RTN_ChanP_L44', 'RTN_ChanP_L55', 'RTN_ChanP_L66', 'RTN_ChanP_L77', 'SA_ChanP']
+PSP_ISOIS-EPILO_L2-IC@3
+  nnl = 41 != nbw = 32 for bw DEPEND_0  = Epoch_ChanR
+  Differences: {'RTN_ChanR_L55', 'RTN_ChanR_L77', 'RTN_ChanR', 'HCI_ChanC_L66', 'HGC_R_ChanC', 'PA_ChanR', 'HCI_ChanR_L22', 'RTN_ChanC_L22', 'HCI_ChanC_L77', 'HCI_Lon_ChanR', 'HGC_Lat_ChanR', 'H_Flux_ChanR', 'He4_Flux_ChanC', 'HCI_ChanC', 'HGC_Lat_ChanC', 'RTN_ChanC_L55', 'O_CountRate_ChanC', 'HGC_Lon_ChanR', 'H_Flux_ChanR_avg', 'H_CountRate_ChanR', 'He4_CountRate_ChanC_avg', 'O_Counts_ChanC', 'H_CountRate_ChanR_avg', 'HCI_Lat_ChanC', 'HCI_ChanR_L55', 'HCI_ChanC_L22', 'RTN_ChanR_L00', 'RTN_ChanC_L00', 'HCI_ChanR_L33', 'HCI_ChanR_L44', 'RTN_ChanR_L11', 'RTN_ChanR_L22', 'HCI_ChanR', 'RTN_ChanC', 'HCI_Lon_ChanC', 'HCI_ChanC_L11', 'HGC_R_ChanR', 'SA_ChanR', 'HCI_ChanR_L66', 'HCI_ChanC_L44', 'HCI_R_ChanC', 'O_CountRate_ChanC_avg', 'HCI_ChanR_L00', 'He3_Counts_ChanC', 'SA_ChanC', 'RTN_ChanC_L77', 'HCI_R_ChanR', 'HCI_ChanC_L00', 'RTN_ChanC_L44', 'Fe_CountRate_ChanC', 'Fe_Counts_ChanC', 'HCI_Lat_ChanR', 'He4_Counts_ChanC', 'RTN_ChanR_L33', 'H_Counts_ChanR', 'RTN_ChanR_L66', 'HCI_ChanC_L33', 'RTN_ChanR_L44', 'He3_CountRate_ChanC', 'HCI_ChanC_L55', 'PA_ChanC', 'Fe_CountRate_ChanC_avg', 'He4_Flux_ChanC_avg', 'RTN_ChanC_L33', 'HCI_ChanR_L11', 'HCI_ChanR_L77', 'HGC_Lon_ChanC', 'He3_CountRate_ChanC_avg', 'RTN_ChanC_L66', 'RTN_ChanC_L11', 'He4_CountRate_ChanC'}
+PSP_ISOIS-EPILO_L2-IC@4
+  nnl = 42 != nbw = 32 for bw DEPEND_0  = Epoch_ChanT
+  Differences: {'RTN_ChanD_L00', 'C_CountRate_ChanD', 'HCI_ChanT_L22', 'RTN_ChanT_L55', 'RTN_ChanD_L11', 'Ne_CountRate_ChanD', 'RTN_ChanD_L33', 'SA_ChanD', 'C_Counts_ChanD', 'Mg_Counts_ChanD', 'HCI_ChanD_L00', 'N_Counts_ChanD', 'HCI_ChanD', 'RTN_ChanD', 'RTN_ChanT_L33', 'HCI_Lon_ChanT', 'HGC_Lon_ChanT', 'RTN_ChanT_L66', 'HCI_R_ChanT', 'HCI_ChanT', 'RTN_ChanD_L66', 'HGC_Lat_ChanD', 'RTN_ChanT_L11', 'HCI_ChanT_L11', 'RTN_ChanT_L77', 'HCI_ChanT_L44', 'RTN_ChanT', 'H_Counts_ChanT', 'HCI_ChanT_L00', 'HCI_Lat_ChanT', 'RTN_ChanT_L44', 'HCI_ChanD_L77', 'HCI_ChanT_L33', 'Ne_Counts_ChanD', 'HCI_ChanT_L77', 'HCI_Lat_ChanD', 'H_Flux_ChanT', 'H_Flux_ChanT_avg', 'HCI_Lon_ChanD', 'HCI_ChanT_L55', 'HGC_Lon_ChanD', 'RTN_ChanD_L55', 'Si_Counts_ChanD', 'Si_CountRate_ChanD', 'HCI_ChanD_L66', 'HCI_R_ChanD', 'HCI_ChanD_L33', 'RTN_ChanD_L22', 'HCI_ChanT_L66', 'RTN_ChanT_L00', 'RTN_ChanT_L22', 'N_CountRate_ChanD', 'RTN_ChanD_L77', 'SA_ChanT', 'Mg_CountRate_ChanD_avg', 'Si_CountRate_ChanD_avg', 'Mg_CountRate_ChanD', 'HCI_ChanD_L55', 'HGC_R_ChanD', 'H_CountRate_ChanT', 'HGC_Lat_ChanT', 'HCI_ChanD_L44', 'N_CountRate_ChanD_avg', 'PA_ChanD', 'HGC_R_ChanT', 'C_CountRate_ChanD_avg', 'PA_ChanT', 'HCI_ChanD_L22', 'Ne_CountRate_ChanD_avg', 'RTN_ChanD_L44', 'H_CountRate_ChanT_avg', 'HCI_ChanD_L11'}
+RBSPA_REL04_ECT-MAGEIS-L3@0
+  nnl = 28 != nbw = 29 for bw DEPEND_0  = Epoch
+  Differences: {'LstarVsAlpha_Alpha'}
+RBSPB_REL04_ECT-MAGEIS-L3@0
+  nnl = 28 != nbw = 29 for bw DEPEND_0  = Epoch
+  Differences: {'LstarVsAlpha_Alpha'}
+RBSP-A-RBSPICE_LEV-3_TOFXEH
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_TOFXEH
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_TOFXEION
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_TOFXEION
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_TOFXENONH
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_TOFXENONH
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_TOFXPHHHELT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_TOFXPHHHELT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_TOFXPHHLEHT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_TOFXPHHLEHT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_ESRHELT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_ESRHELT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_ESRLEHT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_ESRLEHT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-A-RBSPICE_LEV-3_ISRHELT
+  nl has bins for ParticleDir_SM but bw does not
+RBSP-B-RBSPICE_LEV-3_ISRHELT
+  nl has bins for ParticleDir_SM but bw does not
+RBSPA_EFW-L2_E-SPINFIT-MGSE@0
+  nnl = 20 != nbw = 21 for bw DEPEND_0  = epoch
+  Differences: {'e_spinfit_mgse_efw_qual'}
+RBSPA_EFW-L2_E-SPINFIT-MGSE@1
+  nnl = 2 != nbw = 1 for bw DEPEND_0  = epoch_hsk
+  Differences: {'e_spinfit_mgse_efw_qual'}
+RBSPB_EFW-L2_E-SPINFIT-MGSE@0
+  nnl = 20 != nbw = 21 for bw DEPEND_0  = epoch
+  Differences: {'e_spinfit_mgse_efw_qual'}
+RBSPB_EFW-L2_E-SPINFIT-MGSE@1
+  nnl = 2 != nbw = 1 for bw DEPEND_0  = epoch_hsk
+  Differences: {'e_spinfit_mgse_efw_qual'}
+RBSPA_EFW-L2_ESVY_DESPUN@0
+  Order differs for bw DEPEND_0 = epoch_e
+  nl: ['Time', 'efw_qual']
+  bw: ['Time', 'efield_mgse']
+RBSPA_EFW-L2_ESVY_DESPUN@1
+  nnl = 13 != nbw = 2 for bw DEPEND_0  = epoch_qual
+  Differences: {'lshell', 'bias_current', 'pos_gse', 'spinaxis_gse', 'diagEx1', 'vel_gse', 'efw_qual', 'mlat', 'diagEx2', 'flags_charging_bias_eclipse', 'orbit_num', 'mlt', 'diagBratio'}
+RBSPA_EFW-L2_ESVY_DESPUN@2 not in nl
+RBSPB_EFW-L2_ESVY_DESPUN@0
+  Order differs for bw DEPEND_0 = epoch_e
+  nl: ['Time', 'efw_qual']
+  bw: ['Time', 'efield_mgse']
+RBSPB_EFW-L2_ESVY_DESPUN@1
+  nnl = 13 != nbw = 2 for bw DEPEND_0  = epoch_qual
+  Differences: {'lshell', 'bias_current', 'pos_gse', 'spinaxis_gse', 'diagEx1', 'vel_gse', 'efw_qual', 'mlat', 'diagEx2', 'flags_charging_bias_eclipse', 'orbit_num', 'mlt', 'diagBratio'}
+RBSPB_EFW-L2_ESVY_DESPUN@2 not in nl
+RBSP-A_DENSITY_EMFISIS-L4
+  nnl = 8 != nbw = 9 for bw DEPEND_0  = Epoch
+  Differences: {'digi_type'}
+RBSP-B_DENSITY_EMFISIS-L4
+  nnl = 8 != nbw = 9 for bw DEPEND_0  = Epoch
+  Differences: {'digi_type'}
+SNOE_L3_GEO
+  nnl = 10 != nbw = 12 for bw DEPEND_0  = Epoch
+  Differences: {'latitude', 'localTime'}
+SNOE_L3_MAG
+  nnl = 10 != nbw = 11 for bw DEPEND_0  = Epoch
+  Differences: {'latitude'}
+SOLO_L2_SWA-PAS-EFLUX
+  nnl = 4 != nbw = 5 for bw DEPEND_0  = Epoch
+  Differences: {'eflux'}
+SOLO_L2_SWA-PAS-VDF
+  nnl = 30 != nbw = 31 for bw DEPEND_0  = Epoch
+  Differences: {'vdf'}
+SOLO_L2_RPW-LFR-SURV-BP1@0
+  nnl = 11 != nbw = 2 for bw DEPEND_0  = Epoch
+  Differences: {'NVEC_N_F0', 'VPHI_REA_N_F0', 'VPHI_ARG_N_F0', 'ELLIP_N_F0', 'PE_N_F0', 'SX_ARG_N_F0', 'SX_REA_N_F0', 'PB_N_F0', 'SURVEY_MODE', 'DOP_N_F0', 'NVEC_N_F0_SRF'}
+SOLO_L2_RPW-LFR-SURV-BP1@1
+  Order differs for bw DEPEND_0 = Epoch_N_F0
+  nl: ['Time', 'PE_N_F1', 'PB_N_F1', 'NVEC_N_F1', 'NVEC_N_F1_SRF', 'ELLIP_N_F1', 'DOP_N_F1', 'SX_REA_N_F1', 'SX_ARG_N_F1', 'VPHI_REA_N_F1', 'VPHI_ARG_N_F1']
+  bw: ['Time', 'PE_N_F0', 'PB_N_F0', 'NVEC_N_F0', 'NVEC_N_F0_SRF', 'ELLIP_N_F0', 'DOP_N_F0', 'SX_REA_N_F0', 'SX_ARG_N_F0', 'VPHI_REA_N_F0', 'VPHI_ARG_N_F0']
+SOLO_L2_RPW-LFR-SURV-BP1@2
+  Order differs for bw DEPEND_0 = Epoch_N_F1
+  nl: ['Time', 'PE_N_F2', 'PB_N_F2', 'NVEC_N_F2', 'NVEC_N_F2_SRF', 'ELLIP_N_F2', 'DOP_N_F2', 'SX_REA_N_F2', 'SX_ARG_N_F2', 'VPHI_REA_N_F2', 'VPHI_ARG_N_F2']
+  bw: ['Time', 'PE_N_F1', 'PB_N_F1', 'NVEC_N_F1', 'NVEC_N_F1_SRF', 'ELLIP_N_F1', 'DOP_N_F1', 'SX_REA_N_F1', 'SX_ARG_N_F1', 'VPHI_REA_N_F1', 'VPHI_ARG_N_F1']
+SOLO_L2_RPW-LFR-SURV-BP1@3
+  nnl = 2 != nbw = 11 for bw DEPEND_0  = Epoch_N_F2
+  Differences: {'DOP_N_F2', 'ELLIP_N_F2', 'SX_ARG_N_F2', 'SX_REA_N_F2', 'VPHI_REA_N_F2', 'PB_N_F2', 'VPHI_ARG_N_F2', 'SURVEY_MODE', 'NVEC_N_F2', 'NVEC_N_F2_SRF', 'PE_N_F2'}
+SOLO_L2_RPW-LFR-SURV-BP1@4 not in nl
+SOLO_L2_RPW-LFR-SURV-BP1@5 not in nl
+SOLO_L2_RPW-LFR-SURV-BP2@3
+  nnl = 2 != nbw = 5 for bw DEPEND_0  = Epoch_B_F0
+  Differences: {'BP2_RE_B_F0_SRF', 'BP2_IM_B_F0', 'BP2_RE_B_F0', 'BP2_IM_B_F0_SRF', 'SURVEY_MODE'}
+SOLO_L2_RPW-LFR-SURV-BP2@4 not in nl
+SOLO_L2_RPW-LFR-SURV-BP2@5 not in nl
+SOLO_L2_EPD-HET-ASUN-RATES@1
+  nnl = 3 != nbw = 4 for bw DEPEND_0  = EPOCH_1
+  Differences: {'H_HCad_Flux', 'Electron_Flux', 'He3_Flux', 'He4_Flux', 'Elec_HE_Flux'}
+SOLO_L2_EPD-HET-ASUN-RATES@2
+  Order differs for bw DEPEND_0 = EPOCH_2
+  nl: ['Time', 'Elec_HE_Flux', 'He3_Flux', 'He4_Flux']
+  bw: ['Time', 'C_Flux', 'N_Flux', 'O_Flux']
+SOLO_L2_EPD-HET-ASUN-RATES@3
+  nnl = 4 != nbw = 2 for bw DEPEND_0  = EPOCH_3
+  Differences: {'O_Flux', 'Fe_Flux', 'N_Flux', 'C_Flux'}
+SOLO_L2_EPD-HET-ASUN-RATES@4
+  nnl = 2 != nbw = 3 for bw DEPEND_0  = EPOCH_4
+  Differences: {'H_HCad_Flux', 'Electron_Flux', 'Fe_Flux'}
+SOLO_L2_EPD-HET-SUN-RATES@1
+  nnl = 3 != nbw = 4 for bw DEPEND_0  = EPOCH_1
+  Differences: {'H_HCad_Flux', 'Electron_Flux', 'He3_Flux', 'He4_Flux', 'Elec_HE_Flux'}
+SOLO_L2_EPD-HET-SUN-RATES@2
+  Order differs for bw DEPEND_0 = EPOCH_2
+  nl: ['Time', 'Elec_HE_Flux', 'He3_Flux', 'He4_Flux']
+  bw: ['Time', 'C_Flux', 'N_Flux', 'O_Flux']
+SOLO_L2_EPD-HET-SUN-RATES@3
+  nnl = 4 != nbw = 2 for bw DEPEND_0  = EPOCH_3
+  Differences: {'O_Flux', 'Fe_Flux', 'N_Flux', 'C_Flux'}
+SOLO_L2_EPD-HET-SUN-RATES@4
+  nnl = 2 != nbw = 3 for bw DEPEND_0  = EPOCH_4
+  Differences: {'H_HCad_Flux', 'Electron_Flux', 'Fe_Flux'}
+SOLO_L2_EPD-HET-NORTH-RATES@1
+  nnl = 3 != nbw = 4 for bw DEPEND_0  = EPOCH_1
+  Differences: {'H_HCad_Flux', 'Electron_Flux', 'He3_Flux', 'He4_Flux', 'Elec_HE_Flux'}
+SOLO_L2_EPD-HET-NORTH-RATES@2
+  Order differs for bw DEPEND_0 = EPOCH_2
+  nl: ['Time', 'Elec_HE_Flux', 'He3_Flux', 'He4_Flux']
+  bw: ['Time', 'C_Flux', 'N_Flux', 'O_Flux']
+SOLO_L2_EPD-HET-NORTH-RATES@3
+  nnl = 4 != nbw = 2 for bw DEPEND_0  = EPOCH_3
+  Differences: {'O_Flux', 'Fe_Flux', 'N_Flux', 'C_Flux'}
+SOLO_L2_EPD-HET-NORTH-RATES@4
+  nnl = 2 != nbw = 3 for bw DEPEND_0  = EPOCH_4
+  Differences: {'H_HCad_Flux', 'Electron_Flux', 'Fe_Flux'}
+SOLO_L2_EPD-HET-SOUTH-RATES@1
+  nnl = 3 != nbw = 4 for bw DEPEND_0  = EPOCH_1
+  Differences: {'H_HCad_Flux', 'Electron_Flux', 'He3_Flux', 'He4_Flux', 'Elec_HE_Flux'}
+SOLO_L2_EPD-HET-SOUTH-RATES@2
+  Order differs for bw DEPEND_0 = EPOCH_2
+  nl: ['Time', 'Elec_HE_Flux', 'He3_Flux', 'He4_Flux']
+  bw: ['Time', 'C_Flux', 'N_Flux', 'O_Flux']
+SOLO_L2_EPD-HET-SOUTH-RATES@3
+  nnl = 4 != nbw = 2 for bw DEPEND_0  = EPOCH_3
+  Differences: {'O_Flux', 'Fe_Flux', 'N_Flux', 'C_Flux'}
+SOLO_L2_EPD-HET-SOUTH-RATES@4
+  nnl = 2 != nbw = 3 for bw DEPEND_0  = EPOCH_4
+  Differences: {'H_HCad_Flux', 'Electron_Flux', 'Fe_Flux'}
+THA_L2_FFT@1
+  Order differs for bw DEPEND_0 = tha_fff_32_epoch
+  nl: ['Time', 'tha_fff_64_dbpara', 'tha_fff_64_dbperp', 'tha_fff_64_eac12', 'tha_fff_64_eac34', 'tha_fff_64_eac56', 'tha_fff_64_edc12', 'tha_fff_64_edc34', 'tha_fff_64_edc56', 'tha_fff_64_epara', 'tha_fff_64_eperp', 'tha_fff_64_scm1', 'tha_fff_64_scm2', 'tha_fff_64_scm3', 'tha_fff_64_v1', 'tha_fff_64_v2', 'tha_fff_64_v3', 'tha_fff_64_v4', 'tha_fff_64_v5', 'tha_fff_64_v6']
+  bw: ['Time', 'tha_fff_32_dbpara', 'tha_fff_32_dbperp', 'tha_fff_32_eac12', 'tha_fff_32_eac34', 'tha_fff_32_eac56', 'tha_fff_32_edc12', 'tha_fff_32_edc34', 'tha_fff_32_edc56', 'tha_fff_32_epara', 'tha_fff_32_eperp', 'tha_fff_32_scm1', 'tha_fff_32_scm2', 'tha_fff_32_scm3', 'tha_fff_32_v1', 'tha_fff_32_v2', 'tha_fff_32_v3', 'tha_fff_32_v4', 'tha_fff_32_v5', 'tha_fff_32_v6']
+THA_L2_FFT@2
+  Order differs for bw DEPEND_0 = tha_fff_64_epoch
+  nl: ['Time', 'tha_ffp_16_dbpara', 'tha_ffp_16_dbperp', 'tha_ffp_16_eac12', 'tha_ffp_16_eac34', 'tha_ffp_16_eac56', 'tha_ffp_16_edc12', 'tha_ffp_16_edc34', 'tha_ffp_16_edc56', 'tha_ffp_16_epara', 'tha_ffp_16_eperp', 'tha_ffp_16_scm1', 'tha_ffp_16_scm2', 'tha_ffp_16_scm3', 'tha_ffp_16_v1', 'tha_ffp_16_v2', 'tha_ffp_16_v3', 'tha_ffp_16_v4', 'tha_ffp_16_v5', 'tha_ffp_16_v6']
+  bw: ['Time', 'tha_fff_64_dbpara', 'tha_fff_64_dbperp', 'tha_fff_64_eac12', 'tha_fff_64_eac34', 'tha_fff_64_eac56', 'tha_fff_64_edc12', 'tha_fff_64_edc34', 'tha_fff_64_edc56', 'tha_fff_64_epara', 'tha_fff_64_eperp', 'tha_fff_64_scm1', 'tha_fff_64_scm2', 'tha_fff_64_scm3', 'tha_fff_64_v1', 'tha_fff_64_v2', 'tha_fff_64_v3', 'tha_fff_64_v4', 'tha_fff_64_v5', 'tha_fff_64_v6']
+THA_L2_FFT@3
+  nnl = 12 != nbw = 20 for bw DEPEND_0  = tha_ffp_16_epoch
+  Differences: {'tha_ffp_16_eac34', 'tha_ffp_16_v1', 'tha_ffp_32_v4', 'tha_ffp_32_v6', 'tha_ffp_16_v2', 'tha_ffp_32_scm2', 'tha_ffp_16_edc56', 'tha_ffp_32_scm3', 'tha_ffp_16_v6', 'tha_ffp_16_dbpara', 'tha_ffp_32_v2', 'tha_ffp_32_scm1', 'tha_ffp_16_edc34', 'tha_ffp_32_v1', 'tha_ffp_16_epara', 'tha_ffp_16_v4', 'tha_ffp_16_scm1', 'tha_ffp_16_scm2', 'tha_ffp_16_v3', 'tha_ffp_32_v5', 'tha_ffp_16_eperp', 'tha_ffp_16_dbperp', 'tha_ffp_16_eac56', 'tha_ffp_32_epara', 'tha_ffp_32_v3', 'tha_ffp_16_v5', 'tha_ffp_16_edc12', 'tha_ffp_32_eperp', 'tha_ffp_16_scm3', 'tha_ffp_16_eac12'}
+THA_L2_FFT@4
+  Order differs for bw DEPEND_0 = tha_ffp_32_epoch
+  nl: ['Time', 'tha_ffp_64_dbpara', 'tha_ffp_64_dbperp', 'tha_ffp_64_eac12', 'tha_ffp_64_eac34', 'tha_ffp_64_eac56', 'tha_ffp_64_edc12', 'tha_ffp_64_edc34', 'tha_ffp_64_edc56', 'tha_ffp_64_epara', 'tha_ffp_64_eperp', 'tha_ffp_64_scm1', 'tha_ffp_64_scm2', 'tha_ffp_64_scm3', 'tha_ffp_64_v1', 'tha_ffp_64_v2', 'tha_ffp_64_v3', 'tha_ffp_64_v4', 'tha_ffp_64_v5', 'tha_ffp_64_v6']
+  bw: ['Time', 'tha_ffp_32_dbpara', 'tha_ffp_32_dbperp', 'tha_ffp_32_eac12', 'tha_ffp_32_eac34', 'tha_ffp_32_eac56', 'tha_ffp_32_edc12', 'tha_ffp_32_edc34', 'tha_ffp_32_edc56', 'tha_ffp_32_epara', 'tha_ffp_32_eperp', 'tha_ffp_32_scm1', 'tha_ffp_32_scm2', 'tha_ffp_32_scm3', 'tha_ffp_32_v1', 'tha_ffp_32_v2', 'tha_ffp_32_v3', 'tha_ffp_32_v4', 'tha_ffp_32_v5', 'tha_ffp_32_v6']
+THA_L2_FFT@5
+  Order differs for bw DEPEND_0 = tha_ffp_64_epoch
+  nl: ['Time', 'tha_ffw_16_dbpara', 'tha_ffw_16_dbperp', 'tha_ffw_16_eac12', 'tha_ffw_16_eac34', 'tha_ffw_16_eac56', 'tha_ffw_16_edc12', 'tha_ffw_16_edc34', 'tha_ffw_16_edc56', 'tha_ffw_16_epara', 'tha_ffw_16_eperp', 'tha_ffw_16_scm1', 'tha_ffw_16_scm2', 'tha_ffw_16_scm3', 'tha_ffw_16_v1', 'tha_ffw_16_v2', 'tha_ffw_16_v3', 'tha_ffw_16_v4', 'tha_ffw_16_v5', 'tha_ffw_16_v6']
+  bw: ['Time', 'tha_ffp_64_dbpara', 'tha_ffp_64_dbperp', 'tha_ffp_64_eac12', 'tha_ffp_64_eac34', 'tha_ffp_64_eac56', 'tha_ffp_64_edc12', 'tha_ffp_64_edc34', 'tha_ffp_64_edc56', 'tha_ffp_64_epara', 'tha_ffp_64_eperp', 'tha_ffp_64_scm1', 'tha_ffp_64_scm2', 'tha_ffp_64_scm3', 'tha_ffp_64_v1', 'tha_ffp_64_v2', 'tha_ffp_64_v3', 'tha_ffp_64_v4', 'tha_ffp_64_v5', 'tha_ffp_64_v6']
+THA_L2_FFT@6
+  Order differs for bw DEPEND_0 = tha_ffw_16_epoch
+  nl: ['Time', 'tha_ffw_32_dbpara', 'tha_ffw_32_dbperp', 'tha_ffw_32_eac12', 'tha_ffw_32_eac34', 'tha_ffw_32_eac56', 'tha_ffw_32_edc12', 'tha_ffw_32_edc34', 'tha_ffw_32_edc56', 'tha_ffw_32_epara', 'tha_ffw_32_eperp', 'tha_ffw_32_scm1', 'tha_ffw_32_scm2', 'tha_ffw_32_scm3', 'tha_ffw_32_v1', 'tha_ffw_32_v2', 'tha_ffw_32_v3', 'tha_ffw_32_v4', 'tha_ffw_32_v5', 'tha_ffw_32_v6']
+  bw: ['Time', 'tha_ffw_16_dbpara', 'tha_ffw_16_dbperp', 'tha_ffw_16_eac12', 'tha_ffw_16_eac34', 'tha_ffw_16_eac56', 'tha_ffw_16_edc12', 'tha_ffw_16_edc34', 'tha_ffw_16_edc56', 'tha_ffw_16_epara', 'tha_ffw_16_eperp', 'tha_ffw_16_scm1', 'tha_ffw_16_scm2', 'tha_ffw_16_scm3', 'tha_ffw_16_v1', 'tha_ffw_16_v2', 'tha_ffw_16_v3', 'tha_ffw_16_v4', 'tha_ffw_16_v5', 'tha_ffw_16_v6']
+THA_L2_FFT@7
+  Order differs for bw DEPEND_0 = tha_ffw_32_epoch
+  nl: ['Time', 'tha_ffw_64_dbpara', 'tha_ffw_64_dbperp', 'tha_ffw_64_eac12', 'tha_ffw_64_eac34', 'tha_ffw_64_eac56', 'tha_ffw_64_edc12', 'tha_ffw_64_edc34', 'tha_ffw_64_edc56', 'tha_ffw_64_epara', 'tha_ffw_64_eperp', 'tha_ffw_64_scm1', 'tha_ffw_64_scm2', 'tha_ffw_64_scm3', 'tha_ffw_64_v1', 'tha_ffw_64_v2', 'tha_ffw_64_v3', 'tha_ffw_64_v4', 'tha_ffw_64_v5', 'tha_ffw_64_v6']
+  bw: ['Time', 'tha_ffw_32_dbpara', 'tha_ffw_32_dbperp', 'tha_ffw_32_eac12', 'tha_ffw_32_eac34', 'tha_ffw_32_eac56', 'tha_ffw_32_edc12', 'tha_ffw_32_edc34', 'tha_ffw_32_edc56', 'tha_ffw_32_epara', 'tha_ffw_32_eperp', 'tha_ffw_32_scm1', 'tha_ffw_32_scm2', 'tha_ffw_32_scm3', 'tha_ffw_32_v1', 'tha_ffw_32_v2', 'tha_ffw_32_v3', 'tha_ffw_32_v4', 'tha_ffw_32_v5', 'tha_ffw_32_v6']
+THA_L2_FFT@8 not in nl
+THG_L1_ASK@0
+  Order differs for bw DEPEND_0 = thg_ask_nrsq_epoch
+  nl: ['Time', 'thg_ask_gbay']
+  bw: ['Time', 'thg_ask_nrsq']
+THG_L1_ASK@1
+  Order differs for bw DEPEND_0 = thg_ask_gbay_epoch
+  nl: ['Time', 'thg_ask_kuuj']
+  bw: ['Time', 'thg_ask_gbay']
+THG_L1_ASK@2
+  Order differs for bw DEPEND_0 = thg_ask_kuuj_epoch
+  nl: ['Time', 'thg_ask_chbg']
+  bw: ['Time', 'thg_ask_kuuj']
+THG_L1_ASK@3
+  Order differs for bw DEPEND_0 = thg_ask_chbg_epoch
+  nl: ['Time', 'thg_ask_snkq']
+  bw: ['Time', 'thg_ask_chbg']
+THG_L1_ASK@4
+  Order differs for bw DEPEND_0 = thg_ask_snkq_epoch
+  nl: ['Time', 'thg_ask_kapu']
+  bw: ['Time', 'thg_ask_snkq']
+THG_L1_ASK@5
+  Order differs for bw DEPEND_0 = thg_ask_kapu_epoch
+  nl: ['Time', 'thg_ask_rank']
+  bw: ['Time', 'thg_ask_kapu']
+THG_L1_ASK@6
+  Order differs for bw DEPEND_0 = thg_ask_rank_epoch
+  nl: ['Time', 'thg_ask_gill']
+  bw: ['Time', 'thg_ask_rank']
+THG_L1_ASK@7
+  Order differs for bw DEPEND_0 = thg_ask_talo_epoch
+  nl: ['Time', 'thg_ask_pina']
+  bw: ['Time', 'thg_ask_talo']
+THG_L1_ASK@8
+  Order differs for bw DEPEND_0 = thg_ask_gill_epoch
+  nl: ['Time', 'thg_ask_tpas']
+  bw: ['Time', 'thg_ask_gill']
+THG_L1_ASK@9
+  Order differs for bw DEPEND_0 = thg_ask_pina_epoch
+  nl: ['Time', 'thg_ask_ekat']
+  bw: ['Time', 'thg_ask_pina']
+THG_L1_ASK@10
+  Order differs for bw DEPEND_0 = thg_ask_tpas_epoch
+  nl: ['Time', 'thg_ask_fsmi']
+  bw: ['Time', 'thg_ask_tpas']
+THG_L1_ASK@11
+  Order differs for bw DEPEND_0 = thg_ask_ekat_epoch
+  nl: ['Time', 'thg_ask_atha']
+  bw: ['Time', 'thg_ask_ekat']
+THG_L1_ASK@12
+  Order differs for bw DEPEND_0 = thg_ask_snap_epoch
+  nl: ['Time', 'thg_ask_fsim']
+  bw: ['Time', 'thg_ask_snap']
+THG_L1_ASK@13
+  Order differs for bw DEPEND_0 = thg_ask_fsmi_epoch
+  nl: ['Time', 'thg_ask_pgeo']
+  bw: ['Time', 'thg_ask_fsmi']
+THG_L1_ASK@14
+  Order differs for bw DEPEND_0 = thg_ask_atha_epoch
+  nl: ['Time', 'thg_ask_inuv']
+  bw: ['Time', 'thg_ask_atha']
+THG_L1_ASK@15
+  Order differs for bw DEPEND_0 = thg_ask_yknf_epoch
+  nl: ['Time', 'thg_ask_whit']
+  bw: ['Time', 'thg_ask_yknf']
+THG_L1_ASK@16
+  Order differs for bw DEPEND_0 = thg_ask_fsim_epoch
+  nl: ['Time', 'thg_ask_gako']
+  bw: ['Time', 'thg_ask_fsim']
+THG_L1_ASK@17
+  Order differs for bw DEPEND_0 = thg_ask_pgeo_epoch
+  nl: ['Time', 'thg_ask_fykn']
+  bw: ['Time', 'thg_ask_pgeo']
+THG_L1_ASK@18
+  Order differs for bw DEPEND_0 = thg_ask_inuv_epoch
+  nl: ['Time', 'thg_ask_mcgr']
+  bw: ['Time', 'thg_ask_inuv']
+THG_L1_ASK@19
+  Order differs for bw DEPEND_0 = thg_ask_whit_epoch
+  nl: ['Time', 'thg_ask_kian']
+  bw: ['Time', 'thg_ask_whit']
+THG_L1_ASK@20 not in nl
+THG_L1_ASK@21 not in nl
+THG_L1_ASK@22 not in nl
+THG_L1_ASK@23 not in nl
+THG_L2_MAG_PANG not in nl
+TIMED_L3A_SEE
+  nnl = 17 != nbw = 19 for bw DEPEND_0  = Epoch
+  Differences: {'LOGT_LINE', 'WAVE_LINE'}
+TIMED_EDP_GUVI
+  nnl = 29 != nbw = 36 for bw DEPEND_0  = Epoch
+  Differences: {'k_nonpar_W1C', 'k_par_W0', 'k_nonpar_W1', 'k_par_W1', 'k_nonpar_W0C', 'k_nonpar_W0', 'Orbit'}
+TIMED_L1CDISK_GUVI@0
+  nnl = 90 != nbw = 94 for bw DEPEND_0  = Epoch2
+  Differences: {'PiercePointAlt', 'DataRegion', 'SolarZenithAngle', 'DQI'}
+TIMED_L1CDISK_GUVI@1
+  nnl = 24 != nbw = 26 for bw DEPEND_0  = Epoch
+  Differences: {'Slit', 'Detector'}
+TSS-1R_M1_SHAE@1
+  Order differs for bw DEPEND_0 = Epoch_TO1
+  nl: ['Time', 'Coarse_Const_Y_Drift', 'Data_Quality_Coarse_Const_Y_Drift']
+  bw: ['Time', 'Fine_Const_X_Drift', 'Data_Quality_Fine_Const_X_Drift']
+TSS-1R_M1_SHAE@2
+  Order differs for bw DEPEND_0 = Epoch_TO2
+  nl: ['Time', 'Coarse_Const_Z_Drift', 'Data_Quality_Coarse_Const_Z_Drift']
+  bw: ['Time', 'Coarse_Const_Y_Drift', 'Data_Quality_Coarse_Const_Y_Drift']
+TSS-1R_M1_SHAE@3
+  Order differs for bw DEPEND_0 = Epoch_TO3
+  nl: ['Time', 'Coarse_Const_S_Drift', 'Data_Quality_Coarse_Const_S_Drift']
+  bw: ['Time', 'Fine_Const_Y_Drift', 'Data_Quality_Fine_Const_Y_Drift']
+TSS-1R_M1_SHAE@4
+  Order differs for bw DEPEND_0 = Epoch_TO4
+  nl: ['Time', 'Fine_Const_X_Drift', 'Data_Quality_Fine_Const_X_Drift']
+  bw: ['Time', 'Coarse_Const_Z_Drift', 'Data_Quality_Coarse_Const_Z_Drift']
+TSS-1R_M1_SHAE@5
+  Order differs for bw DEPEND_0 = Epoch_TO5
+  nl: ['Time', 'Fine_Const_Y_Drift', 'Data_Quality_Fine_Const_Y_Drift']
+  bw: ['Time', 'Fine_Const_Z_Drift', 'Data_Quality_Fine_Const_Z_Drift']
+TSS-1R_M1_SHAE@6
+  Order differs for bw DEPEND_0 = Epoch_TO6
+  nl: ['Time', 'Fine_Const_Z_Drift', 'Data_Quality_Fine_Const_Z_Drift']
+  bw: ['Time', 'Coarse_Const_S_Drift', 'Data_Quality_Coarse_Const_S_Drift']
+TSS-1R_M1_SHSA@0
+  nnl = 7 != nbw = 47 for bw DEPEND_0  = Epoch
+  Differences: {'Yaw_2_Flag', 'S_Gyro_Chkout', 'Data_Quality_Y_Gyro_Chkout', 'Gyro_Status', 'ES_1_Served', 'Sun_Sen', 'Data_Quality_S_Gyro_Chkout', 'Data_Quality_Yaw_2_Cmd_Flag', 'Yaw_2_Cmd_Flag', 'Y_Gyro_Cmd', 'Data_Quality_ES_2_OK', 'Data_Quality_EL_2_OK', 'Data_Quality_EL_1_OK', 'Data_Quality_Yaw_2_Flag', 'Earth_Sen', 'Data_Quality_Yaw_1_Flag', 'Data_Quality_ES_2_Served', 'Data_Quality_Z_Gyro_Cmd', 'Data_Quality_Y_Gyro_Warmup', 'Y_Gyro_Warmup', 'Data_Quality_X_Gyro_Cmd', 'Data_Quality_ES_1_Served', 'Z_Gyro_Chkout', 'Data_Quality_X_Gyro_Warmup', 'Data_Quality_Earth_Sen', 'ES_2_OK', 'X_Gyro_Warmup', 'Data_Quality_Gyro_Status', 'EL_2_OK', 'Data_Quality_ES_1_Hd_Flg', 'Data_Quality_Sun_Sen', 'Data_Quality_Y_Gyro_Cmd', 'ES_1_Hd_Flg', 'S_Gyro_Cmd', 'Data_Quality_S_Gyro_Cmd', 'Z_Gyro_Warmup', 'Data_Quality_ES_1_OK', 'X_Gyro_Cmd', 'Data_Quality_S_Gyro_Warmup', 'ES_2_Served', 'Data_Quality_X_Gyro_Chkout', 'Data_Quality_Z_Gyro_Chkout', 'X_Gyro_Chkout', 'S_Gyro_Warmup', 'ES_1_OK', 'Y_Gyro_Chkout', 'Data_Quality_Z_Gyro_Warmup', 'Z_Gyro_Cmd', 'Data_Quality_Yaw_1_Cmd_Flag', 'Yaw_1_Cmd_Flag', 'Yaw_1_Flag', 'EL_1_OK'}
+TSS-1R_M1_SHSA@1
+  nnl = 47 != nbw = 7 for bw DEPEND_0  = Epoch_TO1
+  Differences: {'Data_Quality_X_Gyro_Cmd', 'Yaw_2_Flag', 'Data_Quality_ES_1_Served', 'Z_Gyro_Chkout', 'Data_Quality_X_Gyro_Warmup', 'ES_2_OK', 'S_Gyro_Chkout', 'X_Gyro_Warmup', 'Data_Quality_Y_Gyro_Chkout', 'Data_Quality_Earth_Sen', 'Gyro_Status', 'EL_2_OK', 'ES_1_Served', 'Data_Quality_ES_1_Hd_Flg', 'Data_Quality_Gyro_Status', 'Data_Quality_Sun_Sen', 'Sun_Sen', 'Data_Quality_Y_Gyro_Cmd', 'Data_Quality_S_Gyro_Chkout', 'ES_1_Hd_Flg', 'S_Gyro_Cmd', 'Data_Quality_Yaw_2_Cmd_Flag', 'Yaw_2_Cmd_Flag', 'Data_Quality_S_Gyro_Cmd', 'Z_Gyro_Warmup', 'Y_Gyro_Cmd', 'Data_Quality_ES_2_OK', 'Data_Quality_EL_2_OK', 'Data_Quality_ES_1_OK', 'X_Gyro_Cmd', 'Data_Quality_S_Gyro_Warmup', 'Data_Quality_EL_1_OK', 'ES_2_Served', 'Data_Quality_X_Gyro_Chkout', 'Data_Quality_Z_Gyro_Chkout', 'Data_Quality_Yaw_2_Flag', 'X_Gyro_Chkout', 'S_Gyro_Warmup', 'Earth_Sen', 'Data_Quality_Yaw_1_Flag', 'Data_Quality_ES_2_Served', 'ES_1_OK', 'Y_Gyro_Chkout', 'Data_Quality_Z_Gyro_Warmup', 'Data_Quality_Y_Gyro_Warmup', 'Data_Quality_Z_Gyro_Cmd', 'Z_Gyro_Cmd', 'Data_Quality_Yaw_1_Cmd_Flag', 'Yaw_1_Cmd_Flag', 'Yaw_1_Flag', 'Y_Gyro_Warmup', 'EL_1_OK'}
+TWINS1_L1_IMAGER
+  nnl = 94 != nbw = 95 for bw DEPEND_0  = Epoch
+  Differences: {'title'}
+TWINS2_L1_IMAGER
+  nnl = 94 != nbw = 95 for bw DEPEND_0  = Epoch
+  Differences: {'title'}
+TWINS2_OR_DEF
+  nnl = 4 != nbw = 36 for bw DEPEND_0  = Epoch
+  Differences: {'FBMIRROR', 'FBNORTH100KM', 'FDIPOLETILT', 'FSOUTH100KMGSM', 'FSCGSM', 'FNORTH100KMGSM', 'ISTARTTIMEMJD', 'FSCLONGGEO', 'FINVLAT', 'FDIPOLERADIUS', 'FLOSSCONE', 'FBECI', 'FLSHELL', 'FDIPOLEOFFSET', 'FSCECD', 'FLTECD', 'FSUNECI', 'FBSOUTH100KM', 'FDIPOLELAT', 'FSCRADIALDIST', 'FSCLATECD', 'FEQUATORIALGSM', 'FSOLARZENITHCOS', 'NDATAFILEID', 'FSCRADIALALT', 'FBEQUATORIAL', 'FSCGEO', 'FMIRRORGSM', 'FLTGEO', 'FLTEQU', 'FSCECI', 'FSCLATGEO'}
+VOYAGER1_10S_MAG@0
+  nnl = 30 != nbw = 15 for bw DEPEND_0  = Epoch
+  Differences: {'matrix1', 'B2_1nt', 'RMSB3', 'y', 'F2', 'matrix3', 'scLon', 'F1', 'F2_1nt', 'B1', 'B3_dot1nt', 'F2_dot1nt', 'B2', 'B1_dot1nt', 'B3', 'F1_10nt', 'B3_1nt', 'F1_100nt', 'RMSB2', 'scLat', 'RMSB1', 'B3_10nt', 'B3_100nt', 'F1_dot1nt', 'F1_1nt', 'B1_100nt', 'scDistance', 'MagCommand', 'yvel', 'F2_10nt', 'B1_10nt', 'magStatus', 'B2_10nt', 'F2_100nt', 'B2_100nt', 'B2_dot1nt', 'B_error', 'B1_1nt', 'x', 'zvel', 'matrix2', 'xvel', 'z'}
+VOYAGER1_10S_MAG@1
+  nnl = 13 != nbw = 31 for bw DEPEND_0  = Epoch2
+  Differences: {'F1_dot1nt', 'matrix1', 'B2_1nt', 'F1_1nt', 'RMSB3', 'B1_100nt', 'scDistance', 'yvel', 'y', 'F2_10nt', 'F2', 'B1_10nt', 'matrix3', 'scLon', 'F1', 'F2_1nt', 'B1', 'B2_10nt', 'F2_100nt', 'B2_100nt', 'B3_dot1nt', 'F2_dot1nt', 'B2_dot1nt', 'B3_100nt', 'B2', 'B1_dot1nt', 'B3', 'B_error', 'F1_10nt', 'B3_1nt', 'F1_100nt', 'B1_1nt', 'x', 'zvel', 'matrix2', 'RMSB2', 'scLat', 'num1_92_averages', 'RMSB1', 'B3_10nt', 'xvel', 'z'}
+VOYAGER2_10S_MAG@0
+  nnl = 30 != nbw = 15 for bw DEPEND_0  = Epoch
+  Differences: {'matrix1', 'B2_1nt', 'RMSB3', 'y', 'F2', 'matrix3', 'scLon', 'F1', 'F2_1nt', 'B1', 'B3_dot1nt', 'F2_dot1nt', 'B2', 'B1_dot1nt', 'B3', 'F1_10nt', 'B3_1nt', 'F1_100nt', 'RMSB2', 'scLat', 'RMSB1', 'B3_10nt', 'B3_100nt', 'F1_dot1nt', 'F1_1nt', 'B1_100nt', 'scDistance', 'MagCommand', 'yvel', 'F2_10nt', 'B1_10nt', 'magStatus', 'B2_10nt', 'F2_100nt', 'B2_100nt', 'B2_dot1nt', 'B_error', 'B1_1nt', 'x', 'zvel', 'matrix2', 'xvel', 'z'}
+VOYAGER2_10S_MAG@1
+  nnl = 13 != nbw = 31 for bw DEPEND_0  = Epoch2
+  Differences: {'F1_dot1nt', 'matrix1', 'B2_1nt', 'F1_1nt', 'RMSB3', 'B1_100nt', 'scDistance', 'yvel', 'y', 'F2_10nt', 'F2', 'B1_10nt', 'matrix3', 'scLon', 'F1', 'F2_1nt', 'B1', 'B2_10nt', 'F2_100nt', 'B2_100nt', 'B3_dot1nt', 'F2_dot1nt', 'B2_dot1nt', 'B3_100nt', 'B2', 'B1_dot1nt', 'B3', 'B_error', 'F1_10nt', 'B3_1nt', 'F1_100nt', 'B1_1nt', 'x', 'zvel', 'matrix2', 'RMSB2', 'scLat', 'num1_92_averages', 'RMSB1', 'B3_10nt', 'xvel', 'z'}
