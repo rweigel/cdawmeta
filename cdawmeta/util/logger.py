@@ -122,9 +122,11 @@ def logger(name=None,
               'handlers': handlers
           }
       },
-      'root': {
-          # In general, this should be kept at 'NOTSET'.
-          # Otherwise it would interfere with the log levels set for each handler.
+      'xroot': {
+          # Docs say:
+          #   In general, this should be kept at 'NOTSET'.
+          #   Otherwise it would interfere with the log levels set for each handler.
+          # However, this leads to duplicate log messages.
           'level': 'NOTSET',
           'handlers': handlers
       }

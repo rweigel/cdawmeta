@@ -12,7 +12,6 @@ import json
 
 root_dir    = os.path.join(os.path.dirname(__file__), '..')
 base_dir    = os.path.join(root_dir, 'data')
-all_input   = os.path.join(base_dir, 'cdaweb.json')
 file_body   = os.path.join(base_dir, 'tables/cdaweb.table.body.json')
 file_header = os.path.join(base_dir, 'tables/cdaweb.table.head.json')
 file_counts = os.path.join(os.path.dirname(__file__), 'table-cdaweb.fixes.counts.csv')
@@ -108,7 +107,7 @@ def all_attribute_table(datasets):
 
   attributes = all_attributes(datasets)
 
-  header = ['datasetID','VariableName']
+  header = ['datasetID', 'VariableName']
   for attribute in attributes['VarDescription']:
     header.append(attribute)
   for attribute in attributes['VarAttributes']:
@@ -148,11 +147,14 @@ def all_attribute_table(datasets):
 
   return header, table
 
-with open(all_input, 'r', encoding='utf-8') as f:
-  datasets = json.load(f)
+import cdawmeta
+metadata_cdaweb = cdawmeta.metadata(update=False, embed_data=True)
+for dsid in metadata_cdaweb.keys():
+  master = metadata_cdaweb[dsid]['master']['data']
+  vars = cdawmeta.hapi.restructure_master(dsid, master)
+  print(vars)
+  exit()
 
-from cdawmeta.restructure_master import add_master_restructured
-datasets = add_master_restructured(root_dir, datasets)
 
 print("Creating table")
 header, table = all_attribute_table(datasets)

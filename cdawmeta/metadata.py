@@ -13,6 +13,13 @@ logger = None
 allurl = 'https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml'
 wsbase = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/'
 
+timeouts = {
+  'allxml': 30,
+  'master': 30,
+  'spase': 30,
+  'orig_data': 120
+}
+
 def logger_config():
 
   config = {
@@ -24,20 +31,16 @@ def logger_config():
   }
   return config
 
-def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False, timeouts=None, no_spase=True, no_orig_data=True):
+def ids(timeout=timeouts['allxml'], update=True):
+  datasets_ = datasets(timeout=timeout, update=update)
+  return list(datasets_.keys())
+
+def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False, restructure_master=True, no_spase=True, no_orig_data=True):
 
   global DATA_DIR
   global logger
   from . import DATA_DIR
   logger = util.logger(**logger_config())
-
-  if timeouts is None:
-    timeouts = {
-      'allxml': 30,
-      'master': 30,
-      'spase': 30,
-      'orig_data': 120
-  }
 
   datasets_ = datasets(timeout=timeouts['allxml'], update=update)
   ids_all = datasets_.keys()
@@ -60,7 +63,7 @@ def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False,
     ids = list(datasets_.keys())
 
   def get_one(dataset):
-    dataset['master'] = master(dataset, diffs=diffs, timeout=timeouts['master'], update=update)
+    dataset['master'] = master(dataset, restructure=restructure_master, diffs=diffs, timeout=timeouts['master'], update=update)
     if no_orig_data == False:
       dataset['orig_data'] = orig_data(dataset, diffs=diffs, timeout=timeouts['orig_data'], update=update)
       dataset['samples'] = samples(dataset['id'], dataset['orig_data'])
@@ -69,8 +72,10 @@ def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False,
 
     if embed_data == False:
       del dataset['master']['data']
-      del dataset['orig_data']['data']
-      del dataset['spase']['data']
+      if 'orig_data' in dataset:
+        del dataset['orig_data']['data']
+      if 'spase' in dataset:
+        del dataset['spase']['data']
 
   if max_workers == 1:
     for id in ids:
@@ -272,12 +277,15 @@ def datasets(timeout=20, update=False):
 
   return _datasets
 
-def master(dataset, timeout=20, update=False, diffs=False):
+def master(dataset, restructure=True, timeout=20, update=False, diffs=False):
 
   mastercdf = dataset['allxml']['mastercdf']['@ID']
   url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
 
-  return fetch(url, dataset['id'], 'master', timeout=timeout, update=update, diffs=diffs)
+  _master = fetch(url, dataset['id'], 'master', timeout=timeout, update=update, diffs=diffs)
+  if restructure == True:
+    restructure_master(_master['data'], logger=logger)
+  return _master
 
 def spase(_master, timeout=20, update=True, diffs=False):
 
@@ -324,3 +332,86 @@ def samples(id, _orig_data):
     'plot': f"{wsbase}{id}/data/{start},{stop}/ALL-VARIABLES?format=png"
   }
   return _samples
+
+def restructure_master(_master, logger=None):
+
+  """
+  Convert dict with arrays of objects to objects with objects. For example
+    { "Epoch": [ 
+        {"VarDescription": [{"DataType": "CDF_TIME_TT2000"}, ...] },
+        {"VarAttributes": [{"CATDESC": "Default time"}, ...] }
+      ],
+      ...
+    }
+  is converted to
+    {
+      "Epoch": {
+        "VarDescription": {
+          "DataType": "CDF_TIME_TT2000",
+          ...
+        },
+        "VarAttributes": {
+          "CATDESC": "Default time",
+          ...
+        }
+      }
+    }
+  """
+
+  def sort_keys(obj):
+    return {key: obj[key] for key in sorted(obj)}
+
+  def array_to_dict(array):
+    obj = {}
+    for element in array:
+      key = list(element.keys())[0]
+      obj[key] = element[key]
+    return obj
+
+  file = list(_master.keys())[0]
+
+  variables = _master[file]['CDFVariables']
+  variables_new = {}
+
+  for variable in variables:
+
+    variable_keys = list(variable.keys())
+    if len(variable_keys) > 1:
+      msg = "Expected only one variable key in variable object. Exiting witih code 1."
+      logger.error(msg)
+      exit(1)
+
+    variable_name = variable_keys[0]
+    variable_array = variable[variable_name]
+    variable_dict = array_to_dict(variable_array)
+
+    for key, value in variable_dict.items():
+
+      if key == 'VarData':
+        variable_dict[key] = value
+      else:
+        variable_dict[key] = sort_keys(array_to_dict(value))
+
+    variables_new[variable_name] = variable_dict
+
+  globals = _master[file]['CDFglobalAttributes']
+  globals_r = {}
+
+  for _global in globals:
+    gkey = list(_global.keys())
+    if len(gkey) > 1:
+      if logger is not None:
+        msg = "Expected only one key in _global object."
+        logger.error(msg)
+    gvals = _global[gkey[0]]
+    text = []
+    for gval in gvals:
+      line = gval[list(gval.keys())[0]];
+      text.append(str(line))
+
+    globals_r[gkey[0]] = "\n".join(text)
+
+  _master[file]['CDFFileInfo'] = array_to_dict(_master[file]['CDFFileInfo'])
+
+  _master[file]['CDFglobalAttributes'] = globals_r
+  _master[file]['CDFVariables'] = variables_new

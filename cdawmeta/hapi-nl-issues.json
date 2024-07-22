@@ -129,8 +129,6 @@
     "WI_EM_3DP": ["VALID", "GAP"],
     "WI_PM_3DP": ["VALID", "E_RANGE", "GAP"]
   },
-  "omitVariables_needed_at_one_time": {
-  },
   "omitSubset": {
     "AEROCUBE-6-A_DOSIMETER_L2": ["Epoch_10Hz"],
     "AEROCUBE-6-B_DOSIMETER_L2": ["Epoch_10Hz"],
