@@ -34,9 +34,6 @@ Given I am using masters, this is unexpected. Is this something that Nand correc
 curl "https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/iss_sp_fpmu_00000000_v01.json" > a.json
 ```
 
-However, I don't see `"UNITS":"\u0000"` in the `VarAttributes` for `TCC` when I open [iss_sp_fpmu_00000000_v01.json](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/iss_sp_fpmu_00000000_v01.json) in a browser. I don't understand this.
-
-
 7\. If you search [the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/catalog-all.log) for `Error:`, errors in the master CDFs associated with missing
 
 1. `VarAttributes`

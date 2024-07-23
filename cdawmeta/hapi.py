@@ -35,13 +35,17 @@ def logger_config():
 
   return config
 
-def hapi(id=None, update=True, diffs=None, max_workers=None, no_orig_data=False):
+def hapi(id=None, data_dir=None, update=True, diffs=None, max_workers=None, no_orig_data=False):
 
   global DATA_DIR
+  if data_dir is None:
+    from . import DATA_DIR
+  else:
+    DATA_DIR = data_dir
   global INFO_DIR
-  global logger
-  from . import DATA_DIR
   INFO_DIR = os.path.join(DATA_DIR, 'hapi', 'info')
+
+  global logger
   logger = util.logger(**logger_config())
 
   if id is not None:
@@ -312,7 +316,7 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
     parameter = {
       "name": name,
       "type": type,
-      "units": extract_units(dsid, name, variable, x=None, print_info=print_info),
+      "units": extract_units(dsid, name, variable, all_variables, x=None, print_info=print_info),
       "x_cdf_is_virtual": virtual
     }
 
@@ -340,19 +344,31 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
     if fill is not None:
       parameter['fill'] = fill
 
-    n_values = 0
+    n_depend_values = 0
     if ptrs['DEPEND_VALUES'] is not None:
       parameter['x_cdf_depend_values'] = ptrs['DEPEND_VALUES']
-      n_values = len([x for x in ptrs["DEPEND_VALUES"] if x is not None])
+      n_depend_values = len([x for x in ptrs["DEPEND_VALUES"] if x is not None])
 
-    if ptrs['DEPEND'] is not None and n_values != 0:
-      if print_info:
-        msg = '     Error: NotImplemented: Some DEPEND_VALUES are not None and ignored.'
+    n_label_values = 0
+    if ptrs['LABL_PTR_VALUES'] is not None:
+      n_label_values = len([x for x in ptrs["LABL_PTR_VALUES"] if x is not None])
+
+    if ptrs['DEPEND'] is not None and n_depend_values != 0:
+      differ = False
+      if n_label_values != n_depend_values:
+        differ = True
+      else:
+        for x in range(n_depend_values):
+          if ptrs['LABL_PTR_VALUES'][x] != ptrs['DEPEND_VALUES'][x]:
+            differ = True
+            break
+      if differ and print_info:
+        msg = '     Error: NotImplemented[IgnoredDependValues]: Some DEPEND_VALUES are not None and ignored.'
         logger.error(msg)
         set_error(dsid, name, msg)
 
     bins_object = None
-    if ptrs['DEPEND'] is not None and n_values == 0:
+    if ptrs['DEPEND'] is not None and n_depend_values == 0:
       bins_object = bins(dsid, name, all_variables, ptrs['DEPEND'], print_info=print_info)
       if bins_object is not None:
         parameter['bins'] = bins_object
@@ -432,7 +448,7 @@ def create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
 
   if RecVariance == "VARY":
     if print_info:
-      logger.info(f"     Warning: NotImplemented[3]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY'. Not creating bins b/c Nand does not for this case.")
+      logger.info(f"     Warning: NotImplemented[TimeVaryingBins]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY'. Not creating bins b/c Nand does not for this case.")
     return None
 
   VAR_TYPE = extract_var_type(dsid, name, DEPEND_x, x=x, print_info=print_info)
@@ -448,7 +464,7 @@ def create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
                     "name": DEPEND_x_NAME,
                     "description": extract_description(dsid, name, DEPEND_x, x=x, print_info=print_info),
                     "x_label": extract_label(dsid, name, DEPEND_x, ptrs, x=x, print_info=print_info),
-                    "units": extract_units(dsid, name, DEPEND_x, x=x, print_info=print_info),
+                    "units": extract_units(dsid, name, DEPEND_x, all_variables, x=x, print_info=print_info),
                     "centers": DEPEND_x["VarData"]
                   }
     return bins_object
@@ -831,7 +847,7 @@ def extract_label(dsid, name, variable, ptrs, x=None, print_info=False):
 
   if ptrs['LABL_PTR'] is not None:
     if len(ptrs['LABL_PTR_VALUES']) == 1:
-      ptrs['LABL_PTR_VALUES'] = ptrs['LABL_PTR_VALUES'][0]
+      return ptrs['LABL_PTR_VALUES'][0]
     return ptrs['LABL_PTR_VALUES']
 
   return None
@@ -850,7 +866,7 @@ def extract_var_type(dsid, name, variable, x=None, print_info=None):
       set_error(dsid, name, msg)
     return None
 
-def extract_units(dsid, name, variable, x=None, print_info=None):
+def extract_units(dsid, name, variable, all_variables, x=None, print_info=None):
 
   msgx = ""
   if x is not None:
@@ -861,11 +877,29 @@ def extract_units(dsid, name, variable, x=None, print_info=None):
     units = variable['VarAttributes']["UNITS"]
   else:
     if "UNIT_PTR" in variable['VarAttributes']:
-      if print_info:
-        msg = f"     Error: NotImplemented: {msgx}variable '{name}'"
-        msg += f"has UNIT_PTR = '{variable['VarAttributes']['UNIT_PTR']}'. Not using."
-        logger.error(msg)
-        set_error(dsid, name, msg)
+      ptr_name = variable['VarAttributes']['UNIT_PTR']
+      if ptr_name in all_variables:
+          if 'string' == cdf2hapitype(all_variables[ptr_name]['VarDescription']['DataType']):
+            if 'VarData' in all_variables[ptr_name]:
+              units = all_variables[ptr_name]['VarData']
+            else:
+              if print_info:
+                msg = f"     Error: ISTP: {msgx}variable '{name}' has UNIT_PTR = '{ptr_name}', "
+                msg += f"but it has no VarData."
+                logger.error(msg)
+                set_error(dsid, name, msg)
+          else:
+            if print_info:
+              msg = f"     Error: ISTP: {msgx}variable '{name}' has UNIT_PTR = '{ptr_name}', "
+              msg += f"but it is not a string type."
+              logger.error(msg)
+              set_error(dsid, name, msg)
+      else:
+        if print_info:
+          msg = f"     Error: ISTP: {msgx}variable '{name}'"
+          msg += f" has UNIT_PTR = '{variable['VarAttributes']['UNIT_PTR']}', which is not a variable in dataset."
+          logger.error(msg)
+          set_error(dsid, name, msg)
 
     VAR_TYPE = extract_var_type(dsid, name, variable, x=x, print_info=print_info)
     if VAR_TYPE is not None and VAR_TYPE in ['data', 'support_data']:

@@ -50,10 +50,5 @@ def cli(script):
     parser.add_argument(f'--{k}', **v)
 
   args = vars(parser.parse_args())
-  if args['data_dir'] is not None:
-    import os
-    import cdawmeta
-    cdawmeta.DATA_DIR = os.path.abspath(args['data_dir'])
-  del args['data_dir']
 
   return args

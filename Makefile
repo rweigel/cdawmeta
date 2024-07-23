@@ -36,9 +36,6 @@ cdawmeta.egg-info:
 
 ################################################################################
 cdaweb: cdaweb.py
-	make data/cdaweb.json
-
-data/cdaweb.json: cdawmeta.egg-info
 	python cdaweb.py --data_dir ./data
 ################################################################################
 
@@ -46,7 +43,7 @@ data/cdaweb.json: cdawmeta.egg-info
 hapi:
 	make data/hapi/catalog-all.json $(ARGS)
 
-data/hapi/catalog-all.json: cdawmeta.egg-info data/cdaweb.json hapi.py cdawmeta/hapi-nl-issues.json
+data/hapi/catalog-all.json: cdawmeta.egg-info hapi.py cdawmeta/hapi-nl-issues.json
 	python hapi.py --data_dir ./data $(ARGS)
 ################################################################################
 

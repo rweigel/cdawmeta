@@ -88,8 +88,8 @@ def all_attribute_table(datasets):
                 }
 
     if use_all_attributes == True:
-      for dataset in datasets:
-        for name, variable in dataset['_master_restructured']['_variables'].items():
+      for _, dataset in datasets.items():
+        for name, variable in dataset['master']['data']['CDFVariables'].items():
           for attribute_type in ['VarDescription', 'VarAttributes']:
             if not attribute_type in variable:
               print("Missing " + attribute_type + " in " + name + " in " + dataset['id'])
@@ -114,11 +114,10 @@ def all_attribute_table(datasets):
     header.append(attribute)
 
   table = []
-  for dataset in datasets:
-    #print(dataset['id'])
-    if omit(dataset['id']) == True:
+  for id, dataset in datasets.items():
+    if omit(id) == True:
       continue
-    for name, variable in dataset['_master_restructured']['_variables'].items():
+    for name, variable in dataset['master']['data']['CDFVariables'].items():
       row = [dataset['id'], name]
       for attribute_type in ['VarDescription', 'VarAttributes']:
 
@@ -148,13 +147,7 @@ def all_attribute_table(datasets):
   return header, table
 
 import cdawmeta
-metadata_cdaweb = cdawmeta.metadata(update=False, embed_data=True)
-for dsid in metadata_cdaweb.keys():
-  master = metadata_cdaweb[dsid]['master']['data']
-  vars = cdawmeta.hapi.restructure_master(dsid, master)
-  print(vars)
-  exit()
-
+datasets = cdawmeta.metadata(data_dir='../data', update=False, embed_data=True)
 
 print("Creating table")
 header, table = all_attribute_table(datasets)

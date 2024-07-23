@@ -35,11 +35,15 @@ def ids(timeout=timeouts['allxml'], update=True):
   datasets_ = datasets(timeout=timeout, update=update)
   return list(datasets_.keys())
 
-def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False, restructure_master=True, no_spase=True, no_orig_data=True):
+def metadata(id=None, data_dir=None, embed_data=False, update=True, max_workers=1, diffs=False, restructure_master=True, no_spase=True, no_orig_data=True):
 
   global DATA_DIR
+  if data_dir is None:
+    from . import DATA_DIR
+  else:
+    DATA_DIR = data_dir
+
   global logger
-  from . import DATA_DIR
   logger = util.logger(**logger_config())
 
   datasets_ = datasets(timeout=timeouts['allxml'], update=update)
@@ -94,7 +98,8 @@ def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False,
   return datasets_
 
 def rel_path(base_dir, path):
-  return path.replace(base_dir + '/', '')
+  return path
+  #return path.replace(base_dir + '/', '')
 
 def CachedSession(cache_dir):
   import requests_cache
@@ -421,7 +426,7 @@ def restructure_master(_master, logger=None):
     globals_r[gkey[0]] = "\n".join(text)
 
   _master = {
-              file: file,
+              'CDFFileName': file,
               'CDFFileInfo': fileinfo_r,
               'CDFglobalAttributes': globals_r,
               'CDFVariables': variables_r
