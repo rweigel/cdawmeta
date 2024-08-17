@@ -2,7 +2,7 @@ def cli(script):
 
   clkws = {
     "id": {
-      "help": "Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)"
+      "help": "ID or pattern for dataset IDs to include (prefix with ^ to use pattern match, e.g., '^A|^B') (default: ^.*)"
     },
     "max_workers": {
       "type": int,
@@ -16,17 +16,17 @@ def cli(script):
     },
     "update": {
       "action": "store_true",
-      "help": "Update existing files",
+      "help": "Update existing cached HTTP responses",
       "default": False
     },
     "no_orig_data": {
       "action": "store_true",
-      "help": "Exclude _orig_data in catalog.json (_sample_{file,url} is also not created)",
+      "help": "Exclude orig_data object in catalog.json (sample_{file,url,plot} is also not created)",
       "default": False
     },
     "no_spase": {
       "action": "store_true",
-      "help": "Exclude _spase in catalog.json",
+      "help": "Exclude spase in catalog.json",
       "default": False
     },
     "diffs": {

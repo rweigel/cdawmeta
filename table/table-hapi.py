@@ -1,4 +1,6 @@
 import os
+import json
+
 base_dir = os.path.join(os.path.dirname(__file__), '../data')
 all_input_bw = os.path.join(base_dir, 'hapi','catalog-all.json')
 all_input_nl = os.path.join(base_dir, 'hapi', 'catalog-all.nl.json')
@@ -111,8 +113,6 @@ def table(datasets, ukeys, prefix):
   # head = [*heado, *head] Default order
   head = [heado[1], heado[0], *head, *heado[2:]]
   return head, rows
-
-import json
 
 print(f'Reading: {all_input_bw}')
 with open(all_input_bw, 'r', encoding='utf-8') as f:

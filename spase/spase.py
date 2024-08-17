@@ -5,7 +5,6 @@ import cdawmeta
 
 root_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 base_dir = os.path.join(root_dir, 'data')
-in_file  = os.path.join(base_dir, 'cdaweb.json')
 spase_units_file = os.path.join(os.path.dirname(__file__), 'spase-units.txt')
 master_units_file = os.path.join(os.path.dirname(__file__), 'master-units.txt')
 master2spase_units_file = os.path.join(os.path.dirname(__file__), 'master2spase-units.txt')
@@ -18,14 +17,8 @@ log_config = {
 }
 logger = cdawmeta.util.logger(**log_config)
 
-logger.info(f'Reading: {in_file}')
-
-with open(in_file, 'r', encoding='utf-8') as f:
-  datasets = json.load(f)
-logger.info(f'Read: {in_file}')
-
-from cdawmeta.restructure_master import add_master_restructured
-datasets = add_master_restructured(root_dir, datasets)
+import cdawmeta
+datasets = cdawmeta.metadata(data_dir='../data', update=False, no_spase=False, embed_data=True)
 
 def get_path(obj, path):
   for key in path:
@@ -34,7 +27,7 @@ def get_path(obj, path):
     obj = obj[key]
   return obj
 
-def array_to_dict(array):
+def array_to_dict(array, dsid):
   obj = {}
   for element in array:
     if 'ParameterKey' in element:
@@ -43,58 +36,62 @@ def array_to_dict(array):
       except:
         print(f"  {array}")
     else:
-      logger.error(f"  Error - No ParameterKey in {element}")
+      logger.error(f"  {dsid} Error - No ParameterKey for parameter with Name = {element.get('Name', None)}")
   return obj
 
 master_units = []
 spase_units = []
 master_units_dict = {}
-for dataset in datasets:
+for dsid in datasets:
 
-  print(f"Dataset: {dataset['id']}")
-  if '_spase' not in dataset or dataset['_spase'] is None:
-    logger.error(f"  Error - No SPASE for: {dataset['id']}")
+  print(f"Dataset: {dsid}")
+  #print(datasets[dsid])
+  if 'spase' not in datasets[dsid] or datasets[dsid]['spase'] is None:
+    logger.error(f"  {dsid}: Error - No SPASE.")
     continue
-  fname = os.path.join(root_dir, dataset['_spase'])
-  with open(fname, 'r', encoding='utf-8') as f:
-    #print(f"Reading: {dataset['_spase'].replace(base_dir,'data')}")
-    dataset['_spase_content'] = json.load(f)["_decoded_content"]
+  if 'data' not in datasets[dsid]['spase'] or datasets[dsid]['spase']['data'] is None:
+    continue
 
-  logger.info(f"  SPASE: {dataset['_spase']}")
-  logger.info(f"  Master: {dataset['_master']}")
-
-  Parameter = get_path(dataset['_spase_content'], ['Spase', 'NumericalData','Parameter'])
+  Parameter = get_path(datasets[dsid]['spase']['data'], ['Spase', 'NumericalData','Parameter'])
   if Parameter is None:
-    logger.error(f"  Error - No Spase/NumericalData/Parameter node in {dataset['id']}")
+    logger.error(f"  {dsid}: Error - No Spase/NumericalData/Parameter node")
     continue
 
-  parameter_dict = array_to_dict(Parameter)
+  parameter_dict = array_to_dict(Parameter, dsid)
 
-  dataset['_spase_restructured'] = {'Parameter': parameter_dict}
-  parameters = dataset['_spase_restructured']['Parameter']
-  variables = dataset['_master_restructured']['_variables']
+  datasets[dsid]['spase_restructured'] = {'Parameter': parameter_dict}
+  parameters = datasets[dsid]['spase_restructured']['Parameter']
+  variables = datasets[dsid]['master']['data']['CDFVariables']
 
-  for id in list(variables.keys()):
-    if 'VarAttributes' not in variables[id]:
-      logger.error(f"  Error in master - No VarAttributes in {dataset['id']}")
+  for vid in list(variables.keys()):
+    if 'VarAttributes' not in variables[vid]:
+      logger.error(f"  {dsid}/{vid}: Error in master - No VarAttributes")
       continue
-    if 'VAR_TYPE' not in variables[id]['VarAttributes']:
-      logger.error(f"  Error in master - No VarAttributes/VAR_TYPE in {dataset['id']}")
+    if 'VAR_TYPE' not in variables[vid]['VarAttributes']:
+      logger.error(f"  {dsid}/{vid}: Error in master - No VarAttributes/VAR_TYPE")
       continue
 
-    logger.info(f" {id}")
+    if variables[vid]['VarAttributes'].get('VAR_TYPE', None) not in ['data', 'support_data']:
+      continue
 
-    if id not in parameters:
-      logger.error(f"  Error in SPASE - Parameter {dataset['id']}/{id} not in SPASE")
+    logger.info(f"{vid}")
+
+    if vid not in parameters:
+      logger.error(f"  {dsid}/{vid} Error in SPASE - Parameter not in SPASE")
       continue
 
     for si_conversion in ['SI_conversion', 'SI_CONV', 'SI_conv']:
-      if si_conversion in variables[id]['VarAttributes']:
-        conv = variables[id]['VarAttributes'][si_conversion]
+      if si_conversion in variables[vid]['VarAttributes']:
+        conv = variables[vid]['VarAttributes'][si_conversion]
         logger.info(f"  master/SI_CONVERSION: '{conv}' (called {si_conversion})")
 
-    if 'UNITS' in variables[id]['VarAttributes']:
-      UNITS = variables[id]['VarAttributes']['UNITS']
+    if 'UNITS_PTR' in variables[vid]['VarAttributes']:
+      units_var = variables[vid]['VarAttributes']['UNITS_PTR']
+      print(variables[units_var])
+      exit()
+
+    if 'UNITS' in variables[vid]['VarAttributes']:
+      UNITS = variables[vid]['VarAttributes']['UNITS']
       logger.info(f"  master/UNITS: '{UNITS}'")
       master_units.append(UNITS)
       if not UNITS in master_units_dict:
@@ -103,8 +100,8 @@ for dataset in datasets:
       UNITS = None
       logger.info("  master/UNITS: No UNITS attribute")
 
-    if 'Units' in parameters[id]:
-      Units = parameters[id]['Units']
+    if 'Units' in parameters[vid]:
+      Units = parameters[vid]['Units']
       if UNITS is not None:
         master_units_dict[UNITS].append(Units)
       logger.info(f"  spase/Units:  '{Units}'")
@@ -112,14 +109,14 @@ for dataset in datasets:
     else:
       logger.info("  spase/Units: No <Units> element")
 
-    if 'COORDINATE_SYSTEM' in variables[id]['VarAttributes']:
-      csys = variables[id]['VarAttributes']['COORDINATE_SYSTEM']
+    if 'COORDINATE_SYSTEM' in variables[vid]['VarAttributes']:
+      csys = variables[vid]['VarAttributes']['COORDINATE_SYSTEM']
       logger.info(f"  master/COORDINATE_SYSTEM: '{csys}'")
     else:
       logger.info(f"  master/COORDINATE_SYSTEM: No COORDINATE_SYSTEM attribute")
 
-    if 'CoordinateSystem' in parameters[id]:
-      csys = parameters[id]['CoordinateSystem']
+    if 'CoordinateSystem' in parameters[vid]:
+      csys = parameters[vid]['CoordinateSystem']
       logger.info(f"  spase/CoordinateSystem:   '{csys}'")
     else:
       logger.info(f"  spase/CoordinateSystem:   No <CoordinateSystem> element")

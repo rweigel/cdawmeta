@@ -22,13 +22,14 @@ def logger(name=None,
       self.rm_string = rm_string
 
     def format(self, record):
+      record.pathname = record.pathname.replace(os.getcwd() + "/","")
       res = super(CustomFormatter, self).format(record)
       if self.rm_string is None:
         return res
       return res.replace(self.rm_string, '')
 
   if name is None:
-    name = __name__
+    name = __name__ # Use top-level module name
 
   if file_log is None:
     frame = inspect.stack()[1]
@@ -77,7 +78,8 @@ def logger(name=None,
       },
       'formatters': {
           'console_formatter': {
-            'format': f'{name}: {format}'
+            #'format': f' {name}>%(pathname)s:%(lineno)s: {format}'
+            'format': f'{format}'
           },
           'file_formatter': {
             'format': f'{format}'
@@ -144,6 +146,6 @@ def logger(name=None,
 
   _logger = logging.getLogger(name)
   for handler in _logger.handlers:
-    handler.setFormatter(CustomFormatter(rm_string=rm_string))
+    handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, rm_string=rm_string))
 
   return logging.getLogger(name)

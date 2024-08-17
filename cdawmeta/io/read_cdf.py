@@ -69,15 +69,19 @@ def read_cdf_meta(file, subset=False, logger=None, use_cache=True):
   rVariables = info.rVariables
   zVariables = info.zVariables
   for variable in rVariables + zVariables:
-    meta[variable] = cdffile.varattsget(variable=variable)
+    meta[variable] = {'VarDescription': None, 'VarAttributes': {}}
+    meta[variable]['VarDescription'] = cdffile.varattsget(variable=variable)
     # Add information that is in Master CDF JSONs
     vdata = cdffile.varinq(variable)
     # Use convention used in Master CDF JSONs for names
-    meta[variable]['DimSizes'] = vdata.Dim_Sizes
-    meta[variable]['RecVariance'] = vdata.Rec_Vary
-    meta[variable]['DimVariances'] = vdata.Dim_Vary
-    meta[variable]['NumDims'] = vdata.Num_Dims
-    meta[variable]['DataType'] = vdata.Data_Type_Description
+    meta[variable]['VarAttributes']['DimSizes'] = vdata.Dim_Sizes
+    meta[variable]['VarAttributes']['RecVariance'] = vdata.Rec_Vary
+    meta[variable]['VarAttributes']['DimVariances'] = vdata.Dim_Vary
+    meta[variable]['VarAttributes']['NumDims'] = vdata.Num_Dims
+    meta[variable]['VarAttributes']['NumElements'] = vdata.Num_Elements
+    meta[variable]['VarAttributes']['DataType'] = vdata.Data_Type_Description
+    meta[variable]['VarAttributes']['RecVariance'] = vdata.Rec_Vary
+    meta[variable]['VarAttributes']['LastRecord'] = vdata.Last_Rec
     if subset and 'DEPEND_0' in meta[variable]:
       depend_0s.append(meta[variable]['DEPEND_0'])
 
@@ -160,15 +164,16 @@ def read_cdf(file, variables=None, start=None, stop=None, logger=None, use_cache
     except:
       data[variable] = None
     meta[variable] = meta_all[variable]
+    meta[variable]['VarData'] = data[variable]
 
-  return data, meta
+  return meta
 
-def xprint_meta(meta):
+def xprint_dict(meta):
   import pprint
   pp = pprint.PrettyPrinter(depth=4, compact=True)
   pp.pprint(meta)
 
-def print_meta(d, indent=0):
+def print_dict(d, indent=0):
 
   if not isinstance(d, dict):
     print(d)
@@ -180,7 +185,7 @@ def print_meta(d, indent=0):
       end = '\n'
     print(' ' * indent + str(key), end=end)
     if isinstance(value, dict):
-        print_meta(value, indent+1)
+        print_dict(value, indent+1)
     else:
       if isinstance(value, str):
         print(f": '{value}'")
@@ -219,9 +224,9 @@ def subset_meta(meta, DEPEND_0=None, VAR_TYPE='data', RecVariance=True):
 
   return meta_sub
 
-def read(dataset, variables=None, start=None, stop=None, logger=None, use_cache=True):
+def read(dataset, data_dir=None, variables=None, start=None, stop=None, logger=None, use_cache=True):
 
-  meta_master = cdawmeta.metadata(id=dataset, update=False, embed_data=True, no_orig_data=False)
+  meta_master = cdawmeta.metadata(id=dataset, data_dir=data_dir, update=False, embed_data=True, no_orig_data=False)
   files_all = meta_master[dataset]['orig_data']['data']['FileDescription']
   files_needed = []
   start = start.strip()
@@ -236,28 +241,37 @@ def read(dataset, variables=None, start=None, stop=None, logger=None, use_cache=
 
   for file in files_needed:
     data, meta = read_cdf(file, variables=variables, start=start, stop=stop, logger=logger, use_cache=use_cache)
-    
-  return
+
+  return data, meta
 
 if __name__ == '__main__':
   if True:
-    file = "https://cdaweb.gsfc.nasa.gov/pub/data/ace/mag/level_2_cdaweb/mfi_h0/1998/ac_h0_mfi_19980203_v04.cdf"
-    file = "https://cdaweb.gsfc.nasa.gov/pub/data/dscovr/h1/faraday_cup/2018/dscovr_h1_fc_20180603_v08.cdf"
-    #data = read_cdf(file, 'Magnitude', start="1998-02-03T05:57:00", stop="1998-02-03T05:57:04")
-    data, meta = read('AC_H0_MFI', start='1997-09-03T00:00:12.000Z', stop='1997-09-05T00:00:12.000Z')
-    print_meta(meta)
+    id = 'AC_OR_SSC'
+    metadata = cdawmeta.metadata(id=id, data_dir="../../data", embed_data=True, update=False, max_workers=1, diffs=False, restructure_master=True, no_spase=True, no_orig_data=False)
+    import json
+    print_dict(metadata[id]['master']['data']['CDFVariables']['Epoch'])
+    #exit()
+    file = metadata[id]['samples']['file']
+    #file = "https://cdaweb.gsfc.nasa.gov/pub/data/ace/mag/level_2_cdaweb/mfi_h0/1998/ac_h0_mfi_19980203_v04.cdf"
+    #file = "https://cdaweb.gsfc.nasa.gov/pub/data/dscovr/h1/faraday_cup/2018/dscovr_h1_fc_20180603_v08.cdf"
+    data = read_cdf(file)
+    print('----')
+    print_dict(data['Epoch'])
     exit()
+    #data, meta = read(id, data_dir="../../data", start='1997-09-03T00:00:12.000Z', stop='1997-09-05T00:00:12.000Z')
+    #files_needed = read(id, data_dir="../../data", start='1997-09-03T00:00:12.000Z', stop='1997-09-05T00:00:12.000Z')
+    print_dict(files_needed)
     meta = read_cdf_meta(file)
-    print_meta(meta)
-    data, meta = read_cdf(file)
-    print_meta(data)
+    #print_dict(meta)
+    data = read_cdf(file)
+    print_dict(data['Epoch'])
     #exit()
 
     meta = read_cdf_meta(file, subset=True)
 
     depend_0s = list(meta.keys())
     meta_sub = subset_meta(meta, DEPEND_0=depend_0s[0])
-    print_meta(meta_sub)
+    print_dict(meta_sub)
     print(list(meta_sub.keys()))
     #print(data[2] == min(data[1][0]))
     #print(min(data[1][0]))

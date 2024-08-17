@@ -6,7 +6,7 @@ import deepdiff
 
 from . import util
 
-# These are set in call to metadata()
+# These are set in first call to metadata()
 DATA_DIR = None
 logger = None
 
@@ -42,9 +42,11 @@ def metadata(id=None, data_dir=None, embed_data=False, update=True, max_workers=
     from . import DATA_DIR
   else:
     DATA_DIR = data_dir
+  DATA_DIR = os.path.abspath(DATA_DIR)
 
   global logger
-  logger = util.logger(**logger_config())
+  if logger is None:
+    logger = util.logger(**logger_config())
 
   datasets_ = datasets(timeout=timeouts['allxml'], update=update)
   ids_all = datasets_.keys()
@@ -76,9 +78,9 @@ def metadata(id=None, data_dir=None, embed_data=False, update=True, max_workers=
 
     if embed_data == False:
       del dataset['master']['data']
-      if 'orig_data' in dataset:
+      if 'orig_data' in dataset and 'data' in dataset['orig_data']:
         del dataset['orig_data']['data']
-      if 'spase' in dataset:
+      if 'spase' in dataset and dataset['spase'] is not None and 'data' in dataset['spase']:
         del dataset['spase']['data']
 
   if max_workers == 1:
@@ -98,11 +100,13 @@ def metadata(id=None, data_dir=None, embed_data=False, update=True, max_workers=
   return datasets_
 
 def rel_path(base_dir, path):
-  return path
-  #return path.replace(base_dir + '/', '')
+  #return path
+  return path.replace(base_dir + '/', '')
 
 def CachedSession(cache_dir):
   import requests_cache
+  from requests.adapters import HTTPAdapter
+
   # https://requests-cache.readthedocs.io/en/stable/#settings
   # https://requests-cache.readthedocs.io/en/stable/user_guide/headers.html
 
@@ -138,7 +142,10 @@ def CachedSession(cache_dir):
     "decode_content": False
   }
 
-  return requests_cache.CachedSession(cache_dir, **copts)
+  session = requests_cache.CachedSession(cache_dir, **copts)
+  session.mount('https://', HTTPAdapter(max_retries=5))
+
+  return session
 
 def print_request_log(resp, url, cache):
   # Combine into single string to deal with parallel processing
@@ -226,6 +233,7 @@ def fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
       json_dict = xmltodict.parse(text);
     else:
       json_dict = resp.json()
+
   except Exception as e:
     msg = f"Error[{what}]: {id}: {e}"
     if logger is not None:
@@ -242,6 +250,9 @@ def fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
   _master['data'] = json_dict
   _master['data-cache'] = rel_path(DATA_DIR, file_out_json)
 
+  if resp.from_cache:
+    return _master
+
   try:
     util.write(file_out_json, _master, logger=logger)
   except Exception as e:
@@ -255,16 +266,37 @@ def fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
   return _master
 
 def datasets(timeout=20, update=False):
-
+  '''
+  Returns dict of datasets. Keys are dataset IDs and values are dicts 
+  with keys 'id' and 'allxml'. The value of 'allxml' is
+  all.xml/data/'sites//datasite/0/dataset
+  '''
   if update == False and datasets.datasets is not None:
     return datasets.datasets
 
   json_dict = fetch(allurl, 'all', 'all', timeout=timeout, update=update)
-  _datasets = {}
-  for dataset_allxml in json_dict['data']['sites']['datasite'][0]['dataset']:
+
+  try:
+    datasites = json_dict['data']['sites']['datasite']
+  except:
+    msg = f"Error[all.xml]: No 'sites/datasite' node in all.xml"
+    logger.error(msg)
+    return None
+
+  datasets_allxml = None
+  for datasite in datasites:
+    if datasite['@ID'] == 'CDAWeb_HTTPS':
+      datasets_allxml = datasite['dataset']
+      break
+  if datasets_allxml is None:
+    msg = f"Error[all.xml]: No datasite with ID=CDAWeb_HTTPS"
+    logger.error(msg)
+    return None
+
+  datasets_ = {}
+  for dataset_allxml in datasets_allxml:
 
     id = dataset_allxml['@serviceprovider_ID']
-
     dataset = {'id': id, 'allxml': dataset_allxml}
 
     if not 'mastercdf' in dataset_allxml:
@@ -282,10 +314,10 @@ def datasets(timeout=20, update=False):
       logger.error(msg)
       continue
 
-    _datasets[id] = dataset
+    datasets_[id] = dataset
 
-  datasets.datasets = _datasets
-  return _datasets
+  datasets.datasets = datasets_
+  return datasets_
 datasets.datasets = None
 
 def master(dataset, restructure=True, timeout=20, update=False, diffs=False):
@@ -304,17 +336,19 @@ def spase(_master, timeout=20, update=True, diffs=False):
   if 'data' not in _master:
     return None
 
-  files = list(_master['data'].keys())
+  global_attributes = _master['data']['CDFglobalAttributes']
+  if not 'spase_DatasetResourceID' in global_attributes:
+    msg = f"Error[master]: {_master['id']}: No spase_DatasetResourceID attribute"
+    logger.error(msg)
+    return None
 
-  global_attributes = _master['data'][files[0]]['CDFglobalAttributes']
-  for attribute in global_attributes:
-    if 'spase_DatasetResourceID' in attribute:
-      spase_id = attribute['spase_DatasetResourceID'][0]['0']
-      if spase_id and not spase_id.startswith('spase://'):
-        msg = f"Error[master]: {_master['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
-        logger.error(msg)
-        return None
-      url = spase_id.replace('spase://', 'https://hpde.io/') + '.json';
+  if 'spase_DatasetResourceID' in global_attributes:
+    spase_id = global_attributes['spase_DatasetResourceID']
+    if spase_id and not spase_id.startswith('spase://'):
+      msg = f"Error[master]: {_master['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
+      logger.error(msg)
+      return None
+    url = spase_id.replace('spase://', 'https://hpde.io/') + '.json';
 
   return fetch(url, id, 'spase', timeout=timeout, diffs=diffs, update=update)
 

@@ -18,7 +18,7 @@ log_delta_issues = False
 
 from . import util
 
-# These are set in hapi()
+# These are set in first call to hapi()
 DATA_DIR = None
 INFO_DIR = None
 logger = None
@@ -42,11 +42,14 @@ def hapi(id=None, data_dir=None, update=True, diffs=None, max_workers=None, no_o
     from . import DATA_DIR
   else:
     DATA_DIR = data_dir
+  DATA_DIR = os.path.abspath(DATA_DIR)
+
   global INFO_DIR
   INFO_DIR = os.path.join(DATA_DIR, 'hapi', 'info')
 
   global logger
-  logger = util.logger(**logger_config())
+  if logger is None:
+    logger = util.logger(**logger_config())
 
   if id is not None:
     file_name = os.path.join(INFO_DIR, f'{id}.json')
@@ -54,14 +57,14 @@ def hapi(id=None, data_dir=None, update=True, diffs=None, max_workers=None, no_o
       logger.info(f'Using cache because update = False and found cached file {file_name}')
       return cdawmeta.util.read(file_name, logger=logger)
 
-  metadata_cdaweb = cdawmeta.metadata(id=id, update=update, diffs=diffs, max_workers=max_workers, no_orig_data=no_orig_data)
+  metadata_cdaweb = cdawmeta.metadata(id=id, data_dir=DATA_DIR, update=update, diffs=diffs, max_workers=max_workers, no_orig_data=no_orig_data)
 
   # Loop over metadata_cdaweb and call _hapi() for each id
   metadata_hapi = []
   for dsid in metadata_cdaweb.keys():
     if dsid.startswith('AIM'):
       continue
-    datasets = _hapi(metadata_cdaweb[dsid], no_orig_data=no_orig_data)
+    datasets = _hapi(metadata_cdaweb[dsid], data_dir=DATA_DIR, no_orig_data=no_orig_data)
     for dataset in datasets:
       metadata_hapi.append(dataset)
 
@@ -81,7 +84,7 @@ def hapi(id=None, data_dir=None, update=True, diffs=None, max_workers=None, no_o
 
   return metadata_hapi
 
-def _hapi(metadatum, no_orig_data=False):
+def _hapi(metadatum, data_dir=None, no_orig_data=False):
 
   id = metadatum['id']
 
@@ -93,7 +96,7 @@ def _hapi(metadatum, no_orig_data=False):
   if no_orig_data == False:
     sample = extract_sample_start_stop(metadatum)
 
-  metadatum_cdaweb = cdawmeta.metadata(id=id, embed_data=True, update=False, no_spase=True, no_orig_data=True)
+  metadatum_cdaweb = cdawmeta.metadata(id=id, data_dir=data_dir, embed_data=True, update=False, no_spase=True, no_orig_data=True)
   master = metadatum_cdaweb[id]["master"]['data']
 
   variables = master['CDFVariables']
@@ -363,9 +366,9 @@ def variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid,
             differ = True
             break
       if differ and print_info:
-        msg = '     Error: NotImplemented[IgnoredDependValues]: Some DEPEND_VALUES are not None and ignored.'
-        logger.error(msg)
-        set_error(dsid, name, msg)
+        msg = '     Warning: NotImplemented[IgnoredDependValues]: Some DEPEND_VALUES are not None and ignored.'
+        logger.info(msg)
+        #set_error(dsid, name, msg)
 
     bins_object = None
     if ptrs['DEPEND'] is not None and n_depend_values == 0:
@@ -401,7 +404,7 @@ def bins(dsid, name, all_variables, depend_xs, print_info=False):
 
   if NumDims != len(DimSizes):
     if print_info:
-      msg = f"     Error: DimSizes mismatch: NumDims = {NumDims} "
+      msg = f"     Error: ISTP: DimSizes mismatch: NumDims = {NumDims} "
       msg += "!= len(DimSizes) = {len(DimSizes)}"
       logger.error(msg)
       set_error(dsid, name, msg)
@@ -421,14 +424,8 @@ def bins(dsid, name, all_variables, depend_xs, print_info=False):
     if DEPEND_x_NAME is not None:
       hapitype = cdf2hapitype(all_variables[DEPEND_x_NAME]['VarDescription']['DataType'])
       if hapitype in ['integer', 'double']:
+        # Other cases are handled in variables2parameters
         bins_object = create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=print_info)
-      else:
-        msg = f"DEPEND_{x} = '{DEPEND_x_NAME}' DataType is not an integer or float. Omitting bins for {name}."
-        if print_info:
-          logger.info(f"     Warning: NotImplemented[2]: {msg}")
-          logger.info(f"     Warning: NotImplemented[2]: {DEPEND_x_NAME}['VarData'] = {all_variables[DEPEND_x_NAME]['VarData']}")
-        return None
-        #bins_object = {'label': all_variables[DEPEND_x_NAME]['VarData']}
 
       if bins_object is None:
         return None
@@ -591,7 +588,7 @@ def extract_sample_start_stop(metadatum):
     return None
 
   if not 'data' in metadatum["orig_data"]:
-    fname = os.path.join(cdawmeta.DATA_DIR, metadatum["orig_data"]['data-cache'].replace(".json", ".pkl"))
+    fname = os.path.join(DATA_DIR, metadatum["orig_data"]['data-cache'].replace(".json", ".pkl"))
     orig_data = cdawmeta.util.read(fname, logger=logger)['data']
   else:
     orig_data = metadatum["orig_data"]['data']
@@ -760,7 +757,7 @@ def extract_ptrs(dsid, name, all_variables, print_info=False):
         if not x_NAME in all_variables:
           ptrs[prefix+"_VALID"][x-1] = False
           if print_info:
-            msg = f"Error: Bad {prefix} reference: '{name}' has {prefix}_{x} "
+            msg = f"Error: ISTP[BadReference]: Bad {prefix} reference: '{name}' has {prefix}_{x} "
             msg += f"named '{x_NAME}', which is not a variable."
             logger.error(f"     {msg}")
             set_error(dsid, name, msg)
@@ -777,9 +774,9 @@ def extract_ptrs(dsid, name, all_variables, print_info=False):
             ptrs[prefix+"_VALID"][x-1] = False
             if print_info:
               if prefix == 'LABL_PTR':
-                msg = f"Error: {x_NAME} has no VarData"
+                msg = f"Error: ISTP[Pointer]: {x_NAME} has no VarData"
               else:
-                msg = f"Error: {x_NAME} is a string type but has no VarData"
+                msg = f"Error: ISTP[Pointer]: {x_NAME} is a string type but has no VarData"
               logger.error(f"     {msg}")
               set_error(dsid, name, msg)
         else:
@@ -793,16 +790,20 @@ def extract_ptrs(dsid, name, all_variables, print_info=False):
     n_found = len([x for x in ptrs[prefix+"_VALID"] if x is not None])
     if n_invalid > 0:
       ptrs[prefix] = None
-      msg = f"Error: '{name}' has {n_invalid} invalid elements."
-      logger.error(f"     {msg}")
-      set_error(dsid, name, msg)
+      if False and print_info:
+        s = ""
+        if n_valid > 1:
+          s = "s"
+        msg = f"Error: ISTP: '{name}' has {n_invalid} invalid element{s}."
+        logger.error(f"     {msg}")
+        set_error(dsid, name, msg)
     elif prefix != 'COMPONENT':
       if n_valid != len(DimSizes):
         ptrs[prefix] = None
         if False and print_info:
           # Not necessarily an error for DEPEND. Depends on DISPLAY_TYPE.
           # https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html
-          msg = f"ISTP Error: '{name}' has {n_valid} valid elements {prefix}_{{1,2,3}}, but need "
+          msg = f"Error: ISTP: '{name}' has {n_valid} valid elements {prefix}_{{1,2,3}}, but need "
           msg += f"len(DimSizes) = {len(DimSizes)}."
           logger.error(f"     {msg}")
           set_error(dsid, name, msg)
@@ -811,7 +812,7 @@ def extract_ptrs(dsid, name, all_variables, print_info=False):
         if False and print_info:
           # Not necessarily an error for DEPEND. Depends on DISPLAY_TYPE.
           # https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html
-          msg = f"ISTP Error: Wrong number of {prefix}s: '{name}' has {n_found} of "
+          msg = f"Error: ISTP: Wrong number of {prefix}s: '{name}' has {n_found} of "
           msg += f"{prefix}_{{1,2,3}} and len(DimSizes) = {len(DimSizes)}."
           logger.error(f"     {msg}")
           set_error(dsid, name, msg)
@@ -905,7 +906,7 @@ def extract_units(dsid, name, variable, all_variables, x=None, print_info=None):
     if VAR_TYPE is not None and VAR_TYPE in ['data', 'support_data']:
       if not "UNIT_PTR" in variable['VarAttributes']:
         if print_info:
-          msg = f"     Error: ISTP: {msgx}variable '{name}' has VAR_TYPE "
+          msg = f"     Error: ISTP[NoUnits]: {msgx}variable '{name}' has VAR_TYPE "
           msg += f"'{VAR_TYPE}' and no UNITS or UNIT_PTR."
           logger.error(msg)
           set_error(dsid, name, msg)
@@ -927,12 +928,12 @@ def split_variables(id, variables, issues):
 
     if 'VarAttributes' not in variable_meta:
       logger.error(id)
-      msg = f"  Error: Dropping variable '{name}' b/c it has no VarAttributes"
+      msg = f"  Error: ISTP: Dropping variable '{name}' b/c it has no VarAttributes"
       logger.error(msg)
       continue
 
     if 'VAR_TYPE' not in variable_meta['VarAttributes']:
-      msg = f"  Error: Dropping variable '{name}' b/c it has no has no VAR_TYPE"
+      msg = f"  Error: ISTP: Dropping variable '{name}' b/c it has no has no VAR_TYPE"
       logger.error(id)
       logger.error(msg)
       set_error(id, name, msg)
@@ -945,7 +946,7 @@ def split_variables(id, variables, issues):
       depend_0_name = variable_meta['VarAttributes']['DEPEND_0']
 
       if depend_0_name not in variables:
-        msg = f"  Error: Dropping '{name}' b/c it has a DEPEND_0 ('{depend_0_name}') that is not in dataset"
+        msg = f"  Error: ISTP: Dropping '{name}' b/c it has a DEPEND_0 ('{depend_0_name}') that is not in dataset"
         logger.error(id)
         logger.error(msg)
         set_error(id, name, msg)

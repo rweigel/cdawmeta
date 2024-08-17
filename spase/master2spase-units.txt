@@ -1,15 +1,15 @@
-'ms': {'ms': 595, 'Milliseconds': 1, 's': 29, 'UT': 1}
+'ms': {'ms': 551, 'Milliseconds': 1, 's': 29, 'UT': 1}
 'Deg': {'Deg': 10, '°': 322, 'deg': 4, 'degree': 3}
 'KM': {'km': 1}
-'km': {'km': 443, 'km/s': 1, 'Re': 2}
-' ': {'ionic charge': 1, 'mV/m': 2, 'ns': 16, 'None': 5, '(0=OK,1=Poor)': 1, 'dB': 2, '\n         ': 6, '(0=OK,1=Other)': 6, 's': 3, 'unitless': 13, 'radians': 2, 'd': 12}
+'km': {'km': 442, 'km/s': 1, 'Re': 2}
+' ': {'ionic charge': 1, 'mV/m': 2, 'ns': 16, 'None': 5, '(0=OK,1=Poor)': 1, 'dB': 2, '\n         ': 6, '(0=OK,1=Other)': 6, 'unitless': 10, 'radians': 2, 'd': 12}
 '1/(cm2 Sr sec MeV/nucleon)': {'1/(cm2 Sr sec MeV/nucleon)': 66, '(cm^2 s sr MeV/n)^-1': 2, '1/(cm^2 sec ster MeV/n)': 12}
 'Counts/day': {'Counts/Day': 24}
 'nT': {'nT': 1571}
 '1/(cm**2-s-sr-MeV/nucleon)': {'(cm^2 s sr MeV/n)^-1': 48, '(cm^2 s sr MeV)^-1)': 60}
 '[fraction]': {'Ratio': 88, '(cm^2 s sr MeV)^-1)': 60}
 '#/cc': {'cm^-3': 26, '#/cc': 2}
-'km/s': {'km/s': 853}
+'km/s': {'km/s': 851}
 'Kelvin': {'Kelvin': 1, 'K': 1, '°K': 2, 'Component.K': 3, 'deg K': 2}
 '#/cm^3': {'cm^-3': 18, '#/cm^3': 4}
 'ionic charge': {'q': 30, 'ionic charge': 2}
@@ -26,23 +26,23 @@
 'counts': {'counts': 22}
 'counts/sec': {'s^-1': 37}
 '1/(sec ster cm^2 keV)': {'(cm^2 s sr keV)^-1': 16}
-'keV': {'keV': 296}
-'ns': {'ns': 1087, 'ms': 3}
+'keV': {'keV': 294}
+'ns': {'ns': 1085, 'ms': 3}
 'degrees North': {'°': 1}
 'degrees East': {'°': 1}
 'hr': {'h': 35, 'hr': 7}
 'uT': {'T': 132}
-'cnts/s': {'s^-1': 138}
+'cnts/s': {'s^-1': 136}
 'AU': {'ua': 101}
-'deg': {'°': 953, 'degrees': 44, 'deg': 91, 'Degrees': 2, 'degree': 37}
-'uA': {'uA': 20, 'µA': 2}
+'deg': {'°': 947, 'degrees': 44, 'deg': 83, 'Degrees': 2, 'degree': 37}
+'uA': {'uA': 16, 'µA': 2}
 'cm^-3': {'cm^-3': 209, '1/cc': 2}
 'MK': {'MK': 24}
 'eV': {'eV': 739, 'ev': 1}
 'kHz': {'kHz': 14}
 'mV/m': {'mV/m': 247}
 'V^2 m^-2 Hz^-1': {'V^2 m^-2 Hz^-1': 32}
-'V': {'V': 245}
+'V': {'V': 224}
 's': {'seconds': 1, 's': 173}
 'Unitless': {'unitless': 2}
 '/cm^3': {'cm^-3': 5}
@@ -51,7 +51,7 @@
 'nT^2 Hz^-1': {'nT^2 Hz^-1': 27}
 'degrees': {'degrees': 126, '°': 335, 'Degrees': 2, 'degree': 120, 'deg': 3, 'km/s': 2}
 'hours': {'h': 56, 'hours': 3}
-'nPa': {'nPa': 178}
+'nPa': {'nPa': 177}
 'Deg.': {'°': 7}
 'm/s': {'m/s': 29}
 'Rayleighs': {'R': 3}
@@ -66,8 +66,8 @@
 'nT**2 Hz**-1': {'nT^2 Hz^-1': 2}
 'Hz': {'Hz': 610}
 'ms (UT)': {'ms': 1}
-'km/sec': {'km/sec': 3, 'km/s': 57}
-'Re': {'Re': 198, 'Earth radii': 7}
+'km/sec': {'km/sec': 3, 'km/s': 51}
+'Re': {'Re': 184, 'Earth radii': 7}
 'sec': {'s': 430, 'sec': 188}
 'K': {'°K': 43, 'Kelvin': 1, 'K': 12}
 'Ray': {'R': 2}
@@ -82,7 +82,7 @@
 'hour': {'h': 14, 'hour': 1}
 '(2=Auroral)': {'(2=Auroral)': 3}
 '(OK>=2)': {'(OK>=2)': 3}
-'msec': {'ms': 474, 'msec': 70}
+'msec': {'ms': 471, 'msec': 70}
 'rad': {'rad': 89, 'degree': 12}
 'km/s (w/o error bars)': {'km/s': 2}
 '#/cc (w/o error bars)': {'cm^-3': 1}
@@ -95,8 +95,8 @@
 'Descrete quality ind': {'(0=good,255=bad or missing)': 1}
 'log10((V/m)**2/Hz)': {'log10((V/m)**2/Hz)': 3}
 'log10(nT**2/Hz)': {'log10(nT**2/Hz)': 3}
-'eV/(cm**2-s-sr-eV)': {'eV/(cm^2 s sr eV)': 9}
-'Degrees': {'°': 263, 'Degrees': 104, 'deg': 1, 'degree': 1}
+'eV/(cm**2-s-sr-eV)': {'eV/(cm^2 s sr eV)': 3}
+'Degrees': {'°': 167, 'Degrees': 104, 'deg': 1, 'degree': 1}
 '/cc': {'cm^-3': 3, '/cc': 1}
 '1/cc (qual only if scan=2=SW)': {'cm^-3': 2}
 'eV (qual only if scan=2=SW)': {'eV': 2}
@@ -110,14 +110,12 @@
 'Pascals': {'Pa': 1}
 'Cnts/sec cm^2 Sr': {'(cm^2 s sr)^-1': 1}
 'Cnts/sec cm^2 Sr MeV': {'(cm^2 s sr MeV)^-1': 1}
-'TBD': {'km': 1, 'degrees': 1, 'unitless': 2}
 'cnts': {'counts': 46, 'Counts': 4}
 'Hr': {'h': 42}
-'particles/m^2  sec sr MeV/N': {'(m^2 s sr MeV/n)^-1': 40}
+'particles/m^2  sec sr MeV/N': {'(m^2 s sr MeV/n)^-1': 24}
 'particles/m^2  sec sr': {'(m^2 s sr)^-1': 8}
-'particles/m^2  sec sr MeV': {'(m^2 s sr MeV)^-1': 2}
-'MeV': {'MeV': 242}
-'MeV/N': {'MeV/n': 4}
+'MeV': {'MeV': 232}
+'MeV/N': {'MeV/n': 2}
 'nT**2/Hz': {'nT**2/Hz': 8}
 '(V/m)(V/m)/Hz': {'(V/m)(V/m)/Hz': 2}
 'RE': {'RE': 7, 'Re': 99}
@@ -161,13 +159,13 @@
 'Deg K': {'deg K': 1, '°K': 1, 'K': 1}
 '1/cc': {'1/cc': 1}
 'nT^2': {'nT^2': 2}
-'ev': {'eV': 20}
+'ev': {'eV': 14}
 'e/cm3': {'cm^-3': 1}
-'p/cm3': {'cm^-3': 2}
-'a/(keV-cm2-ster-sec)': {'alpha/(keV-cm2-ster-sec)': 5}
-'P/(keV-cm2-ster-sec)': {'#/(keV-cm2-ster-sec)': 5}
+'p/cm3': {'cm^-3': 1}
+'a/(keV-cm2-ster-sec)': {'alpha/(keV-cm2-ster-sec)': 4}
+'P/(keV-cm2-ster-sec)': {'#/(keV-cm2-ster-sec)': 4}
 'e/(keV-cm2-ster-sec)': {'#/(keV-cm2-ster-sec)': 5}
-'p/(keV-cm2-ster-sec)': {'#/(keV-cm2-ster-sec)': 5}
+'p/(keV-cm2-ster-sec)': {'#/(keV-cm2-ster-sec)': 4}
 'cts/9ms': {'cts/9ms': 6}
 'nanosec': {'ns': 1}
 '(V/m)^2/Hz': {'(V/m)^2/Hz': 10, '(mV/m)^2/Hz': 240}
@@ -227,7 +225,7 @@
 'nT/Sec': {'nT/Sec': 3}
 '(0=OK,1=poor)': {'(0=OK,1=Poor)': 1}
 '(0=OK,1=Other)': {'(0=OK,1=Other)': 6}
-'nT^2/Hz': {'nT^2/Hz': 78}
+'nT^2/Hz': {'nT^2/Hz': 66}
 ' (0=OK)': {'(0=OK)': 1}
 'no/cc': {'no/cc': 4}
 'eV/[cm^2*s*sr*eV]': {'eV/[cm^2*s*sr*eV]': 11}
@@ -277,19 +275,17 @@
 '(All Qs) cm^{-3}': {'cm^-3': 11}
 '(All Qs) km/s': {'km/s': 11}
 '(All Qs) u/e': {'u/e': 1}
-'none': {'none': 8}
 'pA': {'pA': 10}
 'radian': {'rad': 2}
 'pA*cm**-2': {'pA/cm^-2': 2}
-'eV/cm2-s-ster-eV': {'eV/(cm^2 s sr eV)': 21}
-'Volts^2/Hz': {'V^2/Hz': 280}
+'eV/cm2-s-ster-eV': {'eV/(cm^2 s sr eV)': 18}
+'Volts^2/Hz': {'V^2/Hz': 16}
 'mV': {'mV': 17}
 'mV RMS': {'mV': 13}
 'nT RMS': {'nT': 3}
 'C/s': {'s^-1': 1}
 'RPS': {'s^-1': 4}
 'V^2/Hz': {'V^2/Hz': 188}
-'nT/sqrt(Hz)': {'nT/Hz^1/2': 1}
 'cm!u-3!n': {'cm^-3': 10}
 'R_E': {'Re': 22, 'R_E': 8, 'Earth radii': 24}
 's!E-1!Ncm!E-2!Nster!E-1!NkeV!E-1!N': {'(cm^2 s sr keV)^-1': 40, 's!E-1!Ncm!E-2!Nster!E-1!NkeV!E-1!N': 16}
@@ -299,7 +295,8 @@
 'ln(#protons/cm^2.s.sr.MeV)': {'(cm^2 s sr MeV)^-1': 1}
 'log(#protons/cm^2.s.sr.MeV)': {'(cm^2 s sr MeV)^-1': 1}
 'cm!e-2!ns!e-1!nsr!e-1!nMeV!e-1!n': {'(cm^2 s sr MeV)^-1': 68}
-'s-1 cm-2 ster-1 keV-1': {'s-1 cm-2 ster-1 keV-1': 128}
+'none': {'none': 8}
+'s-1 cm-2 ster-1 keV-1': {'s-1 cm-2 ster-1 keV-1': 88}
 'cm!U-2!N s!U-1!N sr!U-1!N keV!U-1!N': {'(cm^2 s sr keV)^-1': 18}
 'cm!U2!N sr': {'cm^2 sr': 4}
 'Counts/(MeV-cm^2-s-sr)': {'(cm^2 s sr MeV)^-1': 88}
@@ -315,13 +312,13 @@
 '1/(Mev-cm^2-s-sr)': {'1/(Mev-cm^2-s-sr)': 24}
 'UTC': {'UTC': 19}
 'ps': {'ps': 4}
-'V^2/m^2/Hz': {'V^2/m^2/Hz': 33, '(V/m)^2/Hz': 10}
+'V^2/m^2/Hz': {'V^2/m^2/Hz': 22, '(V/m)^2/Hz': 7}
 '(0=stnd,1=Atten)': {'(0=stnd,1=Atten)': 7}
 '(0=U,1=V,2=W/Spin)': {'(0=U,1=V,2=W/Spin)': 7}
 'nT*V/m/Hz': {'(nT V/m)/Hz': 9}
 'constant': {'constant': 4}
 '(0=off)': {'(0=off)': 21}
-'V/m': {'V/m': 24}
+'V/m': {'V/m': 22}
 '(0=def)': {'(0=def)': 6}
 '(0=out,1=in)': {'(0=out,1=in)': 6}
 '(source level)': {'(source level)': 4}
@@ -339,9 +336,7 @@
 '1/(cm**2 s sr MeV) ': {'1/(cm**2 s sr MeV)': 1}
 '1/(cm**2 s sr MeV/n)': {'1/(cm**2 s sr MeV/n)': 1}
 '1/(cm**2 sr min)': {'1/(cm^2 min sr)': 2}
-'eV/cm^3': {'eV/cm^3': 102}
-'eV/cm^2/s': {'eV/(cm^2 s)': 2}
-'cnts/cm^2/s': {'cm^2 s^-1': 8}
+'cnts/cm^2/s': {'cm^2 s^-1': 2}
 '1/cm^2-s-ster-MeV': {'(cm^2 s sr MeV)^-1': 32}
 '1/cm^2-s-ster-MeV/nuc': {'(cm^2 s sr MeV/n)^-1': 22}
 'bps': {'s^-1': 4}
@@ -353,7 +348,6 @@
 'cnts/sec/sr/cm^2/MeV': {'1/(sec sr cm^2 MeV)': 16}
 'particles/(s cm2 sr MeV/n)': {'1/(s sr cm^2 MeV/n)': 16}
 '1/cm3': {'1/cm^3': 6, 'cm^-3': 10}
-'flag': {'flag': 4}
 'Pa': {'Pa': 2}
 'deg_K': {'°K': 2}
 'cts/s (EffCorr,PropTo_DiffEFlux)': {'s^-1': 1}
@@ -384,6 +378,7 @@
 '<|nT|>': {'nT': 10}
 '(nT)^2/Hz': {'(nT)^2/Hz': 150}
 'eV/(cm^2-s-sr-eV)': {'eV/(cm^2 s sr eV)': 27}
+'eV/cm^3': {'eV/cm^3': 100}
 '#/(cm^2-s)': {'(cm^2 s)^-1': 30, '#/(cm^2*s)': 10}
 'eV/(cm^2-s-sr-eV) ': {'eV/(cm^2 s sr eV)': 3}
 'nT GSE': {'nT': 15}
@@ -402,19 +397,19 @@
 '(cm^-3 s^-1)^2': {'(cm^3 s)^-2': 4}
 'K^2': {'(°K)^2': 4}
 'degrees ': {'degrees': 2, 'd': 12}
+'TBD': {'km': 1, 'degrees': 1, 'unitless': 2}
 'milli-seconds': {'ms': 1}
-'[keV]': {'keV': 2}
+'[keV]': {'keV': 1}
 '[Re]': {'Re': 2}
 'mjd': {'d': 6, 'days': 2}
 '(eV cm2 sr s)-1': {'(cm^2 s sr eV)^-1': 48}
-'Flux (cm^2 sr s)^-1': {'(cm^2 sr s)^-1': 6}
 'Flux Per Energy (cm^2 sr s eV)^-1': {'(cm^2 sr s eV)^-1': 42}
 'Flux Per Energy (cm^2 sr s eV)^-1 ': {'(cm^2 sr s eV)^-1': 6}
 'Flux Per Energy (cm^2 sr s eV)^-1  ': {'(cm^2 sr s eV)^-1': 6}
 'attitude change in degrees': {'deg': 2}
 'earth radii': {'Earth Radii': 2}
 'hh:mm': {'hours': 2}
-'Fractional Error': {'Fractional Error': 20}
+'Fractional Error': {'Fractional Error': 18}
 'MJD': {'days': 2}
 'Rayleigh': {'R': 12}
 'days': {'d': 2, 'days': 1}
@@ -437,9 +432,9 @@
 'MSec': {'ms': 8}
 'Fraction of the year': {'a': 8}
 'femto-amp': {'fA': 20}
-'particles/[cm^2*second*steradian*MeV/nucleon]': {'(cm^2 s sr MeV/n)^-1': 52}
-'MeV/nucleon': {'MeV/n': 56}
-'km per sec': {'km/s': 19}
+'particles/[cm^2*second*steradian*MeV/nucleon]': {'(cm^2 s sr MeV/n)^-1': 44}
+'MeV/nucleon': {'MeV/n': 38}
+'km per sec': {'km/s': 15}
 'per cc': {'cm^-3': 5}
 'deg per sec': {'°/s': 1}
 'sector index': {'sector index': 4}
@@ -448,7 +443,6 @@
 'nT (3sec)': {'nT': 6}
 'nT (1hr)': {'nT': 6}
 'Re (1hr)': {'Re': 3}
-'nT/Count': {'nT': 2}
 'ergs/(cm^2 s)': {'ergs/(cm^2 s)': 1}
 '#/{cc*(cm/s)^3}': {'cm^-3 (cm/s)^-3': 4, '#/{cc*(cm/s)^3}': 31}
 'cm/s': {'cm/s': 4}
