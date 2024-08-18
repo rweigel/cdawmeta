@@ -192,37 +192,6 @@ def xprint_dict(meta):
   pp = pprint.PrettyPrinter(depth=4, compact=True)
   pp.pprint(meta)
 
-def sort_by_keys(d):
-  import collections
-  if not isinstance(d, dict):
-    return d
-  d = collections.OrderedDict(sorted(d.items()))
-  for key in d:
-    d[key] = sort_by_keys(d[key])
-  return d
-
-def print_dict(d, sort=False, indent=0):
-
-  if not isinstance(d, dict):
-    print(d)
-    return
-
-  if sort:
-    d = sort_by_keys(d)
-
-  for key, value in d.items():
-    end = ''
-    if isinstance(value, dict):
-      end = '\n'
-    print(' ' * indent + str(key), end=end)
-    if isinstance(value, dict):
-        print_dict(value, sort=sort, indent=indent+1)
-    else:
-      if isinstance(value, str):
-        print(f": '{value}'")
-      else:
-        print(f": {value}")
-
 def subset_meta(meta, DEPEND_0=None, VAR_TYPE='data', RecVariance=True):
 
   if DEPEND_0 is not None:
@@ -277,6 +246,7 @@ def read(dataset, data_dir=None, variables=None, start=None, stop=None, logger=N
 
 if __name__ == '__main__':
   if True:
+    import cdawmeta
     id = 'AC_OR_SSC'
 
     metadata = cdawmeta.metadata(id=id, data_dir="../../data", embed_data=True, update=False, max_workers=1, diffs=False, restructure_master=True, no_spase=True, no_orig_data=False)
@@ -284,14 +254,14 @@ if __name__ == '__main__':
     import json
     Epoch = metadata[id]['master']['data']['CDFVariables']['Epoch']
     #print_dict(Epoch, sort=True)
-    print_dict(Epoch, sort=True)
+    cdawmeta.util.print_dict(Epoch, sort=True)
     file = metadata[id]['samples']['file']
     #file = "https://cdaweb.gsfc.nasa.gov/pub/data/ace/mag/level_2_cdaweb/mfi_h0/1998/ac_h0_mfi_19980203_v04.cdf"
     #file = "https://cdaweb.gsfc.nasa.gov/pub/data/dscovr/h1/faraday_cup/2018/dscovr_h1_fc_20180603_v08.cdf"
     data = read_cdf(file)
 
     print('----')
-    print_dict(data['Epoch'], sort=True)
+    cdawmeta.util.print_dict(data['Epoch'], sort=True)
     exit()
     #data, meta = read(id, data_dir="../../data", start='1997-09-03T00:00:12.000Z', stop='1997-09-05T00:00:12.000Z')
     #files_needed = read(id, data_dir="../../data", start='1997-09-03T00:00:12.000Z', stop='1997-09-05T00:00:12.000Z')
