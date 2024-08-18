@@ -10,10 +10,8 @@
 # If an update is needed due only to a source code change, use
 #   make all
 
-UPDATE=''
-
 all:
-	make hapi UPDATE=$(UPDATE)
+	make hapi
 	make hapi-nl
 	make compare
 
@@ -27,7 +25,7 @@ rsync-from-mag:
 	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ .
 
 compare:
-	make hapi UPDATE=$(UPDATE)
+	make hapi
 	make hapi-nl
 	python hapi/compare.py | tee data/hapi/compare.log
 
@@ -36,18 +34,18 @@ cdawmeta.egg-info:
 
 ################################################################################
 cdaweb: cdaweb.py
-	make data/all.json UPDATE=$(UPDATE)
+	make data/all.json
 
 data/all.json: cdaweb.py
-	python cdaweb.py --data_dir ./data UPDATE=$(UPDATE)
+	python cdaweb.py --data_dir data
 ################################################################################
 
 ################################################################################
 hapi:
-	make data/hapi/catalog-all.json UPDATE=$(UPDATE)
+	make data/hapi/catalog-all.json
 
 data/hapi/catalog-all.json: cdawmeta.egg-info hapi.py cdawmeta/hapi-nl-issues.json
-	python hapi.py --data_dir ./data UPDATE=$(UPDATE)
+	python hapi.py --data_dir data
 ################################################################################
 
 ################################################################################

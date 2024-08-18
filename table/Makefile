@@ -11,6 +11,9 @@ serve-cdaweb-json:
 	make cdaweb-json
 	cd table-ui/ajax; python server.py 8051 $(CDAWEBHEAD) $(CDAWEBBODY)
 
+serve-cdaweb-sql-noupdate:
+	python table-ui/ajax/server.py 8051 $(CDAWEBHEAD) $(CDAWEBBODY).sql
+
 serve-cdaweb-sql:
 	make table-ui
 	make cdaweb-sql

@@ -42,6 +42,7 @@ def hapi(id=None, data_dir=None, update=True, diffs=None, max_workers=None, no_o
     from . import DATA_DIR
   else:
     DATA_DIR = data_dir
+
   DATA_DIR = os.path.abspath(DATA_DIR)
 
   global INFO_DIR

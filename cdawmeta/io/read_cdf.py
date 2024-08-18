@@ -69,19 +69,38 @@ def read_cdf_meta(file, subset=False, logger=None, use_cache=True):
   rVariables = info.rVariables
   zVariables = info.zVariables
   for variable in rVariables + zVariables:
-    meta[variable] = {'VarDescription': None, 'VarAttributes': {}}
-    meta[variable]['VarDescription'] = cdffile.varattsget(variable=variable)
+    meta[variable] = {'VarDescription': {}, 'VarAttributes': None}
+    meta[variable]['VarAttributes'] = cdffile.varattsget(variable=variable)
     # Add information that is in Master CDF JSONs
     vdata = cdffile.varinq(variable)
     # Use convention used in Master CDF JSONs for names
-    meta[variable]['VarAttributes']['DimSizes'] = vdata.Dim_Sizes
-    meta[variable]['VarAttributes']['RecVariance'] = vdata.Rec_Vary
-    meta[variable]['VarAttributes']['DimVariances'] = vdata.Dim_Vary
-    meta[variable]['VarAttributes']['NumDims'] = vdata.Num_Dims
-    meta[variable]['VarAttributes']['NumElements'] = vdata.Num_Elements
-    meta[variable]['VarAttributes']['DataType'] = vdata.Data_Type_Description
-    meta[variable]['VarAttributes']['RecVariance'] = vdata.Rec_Vary
-    meta[variable]['VarAttributes']['LastRecord'] = vdata.Last_Rec
+    methods = dir(vdata)
+    method_map = {
+      'Block_Factor': 'BlockingFactor',
+      'Compress': 'Compress',
+      'Data_Type': 'DataTypeValue',
+      'Data_Type_Description': 'DataType',
+      'Dim_Sizes': 'DimSizes',
+      'Dim_Vary': 'DimVariances',
+      'Last_Rec': 'LastRecord',
+      'Num': 'Num',
+      'Num_Dims': 'NumDims',
+      'Num_Elements': 'NumElements',
+      'Pad': 'PadValue',
+      'Rec_Vary': 'RecVariance',
+      'Sparse': 'SparseRecords',
+      'Var_Type': 'VarType',
+      'Variable': 'VariableName',
+    }
+    for method in methods:
+      if not method.startswith('_'):
+        if method in method_map:
+          method_renamed = method_map[method]
+        else:
+          print("??? Method not in map: ", method)
+          method_renamed = method
+        meta[variable]['VarDescription'][method_renamed] = getattr(vdata, method)
+
     if subset and 'DEPEND_0' in meta[variable]:
       depend_0s.append(meta[variable]['DEPEND_0'])
 
@@ -173,11 +192,23 @@ def xprint_dict(meta):
   pp = pprint.PrettyPrinter(depth=4, compact=True)
   pp.pprint(meta)
 
-def print_dict(d, indent=0):
+def sort_by_keys(d):
+  import collections
+  if not isinstance(d, dict):
+    return d
+  d = collections.OrderedDict(sorted(d.items()))
+  for key in d:
+    d[key] = sort_by_keys(d[key])
+  return d
+
+def print_dict(d, sort=False, indent=0):
 
   if not isinstance(d, dict):
     print(d)
     return
+
+  if sort:
+    d = sort_by_keys(d)
 
   for key, value in d.items():
     end = ''
@@ -185,7 +216,7 @@ def print_dict(d, indent=0):
       end = '\n'
     print(' ' * indent + str(key), end=end)
     if isinstance(value, dict):
-        print_dict(value, indent+1)
+        print_dict(value, sort=sort, indent=indent+1)
     else:
       if isinstance(value, str):
         print(f": '{value}'")
@@ -247,16 +278,20 @@ def read(dataset, data_dir=None, variables=None, start=None, stop=None, logger=N
 if __name__ == '__main__':
   if True:
     id = 'AC_OR_SSC'
+
     metadata = cdawmeta.metadata(id=id, data_dir="../../data", embed_data=True, update=False, max_workers=1, diffs=False, restructure_master=True, no_spase=True, no_orig_data=False)
+
     import json
-    print_dict(metadata[id]['master']['data']['CDFVariables']['Epoch'])
-    #exit()
+    Epoch = metadata[id]['master']['data']['CDFVariables']['Epoch']
+    #print_dict(Epoch, sort=True)
+    print_dict(Epoch, sort=True)
     file = metadata[id]['samples']['file']
     #file = "https://cdaweb.gsfc.nasa.gov/pub/data/ace/mag/level_2_cdaweb/mfi_h0/1998/ac_h0_mfi_19980203_v04.cdf"
     #file = "https://cdaweb.gsfc.nasa.gov/pub/data/dscovr/h1/faraday_cup/2018/dscovr_h1_fc_20180603_v08.cdf"
     data = read_cdf(file)
+
     print('----')
-    print_dict(data['Epoch'])
+    print_dict(data['Epoch'], sort=True)
     exit()
     #data, meta = read(id, data_dir="../../data", start='1997-09-03T00:00:12.000Z', stop='1997-09-05T00:00:12.000Z')
     #files_needed = read(id, data_dir="../../data", start='1997-09-03T00:00:12.000Z', stop='1997-09-05T00:00:12.000Z')

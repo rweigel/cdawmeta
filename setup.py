@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 # "Content-Type": "application/json; charset=utf-8"
 # (charset=utf-8 is redundant and causes requests_cache not not cache
 # _decoded_content)
-install_requires = ["requests_cache==1.2", "xmltodict", "deepdiff"]
+install_requires = ["requests_cache==1.2", "xmltodict", "deepdiff", "cdasws"]
 
 setup(
     name='cdawmeta',
