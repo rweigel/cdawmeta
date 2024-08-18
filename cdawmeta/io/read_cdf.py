@@ -165,7 +165,7 @@ def xread_cdf(file, parameters=None, start=None, stop=None, logger=None, use_cac
 
   return time, data, meta
 
-def read_cdf(file, variables=None, start=None, stop=None, logger=None, use_cache=True):
+def read_cdf(file, variables=None, start=None, stop=None, iso8601=True, logger=None, use_cache=True):
 
   cdffile = open_cdf(file, logger=logger, use_cache=False)
   if cdffile is None:
@@ -185,15 +185,17 @@ def read_cdf(file, variables=None, start=None, stop=None, logger=None, use_cache
       print(f"Error executing cdffile.varget(variable={variable}) for file {file}:\n  {e}")
       data[variable] = None
 
-    try:
-      time_variable = meta[variable]['VarDescription']['DataType'].startswith('CDF_EPOCH')
-      time_variable = time_variable or (meta[variable]['VarDescription']['DataType'] == 'CDF_TIME_TT2000')
-      if time_variable:
-        epoch = cdflib.cdfepoch.encode(data[variable], iso_8601=True)
-        data[variable] = epoch
-    except Exception as e:
-      print(f"Error when executing cdflib.cdfepoch.encode({data[variable]}, iso_8601=True):\n  {e}")
-      data[variable] = None
+    if iso8601:
+      try:
+        varDescription = meta[variable]['VarDescription']
+        time_variable = varDescription['DataType'].startswith('CDF_EPOCH')
+        time_variable = time_variable or (varDescription['DataType'] == 'CDF_TIME_TT2000')
+        if time_variable:
+          epoch = cdflib.cdfepoch.encode(data[variable], iso_8601=True)
+          data[variable] = epoch
+      except Exception as e:
+        print(f"Error when executing cdflib.cdfepoch.encode({data[variable]}, iso_8601=True):\n  {e}")
+        data[variable] = None
 
     meta[variable]['VarData'] = data[variable]
 
@@ -259,8 +261,9 @@ def read(dataset, data_dir=None, variables=None, start=None, stop=None, logger=N
 if __name__ == '__main__':
   if True:
     import cdflib
-    print(cdflib.cdfepoch.compute_epoch('1997-09-03T00:00:12.000Z'))
-    exit()
+    import datetime
+    #dti = [1997, 9, 3, 0, 0, 12, 0, 0, 0]
+    dti = [2024,1,1,0, 0, 0, 0]
     import cdawmeta
 
     id = 'AC_OR_SSC'
@@ -271,10 +274,28 @@ if __name__ == '__main__':
     cdawmeta.util.print_dict(Epoch, sort=True)
 
     file = metadata[id]['samples']['file']
-    data = read_cdf(file)
+    data = read_cdf(file, iso8601=False)
 
     print('----')
     cdawmeta.util.print_dict(data['Epoch'], sort=True)
+    epoch = data['Epoch']['VarData']
+    to = epoch[0]
+    tf = epoch[-1]
+    print(to, tf)
+    #to = cdflib.cdfepoch.parse(to)
+    #tf = cdflib.cdfepoch.parse(tf)
+    #print(to, tf)
+    #exit()
+    #print(epoch)
+    epoch_iso = cdflib.cdfepoch.encode(epoch, iso_8601=True)
+    starttime = epoch_iso[0]
+    endtime = epoch_iso[-1]
+    print(starttime, endtime)
+    print(epoch.dtype)
+    er = cdflib.cdfepoch.findepochrange(epoch, starttime=to, endtime=tf)
+    er = cdflib.cdfepoch.findepochrange(epoch, starttime=starttime, endtime=endtime)
+    print(er)
+    exit()
 
     exit()
 
