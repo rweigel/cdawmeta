@@ -178,11 +178,23 @@ def read_cdf(file, variables=None, start=None, stop=None, logger=None, use_cache
   data = {}
   meta = {}
   for variable in variables:
+    meta[variable] = meta_all[variable]
     try:
       data[variable] = cdffile.varget(variable=variable)
-    except:
+    except Exception as e:
+      print(f"Error executing cdffile.varget(variable={variable}) for file {file}:\n  {e}")
       data[variable] = None
-    meta[variable] = meta_all[variable]
+
+    try:
+      time_variable = meta[variable]['VarDescription']['DataType'].startswith('CDF_EPOCH')
+      time_variable = time_variable or (meta[variable]['VarDescription']['DataType'] == 'CDF_TIME_TT2000')
+      if time_variable:
+        epoch = cdflib.cdfepoch.encode(data[variable], iso_8601=True)
+        data[variable] = epoch
+    except Exception as e:
+      print(f"Error when executing cdflib.cdfepoch.encode({data[variable]}, iso_8601=True):\n  {e}")
+      data[variable] = None
+
     meta[variable]['VarData'] = data[variable]
 
   return meta
@@ -246,23 +258,26 @@ def read(dataset, data_dir=None, variables=None, start=None, stop=None, logger=N
 
 if __name__ == '__main__':
   if True:
+    import cdflib
+    print(cdflib.cdfepoch.compute_epoch('1997-09-03T00:00:12.000Z'))
+    exit()
     import cdawmeta
+
     id = 'AC_OR_SSC'
 
     metadata = cdawmeta.metadata(id=id, data_dir="../../data", embed_data=True, update=False, max_workers=1, diffs=False, restructure_master=True, no_spase=True, no_orig_data=False)
 
-    import json
     Epoch = metadata[id]['master']['data']['CDFVariables']['Epoch']
-    #print_dict(Epoch, sort=True)
     cdawmeta.util.print_dict(Epoch, sort=True)
+
     file = metadata[id]['samples']['file']
-    #file = "https://cdaweb.gsfc.nasa.gov/pub/data/ace/mag/level_2_cdaweb/mfi_h0/1998/ac_h0_mfi_19980203_v04.cdf"
-    #file = "https://cdaweb.gsfc.nasa.gov/pub/data/dscovr/h1/faraday_cup/2018/dscovr_h1_fc_20180603_v08.cdf"
     data = read_cdf(file)
 
     print('----')
     cdawmeta.util.print_dict(data['Epoch'], sort=True)
+
     exit()
+
     #data, meta = read(id, data_dir="../../data", start='1997-09-03T00:00:12.000Z', stop='1997-09-05T00:00:12.000Z')
     #files_needed = read(id, data_dir="../../data", start='1997-09-03T00:00:12.000Z', stop='1997-09-05T00:00:12.000Z')
     print_dict(files_needed)
