@@ -167,11 +167,13 @@ def xread_cdf(file, parameters=None, start=None, stop=None, logger=None, use_cac
 
 def read_cdf(file, variables=None, start=None, stop=None, iso8601=True, logger=None, use_cache=True):
 
-  cdffile = open_cdf(file, logger=logger, use_cache=False)
+  cdffile = open_cdf(file, logger=logger, use_cache=use_cache)
   if cdffile is None:
     return None
 
   meta_all = read_cdf_meta(file, logger=None, use_cache=True)
+  if isinstance(variables, str):
+    variables = variables.split(",")
   if variables is None:
     variables = list(meta_all.keys())
 
@@ -179,11 +181,35 @@ def read_cdf(file, variables=None, start=None, stop=None, iso8601=True, logger=N
   meta = {}
   for variable in variables:
     meta[variable] = meta_all[variable]
+
+    rr = {} # record range
+    depend_0 = None
+    if start is not None and stop is not None:
+      if 'DEPEND_0' in meta[variable]['VarAttributes']:
+        depend_0 = meta[variable]['VarAttributes']['DEPEND_0']
+        if depend_0 not in meta:
+          meta[depend_0] = meta_all[depend_0]
+        if 'VarData' not in meta[depend_0]:
+          print(f"Reading DEPEND_0 = '{depend_0}' for variable = '{variable}'")
+          meta[depend_0]['VarData'] = cdffile.varget(variable=depend_0)
+
+        rr[depend_0] = record_range(meta[depend_0], start, stop)
+
+    print(depend_0)
     try:
-      data[variable] = cdffile.varget(variable=variable)
+      if depend_0 is None:
+        print(f"Reading variable = {variable}")
+        meta[variable]['VarData'] = cdffile.varget(variable=variable)
+      else:
+        print(f"Reading variable = {variable}[{rr[depend_0][0]}:{rr[depend_0][1]}]")
+        meta[variable]['VarData'] = cdffile.varget(variable=variable, startrec=rr[depend_0][0], endrec=rr[depend_0][1])
     except Exception as e:
-      print(f"Error executing cdffile.varget(variable={variable}) for file {file}:\n  {e}")
-      data[variable] = None
+      if depend_0 is None:
+        call_str = f"cdffile.varget(variable='{variable}')"
+      else:
+        call_str = f"cdffile.varget(variable='{variable}', startrec={rr[depend_0][0]}, endrec={rr[depend_0][1]})"
+      print(f"Error executing {call_str} for file {file}:\n  {e}")
+      meta[variable]['VarData'] = None
 
     if iso8601:
       try:
@@ -192,19 +218,32 @@ def read_cdf(file, variables=None, start=None, stop=None, iso8601=True, logger=N
         time_variable = time_variable or (varDescription['DataType'] == 'CDF_TIME_TT2000')
         if time_variable:
           epoch = cdflib.cdfepoch.encode(data[variable], iso_8601=True)
-          data[variable] = epoch
+          meta[variable]['VarDataISO8601'] = epoch
       except Exception as e:
         print(f"Error when executing cdflib.cdfepoch.encode({data[variable]}, iso_8601=True):\n  {e}")
-        data[variable] = None
-
-    meta[variable]['VarData'] = data[variable]
+        meta[variable]['VarDataISO8601'] = None
 
   return meta
 
-def xprint_dict(meta):
-  import pprint
-  pp = pprint.PrettyPrinter(depth=4, compact=True)
-  pp.pprint(meta)
+def record_range(epoch, start_iso, stop_iso):
+
+  lens = {
+    'CDF_EPOCH': 23,
+    'CDF_EPOCH16': 32,
+    'CDF_TIME_TT2000': 29
+  }
+  dataType = epoch['VarDescription']['DataType']
+  if not dataType in lens.keys():
+    raise ValueError(f"Data type {epoch['VarDescription']['DataType']} is not one of {lens.keys()}")
+
+  to = cdflib.cdfepoch.parse(cdawmeta.util.pad_iso8601(start_iso)[0:lens[dataType]])
+  tf = cdflib.cdfepoch.parse(cdawmeta.util.pad_iso8601(stop_iso)[0:lens[dataType]])
+  starttime = to.item()
+  endtime = tf.item()
+  rr = cdflib.cdfepoch.findepochrange(epoch['VarData'], starttime=starttime, endtime=endtime)
+  if rr is None or len(rr) == 0:
+    raise ValueError(f"Could not find record range for {epoch['VariableName']} between {start_iso} and {stop_iso}")
+  return [rr[0], rr[-1]]
 
 def subset_meta(meta, DEPEND_0=None, VAR_TYPE='data', RecVariance=True):
 
@@ -261,41 +300,47 @@ def read(dataset, data_dir=None, variables=None, start=None, stop=None, logger=N
 if __name__ == '__main__':
   if True:
     import cdflib
-    import datetime
-    #dti = [1997, 9, 3, 0, 0, 12, 0, 0, 0]
-    dti = [2024,1,1,0, 0, 0, 0]
     import cdawmeta
 
-    id = 'AC_OR_SSC'
+    id = 'AC_OR_SSC' # CDF_EPOCH
+    #id = 'C1_WAVEFORM_WBD' # CDF_EPOCH16
+    #id = 'BAR_1A_L2_EPHM' # CDF_TIME_TT2000
 
-    metadata = cdawmeta.metadata(id=id, data_dir="../../data", embed_data=True, update=False, max_workers=1, diffs=False, restructure_master=True, no_spase=True, no_orig_data=False)
+    variable = 'Epoch'
 
-    Epoch = metadata[id]['master']['data']['CDFVariables']['Epoch']
-    cdawmeta.util.print_dict(Epoch, sort=True)
+    kwargs = {
+      "data_dir": "../../data",
+      "embed_data": True,
+      "update": False,
+      "max_workers": 1,
+      "diffs": False,
+      "restructure_master": True,
+      "no_spase": True,
+      "no_orig_data": False
+    }
 
-    file = metadata[id]['samples']['file']
-    data = read_cdf(file, iso8601=False)
+    metadata = cdawmeta.metadata(id=id, **kwargs)
+    cdawmeta.util.print_dict(metadata)
+    Epoch = metadata[id]['master']['data']['CDFVariables'][variable]
+    cdawmeta.util.print_dict(Epoch, sort_dicts=True)
 
     print('----')
-    cdawmeta.util.print_dict(data['Epoch'], sort=True)
-    epoch = data['Epoch']['VarData']
-    to = epoch[0]
-    tf = epoch[-1]
-    print(to, tf)
-    #to = cdflib.cdfepoch.parse(to)
-    #tf = cdflib.cdfepoch.parse(tf)
-    #print(to, tf)
-    #exit()
-    #print(epoch)
-    epoch_iso = cdflib.cdfepoch.encode(epoch, iso_8601=True)
-    starttime = epoch_iso[0]
-    endtime = epoch_iso[-1]
-    print(starttime, endtime)
-    print(epoch.dtype)
-    er = cdflib.cdfepoch.findepochrange(epoch, starttime=to, endtime=tf)
-    er = cdflib.cdfepoch.findepochrange(epoch, starttime=starttime, endtime=endtime)
-    print(er)
-    exit()
+
+    file = metadata[id]['samples']['file']
+    data = read_cdf(file, variables=variable, iso8601=False)
+
+    cdawmeta.util.print_dict(data[variable], sort_dicts=True)
+
+    epoch = data[variable]
+    start_iso = cdflib.cdfepoch.encode(epoch['VarData'][0], iso_8601=True)
+    stop_iso = cdflib.cdfepoch.encode(epoch['VarData'][-1], iso_8601=True)
+
+    print('----')
+
+    variable = 'RADIUS'
+    data = read_cdf(file, variables=variable, start=start_iso, stop=stop_iso, iso8601=False)
+
+    #cdawmeta.util.print_dict(data, sort_dicts=True)
 
     exit()
 
