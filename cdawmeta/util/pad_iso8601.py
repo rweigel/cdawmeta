@@ -37,23 +37,23 @@ def pad_iso8601(t):
     t = t + '000000'
     n = 23
     fmt = '%Y-%m-%dT%H:%M:%S.%f'
-  elif len(t) == 23: # yyyy-mm-ddThh:mm:ss.xxx
+  elif len(t) == 23: # yyyy-mm-ddThh:mm:ss.mmm
     t = t + '000000000'
     n = 23
     fmt = '%Y-%m-%dT%H:%M:%S.%f'
-  elif len(t) == 21: # yyyy-mm-ddThh:mm:ss.
+  elif len(t) == 20: # yyyy-mm-ddThh:mm:ss.
     t = t + '000000000000'
     n = 21
     fmt = '%Y-%m-%dT%H:%M:%S.%f'
-  elif len(t) == 20: # yyyy-mm-ddThh:mm:ss
+  elif len(t) == 19: # yyyy-mm-ddThh:mm:ss
     t = t + '.000000000000'
-    n = 20
+    n = 19
     fmt = '%Y-%m-%dT%H:%M:%S'
-  elif len(t) == 17: # yyyy-mm-ddThh:mm
+  elif len(t) == 16: # yyyy-mm-ddThh:mm
     t = t + ':00.000000000000'
     n = 17
     fmt = '%Y-%m-%dT%H:%M'
-  elif len(t) == 14: # yyyy-mm-ddThh
+  elif len(t) == 13: # yyyy-mm-ddThh
     t = t + ':00:00.000000000000'
     n = 14
     fmt = '%Y-%m-%dT%H'
@@ -75,6 +75,6 @@ def pad_iso8601(t):
   try:
     datetime.strptime(t[0:n], fmt)
   except:
-    raise ValueError(f"Could not parse given time string '{t}' truncated t microseconds with inferred format '{fmt}'.")
+    raise ValueError(f"Could not parse given time string '{t[0:n]}' with inferred format '{fmt}'.")
 
   return t + Z

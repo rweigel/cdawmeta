@@ -1,5 +1,6 @@
 import os
 import tempfile
+
 if os.path.exists('/tmp'):
   DATA_DIR = '/tmp/cdawmeta-data'
 else:

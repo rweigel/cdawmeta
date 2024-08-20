@@ -2,17 +2,68 @@ import os
 import cdflib
 import cdawmeta
 
+def _cache_dir(dir):
+  if dir is None:
+    dir = cdawmeta.DATA_DIR
+  return os.path.abspath(dir)
+
 def url2file(url):
   return url.replace("https://cdaweb.gsfc.nasa.gov/", "")
 
-def open_cdf(file, logger=None, use_cache=True, cache_dir=None):
+def _test_config():
+
+  kwargs = {
+    "data_dir": _cache_dir(None),
+    "embed_data": True,
+    "update": False,
+    "max_workers": 1,
+    "diffs": False,
+    "restructure_master": True,
+    "no_spase": True,
+    "no_orig_data": False
+  }
+
+  tests = {
+    'AC_OR_SSC': {
+      'start': None,
+      'stop': None,
+      'depend_0s': ['Epoch'],
+      'variable': 'RADIUS'
+    },
+    'C1_WAVEFORM_WBD': {
+      'start': None,
+      'stop': None,
+      'depend_0s': ['Epoch'],
+      'variable': 'Bandwidth'
+    },
+    'BAR_1A_L2_EPHM': {
+      'start': None,
+      'stop': None,
+      'depend_0s': ['Epoch'],
+      'variable': 'Quality'
+    },
+    'VOYAGER1_10S_MAG': {
+      'start': None,
+      'stop': None,
+      'depend_0s': ['Epoch','Epoch2'],
+      'variable': 'magStatus'
+    }
+  }
+  for id in tests.keys():
+    tests[id]['metadata'] = cdawmeta.metadata(id=id, **kwargs)[id]
+
+  return tests
+
+def open_cdf(file, logger=None, cache_dir=None, use_cache=True):
+
+  cache_dir = _cache_dir(cache_dir)
 
   if file.startswith('http'):
     kwargs = {
       'url2file': url2file,
       'logger': logger,
+      'cache_dir': cache_dir,
       'use_cache': use_cache,
-      'cache_dir': cache_dir
     }
     file_path = cdawmeta.util.get_file(file, **kwargs)
     if file_path is None:
@@ -26,9 +77,11 @@ def open_cdf(file, logger=None, use_cache=True, cache_dir=None):
       logger.error(f"Error opening {file_path}: {e}")
     return None
 
-def read_cdf_depend_0s(file, _return='names', logger=None, use_cache=True, cache_dir=None):
+def read_cdf_depend_0s(file, logger=None, cache_dir=None, use_cache=True):
 
-  cdffile = open_cdf(file, logger=logger, use_cache=use_cache, cache_dir=None)
+  cache_dir = _cache_dir(cache_dir)
+
+  cdffile = open_cdf(file, logger=logger, cache_dir=cache_dir, use_cache=use_cache)
   if cdffile is None:
     return None
 
@@ -42,24 +95,27 @@ def read_cdf_depend_0s(file, _return='names', logger=None, use_cache=True, cache
     if 'DEPEND_0' in meta:
       depend_0s.append(meta['DEPEND_0'])
 
-  depend_0s = list(set(depend_0s))
-  if _return == 'names':
-    return depend_0s
+  return list(set(depend_0s))
 
-  if _return == 'data':
-    data = {}
-    for depend_0 in depend_0s:
-      try:
-        data[depend_0] = cdffile.varget(variable=depend_0)
-      except Exception as e:
-        if logger is not None:
-          logger.error(f"Error reading {depend_0}: {e}")
-        data[depend_0] = None
-    return data
+def read_cdf_depend_0s_test(logger=None, cache_dir=None, use_cache=True):
+  test_config = _test_config()
+  for id in test_config.keys():
+    print(f"Testing {id}")
+    metadata = test_config[id]['metadata']
+    depend_0s = read_cdf_depend_0s(metadata['samples']['file'], logger=logger, cache_dir=cache_dir, use_cache=use_cache)
+    ok = len(depend_0s) == len(test_config[id]['depend_0s'])
+    if ok:
+      print(f"PASS: Number of DEPEND_0s expected = {len(test_config[id]['depend_0s'])} = number found = {len(depend_0s)}")
+    else:
+      print(f"FAIL: Number of DEPEND_0s expected = {len(test_config[id]['depend_0s'])} != number found = {len(depend_0s)}")
 
-def read_cdf_meta(file, subset=False, logger=None, use_cache=True):
+  return ok
 
-  cdffile = open_cdf(file, logger=logger, use_cache=use_cache)
+def read_cdf_meta(file, subset=False, logger=None, cache_dir=None, use_cache=True):
+
+  cache_dir = _cache_dir(cache_dir)
+
+  cdffile = open_cdf(file, logger=logger, cache_dir=cache_dir, use_cache=use_cache)
   if cdffile is None:
     return None
 
@@ -119,61 +175,62 @@ def read_cdf_meta(file, subset=False, logger=None, use_cache=True):
 
   return meta
 
-def xread_cdf(file, parameters=None, start=None, stop=None, logger=None, use_cache=True):
+def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601=True, logger=None, cache_dir=None, use_cache=True):
 
-  meta = []
-  data = []
-  meta = read_cdf_meta(file, logger=None, use_cache=use_cache)
+  def record_range(epoch, start_iso, stop_iso):
 
-  cdffile = open_cdf(file, logger=logger, use_cache=False)
+    lens = {
+      'CDF_EPOCH': 23,
+      'CDF_EPOCH16': 32,
+      'CDF_TIME_TT2000': 29
+    }
+    dataType = epoch['VarDescription']['DataType']
+    if not dataType in lens.keys():
+      msg = f"Data type {epoch['VarDescription']['DataType']} is not one of {lens.keys()}"
+      raise ValueError(msg)
+
+    to = cdflib.cdfepoch.parse(cdawmeta.util.pad_iso8601(start_iso)[0:lens[dataType]])
+    tf = cdflib.cdfepoch.parse(cdawmeta.util.pad_iso8601(stop_iso)[0:lens[dataType]])
+    starttime = to.item()
+    endtime = tf.item()
+
+    rr = cdflib.cdfepoch.findepochrange(epoch['VarData'], starttime=starttime, endtime=endtime)
+    if rr is None or len(rr) == 0:
+      msg = f"Could not find record range for {epoch['VariableName']} between {start_iso} and {stop_iso}"
+      raise ValueError(msg)
+
+    return [rr[0], rr[-1]]
+
+  cache_dir = _cache_dir(cache_dir)
+
+  cdffile = open_cdf(file, logger=logger, cache_dir=cache_dir, use_cache=use_cache)
   if cdffile is None:
     return None
 
-  depend_0s = []
-  parameters = parameters.split(",")
-  for parameter in parameters:
-    data.append(cdffile.varget(variable=parameter))
-    meta.append(cdffile.varattsget(variable=parameter))
-    depend_0s.append(meta[-1]['DEPEND_0'])
+  meta_all = read_cdf_meta(file, logger=None, cache_dir=cache_dir, use_cache=True)
 
-  udepend_0s = list(set(depend_0s)); # Unique depend_0s
-  assert len(udepend_0s) == 1, 'Multiple DEPEND0s not implemented. Found: ' + ", ".join(udepend_0s)
-
-  epoch = cdffile.varget(variable=depend_0s[0])
-  time  = cdflib.cdfepoch.encode(epoch, iso_8601=True) 
-
-  if isinstance(time, str):
-    time = [time]
-
-  start_idx = 0
-  stop_idx = len(time)
-
-  if start is not None or stop is not None:
-    n = len(time)
-    startr = start[0:n-1]
-    stopr = stop[0:n-1]
-    start_found = False
-    for idx, t in enumerate(time):
-      if start_found == False and t >= startr:
-        start_found = True
-        start_idx = idx
-      if t >= stopr:
-        stop_idx = idx + 1
-        break
-
-    time = time[start_idx:stop_idx]
-
-  return time, data, meta
-
-def read_cdf(file, variables=None, start=None, stop=None, iso8601=True, logger=None, use_cache=True):
-
-  cdffile = open_cdf(file, logger=logger, use_cache=use_cache)
-  if cdffile is None:
-    return None
-
-  meta_all = read_cdf_meta(file, logger=None, use_cache=True)
   if isinstance(variables, str):
     variables = variables.split(",")
+
+  if depend_0 is not None:
+    if not depend_0 in meta_all:
+      raise ValueError(f"DEPEND_0 = '{depend_0}' is not a variable in file {file}")
+
+    variables_depend_0 = []
+    for variable in list(meta_all.keys()):
+      if 'DEPEND_0' in meta_all[variable]['VarAttributes']:
+        if meta_all[variable]['VarAttributes']['DEPEND_0'] == depend_0:
+          variables_depend_0.append(variable)
+
+    if len(variables_depend_0) == 0:
+      raise ValueError(f"No variables in {file} depend on {depend_0}")
+
+    for variable in variables:
+      if not variable in variables_depend_0:
+        raise ValueError(f"Requsted variable {variable} does not have DEPEND_0 = {depend_0}")
+
+    variables = variables_depend_0
+
   if variables is None:
     variables = list(meta_all.keys())
 
@@ -195,7 +252,6 @@ def read_cdf(file, variables=None, start=None, stop=None, iso8601=True, logger=N
 
         rr[depend_0] = record_range(meta[depend_0], start, stop)
 
-    print(depend_0)
     try:
       if depend_0 is None:
         print(f"Reading variable = {variable}")
@@ -225,25 +281,85 @@ def read_cdf(file, variables=None, start=None, stop=None, iso8601=True, logger=N
 
   return meta
 
-def record_range(epoch, start_iso, stop_iso):
+def read_cdf_test1(id=None, depend_0=None, variable=None):
+  """
+  Read a data variable from three files with the three different DataTypes
+  for a DEPEND_0 variable (CDF_EPOCH, CDF_EPOCH16, and CDF_TIME_TT2000).
 
-  lens = {
-    'CDF_EPOCH': 23,
-    'CDF_EPOCH16': 32,
-    'CDF_TIME_TT2000': 29
-  }
-  dataType = epoch['VarDescription']['DataType']
-  if not dataType in lens.keys():
-    raise ValueError(f"Data type {epoch['VarDescription']['DataType']} is not one of {lens.keys()}")
+  Read all data for the DEPEND_0 variable, gets the start and stop times, and
+  then reads the data variable in the range [start, stop] and verifies that the
+  number of returned records matches that for all data for the DEPEND_0 variable.
+  """
 
-  to = cdflib.cdfepoch.parse(cdawmeta.util.pad_iso8601(start_iso)[0:lens[dataType]])
-  tf = cdflib.cdfepoch.parse(cdawmeta.util.pad_iso8601(stop_iso)[0:lens[dataType]])
-  starttime = to.item()
-  endtime = tf.item()
-  rr = cdflib.cdfepoch.findepochrange(epoch['VarData'], starttime=starttime, endtime=endtime)
-  if rr is None or len(rr) == 0:
-    raise ValueError(f"Could not find record range for {epoch['VariableName']} between {start_iso} and {stop_iso}")
-  return [rr[0], rr[-1]]
+  test_config = _test_config()
+
+  if id is None:
+    for id in test_config.keys():
+      print(f"Testing {id}")
+      depend_0 = test_config[id]['depend_0s'][0]
+      read_cdf_test1(id=id, depend_0=depend_0, variable=test_config[id]['variable'])
+    return
+
+  metadata = test_config[id]['metadata']
+  #cdawmeta.util.print_dict(metadata)
+  depend_0_ = metadata['master']['data']['CDFVariables'][depend_0]
+  variable_ = metadata['master']['data']['CDFVariables'][variable]
+
+  print('')
+
+  print(f"Master metadata for {id}/{depend_0} (DEPEND_0 for {variable})")
+  cdawmeta.util.print_dict(depend_0_, sort_dicts=True)
+
+  print('')
+
+  print(f"Master metadata for id = {id}/{variable}")
+  cdawmeta.util.print_dict(variable_, sort_dicts=True)
+
+  print('')
+
+  file = metadata['samples']['file']
+  print(f"Reading data for {id}/{depend_0} (DEPEND_0 for {variable}) in sample file = {file}")
+  data = read_cdf(file, variables=depend_0, iso8601=False)
+
+  print(f"File content for id = {id}/{depend_0}")
+  cdawmeta.util.print_dict(data[depend_0], sort_dicts=True)
+
+  epoch = data[depend_0]
+  start_iso = cdflib.cdfepoch.encode(epoch['VarData'][0], iso_8601=True)
+  stop_iso = cdflib.cdfepoch.encode(epoch['VarData'][-1], iso_8601=True)
+
+  print(f"{id}/{depend_0} has {len(epoch['VarData'])} records in range [{start_iso}, {stop_iso}]")
+
+  print('')
+
+  print(f"Reading data in sample file for {id}/{variable} in range [{start_iso}, {stop_iso}]")
+  data = read_cdf(file, variables=variable, start=start_iso, stop=stop_iso, iso8601=False)
+
+  ok = len(epoch['VarData']) == len(data[variable]['VarData'])
+  if ok:
+    print(f"PASS: Number of records expected = {len(epoch['VarData'])} = number of records found = {len(data[variable]['VarData'])}")
+  else:
+    print(f"FAIL: Number of records expected = {len(epoch['VarData'])} != number of records found = {len(data[variable]['VarData'])}")
+
+  return ok
+
+def read_cdf_test2(id=None, depend_0=None, variable=None):
+
+  test_config = _test_config()
+
+  if id is None:
+    for id in test_config.keys():
+      print(f"Testing {id}")
+      depend_0 = test_config[id]['depend_0s'][0]
+      read_cdf_test2(id=id, depend_0=depend_0, variable=test_config[id]['variable'])
+    return
+
+  metadata = test_config[id]['metadata']
+
+  file = metadata['samples']['file']
+  print(f"Reading data for {id}/{depend_0} (DEPEND_0 for {variable}) in sample file = {file}")
+  data = read_cdf(file, variables=variable, depend_0=depend_0, iso8601=False)
+  cdawmeta.util.print_dict(data, sort_dicts=True)
 
 def subset_meta(meta, DEPEND_0=None, VAR_TYPE='data', RecVariance=True):
 
@@ -277,100 +393,32 @@ def subset_meta(meta, DEPEND_0=None, VAR_TYPE='data', RecVariance=True):
 
   return meta_sub
 
-def read(dataset, data_dir=None, variables=None, start=None, stop=None, logger=None, use_cache=True):
+def read(id=id, start=None, stop=None, logger=None, cache_dir=None, update=False):
 
-  meta_master = cdawmeta.metadata(id=dataset, data_dir=data_dir, update=False, embed_data=True, no_orig_data=False)
-  files_all = meta_master[dataset]['orig_data']['data']['FileDescription']
+  cache_dir = _cache_dir(cache_dir)
+
+  metadata = cdawmeta.metadata(id=id, data_dir=cache_dir, update=update, embed_data=True, no_orig_data=False)
+  files_all = metadata[id]['orig_data']['data']['FileDescription']
   files_needed = []
-  start = start.strip()
-  stop = stop.strip()
+  start = cdawmeta.util.pad_iso8601(start.strip())
+  stop = cdawmeta.util.pad_iso8601(stop.strip())
+  print(start, stop)
   for file in files_all:
-    file_start = file['StartTime'].strip()
-    file_stop = file['EndTime'].strip()
-    if file_start >= start:
+    print(file['StartTime'], file['EndTime'], file['Name'].split('/')[-1])
+    file_start = file['StartTime'].strip().replace("Z", "")
+    file_stop = file['EndTime'].strip().replace("Z", "")
+    if file_start >= start[0:len(file_start)]:
       files_needed.append(file['Name'])
     if file_stop >= stop:
       break
 
-  for file in files_needed:
-    data, meta = read_cdf(file, variables=variables, start=start, stop=stop, logger=logger, use_cache=use_cache)
-
-  return data, meta
+  return files_needed
 
 if __name__ == '__main__':
-  if True:
-    import cdflib
-    import cdawmeta
 
-    id = 'AC_OR_SSC' # CDF_EPOCH
-    #id = 'C1_WAVEFORM_WBD' # CDF_EPOCH16
-    #id = 'BAR_1A_L2_EPHM' # CDF_TIME_TT2000
-
-    variable = 'Epoch'
-
-    kwargs = {
-      "data_dir": "../../data",
-      "embed_data": True,
-      "update": False,
-      "max_workers": 1,
-      "diffs": False,
-      "restructure_master": True,
-      "no_spase": True,
-      "no_orig_data": False
-    }
-
-    metadata = cdawmeta.metadata(id=id, **kwargs)
-    cdawmeta.util.print_dict(metadata)
-    Epoch = metadata[id]['master']['data']['CDFVariables'][variable]
-    cdawmeta.util.print_dict(Epoch, sort_dicts=True)
-
-    print('----')
-
-    file = metadata[id]['samples']['file']
-    data = read_cdf(file, variables=variable, iso8601=False)
-
-    cdawmeta.util.print_dict(data[variable], sort_dicts=True)
-
-    epoch = data[variable]
-    start_iso = cdflib.cdfepoch.encode(epoch['VarData'][0], iso_8601=True)
-    stop_iso = cdflib.cdfepoch.encode(epoch['VarData'][-1], iso_8601=True)
-
-    print('----')
-
-    variable = 'RADIUS'
-    data = read_cdf(file, variables=variable, start=start_iso, stop=stop_iso, iso8601=False)
-
-    #cdawmeta.util.print_dict(data, sort_dicts=True)
-
-    exit()
-
-    #data, meta = read(id, data_dir="../../data", start='1997-09-03T00:00:12.000Z', stop='1997-09-05T00:00:12.000Z')
-    #files_needed = read(id, data_dir="../../data", start='1997-09-03T00:00:12.000Z', stop='1997-09-05T00:00:12.000Z')
-    print_dict(files_needed)
-    meta = read_cdf_meta(file)
-    #print_dict(meta)
-    data = read_cdf(file)
-    print_dict(data['Epoch'])
-    #exit()
-
-    meta = read_cdf_meta(file, subset=True)
-
-    depend_0s = list(meta.keys())
-    meta_sub = subset_meta(meta, DEPEND_0=depend_0s[0])
-    print_dict(meta_sub)
-    print(list(meta_sub.keys()))
-    #print(data[2] == min(data[1][0]))
-    #print(min(data[1][0]))
-
-  if False:
-    cdffile = cdflib.CDF("ac_h0_mfi_19980203_v04.cdf")
-    data = cdffile.varget(variable='Magnitude')
-    meta = cdffile.varattsget(variable='Magnitude')
-    vdata = cdffile.varinq('Magnitude')
-    print(vdata)
-    import numpy as np
-    print(data.dtype)
-    print( meta['FILLVAL'].dtype)
-    print(np.sum(data == np.float32(-1e31)))
-    print(np.sum(data == meta['FILLVAL']))
-    #"AC_H0_MFI"&parameters=Magnitude&time.min=1998-02-03T05:57:00&time.max=1998-02-03T05:57:04&format=binary
+  files = read(id='AC_OR_SSC', start='2020-01-01T00:00:00Z', stop='2020-01-01T01:00:00Z')
+  print(files)
+  exit()
+  read_cdf_test1()
+  read_cdf_test2()
+  read_cdf_depend_0s_test()
