@@ -402,9 +402,9 @@ def read(id=id, start=None, stop=None, logger=None, cache_dir=None, update=False
   files_needed = []
   start = cdawmeta.util.pad_iso8601(start.strip())
   stop = cdawmeta.util.pad_iso8601(stop.strip())
-  print(start, stop)
+  #print(start, stop)
   for file in files_all:
-    print(file['StartTime'], file['EndTime'], file['Name'].split('/')[-1])
+    #print(file['StartTime'], file['EndTime'], file['Name'].split('/')[-1])
     file_start = file['StartTime'].strip().replace("Z", "")
     file_stop = file['EndTime'].strip().replace("Z", "")
     if file_start >= start[0:len(file_start)]:

@@ -442,7 +442,8 @@ def restructure_master(_master, logger=None):
 
     variables_r[variable_name] = variable_dict
 
-  globals = _master[file]['CDFglobalAttributes']
+  # Why do they use lower-case G? Inconsistent with CDFFileInfo and CDFVariables.
+  globals = _master[file]['CDFglobalAttributes'] 
   globals_r = {}
 
   for _global in globals:
@@ -460,8 +461,7 @@ def restructure_master(_master, logger=None):
     globals_r[gkey[0]] = "\n".join(text)
 
   _master = {
-              'CDFFileName': file,
-              'CDFFileInfo': fileinfo_r,
+              'CDFFileInfo': {'FileName': file, **fileinfo_r},
               'CDFglobalAttributes': globals_r,
               'CDFVariables': variables_r
             }

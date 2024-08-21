@@ -70,7 +70,7 @@ Also, a while back I mentioned the mixed usage of `SI_conv` and `SI_conversion` 
 
 To create the [SQL table of CDAWeb metadata](https://hapi-server.org/meta/cdaweb/), I had to treat certain attribute names as equivalent (SQL column names are case insensitive, so one cannot create a column named `A` if a column named `a` is not allowed.).
 
-Using [table-cdaweb.counts.csv](https://github.com/rweigel/cdawmeta/blob/main/table/table-cdaweb.counts.csv), I renamed many CDF attributes that differed by case (to address SQL column name constraint) or looked to be misspelled for equivalent to another more-used attribute name. The reaming mapping is in ([table-cdaweb.fixes.json](https://github.com/rweigel/cdawmeta/blob/main/table/table-cdaweb.fixes.json)).
+Using [cdaweb.table.variable_attributes.counts.csv](https://github.com/rweigel/cdawmeta/blob/main/table/report/cdaweb.table.variable_attributes.counts.csv), I renamed many CDF attributes that differed by case (to address SQL column name constraint) or looked to be misspelled for equivalent to another more-used attribute name. The reaming mapping is in ([cdaweb.table.variable_attributes.fixes.json](https://github.com/rweigel/cdawmeta/blob/main/table/cdaweb.table.variable_attributes.fixes.json)).
 
 10\.
 

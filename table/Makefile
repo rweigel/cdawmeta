@@ -1,6 +1,11 @@
-CDAWEBHEAD=../data/tables/cdaweb.table.head.json
-CDAWEBBODY=../data/tables/cdaweb.table.body.json
-CDAWEB=../data/cdaweb.json
+CDAWEBVARIABLEHEAD=../data/table/cdaweb.table.variable.head.json
+CDAWEBVARIABLEBODY=../data/table/cdaweb.table.variable.body.json
+CDAWEBDATASETHEAD=../data/table/cdaweb.table.dataset.head.json
+CDAWEBDATASETBODY=../data/table/cdaweb.table.dataset.body.json
+
+all:
+	make cdaweb-json
+	make cdaweb-sql
 
 table-ui:
 	@- git clone https://github.com/rweigel/table-ui
@@ -9,30 +14,34 @@ table-ui:
 serve-cdaweb-json:
 	make table-ui
 	make cdaweb-json
-	cd table-ui/ajax; python server.py 8051 $(CDAWEBHEAD) $(CDAWEBBODY)
-
-serve-cdaweb-sql-noupdate:
-	python table-ui/ajax/server.py 8051 $(CDAWEBHEAD) $(CDAWEBBODY).sql
+	cd table-ui/ajax; python server.py 8051 $(CDAWEBVARIABLEHEAD) $(CDAWEBVARIABLEBODY) &
+	cd table-ui/ajax; python server.py 8052 $(CDAWEBDATASETHEAD) $(CDAWEBDATASETBODY)
 
 serve-cdaweb-sql:
 	make table-ui
 	make cdaweb-sql
-	python table-ui/ajax/server.py 8051 $(CDAWEBHEAD) $(CDAWEBBODY).sql
+	python table-ui/ajax/server.py 8051 $(CDAWEBVARIABLEHEAD) $(CDAWEBVARIABLEBODY).sql &
+	python table-ui/ajax/server.py 8052 $(CDAWEBDATASETHEAD) $(CDAWEBDATASETBODY).sql
 
-cdaweb-json: $(CDAWEB)
-	make $(CDAWEBBODY)
+cdaweb-json:
+	make $(CDAWEBVARIABLEBODY)
+	make $(CDAWEBDATASETBODY)
 
 cdaweb-sql:
-	make $(CDAWEBBODY).sql
+	make $(CDAWEBVARIABLEBODY).sql
+	make $(CDAWEBDATASETBODY).sql
 
-$(CDAWEB):
-	cd ../; make cdaweb
-
-$(CDAWEBBODY): table-cdaweb.py $(CDAWEB)
+$(CDAWEBVARIABLEBODY): table-cdaweb.py
 	python table-cdaweb.py
 
-$(CDAWEBBODY).sql: table-ui/ajax/sql/sql.py $(CDAWEBBODY)
-	python table-ui/ajax/sql/sql.py $(CDAWEBHEAD) $(CDAWEBBODY)
+$(CDAWEBDATASETBODY): table-cdaweb.py
+	python table-cdaweb.py
+
+$(CDAWEBVARIABLEBODY).sql: table-ui/ajax/sql/sql.py $(CDAWEBVARIABLEBODY)
+	python table-ui/ajax/sql/sql.py $(CDAWEBVARIABLEHEAD) $(CDAWEBVARIABLEBODY)
+
+$(CDAWEBDATASETBODY).sql: table-ui/ajax/sql/sql.py $(CDAWEBVARIABLEBODY)
+	python table-ui/ajax/sql/sql.py $(CDAWEBDATASETHEAD) $(CDAWEBDATASETBODY)
 
 
 
