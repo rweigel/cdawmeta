@@ -1,9 +1,11 @@
 def logger(name=None,
            format=u'%(asctime)sZ %(message)s',
+           console_format=u"%(asctime)s %(levelname)s %(name)s %(message)s",
+           datefmt="%Y-%m-%dT%H:%M:%S.%f",
+           utc_timestamps=True,
            file_log=None,
            file_error=None,
            rm_existing=True,
-           utc_timestamps=True,
            rm_string=None,
            disable_existing_loggers=False):
 
@@ -16,10 +18,26 @@ def logger(name=None,
   import logging
   import logging.config
 
+  if utc_timestamps:
+    logging.Formatter.converter = time.gmtime
+
   class CustomFormatter(logging.Formatter):
-    def __init__(self, rm_string=rm_string, *args, **kwargs):
+    def __init__(self, rm_string=rm_string, datefmt=datefmt, *args, **kwargs):
       super(CustomFormatter, self).__init__(*args, **kwargs)
       self.rm_string = rm_string
+      self.datefmt = datefmt
+
+    import datetime as dt
+    converter=dt.datetime.fromtimestamp
+    def formatTime(self, record, datefmt=None):
+        ct = self.converter(record.created)
+        if datefmt:
+            s = ct.strftime(datefmt)
+        else:
+          s = ct.strftime("%Y-%m-%dT%H:%M:%S.%f")
+        if utc_timestamps:
+          s = s + "Z"
+        return s
 
     def format(self, record):
       record.pathname = record.pathname.replace(os.getcwd() + "/","")
@@ -53,17 +71,15 @@ def logger(name=None,
 
   class _ExcludeErrorsFilter(logging.Filter):
     def filter(self, record):
-      """Only lets through log messages with log level below ERROR ."""
+      """Only show log messages with log level below ERROR."""
       return record.levelno < logging.ERROR
-
-  if utc_timestamps:
-    logging.Formatter.converter = time.gmtime
 
   handlers = [
             'console_stderr',
             'console_stdout',
             'file_stdout'
           ]
+
   if file_error:
     handlers.append('file_stderr')
 
@@ -78,9 +94,10 @@ def logger(name=None,
       },
       'formatters': {
           'console_formatter': {
-            #'format': f' {name}>%(pathname)s:%(lineno)s: {format}'
-            'format': f'{format}'
-          },
+            "class": "logging.Formatter",
+            "datefmt": datefmt,
+            "format": console_format
+           },
           'file_formatter': {
             'format': f'{format}'
           }

@@ -28,14 +28,9 @@ cdaweb-json:
 	make $(CDAWEBDATASETBODY)
 
 cdaweb-sql:
+	#cd ..; python table.py --data_dir ./data
 	make $(CDAWEBVARIABLEBODY).sql
 	make $(CDAWEBDATASETBODY).sql
-
-$(CDAWEBVARIABLEBODY): ../cdawmeta/table.py
-	python table.py --data_dir ../data
-
-$(CDAWEBDATASETBODY): ../cdawmeta/table.py
-	python table.py --data_dir ../data
 
 $(CDAWEBVARIABLEBODY).sql: table-ui/ajax/sql/sql.py $(CDAWEBVARIABLEBODY)
 	python table-ui/ajax/sql/sql.py $(CDAWEBVARIABLEHEAD) $(CDAWEBVARIABLEBODY)

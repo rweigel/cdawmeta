@@ -103,10 +103,10 @@ def _omit(id):
 def _files(table_name, data_dir):
   script_dir = os.path.dirname(__file__)
   files = {
-    'header': os.path.join(data_dir, f'cdaweb.table.{table_name}.head.json'),
-    'body': os.path.join(data_dir, f'cdaweb.table.{table_name}.body.json'),
-    'counts': os.path.join(data_dir, f'cdaweb.table.{table_name}_attributes.counts.csv'),
-    'fixes': os.path.join(script_dir, f'table.fixes.json')
+    'header': os.path.join(data_dir, 'table', f'cdaweb.table.{table_name}.head.json'),
+    'body': os.path.join(data_dir, 'table', f'cdaweb.table.{table_name}.body.json'),
+    'counts': os.path.join(data_dir, 'table', f'cdaweb.table.{table_name}_attributes.counts.csv'),
+    'fixes': os.path.join(script_dir, 'table', f'table.fixes.json')
   }
 
   if not options[table_name]['fix_attributes']:
