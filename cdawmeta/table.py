@@ -1,39 +1,118 @@
-# Put links in header to, e.g.,
-# https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html#FILLVAL
+import os
+import json
 
-def omit(id):
+# TODO: Should be passed to table()
+options = {
+  'dataset': {
+    'use_all_attributes': True,
+    'fix_attributes': True,
+  },
+  'variable': {
+    'use_all_attributes': True,
+    'fix_attributes': True,
+  }
+}
+
+def table(id=None, table_name=None, data_dir=None, update=False, max_workers=1):
+
+  import cdawmeta
+
+  if data_dir is None:
+    from . import DATA_DIR as data_dir
+
+  datasets = cdawmeta.metadata(id=id, data_dir=data_dir, update=update, embed_data=True, max_workers=max_workers)
+
+  if table_name is None:
+    table_names = ['dataset', 'variable']
+  else:
+    table_names = [table_name]
+
+  headers = {}
+  bodies = {}
+  for table_name in table_names:
+    print(f"Creating {table_name} attribute table")
+    headers[table_name], bodies[table_name] = _table(datasets, data_dir, table_name=table_name)
+    print(f"Creating {table_name} attribute table with {len(headers[table_name])} columns and {len(bodies[table_name])} rows")
+    assert len(headers[table_name]) == len(bodies[table_name][0])
+    files = _files(table_name, data_dir)
+    _write_table(headers[table_name], files['header'], bodies[table_name], files['body'])
+
+  if len(table_names) == 1:
+    return headers[table_names[0]], bodies[table_names[0]]
+  else:
+    return headers, bodies
+
+def _table(datasets, data_dir, table_name='dataset'):
+
+  attribute_names = []
+  attributes = _attributes()[table_name]
+  attribute_cats = list(attributes.keys())
+
+  fixes = _read_fixes(table_name, data_dir)
+
+  if options[table_name]['use_all_attributes'] == True:
+    for _, dataset in datasets.items():
+      if table_name == 'dataset':
+        _add_attribute(attributes, attribute_names, attribute_cats, dataset['master']['data'], dataset['id'], None, fixes)
+      else:
+        for name, variable in dataset['master']['data']['CDFVariables'].items():
+          _add_attribute(attributes, attribute_names, attribute_cats, variable, dataset['id'], name, fixes)
+
+  _write_counts(attribute_names, file=_files(table_name, data_dir)['counts'])
+
+  # Manually set first two columns
+  if table_name == 'dataset':
+    header = ['datasetID']
+  else:
+    header = ['datasetID', 'VariableName']
+
+  for attribute_cat in attribute_cats:
+    for attribute in attributes[attribute_cat]:
+      header.append(attribute)
+
+  table = []
+  row = []
+  print(f"Creating {table_name} table rows")
+  for id, dataset in datasets.items():
+
+    if _omit(id) == True:
+      continue
+
+    if table_name == 'dataset':
+      row = [dataset['id']]
+      for attribute_cat in attribute_cats:
+        _append_columns(row, attributes, attribute_cat, dataset['master']['data'], fixes)
+      table.append(row)
+    else:
+      for name, variable in dataset['master']['data']['CDFVariables'].items():
+        row = [dataset['id'], name]
+        for attribute_cat in attribute_cats:
+          _append_columns(row, attributes, attribute_cat, variable, fixes)
+        table.append(row)
+
+  print(f"Created {table_name} table rows")
+
+  return header, table
+
+def _omit(id):
   return False
   if not id.startswith('A'):
     return True
   return False
 
-import os
-import json
-
-use_all_attributes = True
-fix_dataset_attributes = True
-fix_variable_attributes = True
-
-root_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
-table_dir = os.path.join(root_dir, 'data', 'table')
-report_dir = os.path.join(os.path.dirname(__file__), 'report')
-
-files = {
-  'dataset': {
-    'header': os.path.join(table_dir, 'cdaweb.table.dataset.head.json'),
-    'body': os.path.join(table_dir, 'cdaweb.table.dataset.body.json'),
-    'counts': os.path.join(report_dir, 'cdaweb.table.dataset_attributes.counts.csv'),
-    'fixes': os.path.join(report_dir, 'cdaweb.table.dataset_attributes.fixes.json')
+def _files(table_name, data_dir):
+  script_dir = os.path.dirname(__file__)
+  files = {
+    'header': os.path.join(data_dir, f'cdaweb.table.{table_name}.head.json'),
+    'body': os.path.join(data_dir, f'cdaweb.table.{table_name}.body.json'),
+    'counts': os.path.join(data_dir, f'cdaweb.table.{table_name}_attributes.counts.csv'),
+    'fixes': os.path.join(script_dir, f'table.fixes.json')
   }
-}
-files['variable'] = {}
-for key, value in files['dataset'].items():
-  files['variable'][key] = value.replace("dataset", "variable")
 
-if not fix_dataset_attributes:
-  files['dataset']['fixes'] = None
-if not fix_variable_attributes:
-  files['variable']['fixes'] = None
+  if not options[table_name]['fix_attributes']:
+    files['fixes'] = None
+
+  return files
 
 def _attributes():
   # This is used to set the ordering of certain attributes. Attributes not
@@ -124,59 +203,7 @@ def _attributes():
   }
   return ret
 
-def attribute_table(datasets, table_name='dataset'):
-
-  attribute_names = []
-  attributes = _attributes()[table_name]
-  attribute_cats = list(attributes.keys())
-
-  fixes = read_fixes(files[table_name]['fixes'])
-
-  if use_all_attributes == True:
-    for _, dataset in datasets.items():
-      if table_name == 'dataset':
-        add_attribute(attributes, attribute_names, attribute_cats, dataset['master']['data'], dataset['id'], None, fixes)
-      else:
-        for name, variable in dataset['master']['data']['CDFVariables'].items():
-          add_attribute(attributes, attribute_names, attribute_cats, variable, dataset['id'], name, fixes)
-
-  write_counts(attribute_names, file=files[table_name]['counts'])
-
-  # Manually set first two columns
-  if table_name == 'dataset':
-    header = ['datasetID']
-  else:
-    header = ['datasetID', 'VariableName']
-
-  for attribute_cat in attribute_cats:
-    for attribute in attributes[attribute_cat]:
-      header.append(attribute)
-
-  table = []
-  row = []
-  print(f"Creating {table_name} table rows")
-  for id, dataset in datasets.items():
-
-    if omit(id) == True:
-      continue
-
-    if table_name == 'dataset':
-        row = [dataset['id']]
-        for attribute_cat in attribute_cats:
-          append_row(row, attributes, attribute_cat, dataset['master']['data'], fixes)
-    else:
-      for name, variable in dataset['master']['data']['CDFVariables'].items():
-        row = [dataset['id'], name]
-        for attribute_cat in attribute_cats:
-          append_row(row, attributes, attribute_cat, variable, fixes)
-
-    table.append(row)
-
-  print(f"Created {table_name} table rows")
-
-  return header, table
-
-def append_row(row, attributes, attribute_type, variable, fixes):
+def _append_columns(row, attributes, attribute_type, variable, fixes):
 
   if not attribute_type in variable:
     for attribute in attributes[attribute_type]:
@@ -198,9 +225,8 @@ def append_row(row, attributes, attribute_type, variable, fixes):
       row.append(val)
     else:
       row.append("")
-  return row
 
-def add_attribute(attributes, attribute_names, attribute_types, variable, id, name, fixes):
+def _add_attribute(attributes, attribute_names, attribute_types, variable, id, name, fixes):
   for attribute_type in attribute_types:
     if not attribute_type in variable:
       if name is None:
@@ -216,7 +242,7 @@ def add_attribute(attributes, attribute_names, attribute_types, variable, id, na
       else:
         attributes[attribute_type][attribute_name] = None
 
-def write_counts(attribute_names, file=None):
+def _write_counts(attribute_names, file=None):
   import collections
   counts = dict(collections.Counter(attribute_names))
   counts_sorted = sorted(counts.items(), key=lambda i: i[0].lower())
@@ -227,34 +253,25 @@ def write_counts(attribute_names, file=None):
       f.write(f"{count[0]}, {count[1]}\n")
   print(f'Wrote: {file}')
 
-def write_table(file_header, file_body):
+def _write_table(header, file_header, body, file_body):
+
   print(f'Writing: {file_header}')
   os.makedirs(os.path.dirname(file_header), exist_ok=True)
   with open(file_header, 'w', encoding='utf-8') as f:
     json.dump(header, f, indent=2)
     print(f'Wrote: {file_body}')
 
-  print(f'Writing: {file_header}')
+  print(f'Writing: {file_body}')
   os.makedirs(os.path.dirname(file_body), exist_ok=True)
   with open(file_body, 'w', encoding='utf-8') as f:
-    json.dump(table, f, indent=2)
+    json.dump(body, f, indent=2)
     print(f'Wrote: {file_body}')
 
-def read_fixes(file):
+def _read_fixes(table_name, data_dir):
+  file = _files(table_name, data_dir)['fixes']
   if file is not None:
     print(f"Reading: {file}")
     with open(file) as f:
       fixes = json.load(f)
     print(f"Read: {file}")
-  return fixes
-
-import cdawmeta
-datasets = cdawmeta.metadata(id="^A", data_dir='../data', update=False, embed_data=True)
-#datasets = cdawmeta.metadata(data_dir='../data', update=False, embed_data=True)
-
-for table_name in ['dataset', 'variable']:
-  print(f"Creating {table_name} attribute table")
-  header, table = attribute_table(datasets, table_name=table_name)
-  assert len(header) == len(table[0])
-  print(f"Creating {table_name} attribute table")
-  write_table(files[table_name]['header'], files[table_name]['body'])
+  return fixes[table_name]

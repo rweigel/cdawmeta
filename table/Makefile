@@ -31,11 +31,11 @@ cdaweb-sql:
 	make $(CDAWEBVARIABLEBODY).sql
 	make $(CDAWEBDATASETBODY).sql
 
-$(CDAWEBVARIABLEBODY): table-cdaweb.py
-	python table-cdaweb.py
+$(CDAWEBVARIABLEBODY): ../cdawmeta/table.py
+	python table.py --data_dir ../data
 
-$(CDAWEBDATASETBODY): table-cdaweb.py
-	python table-cdaweb.py
+$(CDAWEBDATASETBODY): ../cdawmeta/table.py
+	python table.py --data_dir ../data
 
 $(CDAWEBVARIABLEBODY).sql: table-ui/ajax/sql/sql.py $(CDAWEBVARIABLEBODY)
 	python table-ui/ajax/sql/sql.py $(CDAWEBVARIABLEHEAD) $(CDAWEBVARIABLEBODY)

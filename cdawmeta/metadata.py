@@ -31,10 +31,6 @@ def logger_config():
   }
   return config
 
-def ids(timeout=timeouts['allxml'], update=True):
-  datasets_ = datasets(timeout=timeout, update=update)
-  return list(datasets_.keys())
-
 def metadata(id=None, data_dir=None, embed_data=False, update=True, max_workers=1, diffs=False, restructure_master=True, no_spase=True, no_orig_data=True):
 
   global DATA_DIR
@@ -98,6 +94,10 @@ def metadata(id=None, data_dir=None, embed_data=False, update=True, max_workers=
       pool.map(call, ids)
 
   return datasets_
+
+def ids(timeout=timeouts['allxml'], update=True):
+  datasets_ = datasets(timeout=timeout, update=update)
+  return list(datasets_.keys())
 
 def rel_path(base_dir, path):
   #return path

@@ -44,6 +44,12 @@ def cli(script):
     del clkws['no_spase']
     del clkws['embed_data']
 
+  if script == 'table.py':
+    del clkws['embed_data']
+    del clkws['no_orig_data']
+    del clkws['no_spase']
+    del clkws['diffs']
+
   import argparse
   parser = argparse.ArgumentParser()
   for k, v in clkws.items():
