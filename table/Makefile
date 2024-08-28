@@ -1,3 +1,5 @@
+PYTHON=~/anaconda3/bin/python
+
 CDAWEBVARIABLEHEAD=../data/table/cdaweb.table.variable.head.json
 CDAWEBVARIABLEBODY=../data/table/cdaweb.table.variable.body.json
 CDAWEBDATASETHEAD=../data/table/cdaweb.table.dataset.head.json
@@ -7,21 +9,12 @@ all:
 	make cdaweb-json
 	make cdaweb-sql
 
-table-ui:
-	@- git clone https://github.com/rweigel/table-ui
-	@- git pull https://github.com/rweigel/table-ui
-
-serve-cdaweb-json:
-	make table-ui
-	make cdaweb-json
-	cd table-ui/ajax; python server.py 8051 $(CDAWEBVARIABLEHEAD) $(CDAWEBVARIABLEBODY) &
-	cd table-ui/ajax; python server.py 8052 $(CDAWEBDATASETHEAD) $(CDAWEBDATASETBODY)
 
 serve-cdaweb-sql:
 	make table-ui
 	make cdaweb-sql
-	python table-ui/ajax/server.py 8051 $(CDAWEBVARIABLEHEAD) $(CDAWEBVARIABLEBODY).sql &
-	python table-ui/ajax/server.py 8052 $(CDAWEBDATASETHEAD) $(CDAWEBDATASETBODY).sql
+	$(PYTHON) table-ui/ajax/server.py 8051 $(CDAWEBVARIABLEHEAD) $(CDAWEBVARIABLEBODY).sql &
+	$(PYTHON) table-ui/ajax/server.py 8052 $(CDAWEBDATASETHEAD) $(CDAWEBDATASETBODY).sql
 
 cdaweb-json:
 	make $(CDAWEBVARIABLEBODY)
@@ -35,7 +28,7 @@ cdaweb-sql:
 $(CDAWEBVARIABLEBODY).sql: table-ui/ajax/sql/sql.py $(CDAWEBVARIABLEBODY)
 	python table-ui/ajax/sql/sql.py $(CDAWEBVARIABLEHEAD) $(CDAWEBVARIABLEBODY)
 
-$(CDAWEBDATASETBODY).sql: table-ui/ajax/sql/sql.py $(CDAWEBVARIABLEBODY)
+$(CDAWEBDATASETBODY).sql: table-ui/ajax/sql/sql.py $(CDAWEBDATASETBODY)
 	python table-ui/ajax/sql/sql.py $(CDAWEBDATASETHEAD) $(CDAWEBDATASETBODY)
 
 

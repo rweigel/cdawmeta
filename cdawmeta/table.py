@@ -1,277 +1,338 @@
 import os
 import json
 
-# TODO: Should be passed to table()
-options = {
-  'dataset': {
-    'use_all_attributes': True,
-    'fix_attributes': True,
-  },
-  'variable': {
-    'use_all_attributes': True,
-    'fix_attributes': True,
-  }
-}
+import cdawmeta
+logger = None
 
-def table(id=None, table_name=None, data_dir=None, update=False, max_workers=1):
+def table(id=None, table_name=None, update=False, max_workers=1):
 
-  import cdawmeta
+  global logger
+  if logger is None:
+    logger = cdawmeta.logger(f'table')
 
-  if data_dir is None:
-    from . import DATA_DIR as data_dir
-
-  datasets = cdawmeta.metadata(id=id, data_dir=data_dir, update=update, embed_data=True, max_workers=max_workers)
-
-  if table_name is None:
-    table_names = ['dataset', 'variable']
-  else:
+  table_names = ['cdaweb.dataset', 'cdaweb.variable', 'spase.parameter']
+  if table_name is not None:
+    assert table_name in table_names
     table_names = [table_name]
 
-  headers = {}
-  bodies = {}
+  no_spase = True
+  if 'spase.parameter' in table_names:
+    no_spase = False
+  datasets = cdawmeta.metadata(id=id, update=update, embed_data=True, no_spase=no_spase, max_workers=max_workers)
+
+  info = {}
   for table_name in table_names:
-    print(f"Creating {table_name} attribute table")
-    headers[table_name], bodies[table_name] = _table(datasets, data_dir, table_name=table_name)
-    print(f"Creating {table_name} attribute table with {len(headers[table_name])} columns and {len(bodies[table_name])} rows")
-    assert len(headers[table_name]) == len(bodies[table_name][0])
-    files = _files(table_name, data_dir)
-    _write_table(headers[table_name], files['header'], bodies[table_name], files['body'])
+
+    logger.info(f"Creating {table_name} attribute table")
+    header, body = _table(datasets, table_name=table_name)
+    logger.info(f"Creating {table_name} attribute table with {len(header)} columns and {len(body)} rows")
+    if len(body) > 0:
+      assert len(header) == len(body[0])
+    else:
+      raise Exception(f"No rows in {table_name} table for id='{id}'")
+
+    files = _files(table_name, id=id)
+
+    cdawmeta.util.write(files['header'], header, logger=logger)
+    cdawmeta.util.write(files['body'], body, logger=logger)
+
+    sql_file = files['sql']
+    logger.info(f"Writing {table_name} table to SQLite database file '{files['sql']}'")
+    if os.path.exists(files['sql']):
+      logger.info(f"Removing existing SQLite database file '{files['sql']}'")
+      os.remove(files['sql'])
+    _write_sqldb(header, body, file=f"{files['sql']}", name=table_name)
+    logger.info(f"Wrote {table_name} table to SQLite database file '{files['sql']}'")
+
+    info[table_name] =  {
+                          "header_file": files['header'],
+                          "body_file": files['body'],
+                          "sql_file": sql_file,
+                          "header": header,
+                          "body": body
+                      }
 
   if len(table_names) == 1:
-    return headers[table_names[0]], bodies[table_names[0]]
-  else:
-    return headers, bodies
+    return info[table_names[0]]
+  return info
 
-def _table(datasets, data_dir, table_name='dataset'):
+def _table(datasets, table_name='cdaweb.dataset', mode='attributes'):
 
-  attribute_names = []
-  attributes = _attributes()[table_name]
-  attribute_cats = list(attributes.keys())
+  attributes = {}
+  paths = cdawmeta.CONFIG['table'][table_name]['paths']
+  for path in paths:
+    attributes[path] = cdawmeta.CONFIG['table'][table_name]['paths'][path]
 
-  fixes = _read_fixes(table_name, data_dir)
+  if cdawmeta.CONFIG['table'][table_name]['use_all_attributes']:
+    # Modify attributes dict to include all attributes found in all variables. If
+    # an attribute is misspelled, it is mapped to the correct spelling.
+    attribute_names = _table_walk(datasets, attributes, table_name, mode='attributes')
+    if mode == 'attributes':
+      # Save the counts for all found attribute names (including misspellings).
+      # This is useful for finding similarly named attributes that were probably
+      # meant to be the same.
+      _write_counts(attribute_names, file=_files(table_name)['counts'])
 
-  if options[table_name]['use_all_attributes'] == True:
-    for _, dataset in datasets.items():
-      if table_name == 'dataset':
-        _add_attribute(attributes, attribute_names, attribute_cats, dataset['master']['data'], dataset['id'], None, fixes)
-      else:
-        for name, variable in dataset['master']['data']['CDFVariables'].items():
-          _add_attribute(attributes, attribute_names, attribute_cats, variable, dataset['id'], name, fixes)
+  # Create table header based on attributes dict.
+  header = _table_header(attributes, table_name)
 
-  _write_counts(attribute_names, file=_files(table_name, data_dir)['counts'])
-
-  # Manually set first two columns
-  if table_name == 'dataset':
-    header = ['datasetID']
-  else:
-    header = ['datasetID', 'VariableName']
-
-  for attribute_cat in attribute_cats:
-    for attribute in attributes[attribute_cat]:
-      header.append(attribute)
-
-  table = []
-  row = []
-  print(f"Creating {table_name} table rows")
-  for id, dataset in datasets.items():
-
-    if _omit(id) == True:
-      continue
-
-    if table_name == 'dataset':
-      row = [dataset['id']]
-      for attribute_cat in attribute_cats:
-        _append_columns(row, attributes, attribute_cat, dataset['master']['data'], fixes)
-      table.append(row)
-    else:
-      for name, variable in dataset['master']['data']['CDFVariables'].items():
-        row = [dataset['id'], name]
-        for attribute_cat in attribute_cats:
-          _append_columns(row, attributes, attribute_cat, variable, fixes)
-        table.append(row)
-
-  print(f"Created {table_name} table rows")
+  logger.info(f"Creating {table_name} table rows")
+  table = _table_walk(datasets, attributes, table_name, mode='rows')
+  logger.info(f"Created {table_name} table rows")
 
   return header, table
 
-def _omit(id):
-  return False
-  if not id.startswith('A'):
-    return True
-  return False
+def _table_walk(datasets, attributes, table_name, mode='attributes'):
 
-def _files(table_name, data_dir):
-  script_dir = os.path.dirname(__file__)
-  files = {
-    'header': os.path.join(data_dir, 'table', f'cdaweb.table.{table_name}.head.json'),
-    'body': os.path.join(data_dir, 'table', f'cdaweb.table.{table_name}.body.json'),
-    'counts': os.path.join(data_dir, 'table', f'cdaweb.table.{table_name}_attributes.counts.csv'),
-    'fixes': os.path.join(script_dir, 'table', f'table.fixes.json')
-  }
+  """
+  If mode='attributes', returns a dictionary of attributes found across all
+  datasets and variables starting with the given attributes. If the attribute
+  is misspelled, it is mapped to the correct spelling.
 
-  if not options[table_name]['fix_attributes']:
-    files['fixes'] = None
+  If mode='rows', returns a list of rows for the table. Each row contains the
+  value of the associated attribute (accounting for misspellings) in the given
+  attributes dictionary. If the variable does not have the attribute, an empty
+  string is used for the column.
+  """
+  assert mode in ['attributes', 'rows']
 
-  return files
+  fixes = None
+  if 'fix_attributes' in cdawmeta.CONFIG['table'][table_name]:
+    if cdawmeta.CONFIG['table'][table_name]['fix_attributes']:
+      if 'fixes' in cdawmeta.CONFIG['table'][table_name]:
+        fixes_file = os.path.join(os.path.dirname(cdawmeta.__file__), 'config.json')
+        logger.info(f"Using fixes for {table_name} found in {fixes_file}")
+        fixes = cdawmeta.CONFIG['table'][table_name]['fixes']
+      else:
+        msg = f"Error: cdawmeta.CONFIG['table'][{table_name}]['fix_attributes'] = True, "
+        msg += "but no file cdawmeta.CONFIG['table'][{table_name}]['fixes'] set."
+        logger.error(msg)
 
-def _attributes():
-  # This is used to set the ordering of certain attributes. Attributes not
-  # in this list will be added to the end of the list.
-  ret = {
-    'dataset': {
-      "CDFFileInfo": {
-        "FileName": None,
-        "FileVersion": None,
-        "Format": None,
-        "Majority": None,
-        "Encoding": None
-      },
-      "CDFglobalAttributes": {
-        "TITLE": None,
-        "Project": None,
-        "Discipline": None,
-        "Source_name": None,
-        "Data_version": None,
-        "ADID_ref": None,
-        "Logical_file_id": None,
-        "Data_type": None,
-        "Descriptor": None,
-        "TEXT": None,
-        "MODS": None,
-        "Logical_source": None,
-        "Logical_source_description": None,
-        "PI_name": None,
-        "PI_affiliation": None,
-        "Mission_group": None,
-        "Instrument_type": None,
-        "TEXT_supplement_1": None,
-        "Generation_date": None,
-        "Acknowledgement": None,
-        "Rules_of_use": None,
-        "Generated_by": None,
-        "Time_resolution": None,
-        "Link_text": None,
-        "Link_title": None,
-        "HTTP_Link": None,
-        "alt_logical_source": None,
-        "spase_DatasetResourceID": None
-      }
-    },
-    'variable': {
-      'VarDescription': {
-        "PadValue": None,
-        "RecVariance": None,
-        "NumDims": None,
-        "DataType": None,
-        "DimVariances": None,
-        "NumElements": None
-      },
-      'VarAttributes': {
-        "FIELDNAM": None,
-        'VAR_TYPE': None,
-        'DICT_KEY': None,
-        'DEPEND_0': None,
-        'DEPEND_1': None,
-        'DEPEND_2': None,
-        'DEPEND_3': None,
-        'DELTA_PLUS_VAR': None,
-        'DELTA_MINUS_VAR': None,
-        'FORMAT': None,
-        'FORM_PTR': None,
-        'BIN_LOCATION': None,
-        'LABLAXIS': None,
-        'LABL_PTR_1': None,
-        'LABL_PTR_2': None,
-        'LABL_PTR_3': None,
-        'VAR_NOTES': None,
-        'VARIABLE_PURPOSE': None,
-        'AVG_TYPE': None,
-        'FILLVAL': None,
-        'UNITS': None,
-        'UNITS_PTR': None,
-        'SI_CONVERSION': None,
-        'COORDINATE_SYSTEM': None,
-        'VIRTUAL': None,
-        'FUNCT': None,
-        'FUNCTION': None,
-        'SCALETYP': None,
-        'SCAL_PTR': None,
-        'VALID_MIN': None,
-        'VALID_MAX': None,
-      }
-    }
-  }
-  return ret
 
-def _append_columns(row, attributes, attribute_type, variable, fixes):
+  if mode == 'attributes':
+    attribute_names = []
+  else:
+    table = []
+    row = []
 
-  if not attribute_type in variable:
-    for attribute in attributes[attribute_type]:
-      row.append("?") # No VarDescription or VarAttributes
-    return row
+  n_cols_last = None
+  for id, dataset in datasets.items():
 
-  for attribute in attributes[attribute_type]:
+    if table_name == 'cdaweb.dataset':
+      if mode == 'rows':
+        row = [dataset['id']]
+
+      for path in attributes.keys():
+        data = cdawmeta.util.get_path(dataset, path.split('/'))
+        if data is None:
+          logger.info(f"No data found for {id}/{path}")
+          continue
+        if mode == 'attributes':
+          _add_attributes(data, attributes[path], attribute_names, fixes, id + "/" + path)
+        else:
+          _append_columns(data, attributes[path], row, fixes)
+          table.append(row)
+
+    if table_name == 'cdaweb.variable' or table_name == 'spase.parameter':
+
+      for path in attributes.keys():
+
+        data = cdawmeta.util.get_path(dataset, path.split('/'))
+        if data is None: continue
+        for variable_name, variable in data.items():
+
+          if mode == 'rows':
+            row = [dataset['id'], variable_name]
+
+          if table_name == 'spase.parameter':
+            for key in variable.copy():
+              # Drop attribute if value is list
+              if isinstance(variable[key], list):
+                del variable[key]
+            if mode == 'attributes':
+              _add_attributes(variable, attributes[path], attribute_names, fixes, id + "/" + path)
+            else:
+              _append_columns(variable, attributes[path], row, fixes)
+
+          else:
+            for subpath in attributes[path]:
+              if subpath in data[variable_name]:
+                variable_ = data[variable_name][subpath]
+                if mode == 'attributes':
+                  _add_attributes(variable_, attributes[path][subpath], attribute_names, fixes, f"{id}/{path}/{variable_name}/{subpath}")
+                else:
+                  _append_columns(variable_, attributes[path][subpath], row, fixes)
+              else:
+                if mode == 'rows':
+                  # Insert "?" for all attributes
+                  n_attribs = len(attributes[path][subpath])
+                  fill = n_attribs*"?".split()
+                  row = [*row, *fill]
+
+          # Add row for variable
+          if mode == 'rows':
+            if n_cols_last is not None and len(row) != n_cols_last:
+              raise Exception(f"Number of columns changed from {n_cols_last} to {len(row)} for {id}/{variable_name}")
+            table.append(row)
+
+  if mode == 'attributes':
+    return attribute_names
+  else:
+    return table
+
+def _table_header(attributes, table_name):
+
+  if table_name == 'cdaweb.dataset':
+    header = ['datasetID']
+  if table_name == 'cdaweb.variable':
+    header = ['datasetID', 'VariableName']
+  if table_name == 'spase.parameter':
+    header = ['datasetID', 'ParameterKey']
+
+  for path in attributes.keys():
+    if table_name == 'cdaweb.dataset' or table_name == 'spase.parameter':
+      for attribute in attributes[path]:
+        header.append(attribute)
+    else:
+      for subpath in attributes[path]:
+        for subattribute in attributes[path][subpath]:
+          header.append(subattribute)
+  return header
+
+def _append_columns(data, attributes, row, fixes):
+
+  for attribute in attributes:
 
     if fixes is not None:
       for fix in fixes:
-        if fix in variable[attribute_type]:
-          variable[attribute_type][fixes[fix]] = variable[attribute_type][fix]
-          del variable[attribute_type][fix]
+        if fix in data:
+          data[fixes[fix]] = data[fix]
+          del data[fix]
 
-    if attribute in variable[attribute_type]:
-      val = variable[attribute_type][attribute]
+    if attribute in data:
+      val = data[attribute]
       if isinstance(val, str) and val == " ":
         val = val.replace(' ', '⎵')
       row.append(val)
     else:
       row.append("")
 
-def _add_attribute(attributes, attribute_names, attribute_types, variable, id, name, fixes):
-  for attribute_type in attribute_types:
-    if not attribute_type in variable:
-      if name is None:
-        print(f"Missing {attribute_type} in {id}")
-      else:
-        print(f"Missing {attribute_type} in {name} in {id}")
-      continue
-    for attribute_name in variable[attribute_type]:
-      attribute_names.append(attribute_name)
-      if fixes is not None:
-        if attribute_name not in fixes:
-          attributes[attribute_type][attribute_name] = None
-      else:
-        attributes[attribute_type][attribute_name] = None
+def _add_attributes(data, attributes, attribute_names, fixes, path):
+
+  for attribute_name in data:
+    attribute_names.append(attribute_name)
+    if fixes is None or attribute_name not in fixes:
+      attributes[attribute_name] = None
+    else:
+      logger.error(f"Fixing attribute name: {path}/{attribute_name} -> {fixes[attribute_name]}")
+      attributes[fixes[attribute_name]] = None
+
+def _files(table_name, id=None):
+  data_dir = cdawmeta.DATA_DIR
+
+  subdir = ''
+  if id is not None:
+    logger.warning("Using id to create subdirectory for table files. If id is a regex, expect trouble.")
+    subdir = id
+  files = {
+    'header': os.path.join(data_dir, 'table', subdir, f'{table_name}.head.json'),
+    'body': os.path.join(data_dir, 'table', subdir, f'{table_name}.body.json'),
+    'sql': os.path.join(data_dir, 'table', subdir, f'{table_name}.sql'),
+    'counts': os.path.join(data_dir, 'table', subdir, f'{table_name}.attribute_counts.csv')
+  }
+
+  return files
 
 def _write_counts(attribute_names, file=None):
   import collections
   counts = dict(collections.Counter(attribute_names))
   counts_sorted = sorted(counts.items(), key=lambda i: i[0].lower())
-  print(f'Writing: {file}')
+  logger.info(f'Writing: {file}')
   with open(file, 'w', encoding='utf-8') as f:
     f.write("Attribute, Count\n")
     for count in counts_sorted:
       f.write(f"{count[0]}, {count[1]}\n")
-  print(f'Wrote: {file}')
+  logger.info(f'Wrote: {file}')
 
-def _write_table(header, file_header, body, file_body):
+def _write_sqldb(header, body, file="table1.db", name="table1"):
 
-  print(f'Writing: {file_header}')
-  os.makedirs(os.path.dirname(file_header), exist_ok=True)
-  with open(file_header, 'w', encoding='utf-8') as f:
-    json.dump(header, f, indent=2)
-    print(f'Wrote: {file_body}')
+  import sqlite3
 
-  print(f'Writing: {file_body}')
-  os.makedirs(os.path.dirname(file_body), exist_ok=True)
-  with open(file_body, 'w', encoding='utf-8') as f:
-    json.dump(body, f, indent=2)
-    print(f'Wrote: {file_body}')
+  header, body = _sql_prep(header, body)
 
-def _read_fixes(table_name, data_dir):
-  file = _files(table_name, data_dir)['fixes']
-  if file is not None:
-    print(f"Reading: {file}")
-    with open(file) as f:
-      fixes = json.load(f)
-    print(f"Read: {file}")
-  return fixes[table_name]
+  for hidx, colname in enumerate(header):
+    header[hidx] = f"`{colname}`"
+
+  column_names = f"({', '.join(header)})"
+  column_spec  = f"({', '.join(header)} TEXT)"
+  column_vals  = f"({', '.join(len(header)*['?'])})"
+
+  create  = f'CREATE TABLE `{name}` {column_spec}'
+  execute = f'INSERT INTO `{name}` {column_names} VALUES {column_vals}'
+
+  logger.info(f"Creating and connecting to file '{file}'")
+  conn = sqlite3.connect(file)
+  logger.info(f"Created and connecting to file '{file}'")
+
+  logger.info(f"Getting cursor from connection to '{file}'")
+  cursor = conn.cursor()
+  logger.info(f"Got cursor from connection to '{file}'")
+
+  logger.info(f"Creating index using cursor.execute('{create}')")
+  cursor.execute(create)
+  logger.info(f"Done")
+
+  logger.info(f"Inserting rows using cursor.executemany('{execute}', body)")
+  cursor.executemany(execute, body)
+  logger.info(f"Done")
+
+  logger.info(f"Executing: commit()")
+  conn.commit()
+  logger.info(f"Done")
+
+  if header is not None:
+    index = f"CREATE INDEX idx0 ON `{name}` ({header[0]})"
+    logger.info(f"Creating index using cursor.execute('{index}')")
+    cursor.execute(index)
+
+    logger.info(f"Executing: commit()")
+    conn.commit()
+    logger.info(f"Done")
+
+  conn.close()
+
+def _sql_prep(header, body):
+  import time
+
+  def unique(header):
+
+    headerlc = [val.lower() for val in header]
+    headeru = header.copy()
+    for val in header:
+      indices = [i for i, x in enumerate(headerlc) if x == val.lower()]
+      if len(indices) > 1:
+        dups = [header[i] for i in indices]
+        logger.error(f"Warning: Duplicate column names when cast to lower case: {str(dups)}.")
+        logger.error(f"         Renaming duplicates by appending _$DUPLICATE_NUMBER$ to the column name.")
+        for r, idx in enumerate(indices):
+          if r > 0:
+            newname = header[idx] + "_$" + str(r) + "$"
+            logger.info(f"Renaming {header[idx]} to {newname}")
+            headeru[idx] = newname
+    return headeru
+
+  logger.info("Casting table elements to str.")
+  start = time.time()
+
+  logger.info("Renaming non-unique column names")
+  header = unique(header)
+  logger.info("Renamed non-unique column names")
+
+  for i, row in enumerate(body):
+    for j, _ in enumerate(row):
+      body[i][j] = str(body[i][j])
+
+  dt = "{:.2f} [s]".format(time.time() - start)
+  logger.info(f"Casted table elements to str {len(body)} rows and {len(header)} columns in {dt}")
+
+  return header, body

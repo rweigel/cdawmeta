@@ -36,11 +36,25 @@ def cli(script):
     },
     "data_dir": {
       "help": "Directory for data files",
+      "default": './data'
+    },
+    "table_name": {
+      "help": "Name of table to create (default: all tables)",
+      "default": None
+    },
+    "port": {
+      "help": "Serve table as a web page at http://localhost:port. Must specify --table_name",
       "default": None
     }
   }
 
+  if script == 'cdaweb.py':
+    del clkws['table_name']
+    del clkws['port']
+
   if script == 'hapi.py':
+    del clkws['table_name']
+    del clkws['port']
     del clkws['no_spase']
     del clkws['embed_data']
 
@@ -50,11 +64,23 @@ def cli(script):
     del clkws['no_spase']
     del clkws['diffs']
 
+  if script == 'query.py':
+    del clkws['table_name']
+    del clkws['port']
+    del clkws['diffs']
+    del clkws['no_spase']
+    del clkws['no_orig_data']
+
   import argparse
   parser = argparse.ArgumentParser()
   for k, v in clkws.items():
     parser.add_argument(f'--{k}', **v)
 
   args = vars(parser.parse_args())
+
+  import cdawmeta
+  if args['data_dir']:
+    cdawmeta.set('DATA_DIR', args['data_dir'])
+  del args['data_dir']
 
   return args

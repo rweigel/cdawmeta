@@ -1,15 +1,14 @@
 def logger(name=None,
-           format=u'%(asctime)sZ %(message)s',
            console_format=u"%(asctime)s %(levelname)s %(name)s %(message)s",
-           datefmt="%Y-%m-%dT%H:%M:%S.%f",
-           utc_timestamps=True,
+           file_format=u"%(asctime)s %(levelname)s %(name)s %(message)s",
            file_log=None,
            file_error=None,
+           datefmt="%Y-%m-%dT%H:%M:%S.%f",
+           utc_timestamps=True,
            rm_existing=True,
            rm_string=None,
-           disable_existing_loggers=False):
-
-  #'format': '(%(process)d) %(asctime)s %(name)s (line %(lineno)s) | %(levelname)s %(message)s'
+           disable_existing_loggers=False,
+           startup_message=True):
 
   import os
   import sys
@@ -22,7 +21,8 @@ def logger(name=None,
     logging.Formatter.converter = time.gmtime
 
   class CustomFormatter(logging.Formatter):
-    def __init__(self, rm_string=rm_string, datefmt=datefmt, *args, **kwargs):
+
+    def __init__(self, rm_string=None, datefmt=datefmt, *args, **kwargs):
       super(CustomFormatter, self).__init__(*args, **kwargs)
       self.rm_string = rm_string
       self.datefmt = datefmt
@@ -40,11 +40,29 @@ def logger(name=None,
         return s
 
     def format(self, record):
+
+      record.levelname = self.color_levelname(record.levelname)
+
       record.pathname = record.pathname.replace(os.getcwd() + "/","")
       res = super(CustomFormatter, self).format(record)
       if self.rm_string is None:
         return res
       return res.replace(self.rm_string, '')
+
+    def color_levelname(self, levelname):
+      if levelname.startswith('\033'):
+        return levelname
+      if levelname == 'DEBUG':
+        return '\033[94m' + levelname + '\033[0m'
+      if levelname == 'INFO':
+        return '\033[92m' + levelname + '\033[0m'
+      if levelname == 'WARNING':
+        return '\033[93m' + levelname + '\033[0m'
+      if levelname == 'ERROR':
+        return '\033[91m' + levelname + '\033[0m'
+      if levelname == 'CRITICAL':
+        return '\033[95m' + levelname + '\033[0m'
+      return levelname
 
   if name is None:
     name = __name__ # Use top-level module name
@@ -99,7 +117,9 @@ def logger(name=None,
             "format": console_format
            },
           'file_formatter': {
-            'format': f'{format}'
+            "class": "logging.Formatter",
+            "datefmt": datefmt,
+            'format': file_format
           }
       },
       'handlers': {
@@ -153,16 +173,27 @@ def logger(name=None,
 
   if name is not None:
     msgx = f"for {name} "
-  print(f'Logging output {msgx}to: {file_log}')
+  if startup_message:
+    print(f"---\nLogger with name='{name}' configuration:")
+    print(f'Logging output {msgx}to: {file_log}')
   if file_error:
-    print(f'Logging errors {msgx}to: {file_error}')
+    if startup_message:
+      print(f'Logging errors {msgx}to: {file_error}')
   else:
     del config['handlers']['file_stderr']
+  if rm_string is not None:
+    if startup_message:
+      print(f'Removing string: {rm_string} from log messages in files')
+  if startup_message:
+    print(f'Remove logger configuration message by setting startup_message=False\n---')
 
   logging.config.dictConfig(config)
 
   _logger = logging.getLogger(name)
   for handler in _logger.handlers:
-    handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, rm_string=rm_string))
+    if handler.name.startswith('console'):
+      handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, rm_string=None))
+    else:
+      handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, rm_string=rm_string))
 
   return logging.getLogger(name)

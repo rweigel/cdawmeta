@@ -10,6 +10,8 @@
 # If an update is needed due only to a source code change, use
 #   make all
 
+PYTHON=~/anaconda3/bin/python
+
 all:
 	make hapi
 	make hapi-nl
@@ -31,6 +33,34 @@ compare:
 
 cdawmeta.egg-info:
 	pip install -e .
+
+################################################################################
+table/table-ui:
+	@- cd table; git clone https://github.com/rweigel/table-ui
+	@- cd table; git pull https://github.com/rweigel/table-ui
+
+# Generate all tables
+table-update: table/table-ui
+	python table.py --update
+
+# Use code to generate table code or metadata code it uses changes
+table-regen:
+	python table.py
+
+data/table/cdaweb.variable.sql:
+	python table.py --table_name cdaweb.variable
+
+data/table/cdaweb.dataset.sql:
+	python table.py --table_name cdaweb.dataset
+
+data/table/spase.parameter.sql:
+	python table.py --table_name spase.parameter
+
+table-serve: data/table/cdaweb.variable.sql data/table/cdaweb.dataset.sql data/table/spase.parameter.sql
+	$(PYTHON) table/table-ui/ajax/server.py 8051 data/table/cdaweb.variable.head.json data/table/cdaweb.variable.sql &
+	$(PYTHON) table/table-ui/ajax/server.py 8052 data/table/cdaweb.dataset.head.json data/table/cdaweb.dataset.sql &
+	$(PYTHON) table/table-ui/ajax/server.py 8053 data/table/spase.parameter.head.json data/table/spase.parameter.sql
+################################################################################
 
 ################################################################################
 cdaweb: cdaweb.py
