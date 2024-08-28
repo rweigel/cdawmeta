@@ -15,7 +15,8 @@ def ids(id=None, update=True):
 
   timeouts = cdawmeta.CONFIG['cdaweb']['timeouts']
 
-  datasets_all = datasets(timeout=timeouts['allxml'], update=update)
+  allxml = _allxml(timeout=timeouts['allxml'], update=update)
+  datasets_all = _datasets(allxml, update=update)
   ids_all = datasets_all.keys()
 
   if isinstance(id, str):
@@ -35,7 +36,7 @@ def ids(id=None, update=True):
 
   return ids_reduced
 
-def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False, restructure_master=True, restructure_spase=True, no_spase=True, no_orig_data=True):
+def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False, restructure_allxml=True, restructure_master=True, restructure_spase=True, no_spase=True, no_orig_data=True):
 
   global logger
   if logger is None:
@@ -46,15 +47,16 @@ def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False,
   dsids = ids(id=id, update=update)
 
   # Create base datasets using info in all.xml
-  datasets_all = datasets(timeout=timeouts['allxml'], update=False)
+  allxml = _allxml(timeout=timeouts['allxml'], update=update)
+  datasets_all = _datasets(allxml, restructure=restructure_allxml, update=False)
 
   def get_one(dataset):
-    dataset['master'] = master(dataset, restructure=restructure_master, diffs=diffs, timeout=timeouts['master'], update=update)
+    dataset['master'] = _master(dataset, restructure=restructure_master, diffs=diffs, timeout=timeouts['master'], update=update)
     if no_orig_data == False:
-      dataset['orig_data'] = orig_data(dataset, diffs=diffs, timeout=timeouts['orig_data'], update=update)
-      dataset['samples'] = samples(dataset['id'], dataset['orig_data'])
+      dataset['orig_data'] = _orig_data(dataset, diffs=diffs, timeout=timeouts['orig_data'], update=update)
+      dataset['samples'] = _samples(dataset['id'], dataset['orig_data'])
     if no_spase == False:
-      dataset['spase'] = spase(dataset['master'], restructure=restructure_spase, diffs=diffs, timeout=timeouts['spase'], update=update)
+      dataset['spase'] = _spase(dataset['master'], restructure=restructure_spase, diffs=diffs, timeout=timeouts['spase'], update=update)
 
     if embed_data == False:
       del dataset['master']['data']
@@ -79,7 +81,240 @@ def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False,
 
   return {key: datasets_all[key] for key in dsids}
 
-def rel_path(base_dir, path):
+def _datasets(allxml, restructure=True, update=False):
+  '''
+  Returns dict of datasets. Keys are dataset IDs and values are dicts 
+  with keys 'id' and 'allxml'. The value of 'allxml' is
+  all.xml/data/'sites//datasite/0/dataset
+  '''
+
+  try:
+    datasites = allxml['data']['sites']['datasite']
+  except:
+    msg = f"Error[all.xml]: No 'sites/datasite' node in all.xml"
+    logger.error(msg)
+    return None
+
+  datasets_allxml = None
+  for datasite in datasites:
+    if datasite['@ID'] == 'CDAWeb_HTTPS':
+      datasets_allxml = datasite['dataset']
+      break
+  if datasets_allxml is None:
+    msg = f"Error[all.xml]: No datasite with ID=CDAWeb_HTTPS"
+    logger.error(msg)
+    return None
+
+  datasets_ = {}
+  for dataset_allxml in datasets_allxml:
+
+    id = dataset_allxml['@serviceprovider_ID']
+    dataset = {'id': id, 'allxml': dataset_allxml}
+
+    if not 'mastercdf' in dataset_allxml:
+      msg = f'Error[all.xml]: {id}: No mastercdf node in all.xml'
+      logger.error(msg)
+      continue
+
+    if isinstance(dataset_allxml['mastercdf'], list):
+      msg = f'Warning[all.xml]: Not implemented: {id}: More than one mastercdf referenced in all.xml mastercdf node.'
+      logger.info(msg)
+      continue
+
+    if not '@ID' in dataset_allxml['mastercdf']:
+      msg = f'Error[all.xml]: {id}: No ID attribute in all.xml mastercdf node'
+      logger.error(msg)
+      continue
+
+    if restructure == True:
+      if 'mission_group' in dataset['allxml']:
+        mission_groups = cdawmeta.util.array_to_dict(dataset['allxml']['mission_group'],'@ID')
+        dataset['allxml']['mission_group'] = mission_groups
+      if 'instrument_type' in dataset['allxml']:
+        instrument_type = cdawmeta.util.array_to_dict(dataset['allxml']['instrument_type'],'@ID')
+        dataset['allxml']['instrument_type'] = instrument_type
+      if 'links' in dataset['allxml']:
+        links = cdawmeta.util.array_to_dict(dataset['allxml']['link'],'@URL')
+        dataset['allxml']['links'] = links
+      for key, val in dataset['allxml'].items():
+        #if val is not None and '@ID' in val:
+          # e.g., dataset['allxml']['observatory] = {'@ID': 'ACE', ...} ->
+          #       dataset['allxml']['observatory']['ACE'] = {'@ID': 'ACE', ...}
+          #dataset['allxml'][key] = {val['@ID']: val}
+        # TODO: Read all.xsd file and check if any others are lists that converted to dicts.
+        if isinstance(val, list):
+          logger.warning(f"Warning[all.xml]: {id}: {key} is a list and was not restructured.")
+          exit()
+
+    datasets_[id] = dataset
+
+  return datasets_
+
+def _allxml(timeout=20, update=False, diffs=False):
+  allurl = cdawmeta.CONFIG['cdaweb']['allurl']
+  allxml = _fetch(allurl, 'all', 'all', timeout=timeout, update=update)
+
+  return allxml
+
+def _master(dataset, restructure=True, timeout=20, update=False, diffs=False):
+
+  mastercdf = dataset['allxml']['mastercdf']['@ID']
+  url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
+
+  master = _fetch(url, dataset['id'], 'master', timeout=timeout, update=update, diffs=diffs)
+  if restructure == True and 'data' in master:
+    master['data'] = _restructure_master(master['data'], logger=logger)
+  return master
+
+def _spase(master, restructure=True, timeout=20, update=True, diffs=False):
+
+  id = master['id']
+  if 'data' not in master:
+    return None
+
+  global_attributes = master['data']['CDFglobalAttributes']
+  if not 'spase_DatasetResourceID' in global_attributes:
+    msg = f"Error[master]: {master['id']}: No spase_DatasetResourceID attribute"
+    logger.error(msg)
+    return None
+
+  if 'spase_DatasetResourceID' in global_attributes:
+    spase_id = global_attributes['spase_DatasetResourceID']
+    if spase_id and not spase_id.startswith('spase://'):
+      msg = f"Error[master]: {master['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
+      logger.error(msg)
+      return None
+    url = spase_id.replace('spase://', 'https://hpde.io/') + '.json';
+
+  spase = _fetch(url, id, 'spase', timeout=timeout, diffs=diffs, update=update)
+  if restructure == True and 'data' in spase:
+    spase['data'] = _restructure_spase(spase['data'], logger=logger)
+
+  return spase
+
+def _orig_data(dataset, timeout=120, update=True, diffs=False):
+
+  wsbase = cdawmeta.CONFIG['cdaweb']['wsbase']
+  start = dataset['allxml']['@timerange_start'].replace(" ", "T").replace("-","").replace(":","") + "Z";
+  stop = dataset['allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z";
+  url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop
+
+  #headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+  headers = {'Accept': 'application/json'}
+  return _fetch(url, dataset['id'], 'orig_data', headers=headers, timeout=timeout, update=update, diffs=diffs)
+
+def _samples(id, _orig_data):
+
+  def reformat_dt(dt):
+    dt = dt.replace(" ", "T").replace("-","").replace(":","")
+    return dt.split(".")[0] + "Z"
+
+  wsbase = cdawmeta.CONFIG['cdaweb']['wsbase']
+
+  last_file = _orig_data['data']['FileDescription'][-1]
+  start = reformat_dt(last_file['StartTime'])
+  stop = reformat_dt(last_file['EndTime'])
+  _samples = {
+    'file': last_file['Name'],
+    'url': f"{wsbase}{id}/data/{start},{stop}/ALL-VARIABLES?format=cdf",
+    'plot': f"{wsbase}{id}/data/{start},{stop}/ALL-VARIABLES?format=png"
+  }
+  return _samples
+
+def _restructure_spase(spase, logger=None):
+  if 'Spase' not in spase:
+    return None
+  if 'NumericalData' not in spase['Spase']:
+    return None
+  if 'Parameter' in spase['Spase']['NumericalData']:
+    data = spase['Spase']['NumericalData']['Parameter']
+    spase['Spase']['NumericalData']['Parameter'] = cdawmeta.util.array_to_dict(data, 'ParameterKey')
+  return spase
+
+def _restructure_master(master, logger=None):
+
+  """
+  Convert dict with arrays of objects to objects with objects. For example
+    { "Epoch": [ 
+        {"VarDescription": [{"DataType": "CDF_TIME_TT2000"}, ...] },
+        {"VarAttributes": [{"CATDESC": "Default time"}, ...] }
+      ],
+      ...
+    }
+  is converted to
+    {
+      "Epoch": {
+        "VarDescription": {
+          "DataType": "CDF_TIME_TT2000",
+          ...
+        },
+        "VarAttributes": {
+          "CATDESC": "Default time",
+          ...
+        }
+      }
+    }
+  """
+
+  def sort_keys(obj):
+    return {key: obj[key] for key in sorted(obj)}
+
+  # TODO: Check that only one key.
+  file = list(master.keys())[0]
+
+  fileinfo_r = cdawmeta.util.array_to_dict(master[file]['CDFFileInfo'])
+
+  variables = master[file]['CDFVariables']
+  variables_r = {}
+
+  for variable in variables:
+
+    variable_keys = list(variable.keys())
+    if len(variable_keys) > 1:
+      msg = "Expected only one variable key in variable object. Exiting witih code 1."
+      logger.error(msg)
+      exit(1)
+
+    variable_name = variable_keys[0]
+    variable_array = variable[variable_name]
+    variable_dict = cdawmeta.util.array_to_dict(variable_array)
+
+    for key, value in variable_dict.items():
+
+      if key == 'VarData':
+        variable_dict[key] = value
+      else:
+        variable_dict[key] = sort_keys(cdawmeta.util.array_to_dict(value))
+
+    variables_r[variable_name] = variable_dict
+
+  # Why do they use lower-case G? Inconsistent with CDFFileInfo and CDFVariables.
+  globals = master[file]['CDFglobalAttributes'] 
+  globals_r = {}
+
+  for _global in globals:
+    gkey = list(_global.keys())
+    if len(gkey) > 1:
+      if logger is not None:
+        msg = "Expected only one key in _global object."
+        logger.error(msg)
+    gvals = _global[gkey[0]]
+    text = []
+    for gval in gvals:
+      line = gval[list(gval.keys())[0]];
+      text.append(str(line))
+
+    globals_r[gkey[0]] = "\n".join(text)
+
+  master = {
+              'CDFFileInfo': {'FileName': file, **fileinfo_r},
+              'CDFglobalAttributes': globals_r,
+              'CDFVariables': variables_r
+            }
+
+  return master
+
+def _rel_path(base_dir, path):
   #return path
   return path.replace(base_dir + '/', '')
 
@@ -127,37 +362,7 @@ def CachedSession(cache_dir):
 
   return session
 
-def print_request_log(resp, url, cache):
-  # Combine into single string to deal with parallel processing
-
-  req_cache_headers = {k: v for k, v in resp.request.headers.items() if k in ['If-None-Match', 'If-Modified-Since']}
-  res_cache_headers = {k: v for k, v in resp.headers.items() if k in ['ETag', 'Last-Modified', 'Cache-Control', 'Vary']}
-  msg = ""
-  msg += f'Got: {url}\n'
-  msg += f"  Status code: {resp.status_code}\n"
-  msg += f"  From cache: {resp.from_cache}\n"
-  msg += f"  Current cache file: {rel_path(cdawmeta.DATA_DIR, cache['file'])}\n"
-  if 'file_last' in cache:
-    msg += f"  Last cache file:    {rel_path(cdawmeta.DATA_DIR, cache['file_last'])}\n"
-  msg += f"  Request Cache-Related Headers:\n"
-  for k, v in req_cache_headers.items():
-    print(k,v)
-    msg += f"    {k}: {v}\n"
-  msg += f"  Response Cache-Related Headers:\n"
-  for k, v in res_cache_headers.items():
-    msg += f"    {k}: {v}\n"
-  if 'diff' in cache:
-    if len(cache['diff']) == 0:
-      msg += f"  Cache diff: None\n"
-    else:
-      msg += f"  Cache diff:\n    "
-      json_indented = "\n    ".join(cache['diff'].to_json(indent=2).split('\n'))
-      msg += f"{json_indented}\n"
-  if logger is not None:
-    logger.info(msg)
-  return msg
-
-def cache_info(cache_dir, cache_key, diffs=False):
+def _cache_info(cache_dir, cache_key, diffs=False):
 
   cache_file = os.path.join(cache_dir, cache_key + ".json")
   cache_subdir = os.path.join(cache_dir, cache_key)
@@ -190,7 +395,37 @@ def cache_info(cache_dir, cache_key, diffs=False):
 
   return _return
 
-def fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
+def _print_request_log(resp, url, cache):
+  # Combine into single string to deal with parallel processing
+
+  req_cache_headers = {k: v for k, v in resp.request.headers.items() if k in ['If-None-Match', 'If-Modified-Since']}
+  res_cache_headers = {k: v for k, v in resp.headers.items() if k in ['ETag', 'Last-Modified', 'Cache-Control', 'Vary']}
+  msg = ""
+  msg += f'Got: {url}\n'
+  msg += f"  Status code: {resp.status_code}\n"
+  msg += f"  From cache: {resp.from_cache}\n"
+  msg += f"  Current cache file: {_rel_path(cdawmeta.DATA_DIR, cache['file'])}\n"
+  if 'file_last' in cache:
+    msg += f"  Last cache file:    {_rel_path(cdawmeta.DATA_DIR, cache['file_last'])}\n"
+  msg += f"  Request Cache-Related Headers:\n"
+  for k, v in req_cache_headers.items():
+    print(k,v)
+    msg += f"    {k}: {v}\n"
+  msg += f"  Response Cache-Related Headers:\n"
+  for k, v in res_cache_headers.items():
+    msg += f"    {k}: {v}\n"
+  if 'diff' in cache:
+    if len(cache['diff']) == 0:
+      msg += f"  Cache diff: None\n"
+    else:
+      msg += f"  Cache diff:\n    "
+      json_indented = "\n    ".join(cache['diff'].to_json(indent=2).split('\n'))
+      msg += f"{json_indented}\n"
+  if logger is not None:
+    logger.info(msg)
+  return msg
+
+def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
 
   cache_dir = os.path.join(cdawmeta.DATA_DIR, 'cache', what)
   file_out_json = os.path.join(cdawmeta.DATA_DIR, what, f"{id}.json")
@@ -204,7 +439,7 @@ def fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
   if logger is not None:
     logger.info('Get: ' + url)
 
-  _master = {}
+  master = {}
   try:
     resp = session.get(url, headers=headers, timeout=timeout)
     resp.raise_for_status()
@@ -218,243 +453,29 @@ def fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
     msg = f"Error[{what}]: {id}: {e}"
     if logger is not None:
       logger.error(msg)
-    _master['error'] = msg
-    return _master
+    master['error'] = msg
+    return master
 
-  cache = cache_info(cache_dir, resp.cache_key, diffs=diffs)
+  cache = _cache_info(cache_dir, resp.cache_key, diffs=diffs)
 
-  _master['id'] = id
-  _master['request-log'] = print_request_log(resp, url, cache)
-  _master['request-cache'] = rel_path(cdawmeta.DATA_DIR, cache['file'])
-  _master['url'] = url
-  _master['data'] = json_dict
-  _master['data-cache'] = rel_path(cdawmeta.DATA_DIR, file_out_json)
+  master['id'] = id
+  master['request-log'] = _print_request_log(resp, url, cache)
+  master['request-cache'] = _rel_path(cdawmeta.DATA_DIR, cache['file'])
+  master['url'] = url
+  master['data'] = json_dict
+  master['data-cache'] = _rel_path(cdawmeta.DATA_DIR, file_out_json)
 
   if resp.from_cache:
-    return _master
+    return master
 
   try:
-    cdawmeta.util.write(file_out_json, _master, logger=logger)
+    cdawmeta.util.write(file_out_json, master, logger=logger)
   except Exception as e:
     logger.error(f"Error writing {file_out_json}: {e}")
 
   try:
-    cdawmeta.util.write(file_out_pkl, _master, logger=logger)
+    cdawmeta.util.write(file_out_pkl, master, logger=logger)
   except Exception as e:
     logger.error(f"Error writing {file_out_pkl}: {e}")
 
-  return _master
-
-def datasets(timeout=20, update=False):
-  '''
-  Returns dict of datasets. Keys are dataset IDs and values are dicts 
-  with keys 'id' and 'allxml'. The value of 'allxml' is
-  all.xml/data/'sites//datasite/0/dataset
-  '''
-  if update == False and datasets.datasets is not None:
-    return datasets.datasets
-
-  allurl = cdawmeta.CONFIG['cdaweb']['allurl']
-  json_dict = fetch(allurl, 'all', 'all', timeout=timeout, update=update)
-
-  try:
-    datasites = json_dict['data']['sites']['datasite']
-  except:
-    msg = f"Error[all.xml]: No 'sites/datasite' node in all.xml"
-    logger.error(msg)
-    return None
-
-  datasets_allxml = None
-  for datasite in datasites:
-    if datasite['@ID'] == 'CDAWeb_HTTPS':
-      datasets_allxml = datasite['dataset']
-      break
-  if datasets_allxml is None:
-    msg = f"Error[all.xml]: No datasite with ID=CDAWeb_HTTPS"
-    logger.error(msg)
-    return None
-
-  datasets_ = {}
-  for dataset_allxml in datasets_allxml:
-
-    id = dataset_allxml['@serviceprovider_ID']
-    dataset = {'id': id, 'allxml': dataset_allxml}
-
-    if not 'mastercdf' in dataset_allxml:
-      msg = f'Error[all.xml]: {id}: No mastercdf node in all.xml'
-      logger.error(msg)
-      continue
-
-    if isinstance(dataset_allxml['mastercdf'], list):
-      msg = f'Warning[all.xml]: Not implemented: {id}: More than one mastercdf referenced in all.xml mastercdf node.'
-      logger.info(msg)
-      continue
-
-    if not '@ID' in dataset_allxml['mastercdf']:
-      msg = f'Error[all.xml]: {id}: No ID attribute in all.xml mastercdf node'
-      logger.error(msg)
-      continue
-
-    datasets_[id] = dataset
-
-  datasets.datasets = datasets_
-  return datasets_
-datasets.datasets = None
-
-def master(dataset, restructure=True, timeout=20, update=False, diffs=False):
-
-  mastercdf = dataset['allxml']['mastercdf']['@ID']
-  url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
-
-  _master = fetch(url, dataset['id'], 'master', timeout=timeout, update=update, diffs=diffs)
-  if restructure == True and 'data' in _master:
-    _master['data'] = restructure_master(_master['data'], logger=logger)
-  return _master
-
-def spase(_master, restructure=True, timeout=20, update=True, diffs=False):
-
-  id = _master['id']
-  if 'data' not in _master:
-    return None
-
-  global_attributes = _master['data']['CDFglobalAttributes']
-  if not 'spase_DatasetResourceID' in global_attributes:
-    msg = f"Error[master]: {_master['id']}: No spase_DatasetResourceID attribute"
-    logger.error(msg)
-    return None
-
-  if 'spase_DatasetResourceID' in global_attributes:
-    spase_id = global_attributes['spase_DatasetResourceID']
-    if spase_id and not spase_id.startswith('spase://'):
-      msg = f"Error[master]: {_master['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
-      logger.error(msg)
-      return None
-    url = spase_id.replace('spase://', 'https://hpde.io/') + '.json';
-
-  _spase = fetch(url, id, 'spase', timeout=timeout, diffs=diffs, update=update)
-  if restructure == True and 'data' in _spase:
-    _spase['data'] = restructure_spase(_spase['data'], logger=logger)
-
-  return _spase
-
-def orig_data(dataset, timeout=120, update=True, diffs=False):
-
-  wsbase = cdawmeta.CONFIG['cdaweb']['wsbase']
-  start = dataset['allxml']['@timerange_start'].replace(" ", "T").replace("-","").replace(":","") + "Z";
-  stop = dataset['allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z";
-  url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop
-
-  #headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-  headers = {'Accept': 'application/json'}
-  return fetch(url, dataset['id'], 'orig_data', headers=headers, timeout=timeout, update=update, diffs=diffs)
-
-def samples(id, _orig_data):
-
-  def reformat_dt(dt):
-    dt = dt.replace(" ", "T").replace("-","").replace(":","")
-    return dt.split(".")[0] + "Z"
-
-  wsbase = cdawmeta.CONFIG['cdaweb']['wsbase']
-
-  last_file = _orig_data['data']['FileDescription'][-1]
-  start = reformat_dt(last_file['StartTime'])
-  stop = reformat_dt(last_file['EndTime'])
-  _samples = {
-    'file': last_file['Name'],
-    'url': f"{wsbase}{id}/data/{start},{stop}/ALL-VARIABLES?format=cdf",
-    'plot': f"{wsbase}{id}/data/{start},{stop}/ALL-VARIABLES?format=png"
-  }
-  return _samples
-
-def restructure_spase(_spase, logger=None):
-  if 'Spase' not in _spase:
-    return None
-  if 'NumericalData' not in _spase['Spase']:
-    return None
-  if 'Parameter' in _spase['Spase']['NumericalData']:
-    data = _spase['Spase']['NumericalData']['Parameter']
-    _spase['Spase']['NumericalData']['Parameter'] = cdawmeta.util.array_to_dict(data, 'ParameterKey')
-  return _spase
-
-def restructure_master(_master, logger=None):
-
-  """
-  Convert dict with arrays of objects to objects with objects. For example
-    { "Epoch": [ 
-        {"VarDescription": [{"DataType": "CDF_TIME_TT2000"}, ...] },
-        {"VarAttributes": [{"CATDESC": "Default time"}, ...] }
-      ],
-      ...
-    }
-  is converted to
-    {
-      "Epoch": {
-        "VarDescription": {
-          "DataType": "CDF_TIME_TT2000",
-          ...
-        },
-        "VarAttributes": {
-          "CATDESC": "Default time",
-          ...
-        }
-      }
-    }
-  """
-
-  def sort_keys(obj):
-    return {key: obj[key] for key in sorted(obj)}
-
-  # TODO: Check that only one key.
-  file = list(_master.keys())[0]
-
-  fileinfo_r = cdawmeta.util.array_to_dict(_master[file]['CDFFileInfo'])
-
-  variables = _master[file]['CDFVariables']
-  variables_r = {}
-
-  for variable in variables:
-
-    variable_keys = list(variable.keys())
-    if len(variable_keys) > 1:
-      msg = "Expected only one variable key in variable object. Exiting witih code 1."
-      logger.error(msg)
-      exit(1)
-
-    variable_name = variable_keys[0]
-    variable_array = variable[variable_name]
-    variable_dict = cdawmeta.util.array_to_dict(variable_array)
-
-    for key, value in variable_dict.items():
-
-      if key == 'VarData':
-        variable_dict[key] = value
-      else:
-        variable_dict[key] = sort_keys(cdawmeta.util.array_to_dict(value))
-
-    variables_r[variable_name] = variable_dict
-
-  # Why do they use lower-case G? Inconsistent with CDFFileInfo and CDFVariables.
-  globals = _master[file]['CDFglobalAttributes'] 
-  globals_r = {}
-
-  for _global in globals:
-    gkey = list(_global.keys())
-    if len(gkey) > 1:
-      if logger is not None:
-        msg = "Expected only one key in _global object."
-        logger.error(msg)
-    gvals = _global[gkey[0]]
-    text = []
-    for gval in gvals:
-      line = gval[list(gval.keys())[0]];
-      text.append(str(line))
-
-    globals_r[gkey[0]] = "\n".join(text)
-
-  _master = {
-              'CDFFileInfo': {'FileName': file, **fileinfo_r},
-              'CDFglobalAttributes': globals_r,
-              'CDFVariables': variables_r
-            }
-
-  return _master
+  return master

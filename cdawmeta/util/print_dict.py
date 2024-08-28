@@ -22,7 +22,7 @@ def print_dict(d, sort_dicts=False, indent=0, use_pprint=False):
       end = '\n'
     print(' ' * indent + str(key), end=end)
     if isinstance(value, dict):
-        print_dict(value, sort_dicts=sort_dicts, indent=indent+1)
+      print_dict(value, sort_dicts=sort_dicts, indent=indent+1)
     else:
       if isinstance(value, str):
         print(f": '{value}'")

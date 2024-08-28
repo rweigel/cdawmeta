@@ -21,8 +21,15 @@ def logger(name):
     'table': {
         'name': 'table',
         'file_log': os.path.join(data_dir, 'table', f'{name}.log'),
-        'file_error': os.path.join(data_dir, f'{name}.errors.log'),
+        'file_error': os.path.join(data_dir, 'table', f'{name}.errors.log'),
         'console_format': '%(name)s %(pathname)s:%(lineno)d %(levelname)s %(message)s',
+        'rm_string': data_dir + '/'
+    },
+    'query': {
+        'name': 'query',
+        'file_log': os.path.join(data_dir, 'query', f'{name}.log'),
+        'file_error': os.path.join(data_dir, 'query', f'{name}.errors.log'),
+        'console_format': '%(message)s',
         'rm_string': data_dir + '/'
     }
   }

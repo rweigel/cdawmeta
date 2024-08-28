@@ -7,6 +7,7 @@ def logger(name=None,
            utc_timestamps=True,
            rm_existing=True,
            rm_string=None,
+           color=None,
            disable_existing_loggers=False,
            startup_message=True):
 
@@ -22,13 +23,15 @@ def logger(name=None,
 
   class CustomFormatter(logging.Formatter):
 
-    def __init__(self, rm_string=None, datefmt=datefmt, *args, **kwargs):
+    def __init__(self, rm_string=None, datefmt=datefmt, name=name, *args, **kwargs):
       super(CustomFormatter, self).__init__(*args, **kwargs)
       self.rm_string = rm_string
       self.datefmt = datefmt
+      self.name = name
+      print("__init__ called for", self.name)
 
     import datetime as dt
-    converter=dt.datetime.fromtimestamp
+    converter = dt.datetime.fromtimestamp
     def formatTime(self, record, datefmt=None):
         ct = self.converter(record.created)
         if datefmt:
@@ -40,13 +43,18 @@ def logger(name=None,
         return s
 
     def format(self, record):
+      res = super(CustomFormatter, self).format(record)
 
-      record.levelname = self.color_levelname(record.levelname)
+      print(f"Format called for {self.name}")
+      if self.name.startswith('console') and color == True:
+        print('  Applying color')
+        record.levelname = self.color_levelname(record.levelname)
+        print('  record.levelname:', record.levelname)
 
       record.pathname = record.pathname.replace(os.getcwd() + "/","")
-      res = super(CustomFormatter, self).format(record)
       if self.rm_string is None:
         return res
+      print('  Removing rm_string')
       return res.replace(self.rm_string, '')
 
     def color_levelname(self, levelname):
@@ -192,8 +200,8 @@ def logger(name=None,
   _logger = logging.getLogger(name)
   for handler in _logger.handlers:
     if handler.name.startswith('console'):
-      handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, rm_string=None))
+      handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, rm_string=None, name=handler.name))
     else:
-      handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, rm_string=rm_string))
+      handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, rm_string=rm_string, name=handler.name))
 
   return logging.getLogger(name)

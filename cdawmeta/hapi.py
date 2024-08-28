@@ -164,10 +164,10 @@ def _hapi(metadatum, no_orig_data=False):
 
   return catalog
 
-def _info_head(master):
+def _info_head(metadatum):
 
-  id = master['id']
-  allxml = master['allxml']
+  id = metadatum['id']
+  allxml = metadatum['allxml']
 
   startDate = allxml['@timerange_start'].replace(' ', 'T') + 'Z';
   stopDate = allxml['@timerange_stop'].replace(' ', 'T') + 'Z';

@@ -7,6 +7,8 @@ def array_to_dict(array, key=None):
   array_to_dict([{key: value1, ...}, {key: value2}, ...]) -> 
                  {value1: {key: value1, ...}, value2: {key: value2, ...}}
   """
+  if not isinstance(array, list):
+    return array
 
   obj = {}
   for array_idx, array_elem in enumerate(array):
