@@ -1,4 +1,4 @@
-def array_to_dict(array, key=None):
+def array_to_dict(array, key=None, ignore_error=False):
   """Convert array of dicts to dict of dicts
   
   array_to_dict([{key1: value1}, {key2: value1}, ...]) -> 
@@ -23,6 +23,10 @@ def array_to_dict(array, key=None):
       if key in array_elem:
         obj[array_elem[key]] = array_elem
       else:
+        if ignore_error == True:
+          ekey = f"{key}MissingAtArrayIndex{array_idx}"
+          obj[ekey] = array_elem
+          continue
         raise ValueError(f"Array element {array_idx} does not have key '{key}'")
 
   return obj

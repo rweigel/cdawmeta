@@ -1,5 +1,7 @@
 # TODO: Give example of using sql files.
 
+import yaml
+
 import cdawmeta
 
 name = 'FORMAT'
@@ -11,26 +13,67 @@ logger = None
 
 def query(name):
   logger = cdawmeta.logger('query')
+
+
   if name == 'sos':
+
+    suppress = {
+                "Spase": [
+                  "AccessInformation",
+                  "Parameter",
+                  "ResourceHeader/PriorID",
+                  "ResourceHeader/InformationURL",
+                  "ResourceHeader/RevisionHistory",
+                  "ResourceHeader/Contact"
+                  ]
+                }
+    #suppress = None
+
     meta = cdawmeta.metadata(**args)
-    formats = []
+
     for id in meta.keys():
-      logger.info(cdawmeta.util.print_dict(meta[id]['allxml']))
+
+      print(f"\n-----{id}-----")
+
+      logger.info(yaml.dump({f"allxml/{id}": meta[id]['allxml']}))
+
 
       if "master" not in meta[id]:
-        logger.error(f"  {id}: Error - No master.")
-        continue
-
-      master = meta[id]["master"]['data']
-      if 'CDFglobalAttributes' in master:
-        logger.info(cdawmeta.util.print_dict(meta[id]['master']['data']['CDFglobalAttributes']))
+        logger.error(f"  Error - No master.")
       else:
-        logger.error(f"  {id}: Error - No CDFglobalAttributes")
+        master = meta[id]["master"]['data']
+        if 'CDFglobalAttributes' in master:
+          print(yaml.dump({"master/CDFglobalAttributes": meta[id]['master']['data']['CDFglobalAttributes']}))
+        else:
+          logger.error(f"  Error - No CDFglobalAttributes")
 
-      if 'CDFVariables' in master:
+
+      if "spase" not in meta[id]:
+        print(f"  Error - No spase node. Was --no_spase used?")
         continue
+      if "error" in meta[id]["spase"]:
+        print(f"spase: {meta[id]['spase']['error']}")
+      else:
+        spase = meta[id]["spase"]['data']
+        if 'Spase' not in spase:
+          print(f"spase: No Spase node in {spase}")
+        if 'NumericalData' not in spase['Spase']:
+          print(f"spase: No Spase/NumericalData.")
+          continue
+        resource_id = cdawmeta.util.get_path(spase, ['Spase', 'NumericalData', 'ResourceID'])
+        numerical_data = cdawmeta.util.get_path(spase, ['Spase', 'NumericalData'])
 
-      logger.info(len(master['CDFVariables'].keys()))
+        suppressed = []
+        if suppress is not None and 'Spase' in suppress:
+          for path in suppress['Spase']:
+            suppressed.append(path)
+            cdawmeta.util.rm_path(numerical_data, path.split('/'))
+
+        print(yaml.dump({resource_id: numerical_data}))
+        if len(suppressed) > 0:
+          suppressed = "\n    ".join(suppressed)
+          print(f"  *Suppressed*:\n    {suppressed}")
+
 
   if name == 'f2c_specifier':
     # Compare given FORMAT/FORM_PTR with computed FORMAT specifier.

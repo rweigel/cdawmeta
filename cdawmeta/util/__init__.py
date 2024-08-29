@@ -25,6 +25,9 @@ print_dict = print_dict.print_dict
 from . import read as read
 read = read.read
 
+from . import rm_path as rm_path
+rm_path = rm_path.rm_path
+
 from . import sort_dict as sort_dict
 sort_dict = sort_dict.sort_dict
 

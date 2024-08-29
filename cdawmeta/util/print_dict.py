@@ -1,7 +1,8 @@
+import yaml
 import pprint
 from .sort_dict import sort_dict
 
-def print_dict(d, sort_dicts=False, indent=0, use_pprint=False):
+def print_dict(d, sort_dicts=False, indent=0, method=None):
 
   if not isinstance(d, dict):
     print(d)
@@ -10,7 +11,10 @@ def print_dict(d, sort_dicts=False, indent=0, use_pprint=False):
   if sort_dicts:
     d = sort_dict(d)
 
-  if use_pprint:
+  if method == 'yaml':
+    yaml.dump(d)
+
+  if method == 'pprint':
     pp = pprint.PrettyPrinter(depth=4, indent=0, compact=True)
     pp.pprint(d)
     return
@@ -35,4 +39,3 @@ def print_dict(d, sort_dicts=False, indent=0, use_pprint=False):
             print(f": [{value[0]}, {value[1]}, ..., {value[len(value)-2]}, {value[len(value)-1]} ({len(value)} elements)")
         else:
           print(f": {value}")
-

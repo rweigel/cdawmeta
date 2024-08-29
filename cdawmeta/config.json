@@ -1,4 +1,35 @@
 {
+  "logger": {
+     "_comment": "Relative are relative to cdawmeta.DATA_DIR",
+     "cdaweb": {
+        "name": "cdaweb",
+        "file_log": "{name}.log",
+        "file_error": "{name}.errors.log",
+        "console_format": "%(name)s %(pathname)s:%(lineno)d %(levelname)s %(message)s",
+        "color": true
+    },
+    "hapi": {
+          "name": "hapi",
+          "file_log": "hapi/{name}.log",
+          "file_error": false,
+          "console_format": "%(name)s %(pathname)s:%(lineno)d %(levelname)s %(message)s",
+          "color": true
+    },
+    "table": {
+        "name": "table",
+        "file_log": "table/{name}.log",
+        "file_error": "table/{name}.errors.log",
+        "console_format": "%(name)s %(pathname)s:%(lineno)d %(levelname)s %(message)s",
+        "color": true
+    },
+    "query": {
+        "name": "query",
+        "file_log": "query/{name}.log",
+        "file_error": "query/{name}.errors.log",
+        "console_format": "%(name)s %(pathname)s:%(lineno)d %(levelname)s %(message)s",
+        "color": true
+    }
+  },
   "_comment": "Options used by metadata.py",
   "cdaweb": {
     "allurl": "https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml",
@@ -289,6 +320,9 @@
       }
   },
   "_comment": "Options used by table.py",
+  "_comment": "paths are used to set the ordering of certain attributes.",
+  "_comment": "Attributes not in the dict under paths will be added to the end of the list of attributes if use_all_attributes is true.",
+  "_comment": "Attributes are renamed according to fixes ('given': 'new')",
   "table": {
     "cdaweb.dataset": {
       "use_all_attributes": true,
@@ -339,42 +373,40 @@
       }
     },
     "cdaweb.variable": {
-      "_comment": "paths are used to set the defaults and ordering of certain attributes.",
-      "_comment": "Attributes not in this list will be added to the end of the list if use_all_attributes is true.",
       "use_all_attributes": true,
       "fix_attributes": true,
-      "fixes": {
-                "Bin_Location": "BIN_LOCATION",
-                "Bin_location": "BIN_LOCATION",
-                "Calib_input": "CALIB_INPUT",
-                "Calib_software": "CALIB_SOFTWARE",
-                "Datatype": "DataType",
-                "desc": "description",
-                "Description": "DESCRIP",
-                "description": "DESCRIP",
-                "Display_Type": "DISPLAY_TYPE",
-                "DISPLAYTYPE": "DISPLAY_TYPE",
-                "fill": "FILLVAL",
-                "Frame": "FRAME",
-                "LABl_PTR_1": "LABL_PTR_1",
-                "long_name": "Long_Name",
-                "MonoTon": "MONOTON",
-                "Resolution": "RESOLUTION",
-                "SC_id": "SC_ID",
-                "ScaleTyp": "SCALETYP",
-                "SCALETYPE": "SCALETYP",
-                "ScaleType": "SCALETYP",
-                "SI_conv": "SI_CONVERSION",
-                "SI_conversion": "SI_CONVERSION",
-                "Sig_digits": "SIG_DIGITS",
-                "station_latitude": "STATION_LATITUDE",
-                "station_longitude": "STATION_LONGITUDE",
-                "Time_Base": "TIME_BASE",
-                "Time_Scale": "TIME_SCALE",
-                "units": "UNITS",
-                "valid_range": "VALID_RANGE"
+        "fixes": {
+                  "Bin_Location": "BIN_LOCATION",
+                  "Bin_location": "BIN_LOCATION",
+                  "Calib_input": "CALIB_INPUT",
+                  "Calib_software": "CALIB_SOFTWARE",
+                  "Datatype": "DataType",
+                  "desc": "description",
+                  "Description": "DESCRIP",
+                  "description": "DESCRIP",
+                  "Display_Type": "DISPLAY_TYPE",
+                  "DISPLAYTYPE": "DISPLAY_TYPE",
+                  "fill": "FILLVAL",
+                  "Frame": "FRAME",
+                  "LABl_PTR_1": "LABL_PTR_1",
+                  "long_name": "Long_Name",
+                  "MonoTon": "MONOTON",
+                  "Resolution": "RESOLUTION",
+                  "SC_id": "SC_ID",
+                  "ScaleTyp": "SCALETYP",
+                  "SCALETYPE": "SCALETYP",
+                  "ScaleType": "SCALETYP",
+                  "SI_conv": "SI_CONVERSION",
+                  "SI_conversion": "SI_CONVERSION",
+                  "Sig_digits": "SIG_DIGITS",
+                  "station_latitude": "STATION_LATITUDE",
+                  "station_longitude": "STATION_LONGITUDE",
+                  "Time_Base": "TIME_BASE",
+                  "Time_Scale": "TIME_SCALE",
+                  "units": "UNITS",
+                  "valid_range": "VALID_RANGE"
       },
-      "_comment": "These are attributes under each path are attributes of each variable.",
+      "_comment": "This table requires special handling because each variable two top-level attributes that are combined.",
       "paths": {
         "master/data/CDFVariables": {
           "VarDescription": {
@@ -421,12 +453,24 @@
         }
       }
     },
+    "spase.dataset": {
+      "use_all_attributes": false,
+      "paths": {
+        "spase/data/Spase/NumericalData": {
+          "ResourceID": null,
+          "InstrumentID": null,
+          "MeasurementType": null,
+          "ObservedRegion": null,
+          "ProviderProcessingLevel": null
+        }
+      }
+    },
     "spase.parameter": {
       "use_all_attributes": true,
       "paths": {
         "spase/data/Spase/NumericalData/Parameter": {
-          "Name": null,
           "ParameterKey": null,
+          "Name": null,
           "Description": null,
           "Units": null
         }

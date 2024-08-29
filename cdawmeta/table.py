@@ -10,14 +10,17 @@ def table(id=None, table_name=None, update=False, max_workers=1):
   if logger is None:
     logger = cdawmeta.logger(f'table')
 
-  table_names = ['cdaweb.dataset', 'cdaweb.variable', 'spase.parameter']
+  table_names = list(cdawmeta.CONFIG['table'].keys())
   if table_name is not None:
-    assert table_name in table_names
+    if table_name not in table_names:
+      raise ValueError(f"table_name='{table_name}' not in {table_names} in config.json")
     table_names = [table_name]
 
   no_spase = True
-  if 'spase.parameter' in table_names:
-    no_spase = False
+  for table_name in table_names:
+    if table_name.startswith('spase'):
+      no_spase = False
+
   datasets = cdawmeta.metadata(id=id, update=update, embed_data=True, no_spase=no_spase, max_workers=max_workers)
 
   info = {}
@@ -26,9 +29,9 @@ def table(id=None, table_name=None, update=False, max_workers=1):
     logger.info(f"Creating {table_name} attribute table")
     header, body = _table(datasets, table_name=table_name)
     logger.info(f"Creating {table_name} attribute table with {len(header)} columns and {len(body)} rows")
-    if len(body) > 0:
-      assert len(header) == len(body[0])
-    else:
+    if len(body) > 0 and len(header) != len(body[0]):
+      raise Exception(f"len(header) == {len(header)} != len(body[0]) = {len(body[0])}")
+    if len(body) == 0:
       raise Exception(f"No rows in {table_name} table for id='{id}'")
 
     files = _files(table_name, id=id)
@@ -118,7 +121,7 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
   n_cols_last = None
   for id, dataset in datasets.items():
 
-    if table_name == 'cdaweb.dataset':
+    if table_name == 'cdaweb.dataset' or table_name == 'spase.dataset':
       if mode == 'rows':
         row = [dataset['id']]
 
@@ -142,7 +145,9 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
         for variable_name, variable in data.items():
 
           if mode == 'rows':
-            row = [dataset['id'], variable_name]
+            row = [dataset['id']]
+            if table_name == 'cdaweb.variable':
+              row = [dataset['id'], variable_name]
 
           if table_name == 'spase.parameter':
             for key in variable.copy():
@@ -182,15 +187,12 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
 
 def _table_header(attributes, table_name):
 
-  if table_name == 'cdaweb.dataset':
-    header = ['datasetID']
+  header = ['datasetID']
   if table_name == 'cdaweb.variable':
     header = ['datasetID', 'VariableName']
-  if table_name == 'spase.parameter':
-    header = ['datasetID', 'ParameterKey']
 
   for path in attributes.keys():
-    if table_name == 'cdaweb.dataset' or table_name == 'spase.parameter':
+    if table_name == 'cdaweb.dataset' or table_name.startswith('spase'):
       for attribute in attributes[path]:
         header.append(attribute)
     else:

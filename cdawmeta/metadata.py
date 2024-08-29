@@ -26,6 +26,8 @@ def ids(id=None, update=True):
       for dsid in list(ids_all):
         if re.search(id, dsid):
           ids_reduced.append(dsid)
+      if len(ids_reduced) == 0:
+        raise ValueError(f"Error: id = {id}: No matches.")
     elif id not in ids_all:
       raise ValueError(f"Error: id = {id}: Not found.")
     else:
@@ -36,7 +38,9 @@ def ids(id=None, update=True):
 
   return ids_reduced
 
-def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False, restructure_allxml=True, restructure_master=True, restructure_spase=True, no_spase=True, no_orig_data=True):
+def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False,
+             restructure_allxml=True, restructure_master=True, restructure_spase=True,
+             no_spase=False, no_orig_data=False):
 
   global logger
   if logger is None:
@@ -117,8 +121,9 @@ def _datasets(allxml, restructure=True, update=False):
       continue
 
     if isinstance(dataset_allxml['mastercdf'], list):
-      msg = f'Warning[all.xml]: Not implemented: {id}: More than one mastercdf referenced in all.xml mastercdf node.'
-      logger.info(msg)
+      if not id.endswith('_MOVIES'):
+        msg = f'Warning[all.xml]: Not implemented: {id}: More than one mastercdf referenced in all.xml mastercdf node.'
+        logger.warning(msg)
       continue
 
     if not '@ID' in dataset_allxml['mastercdf']:
@@ -170,26 +175,26 @@ def _spase(master, restructure=True, timeout=20, update=True, diffs=False):
 
   id = master['id']
   if 'data' not in master:
-    return None
+    return {'error': 'No spase_DatasetResourceID because no master'}
 
   global_attributes = master['data']['CDFglobalAttributes']
   if not 'spase_DatasetResourceID' in global_attributes:
-    msg = f"Error[master]: {master['id']}: No spase_DatasetResourceID attribute"
+    msg = f"Error[master]: {master['id']}: Missing or invalid spase_DatasetResourceID attribute in master"
     logger.error(msg)
-    return None
+    return {'error': msg}
 
   if 'spase_DatasetResourceID' in global_attributes:
     spase_id = global_attributes['spase_DatasetResourceID']
     if spase_id and not spase_id.startswith('spase://'):
       msg = f"Error[master]: {master['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
       logger.error(msg)
-      return None
+      return {'error': msg}
     url = spase_id.replace('spase://', 'https://hpde.io/') + '.json';
 
   spase = _fetch(url, id, 'spase', timeout=timeout, diffs=diffs, update=update)
+
   if restructure == True and 'data' in spase:
     spase['data'] = _restructure_spase(spase['data'], logger=logger)
-
   return spase
 
 def _orig_data(dataset, timeout=120, update=True, diffs=False):
@@ -223,12 +228,15 @@ def _samples(id, _orig_data):
 
 def _restructure_spase(spase, logger=None):
   if 'Spase' not in spase:
-    return None
+    return spase
   if 'NumericalData' not in spase['Spase']:
-    return None
+    return spase
   if 'Parameter' in spase['Spase']['NumericalData']:
+    for pidx, parameter in enumerate(spase['Spase']['NumericalData']['Parameter']):
+      if 'ParameterKey' not in parameter:
+        logger.error(f'Error[SPASE]: No ParameterKey in Parameter array element {pidx}: {parameter}')
     data = spase['Spase']['NumericalData']['Parameter']
-    spase['Spase']['NumericalData']['Parameter'] = cdawmeta.util.array_to_dict(data, 'ParameterKey')
+    spase['Spase']['NumericalData']['Parameter'] = cdawmeta.util.array_to_dict(data, 'ParameterKey', ignore_error=True)
   return spase
 
 def _restructure_master(master, logger=None):
@@ -313,10 +321,6 @@ def _restructure_master(master, logger=None):
             }
 
   return master
-
-def _rel_path(base_dir, path):
-  #return path
-  return path.replace(base_dir + '/', '')
 
 def CachedSession(cache_dir):
   import requests_cache
@@ -404,9 +408,9 @@ def _print_request_log(resp, url, cache):
   msg += f'Got: {url}\n'
   msg += f"  Status code: {resp.status_code}\n"
   msg += f"  From cache: {resp.from_cache}\n"
-  msg += f"  Current cache file: {_rel_path(cdawmeta.DATA_DIR, cache['file'])}\n"
+  msg += f"  Current cache file: {cache['file']}\n"
   if 'file_last' in cache:
-    msg += f"  Last cache file:    {_rel_path(cdawmeta.DATA_DIR, cache['file_last'])}\n"
+    msg += f"  Last cache file:    {cache['file_last']}\n"
   msg += f"  Request Cache-Related Headers:\n"
   for k, v in req_cache_headers.items():
     print(k,v)
@@ -460,10 +464,10 @@ def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
 
   master['id'] = id
   master['request-log'] = _print_request_log(resp, url, cache)
-  master['request-cache'] = _rel_path(cdawmeta.DATA_DIR, cache['file'])
+  master['request-cache'] = cache['file'].replace(cdawmeta.DATA_DIR + "/", '')
   master['url'] = url
   master['data'] = json_dict
-  master['data-cache'] = _rel_path(cdawmeta.DATA_DIR, file_out_json)
+  master['data-cache'] = file_out_json.replace(cdawmeta.DATA_DIR + "/", '')
 
   if resp.from_cache:
     return master

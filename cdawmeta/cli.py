@@ -4,12 +4,13 @@ def cli(script):
     "id": {
       "help": "ID or pattern for dataset IDs to include (prefix with ^ to use pattern match, e.g., '^A|^B') (default: ^.*)"
     },
-    "max_workers": {
+    "max-workers": {
+      "metavar": "N",
       "type": int,
       "help": "Number of threads to use for downloading",
       "default": 3
     },
-    "embed_data": {
+    "embed-data": {
       "action": "store_true",
       "help": "Embed data in returned dict",
       "default": False
@@ -19,12 +20,12 @@ def cli(script):
       "help": "Update existing cached HTTP responses",
       "default": False
     },
-    "no_orig_data": {
+    "no-orig-data": {
       "action": "store_true",
       "help": "Exclude orig_data object in catalog.json (sample_{file,url,plot} is also not created)",
       "default": False
     },
-    "no_spase": {
+    "no-spase": {
       "action": "store_true",
       "help": "Exclude spase in catalog.json",
       "default": False
@@ -34,42 +35,45 @@ def cli(script):
       "help": "Compute response diffs",
       "default": False
     },
-    "data_dir": {
+    "data-dir": {
+      "metavar": "DIR",
       "help": "Directory for data files",
       "default": './data'
     },
-    "table_name": {
+    "table": {
       "help": "Name of table to create (default: all tables)",
       "default": None
     },
     "port": {
+      "metavar": "PORT",
+      "type": int,
       "help": "Serve table as a web page at http://localhost:port. Must specify --table_name",
       "default": None
     }
   }
 
   if script == 'cdaweb.py':
-    del clkws['table_name']
+    del clkws['table']
     del clkws['port']
 
   if script == 'hapi.py':
-    del clkws['table_name']
+    del clkws['table']
     del clkws['port']
-    del clkws['no_spase']
-    del clkws['embed_data']
+    del clkws['no-spase']
+    del clkws['embed-data']
 
   if script == 'table.py':
-    del clkws['embed_data']
-    del clkws['no_orig_data']
-    del clkws['no_spase']
+    del clkws['embed-data']
+    del clkws['no-orig-data']
+    del clkws['no-spase']
     del clkws['diffs']
 
   if script == 'query.py':
-    del clkws['table_name']
+    del clkws['table']
     del clkws['port']
     del clkws['diffs']
-    del clkws['no_spase']
-    del clkws['no_orig_data']
+    del clkws['no-spase']
+    del clkws['no-orig-data']
 
   import argparse
   parser = argparse.ArgumentParser()
@@ -78,9 +82,10 @@ def cli(script):
 
   args = vars(parser.parse_args())
 
-  import cdawmeta
+  # Hyphens are converted to underscores
   if args['data_dir']:
-    cdawmeta.set('DATA_DIR', args['data_dir'])
+    import cdawmeta
+    cdawmeta.DATA_DIR = args['data_dir']
   del args['data_dir']
 
   return args
