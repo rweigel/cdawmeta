@@ -1,4 +1,3 @@
-
 def CATDESC(dsid, name, variable):
 
   msg = None
@@ -8,6 +7,6 @@ def CATDESC(dsid, name, variable):
     if isinstance(catdesc, list):
       catdesc = '\n'.join(catdesc)
   else:
-    msg = f"     Error: ISTP[DISPLAY_TYPE]: Variable '{name}' does not have a CATDESC attribute."
+    msg = f"     Error: ISTP[CATDESC]: Variable '{name}' does not have a CATDESC attribute."
 
   return catdesc, msg

@@ -14,7 +14,7 @@ def read(fname, logger=None):
       f = open(fname, 'rb')
       data = pickle.load(f)
       if logger is not None:
-        logger.info(f"Read and parsed {fname}")
+        logger.info(f"Read {fname}")
       return data
     except Exception as e:
       msg = f"pickle.load({fname}) raised: {e}"

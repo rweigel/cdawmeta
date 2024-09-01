@@ -2,7 +2,7 @@ import cdawmeta
 
 def DISPLAY_TYPE(dsid, name, variable):
 
-  if not 'DISPLAY_TYPE' in variable['VarAttributes']:
+  if 'DISPLAY_TYPE' not in variable['VarAttributes']:
     if variable['VarAttributes'].get('VAR_TYPE') == 'data':
       msg = f"     Error: ISTP[DISPLAY_TYPE]: No attribute for variable '{name}' with VAR_TYPE = data'"
       return None, msg
@@ -12,7 +12,7 @@ def DISPLAY_TYPE(dsid, name, variable):
   display_type = display_type.split(">")[0]
 
   if display_type.strip() == '':
-    msg = f"     Error: ISTP[DISPLAY_TYPE]: DISPLAY_TYPE.strip() = ''"
+    msg = "     Error: ISTP[DISPLAY_TYPE]: DISPLAY_TYPE.strip() = ''"
     return None, msg
 
   display_types_known = [
@@ -37,7 +37,7 @@ def DISPLAY_TYPE(dsid, name, variable):
       break
   if not found:
     display_type = None
-    msg += f"     Error: ISTP[DISPLAY_TYPE]: DISPLAY_TYPE.lower() = "
+    msg += "     Error: ISTP[DISPLAY_TYPE]: DISPLAY_TYPE.lower() = "
     msg += "'{DISPLAY_TYPE}' does not start with one of {display_types_known}"
 
   return display_type, msg

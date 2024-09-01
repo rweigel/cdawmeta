@@ -56,11 +56,11 @@ data/table/cdaweb.dataset.sql:
 data/table/spase.parameter.sql:
 	python table.py --table_name spase.parameter
 
-table-serve: data/table/cdaweb.variable.sql data/table/cdaweb.dataset.sql data/table/spase.parameter.sql
-	$(PYTHON) table/table-ui/ajax/server.py --port 8051 --sqldb data/table/cdaweb.variable.sql &
-	$(PYTHON) table/table-ui/ajax/server.py --port 8052 --sqldb data/table/cdaweb.dataset.sql &
-	$(PYTHON) table/table-ui/ajax/server.py --port 8053 --sqldb data/table/spase.parameter.sql &
-	$(PYTHON) table/table-ui/ajax/server.py --port 8054 --sqldb data/table/spase.dataset.sql
+table-serve: data/table/cdaweb.variable.sql data/table/cdaweb.dataset.sql data/table/spase.parameter.sql data/table/spase.dataset.sql
+	$(PYTHON) table/table-ui/serve.py --port 8051 --sqldb data/table/cdaweb.variable.sql &
+	$(PYTHON) table/table-ui/serve.py --port 8052 --sqldb data/table/cdaweb.dataset.sql &
+	$(PYTHON) table/table-ui/serve.py --port 8053 --sqldb data/table/spase.parameter.sql &
+	$(PYTHON) table/table-ui/serve.py --port 8054 --sqldb data/table/spase.dataset.sql
 ################################################################################
 
 ################################################################################

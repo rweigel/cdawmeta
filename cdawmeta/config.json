@@ -5,28 +5,35 @@
         "name": "cdaweb",
         "file_log": "{name}.log",
         "file_error": "{name}.errors.log",
-        "console_format": "%(name)s %(pathname)s:%(lineno)d %(levelname)s %(message)s",
+        "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
         "color": true
     },
     "hapi": {
           "name": "hapi",
-          "file_log": "hapi/{name}.log",
+          "file_log": "{name}/{name}.log",
           "file_error": false,
-          "console_format": "%(name)s %(pathname)s:%(lineno)d %(levelname)s %(message)s",
+          "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
+          "color": true
+    },
+    "soso": {
+          "name": "soso",
+          "file_log": "{name}/{name}.log",
+          "file_error": false,
+          "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
           "color": true
     },
     "table": {
         "name": "table",
-        "file_log": "table/{name}.log",
-        "file_error": "table/{name}.errors.log",
-        "console_format": "%(name)s %(pathname)s:%(lineno)d %(levelname)s %(message)s",
+        "file_log": "{name}/{name}.log",
+        "file_error": "{name}/{name}.errors.log",
+        "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
         "color": true
     },
     "query": {
         "name": "query",
-        "file_log": "query/{name}.log",
-        "file_error": "query/{name}.errors.log",
-        "console_format": "%(name)s %(pathname)s:%(lineno)d %(levelname)s %(message)s",
+        "file_log": "{name}/{name}.log",
+        "file_error": "{name}/{name}.errors.log",
+        "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
         "color": true
     }
   },
@@ -329,6 +336,7 @@
       "fix_attributes": true,
       "fixes": {
         "HTTP_link": "HTTP_LINK",
+        "HTTP_Link": "HTTP_LINK",
         "Link_text": "LINK_TEXT",
         "Link_title": "LINK_TITLE"
       },
@@ -454,7 +462,15 @@
       }
     },
     "spase.dataset": {
-      "use_all_attributes": false,
+      "use_all_attributes": true,
+      "omit_attributes": [
+        "Parameter",
+        "Contact",
+        "PublicationInfo",
+        "RevisionHistory",
+        "AccessInformation",
+        "PriorID"
+      ],
       "paths": {
         "spase/data/Spase/NumericalData": {
           "ResourceID": null,
@@ -462,6 +478,9 @@
           "MeasurementType": null,
           "ObservedRegion": null,
           "ProviderProcessingLevel": null
+        },
+        "spase/data/Spase/NumericalData/ResourceHeader": {
+          "ResourceName": null
         }
       }
     },

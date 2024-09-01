@@ -6,26 +6,39 @@ import deepdiff
 
 import cdawmeta
 
+# TODO: Find a better way to handle this.
 # Can't call cdawmeta.logger('cdaweb') here because it calls cdawmeta.DATA_DIR
-# which is set to a default. If user modifies using cdawmeta.set('DATA_DIR', ...)
+# which is set to a default. If user modifies using cdawmeta.DATA_DIR = ...,
 # logger does not know about the change.
 logger = None
+def _logger(log_level='info'):
+  global logger
+  if logger is None:
+    logger = cdawmeta.logger('cdaweb')
+    logger.setLevel(log_level.upper())
+  return logger
 
-def ids(id=None, update=True):
+def ids(id=None, skip=None, update=True):
+
+  # Needed to set logger for any called underscore functions.
+  logger = _logger()
+
+  def _remove_skips(ids_reduced):
+    regex = re.compile(skip)
+    return [id for id in ids_reduced if not regex.match(id)]
 
   timeouts = cdawmeta.CONFIG['cdaweb']['timeouts']
-
   allxml = _allxml(timeout=timeouts['allxml'], update=update)
   datasets_all = _datasets(allxml, update=update)
   ids_all = datasets_all.keys()
 
-  if isinstance(id, str):
+  if id is None:
+    return _remove_skips(ids_all)
 
+  if isinstance(id, str):
     if id.startswith('^'):
-      ids_reduced = []
-      for dsid in list(ids_all):
-        if re.search(id, dsid):
-          ids_reduced.append(dsid)
+      regex = re.compile(id)
+      ids_reduced = [id for id in ids_all if regex.match(id)]
       if len(ids_reduced) == 0:
         raise ValueError(f"Error: id = {id}: No matches.")
     elif id not in ids_all:
@@ -33,22 +46,19 @@ def ids(id=None, update=True):
     else:
       ids_reduced = [id]
 
-  if id is None:
-    ids_reduced = list(datasets_all.keys())
+  if skip is None:
+    return ids_reduced
 
-  return ids_reduced
+  return _remove_skips(ids_reduced)
 
-def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False,
+def metadata(id=None, skip=None, embed_data=False, update=True, max_workers=1, diffs=False,
              restructure_allxml=True, restructure_master=True, restructure_spase=True,
-             no_spase=False, no_orig_data=False):
+             spase=False, orig_data=False, log_level='info'):
 
-  global logger
-  if logger is None:
-    logger = cdawmeta.logger('cdaweb')
-
+  logger = _logger(log_level)
   timeouts = cdawmeta.CONFIG['cdaweb']['timeouts']
 
-  dsids = ids(id=id, update=update)
+  dsids = ids(id=id, skip=skip, update=update)
 
   # Create base datasets using info in all.xml
   allxml = _allxml(timeout=timeouts['allxml'], update=update)
@@ -56,13 +66,13 @@ def metadata(id=None, embed_data=False, update=True, max_workers=1, diffs=False,
 
   def get_one(dataset):
     dataset['master'] = _master(dataset, restructure=restructure_master, diffs=diffs, timeout=timeouts['master'], update=update)
-    if no_orig_data == False:
+    if orig_data:
       dataset['orig_data'] = _orig_data(dataset, diffs=diffs, timeout=timeouts['orig_data'], update=update)
       dataset['samples'] = _samples(dataset['id'], dataset['orig_data'])
-    if no_spase == False:
+    if spase:
       dataset['spase'] = _spase(dataset['master'], restructure=restructure_spase, diffs=diffs, timeout=timeouts['spase'], update=update)
 
-    if embed_data == False:
+    if not embed_data:
       del dataset['master']['data']
       if 'orig_data' in dataset and 'data' in dataset['orig_data']:
         del dataset['orig_data']['data']
@@ -92,12 +102,9 @@ def _datasets(allxml, restructure=True, update=False):
   all.xml/data/'sites//datasite/0/dataset
   '''
 
-  try:
-    datasites = allxml['data']['sites']['datasite']
-  except:
-    msg = f"Error[all.xml]: No 'sites/datasite' node in all.xml"
-    logger.error(msg)
-    return None
+  datasites = cdawmeta.util.get_path(allxml, ['data', 'sites', 'datasite'])
+  if datasites is None:
+    raise Exception("Error[all.xml]: No 'sites/datasite' node in all.xml")
 
   datasets_allxml = None
   for datasite in datasites:
@@ -105,9 +112,7 @@ def _datasets(allxml, restructure=True, update=False):
       datasets_allxml = datasite['dataset']
       break
   if datasets_allxml is None:
-    msg = f"Error[all.xml]: No datasite with ID=CDAWeb_HTTPS"
-    logger.error(msg)
-    return None
+    raise Exception("Error[all.xml]: No 'sites/datasite' with ID=CDAWeb_HTTPS")
 
   datasets_ = {}
   for dataset_allxml in datasets_allxml:
@@ -115,7 +120,7 @@ def _datasets(allxml, restructure=True, update=False):
     id = dataset_allxml['@serviceprovider_ID']
     dataset = {'id': id, 'allxml': dataset_allxml}
 
-    if not 'mastercdf' in dataset_allxml:
+    if 'mastercdf' not in dataset_allxml:
       msg = f'Error[all.xml]: {id}: No mastercdf node in all.xml'
       logger.error(msg)
       continue
@@ -126,12 +131,12 @@ def _datasets(allxml, restructure=True, update=False):
         logger.warning(msg)
       continue
 
-    if not '@ID' in dataset_allxml['mastercdf']:
+    if '@ID' not in dataset_allxml['mastercdf']:
       msg = f'Error[all.xml]: {id}: No ID attribute in all.xml mastercdf node'
       logger.error(msg)
       continue
 
-    if restructure == True:
+    if restructure:
       if 'mission_group' in dataset['allxml']:
         mission_groups = cdawmeta.util.array_to_dict(dataset['allxml']['mission_group'],'@ID')
         dataset['allxml']['mission_group'] = mission_groups
@@ -156,8 +161,15 @@ def _datasets(allxml, restructure=True, update=False):
   return datasets_
 
 def _allxml(timeout=20, update=False, diffs=False):
+
+  if hasattr(_allxml, 'allxml'):
+    # Use curried result (So update only updates all.xml once per execution of main program)
+    return _allxml.allxml
+
   allurl = cdawmeta.CONFIG['cdaweb']['allurl']
   allxml = _fetch(allurl, 'all', 'all', timeout=timeout, update=update)
+  # Curry result
+  _allxml. allxml = allxml
 
   return allxml
 
@@ -167,7 +179,7 @@ def _master(dataset, restructure=True, timeout=20, update=False, diffs=False):
   url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
 
   master = _fetch(url, dataset['id'], 'master', timeout=timeout, update=update, diffs=diffs)
-  if restructure == True and 'data' in master:
+  if restructure and 'data' in master:
     master['data'] = _restructure_master(master['data'], logger=logger)
   return master
 
@@ -178,7 +190,7 @@ def _spase(master, restructure=True, timeout=20, update=True, diffs=False):
     return {'error': 'No spase_DatasetResourceID because no master'}
 
   global_attributes = master['data']['CDFglobalAttributes']
-  if not 'spase_DatasetResourceID' in global_attributes:
+  if 'spase_DatasetResourceID' not in global_attributes:
     msg = f"Error[master]: {master['id']}: Missing or invalid spase_DatasetResourceID attribute in master"
     logger.error(msg)
     return {'error': msg}
@@ -189,19 +201,19 @@ def _spase(master, restructure=True, timeout=20, update=True, diffs=False):
       msg = f"Error[master]: {master['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
       logger.error(msg)
       return {'error': msg}
-    url = spase_id.replace('spase://', 'https://hpde.io/') + '.json';
+    url = spase_id.replace('spase://', 'https://hpde.io/') + '.json'
 
   spase = _fetch(url, id, 'spase', timeout=timeout, diffs=diffs, update=update)
 
-  if restructure == True and 'data' in spase:
+  if restructure and 'data' in spase:
     spase['data'] = _restructure_spase(spase['data'], logger=logger)
   return spase
 
 def _orig_data(dataset, timeout=120, update=True, diffs=False):
 
   wsbase = cdawmeta.CONFIG['cdaweb']['wsbase']
-  start = dataset['allxml']['@timerange_start'].replace(" ", "T").replace("-","").replace(":","") + "Z";
-  stop = dataset['allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z";
+  start = dataset['allxml']['@timerange_start'].replace(" ", "T").replace("-","").replace(":","") + "Z"
+  stop = dataset['allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z"
   url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop
 
   #headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
@@ -309,7 +321,7 @@ def _restructure_master(master, logger=None):
     gvals = _global[gkey[0]]
     text = []
     for gval in gvals:
-      line = gval[list(gval.keys())[0]];
+      line = gval[list(gval.keys())[0]]
       text.append(str(line))
 
     globals_r[gkey[0]] = "\n".join(text)
@@ -375,7 +387,7 @@ def _cache_info(cache_dir, cache_key, diffs=False):
 
   _return = {"file": cache_file}
 
-  if diffs == True:
+  if diffs:
     if os.path.exists(cache_file):
       try:
         now = cdawmeta.util.read(cache_file, logger=logger)
@@ -411,18 +423,18 @@ def _print_request_log(resp, url, cache):
   msg += f"  Current cache file: {cache['file']}\n"
   if 'file_last' in cache:
     msg += f"  Last cache file:    {cache['file_last']}\n"
-  msg += f"  Request Cache-Related Headers:\n"
+  msg += "  Request Cache-Related Headers:\n"
   for k, v in req_cache_headers.items():
     print(k,v)
     msg += f"    {k}: {v}\n"
-  msg += f"  Response Cache-Related Headers:\n"
+  msg += "  Response Cache-Related Headers:\n"
   for k, v in res_cache_headers.items():
     msg += f"    {k}: {v}\n"
   if 'diff' in cache:
     if len(cache['diff']) == 0:
-      msg += f"  Cache diff: None\n"
+      msg += "  Cache diff: None\n"
     else:
-      msg += f"  Cache diff:\n    "
+      msg += "  Cache diff:\n    "
       json_indented = "\n    ".join(cache['diff'].to_json(indent=2).split('\n'))
       msg += f"{json_indented}\n"
   if logger is not None:
@@ -435,7 +447,7 @@ def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
   file_out_json = os.path.join(cdawmeta.DATA_DIR, what, f"{id}.json")
   file_out_pkl = os.path.join(cdawmeta.DATA_DIR, what, f"{id}.pkl")
 
-  if update == False and os.path.exists(file_out_pkl):
+  if not update and os.path.exists(file_out_pkl):
     return cdawmeta.util.read(file_out_pkl, logger=logger)
 
   session = CachedSession(cache_dir)
@@ -449,7 +461,7 @@ def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
     resp.raise_for_status()
     if resp.headers['Content-Type'] == 'text/xml':
       text = resp.text
-      json_dict = xmltodict.parse(text);
+      json_dict = xmltodict.parse(text)
     else:
       json_dict = resp.json()
 

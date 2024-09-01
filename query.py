@@ -39,17 +39,17 @@ def query(name):
 
 
       if "master" not in meta[id]:
-        logger.error(f"  Error - No master.")
+        logger.error("  Error - No master.")
       else:
         master = meta[id]["master"]['data']
         if 'CDFglobalAttributes' in master:
           print(yaml.dump({"master/CDFglobalAttributes": meta[id]['master']['data']['CDFglobalAttributes']}))
         else:
-          logger.error(f"  Error - No CDFglobalAttributes")
+          logger.error("  Error - No CDFglobalAttributes")
 
 
       if "spase" not in meta[id]:
-        print(f"  Error - No spase node. Was --no_spase used?")
+        print("  Error - No spase node. Was --no_spase used?")
         continue
       if "error" in meta[id]["spase"]:
         print(f"spase: {meta[id]['spase']['error']}")
@@ -58,7 +58,7 @@ def query(name):
         if 'Spase' not in spase:
           print(f"spase: No Spase node in {spase}")
         if 'NumericalData' not in spase['Spase']:
-          print(f"spase: No Spase/NumericalData.")
+          print("spase: No Spase/NumericalData.")
           continue
         resource_id = cdawmeta.util.get_path(spase, ['Spase', 'NumericalData', 'ResourceID'])
         numerical_data = cdawmeta.util.get_path(spase, ['Spase', 'NumericalData'])
@@ -93,12 +93,16 @@ def query(name):
           continue
 
         FORMAT_given, emsg = cdawmeta.attrib.FORMAT(id, variable_name, variables, c_specifier=False)
-        if FORMAT_given is None: continue
-        if emsg is not None: print(f"{id}\n{emsg}")
+        if FORMAT_given is None:
+          continue
+        if emsg is not None:
+          print(f"{id}\n{emsg}")
 
         FORMAT_computed, emsg = cdawmeta.attrib.FORMAT(id, variable_name, variables)
-        if FORMAT_given is None: continue
-        if emsg is not None: print(f"{id}\n{emsg}")
+        if FORMAT_given is None:
+          continue
+        if emsg is not None:
+          print(f"{id}\n{emsg}")
 
         if 'DataType' in variable['VarDescription']:
           DataType = variable['VarDescription']['DataType']

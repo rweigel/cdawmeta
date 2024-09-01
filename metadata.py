@@ -1,4 +1,4 @@
-# Usage: python cdaweb.py --help
+# Usage: python metadata.py --help
 
 import cdawmeta
 

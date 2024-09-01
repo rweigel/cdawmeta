@@ -1,13 +1,23 @@
 import os
+import logging
+
 import cdawmeta
 log_dir = os.path.dirname(__file__)
 
 config0 = {
   'name': 'logger0',
+  'color': True,
+  'debug_logger': True
 }
 
-_logger0 = cdawmeta.util.logger(**config0)
-_logger0.info('Logger0 info message')
+logger0 = cdawmeta.util.logger(**config0)
+logger0.setLevel(logging.DEBUG)
+#logger0.info('Logger0 info message')
+logger0.debug('Logger0 debug message')
+exit()
+
+logger0 = cdawmeta.util.logger(**config0)
+logger0.info('Logger0 info message')
 
 print('')
 
@@ -23,9 +33,9 @@ config1 = {
   'debug_logger': False
 }
 
-_logger2 = cdawmeta.util.logger(**config1)
-_logger2.info('Logger2 info message')
-_logger2.error('Logger2 error message')
+logger2 = cdawmeta.util.logger(**config1)
+logger2.info('Logger2 info message')
+logger2.error('Logger2 error message')
 
 
 

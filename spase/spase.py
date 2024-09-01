@@ -110,6 +110,17 @@ def get_path(obj, path):
     obj = obj[key]
   return obj
 
+def array_to_dict(array, dsid):
+  obj = {}
+  for element in array:
+    if 'ParameterKey' in element:
+      try:
+        obj[element['ParameterKey']] = element
+      except:
+        print(f"  {array}")
+    else:
+      logger.error(f"  {dsid} Error - No ParameterKey for parameter with Name = {element.get('Name', None)}")
+  return obj
 
 if False:
   master_units = []

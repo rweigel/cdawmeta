@@ -6,10 +6,9 @@ def logger(name=None,
            datefmt="%Y-%m-%dT%H:%M:%S.%f",
            utc_timestamps=True,
            rm_existing=True,
-           rm_string=None,
+           rm_string='',
            color=None,
            disable_existing_loggers=False,
-           startup_message=True,
            debug_logger=False):
 
   import os
@@ -27,17 +26,15 @@ def logger(name=None,
     import datetime as dt
     converter = dt.datetime.fromtimestamp
 
-    def __init__(self, rm_string=None, datefmt=datefmt, color=color, name=name, *args, **kwargs):
+    def __init__(self, datefmt=datefmt, color=color, name=name, *args, **kwargs):
       super(CustomFormatter, self).__init__(*args, **kwargs)
       self.color = color
       self.datefmt = datefmt
       self.name = name
-      self.rm_string = rm_string
       if debug_logger:
         print("__init__ called for", self.name)
         print("  self.name", self.name)
         print("  self.color", self.color)
-        print("  self.rm_string", self.rm_string)
         print("  self.datefmt", self)
 
     def formatTime(self, record, datefmt=None):
@@ -55,20 +52,22 @@ def logger(name=None,
       if debug_logger:
         print(f"Format called for {self.name}")
 
-      if self.color == True:
-        if debug_logger: print(f'  Applying color to record.levelname = "{record.levelname}"')
+      record.pathname = record.pathname.replace(rm_string, "")
+
+      levelname_original = record.levelname
+      if self.color:
+        if debug_logger:
+          print(f'  Applying color to record.levelname = "{record.levelname}"')
         record.levelname = self.color_levelname(record.levelname)
-        if debug_logger: print('  record.levelname:', record.levelname)
+        if debug_logger:
+          print('  record.levelname:', record.levelname)
+      else:
+        if debug_logger:
+          print(f'  Not applying color to record.levelname = "{record.levelname}"')
 
-      record.pathname = record.pathname.replace(os.getcwd() + "/","")
-      resulto = super(CustomFormatter, self).format(record)
-      if self.rm_string is None:
-        return resulto
-
-      result = resulto.replace(self.rm_string, '')
-      if debug_logger: print(f'  Removing rm_string = {self.rm_string}.\n    Before: "{resulto}"\n    After:  "{result}"')
-
-      return result
+      ret = logging.Formatter.format(self, record)
+      record.levelname = levelname_original
+      return ret
 
     def color_levelname(self, levelname):
       if levelname.startswith('\033'):
@@ -194,27 +193,23 @@ def logger(name=None,
 
   if name is not None:
     msgx = f"for {name} "
-  if startup_message:
+  if debug_logger:
     print(f"---\nLogger with name='{name}' configuration:")
-    print(f'Logging output {msgx}to: {file_log}')
+    print(f'  Logging output {msgx}to: {file_log}')
+
   if file_error:
-    if startup_message:
-      print(f'Logging errors {msgx}to: {file_error}')
+    if debug_logger:
+      print(f'  Logging errors {msgx}to: {file_error}')
   else:
     del config['handlers']['file_stderr']
-  if rm_string is not None:
-    if startup_message:
-      print(f'Removing string: {rm_string} from log messages in files')
-  if startup_message:
-    print(f'Remove logger configuration message by setting startup_message=False\n---')
 
   logging.config.dictConfig(config)
 
   _logger = logging.getLogger(name)
   for handler in _logger.handlers:
     if handler.name.startswith('console'):
-      handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, rm_string=None, color=color, name=handler.name))
+      handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, color=color, name=handler.name))
     else:
-      handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, rm_string=rm_string, color=False, name=handler.name))
+      handler.setFormatter(CustomFormatter(fmt=handler.formatter._fmt, color=False, name=handler.name))
 
   return logging.getLogger(name)

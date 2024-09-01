@@ -11,8 +11,5 @@ def DELTA(dsid, name, variable):
     if attrib in variable['VarAttributes']:
       attrib_val = variable['VarAttributes'][attrib]
       deltas[attrib] = attrib_val
-      if print_info:
-        msg =f"    Error: NotImplemented[DELTA]: {attrib} = '{attrib_val}' not used"
-        logger.error(msg)
-        _set_error(dsid, name, msg)
-  return deltas
+      msg =f"    Error: NotImplemented[DELTA]: {attrib} = '{attrib_val}' not used"
+  return deltas, msg

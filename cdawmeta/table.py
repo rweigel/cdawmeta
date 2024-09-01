@@ -1,14 +1,14 @@
 import os
-import json
 
 import cdawmeta
 logger = None
 
-def table(id=None, table_name=None, update=False, max_workers=1):
+def table(id=None, skip=None, table_name=None, update=False, max_workers=1, log_level='info'):
 
   global logger
   if logger is None:
-    logger = cdawmeta.logger(f'table')
+    logger = cdawmeta.logger('table')
+    logger.setLevel(log_level.upper())
 
   table_names = list(cdawmeta.CONFIG['table'].keys())
   if table_name is not None:
@@ -16,26 +16,25 @@ def table(id=None, table_name=None, update=False, max_workers=1):
       raise ValueError(f"table_name='{table_name}' not in {table_names} in config.json")
     table_names = [table_name]
 
-  no_spase = True
+  spase = False
   for table_name in table_names:
     if table_name.startswith('spase'):
-      no_spase = False
+      spase = True
 
-  datasets = cdawmeta.metadata(id=id, update=update, embed_data=True, no_spase=no_spase, max_workers=max_workers)
+  datasets = cdawmeta.metadata(id=id, skip=skip, update=update, embed_data=True, spase=spase, max_workers=max_workers)
 
   info = {}
   for table_name in table_names:
 
-    logger.info(f"Creating {table_name} attribute table")
+    logger.info(f"Creating table '{table_name}'")
     header, body = _table(datasets, table_name=table_name)
-    logger.info(f"Creating {table_name} attribute table with {len(header)} columns and {len(body)} rows")
     if len(body) > 0 and len(header) != len(body[0]):
       raise Exception(f"len(header) == {len(header)} != len(body[0]) = {len(body[0])}")
     if len(body) == 0:
       raise Exception(f"No rows in {table_name} table for id='{id}'")
 
     files = _files(table_name, id=id)
-
+    logger.info(f"Writing {table_name} table to as JSON files")
     cdawmeta.util.write(files['header'], header, logger=logger)
     cdawmeta.util.write(files['body'], body, logger=logger)
 
@@ -99,6 +98,8 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
   """
   assert mode in ['attributes', 'rows']
 
+  omit_attributes = cdawmeta.CONFIG['table'][table_name].get('omit_attributes', None)
+
   fixes = None
   if 'fix_attributes' in cdawmeta.CONFIG['table'][table_name]:
     if cdawmeta.CONFIG['table'][table_name]['fix_attributes']:
@@ -127,21 +128,31 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
 
       for path in attributes.keys():
         data = cdawmeta.util.get_path(dataset, path.split('/'))
+
+        if omit_attributes is not None:
+          for key in list(data.keys()):
+            for omit in omit_attributes:
+              cdawmeta.util.rm_path(data, omit.split('/'))
+
         if data is None:
           logger.info(f"No data found for {id}/{path}")
           continue
+
         if mode == 'attributes':
           _add_attributes(data, attributes[path], attribute_names, fixes, id + "/" + path)
         else:
           _append_columns(data, attributes[path], row, fixes)
-          table.append(row)
+
+      if mode == 'rows':
+        table.append(row)
 
     if table_name == 'cdaweb.variable' or table_name == 'spase.parameter':
 
       for path in attributes.keys():
 
         data = cdawmeta.util.get_path(dataset, path.split('/'))
-        if data is None: continue
+        if data is None:
+          continue
         for variable_name, variable in data.items():
 
           if mode == 'rows':
@@ -183,6 +194,7 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
   if mode == 'attributes':
     return attribute_names
   else:
+    print(table)
     return table
 
 def _table_header(attributes, table_name):
@@ -282,24 +294,24 @@ def _write_sqldb(header, body, file="table1.db", name="table1"):
 
   logger.info(f"Creating index using cursor.execute('{create}')")
   cursor.execute(create)
-  logger.info(f"Done")
+  logger.info("Done")
 
   logger.info(f"Inserting rows using cursor.executemany('{execute}', body)")
   cursor.executemany(execute, body)
-  logger.info(f"Done")
+  logger.info("Done")
 
-  logger.info(f"Executing: commit()")
+  logger.info("Executing: commit()")
   conn.commit()
-  logger.info(f"Done")
+  logger.info("Done")
 
   if header is not None:
     index = f"CREATE INDEX idx0 ON `{name}` ({header[0]})"
     logger.info(f"Creating index using cursor.execute('{index}')")
     cursor.execute(index)
 
-    logger.info(f"Executing: commit()")
+    logger.info("Executing: commit()")
     conn.commit()
-    logger.info(f"Done")
+    logger.info("Done")
 
   conn.close()
 
@@ -315,7 +327,7 @@ def _sql_prep(header, body):
       if len(indices) > 1:
         dups = [header[i] for i in indices]
         logger.error(f"Warning: Duplicate column names when cast to lower case: {str(dups)}.")
-        logger.error(f"         Renaming duplicates by appending _$DUPLICATE_NUMBER$ to the column name.")
+        logger.error("         Renaming duplicates by appending _$DUPLICATE_NUMBER$ to the column name.")
         for r, idx in enumerate(indices):
           if r > 0:
             newname = header[idx] + "_$" + str(r) + "$"

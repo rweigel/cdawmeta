@@ -28,7 +28,7 @@ def FORMAT(dsid, name, all_variables, c_specifier=True):
 
   if 'FORM_PTR' in variable['VarAttributes']:
     form_ptr = variable['VarAttributes']['FORM_PTR']
-    if not form_ptr in all_variables:
+    if form_ptr not in all_variables:
       msg = f"     Error: ISTP[FORM_PTR]: Variable '{name}' has FORM_PTR = '{form_ptr}' but no such variable exists."
     else:
       variable_ptr = all_variables[form_ptr]
