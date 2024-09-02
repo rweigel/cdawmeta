@@ -2,7 +2,7 @@ import yaml
 import pprint
 from .sort_dict import sort_dict
 
-def print_dict(d, sort_dicts=False, indent=0, method=None):
+def print_dict(d, sort_dicts=False, indent=0, style=None):
 
   if not isinstance(d, dict):
     print(d)
@@ -11,10 +11,16 @@ def print_dict(d, sort_dicts=False, indent=0, method=None):
   if sort_dicts:
     d = sort_dict(d)
 
-  if method == 'yaml':
-    yaml.dump(d)
+  if style == 'json':
+    import json
+    print(json.dumps(d, indent=2))
+    return
 
-  if method == 'pprint':
+  if style == 'yaml':
+    yaml.dump(d)
+    return
+
+  if style == 'pprint':
     pp = pprint.PrettyPrinter(depth=4, indent=0, compact=True)
     pp.pprint(d)
     return

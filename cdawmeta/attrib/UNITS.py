@@ -1,5 +1,5 @@
 import cdawmeta
-from cdawmeta.hapi import cdf2hapitype
+from cdawmeta.generate.hapi import cdf2hapitype
 
 def UNITS(dsid, name, all_variables, x=None):
 
@@ -13,6 +13,9 @@ def UNITS(dsid, name, all_variables, x=None):
   units = None
   if "UNITS" in variable['VarAttributes']:
     units = variable['VarAttributes']["UNITS"]
+    if not units.isprintable():
+      msg = f"     Error: ISTP[UNITS]: {msgx}variable '{name}' has UNITS with non-printable characters. Setting UNITS=''"
+      units = ''
   else:
     if "UNIT_PTR" in variable['VarAttributes']:
       ptr_name = variable['VarAttributes']['UNIT_PTR']

@@ -20,6 +20,7 @@ def get_file(url, logger=None, url2file=None, use_cache=True, cache_dir=None):
   if use_cache and os.path.exists(file_name):
     if logger is not None:
       logger.info(f"Using cached file: {file_name}")
+    return file_name
 
   cdawmeta.util.mkdir(os.path.dirname(file_name), logger=logger)
 

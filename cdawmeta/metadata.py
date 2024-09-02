@@ -14,7 +14,7 @@ logger = None
 def _logger(log_level='info'):
   global logger
   if logger is None:
-    logger = cdawmeta.logger('cdaweb')
+    logger = cdawmeta.logger('metadata')
     logger.setLevel(log_level.upper())
   return logger
 
@@ -27,9 +27,8 @@ def ids(id=None, skip=None, update=True):
     regex = re.compile(skip)
     return [id for id in ids_reduced if not regex.match(id)]
 
-  timeouts = cdawmeta.CONFIG['cdaweb']['timeouts']
-  allxml = _allxml(timeout=timeouts['allxml'], update=update)
-  datasets_all = _datasets(allxml, update=update)
+  allxml = _allxml(update=update)
+  datasets_all = _datasets(allxml)
   ids_all = datasets_all.keys()
 
   if id is None:
@@ -51,33 +50,30 @@ def ids(id=None, skip=None, update=True):
 
   return _remove_skips(ids_reduced)
 
-def metadata(id=None, skip=None, embed_data=False, update=True, max_workers=1, diffs=False,
-             restructure_allxml=True, restructure_master=True, restructure_spase=True,
-             spase=False, orig_data=False, log_level='info'):
+def metadata(id=None, skip=None, embed_data=False, update=True, regen=False, max_workers=1, diffs=False, log_level='info'):
 
   logger = _logger(log_level)
-  timeouts = cdawmeta.CONFIG['cdaweb']['timeouts']
+
+  if diffs and not update:
+    logger.warning("diffs=True but update=False. No diffs can be computed.")
 
   dsids = ids(id=id, skip=skip, update=update)
 
   # Create base datasets using info in all.xml
-  allxml = _allxml(timeout=timeouts['allxml'], update=update)
-  datasets_all = _datasets(allxml, restructure=restructure_allxml, update=False)
+  allxml = _allxml(update=update)
+  datasets_all = _datasets(allxml)
 
   def get_one(dataset):
-    dataset['master'] = _master(dataset, restructure=restructure_master, diffs=diffs, timeout=timeouts['master'], update=update)
-    if orig_data:
-      dataset['orig_data'] = _orig_data(dataset, diffs=diffs, timeout=timeouts['orig_data'], update=update)
-      dataset['samples'] = _samples(dataset['id'], dataset['orig_data'])
-    if spase:
-      dataset['spase'] = _spase(dataset['master'], restructure=restructure_spase, diffs=diffs, timeout=timeouts['spase'], update=update)
+    dataset['master'] = _master(dataset, diffs=diffs, update=update)
+    dataset['orig_data'] = _orig_data(dataset, diffs=diffs, update=update)
+    dataset['spase'] = _spase(dataset['master'], diffs=diffs, update=update)
+    dataset['hapi'] = cdawmeta.generate.hapi(dataset, regen=regen, update=update)
+    dataset['soso'] = cdawmeta.generate.soso(dataset, regen=regen, update=update)
 
     if not embed_data:
-      del dataset['master']['data']
-      if 'orig_data' in dataset and 'data' in dataset['orig_data']:
-        del dataset['orig_data']['data']
-      if 'spase' in dataset and dataset['spase'] is not None and 'data' in dataset['spase']:
-        del dataset['spase']['data']
+      for key in ['master', 'orig_data', 'spase', 'hapi', 'soso']:
+        if 'data' in dataset[key]:
+          del dataset[key]['data']
 
   if max_workers == 1 or len(dsids) == 1:
     for id in dsids:
@@ -95,12 +91,14 @@ def metadata(id=None, skip=None, embed_data=False, update=True, max_workers=1, d
 
   return {key: datasets_all[key] for key in dsids}
 
-def _datasets(allxml, restructure=True, update=False):
+def _datasets(allxml):
   '''
   Returns dict of datasets. Keys are dataset IDs and values are dicts 
   with keys 'id' and 'allxml'. The value of 'allxml' is
   all.xml/data/'sites//datasite/0/dataset
   '''
+
+  restructure = True
 
   datasites = cdawmeta.util.get_path(allxml, ['data', 'sites', 'datasite'])
   if datasites is None:
@@ -137,30 +135,15 @@ def _datasets(allxml, restructure=True, update=False):
       continue
 
     if restructure:
-      if 'mission_group' in dataset['allxml']:
-        mission_groups = cdawmeta.util.array_to_dict(dataset['allxml']['mission_group'],'@ID')
-        dataset['allxml']['mission_group'] = mission_groups
-      if 'instrument_type' in dataset['allxml']:
-        instrument_type = cdawmeta.util.array_to_dict(dataset['allxml']['instrument_type'],'@ID')
-        dataset['allxml']['instrument_type'] = instrument_type
-      if 'links' in dataset['allxml']:
-        links = cdawmeta.util.array_to_dict(dataset['allxml']['link'],'@URL')
-        dataset['allxml']['links'] = links
-      for key, val in dataset['allxml'].items():
-        #if val is not None and '@ID' in val:
-          # e.g., dataset['allxml']['observatory] = {'@ID': 'ACE', ...} ->
-          #       dataset['allxml']['observatory']['ACE'] = {'@ID': 'ACE', ...}
-          #dataset['allxml'][key] = {val['@ID']: val}
-        # TODO: Read all.xsd file and check if any others are lists that converted to dicts.
-        if isinstance(val, list):
-          logger.warning(f"Warning[all.xml]: {id}: {key} is a list and was not restructured.")
-          exit()
+      dataset['allxml'] = _restructure_allxml(dataset['allxml'], logger=logger)
 
     datasets_[id] = dataset
 
   return datasets_
 
-def _allxml(timeout=20, update=False, diffs=False):
+def _allxml(update=False, diffs=False):
+
+  timeout = cdawmeta.CONFIG['cdaweb']['timeouts']['allxml']
 
   if hasattr(_allxml, 'allxml'):
     # Use curried result (So update only updates all.xml once per execution of main program)
@@ -173,7 +156,10 @@ def _allxml(timeout=20, update=False, diffs=False):
 
   return allxml
 
-def _master(dataset, restructure=True, timeout=20, update=False, diffs=False):
+def _master(dataset, update=False, diffs=False):
+
+  restructure=True
+  timeout = cdawmeta.CONFIG['cdaweb']['timeouts']['master']
 
   mastercdf = dataset['allxml']['mastercdf']['@ID']
   url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
@@ -183,7 +169,10 @@ def _master(dataset, restructure=True, timeout=20, update=False, diffs=False):
     master['data'] = _restructure_master(master['data'], logger=logger)
   return master
 
-def _spase(master, restructure=True, timeout=20, update=True, diffs=False):
+def _spase(master, update=True, diffs=False):
+
+  restructure=True
+  timeout = cdawmeta.CONFIG['cdaweb']['timeouts']['spase']
 
   id = master['id']
   if 'data' not in master:
@@ -209,34 +198,38 @@ def _spase(master, restructure=True, timeout=20, update=True, diffs=False):
     spase['data'] = _restructure_spase(spase['data'], logger=logger)
   return spase
 
-def _orig_data(dataset, timeout=120, update=True, diffs=False):
+def _orig_data(dataset, update=True, diffs=False):
+
+  timeout = cdawmeta.CONFIG['cdaweb']['timeouts']['orig_data']
 
   wsbase = cdawmeta.CONFIG['cdaweb']['wsbase']
   start = dataset['allxml']['@timerange_start'].replace(" ", "T").replace("-","").replace(":","") + "Z"
   stop = dataset['allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z"
   url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop
 
-  #headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
   headers = {'Accept': 'application/json'}
   return _fetch(url, dataset['id'], 'orig_data', headers=headers, timeout=timeout, update=update, diffs=diffs)
 
-def _samples(id, _orig_data):
+def _restructure_allxml(allxml, logger=None):
+  if 'mission_group' in allxml:
+    mission_groups = cdawmeta.util.array_to_dict(allxml['mission_group'],'@ID')
+    allxml['mission_group'] = mission_groups
+  if 'instrument_type' in allxml:
+    instrument_type = cdawmeta.util.array_to_dict(allxml['instrument_type'],'@ID')
+    allxml['instrument_type'] = instrument_type
+  if 'links' in allxml:
+    links = cdawmeta.util.array_to_dict(allxml['link'],'@URL')
+    allxml['links'] = links
+  for key, val in allxml.items():
+    #if val is not None and '@ID' in val:
+      # e.g., allxml['observatory] = {'@ID': 'ACE', ...} ->
+      #       allxml['observatory']['ACE'] = {'@ID': 'ACE', ...}
+      #allxml[key] = {val['@ID']: val}
+    # TODO: Read all.xsd file and check if any others are lists that converted to dicts.
+    if isinstance(val, list):
+      logger.warning(f"Warning[all.xml]: {id}: {key} is a list and was not restructured.")
 
-  def reformat_dt(dt):
-    dt = dt.replace(" ", "T").replace("-","").replace(":","")
-    return dt.split(".")[0] + "Z"
-
-  wsbase = cdawmeta.CONFIG['cdaweb']['wsbase']
-
-  last_file = _orig_data['data']['FileDescription'][-1]
-  start = reformat_dt(last_file['StartTime'])
-  stop = reformat_dt(last_file['EndTime'])
-  _samples = {
-    'file': last_file['Name'],
-    'url': f"{wsbase}{id}/data/{start},{stop}/ALL-VARIABLES?format=cdf",
-    'plot': f"{wsbase}{id}/data/{start},{stop}/ALL-VARIABLES?format=png"
-  }
-  return _samples
+  return allxml
 
 def _restructure_spase(spase, logger=None):
   if 'Spase' not in spase:
@@ -373,56 +366,27 @@ def CachedSession(cache_dir):
     "decode_content": False
   }
 
+  # CachedSession does not handle relative paths properly.
+  if not os.path.isabs(cache_dir):
+    cache_dir = os.path.abspath(cache_dir)
+
   session = requests_cache.CachedSession(cache_dir, **copts)
   session.mount('https://', HTTPAdapter(max_retries=5))
 
   return session
 
-def _cache_info(cache_dir, cache_key, diffs=False):
-
-  cache_file = os.path.join(cache_dir, cache_key + ".json")
-  cache_subdir = os.path.join(cache_dir, cache_key)
-  cache_file_copy = os.path.join(cache_subdir, cache_key + ".json")
-  os.makedirs(cache_subdir, exist_ok=True)
-
-  _return = {"file": cache_file}
-
-  if diffs:
-    if os.path.exists(cache_file):
-      try:
-        now = cdawmeta.util.read(cache_file, logger=logger)
-      except Exception as e:
-        logger.error(f"Error reading {cache_file}: {e}")
-        return {"file": None, "file_last": cache_file_copy, "diff": None}
-
-    if os.path.exists(cache_file):
-      try:
-        last = cdawmeta.util.read(cache_file_copy, logger=logger)
-      except Exception as e:
-        logger.error(f"Error reading {cache_file_copy}: {e}")
-        return {"file": cache_file, "file_last": None, "diff": None}
-
-      diff = deepdiff.DeepDiff(last, now)
-      _return['cache_copy'] = cache_file_copy
-      _return['diff'] = diff
-      cache_diff_file = os.path.join(cache_subdir, cache_key + ".diff.json")
-      cdawmeta.util.write(cache_diff_file, diff.to_json(), logger=logger)
-      shutil.copyfile(cache_file, cache_file_copy)
-
-  return _return
-
-def _print_request_log(resp, url, cache):
+def _fetch_request_log(resp, diff):
   # Combine into single string to deal with parallel processing
 
   req_cache_headers = {k: v for k, v in resp.request.headers.items() if k in ['If-None-Match', 'If-Modified-Since']}
   res_cache_headers = {k: v for k, v in resp.headers.items() if k in ['ETag', 'Last-Modified', 'Cache-Control', 'Vary']}
-  msg = ""
-  msg += f'Got: {url}\n'
+  msg = "\n"
   msg += f"  Status code: {resp.status_code}\n"
   msg += f"  From cache: {resp.from_cache}\n"
-  msg += f"  Current cache file: {cache['file']}\n"
-  if 'file_last' in cache:
-    msg += f"  Last cache file:    {cache['file_last']}\n"
+  if diff and 'diff' in diff:
+    msg += f"  Current cache file: {diff['file_now']}\n"
+    if 'file_last' in diff:
+      msg += f"  Last cache file:    {diff['file_last']}\n"
   msg += "  Request Cache-Related Headers:\n"
   for k, v in req_cache_headers.items():
     print(k,v)
@@ -430,32 +394,63 @@ def _print_request_log(resp, url, cache):
   msg += "  Response Cache-Related Headers:\n"
   for k, v in res_cache_headers.items():
     msg += f"    {k}: {v}\n"
-  if 'diff' in cache:
-    if len(cache['diff']) == 0:
+  if diff and 'diff' in diff:
+    if diff['diff'] is None or len(diff['diff']) == 0:
       msg += "  Cache diff: None\n"
     else:
       msg += "  Cache diff:\n    "
-      json_indented = "\n    ".join(cache['diff'].to_json(indent=2).split('\n'))
+      json_indented = "\n    ".join(diff['diff'].to_json(indent=2).split('\n'))
       msg += f"{json_indented}\n"
-  if logger is not None:
-    logger.info(msg)
   return msg
+
+def _fetch_diff(cache_dir, cache_key):
+
+  subdir = os.path.join(cache_dir, cache_key)
+  file_last = os.path.join(subdir, cache_key + ".json")
+  os.makedirs(subdir, exist_ok=True)
+
+  file_now = os.path.join(cache_dir, cache_key + ".json")
+  try:
+    data_now = cdawmeta.util.read(file_now, logger=logger)
+  except Exception as e:
+    logger.error(f"Error reading {file_now}: {e}")
+    return {"diff": None, "file_now": None, "file_last": None}
+
+  if not os.path.exists(file_last):
+    return {"diff": None, "file_now": file_now, "file_last": None}
+
+  try:
+    data_last = cdawmeta.util.read(file_last, logger=logger)
+  except Exception as e:
+    logger.error(f"Error reading {file_last}: {e}")
+    return {"diff": None, "file": file_now, "file_last": None}
+
+  diff = deepdiff.DeepDiff(data_last, data_now)
+  file_diff = os.path.join(subdir, cache_key + ".diff.json")
+  cdawmeta.util.write(file_diff, diff.to_json(), logger=logger)
+
+  shutil.copyfile(file_now, file_last)
+
+  return {"diff": diff, "file_now": file_now, "file_last": file_last}
 
 def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
 
-  cache_dir = os.path.join(cdawmeta.DATA_DIR, 'cache', what)
+  cache_dir = os.path.join(cdawmeta.DATA_DIR, 'CachedSession', what)
   file_out_json = os.path.join(cdawmeta.DATA_DIR, what, f"{id}.json")
   file_out_pkl = os.path.join(cdawmeta.DATA_DIR, what, f"{id}.pkl")
 
   if not update and os.path.exists(file_out_pkl):
-    return cdawmeta.util.read(file_out_pkl, logger=logger)
+    msg = "update = False; bypassing CachedSession request and using last result."
+    logger.info(msg)
+    data = cdawmeta.util.read(file_out_pkl, logger=logger)
+    data['request']["log"] = msg
+    return data
 
   session = CachedSession(cache_dir)
 
-  if logger is not None:
-    logger.info('Get: ' + url)
+  logger.info('CachedSession get: ' + url)
 
-  master = {}
+  result = {'id': id, 'url': url}
   try:
     resp = session.get(url, headers=headers, timeout=timeout)
     resp.raise_for_status()
@@ -467,31 +462,42 @@ def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
 
   except Exception as e:
     msg = f"Error[{what}]: {id}: {e}"
-    if logger is not None:
-      logger.error(msg)
-    master['error'] = msg
-    return master
+    logger.error(msg)
+    result['error'] = msg
+    return result
 
-  cache = _cache_info(cache_dir, resp.cache_key, diffs=diffs)
+  cache_file = os.path.join(cache_dir, resp.cache_key + ".json")
 
-  master['id'] = id
-  master['request-log'] = _print_request_log(resp, url, cache)
-  master['request-cache'] = cache['file'].replace(cdawmeta.DATA_DIR + "/", '')
-  master['url'] = url
-  master['data'] = json_dict
-  master['data-cache'] = file_out_json.replace(cdawmeta.DATA_DIR + "/", '')
+  result['id'] = id
+  result['url'] = url
+  result['data-file'] = file_out_json
+  result['data'] = json_dict
 
-  if resp.from_cache:
-    return master
+  result['request'] = {}
+  result['request']["url"] = url
+  result['request']["file"] = cache_file
+  result['request']["file-header"] = dict(resp.headers)
 
-  try:
-    cdawmeta.util.write(file_out_json, master, logger=logger)
-  except Exception as e:
-    logger.error(f"Error writing {file_out_json}: {e}")
+  diff = None
+  if diffs:
+    logger.info("Computing diff")
+    diff = _fetch_diff(cache_dir, resp.cache_key)
+    result['request']["diff"] = diff
 
-  try:
-    cdawmeta.util.write(file_out_pkl, master, logger=logger)
-  except Exception as e:
-    logger.error(f"Error writing {file_out_pkl}: {e}")
+  #_fetch_request_log(resp, url, diff)
+  result['request']["log"] = _fetch_request_log(resp, diff)
+  logger.info(result['request']["log"])
 
-  return master
+  if not os.path.exists(file_out_json):
+    try:
+      cdawmeta.util.write(file_out_json, result, logger=logger)
+    except Exception as e:
+      logger.error(f"Error writing {file_out_json}: {e}")
+
+  if not os.path.exists(file_out_pkl):
+    try:
+      cdawmeta.util.write(file_out_pkl, result, logger=logger)
+    except Exception as e:
+      logger.error(f"Error writing {file_out_pkl}: {e}")
+
+  return result

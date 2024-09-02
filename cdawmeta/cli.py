@@ -24,36 +24,19 @@ def cli(script):
       "help": "Update existing cached HTTP responses",
       "default": False
     },
+    "regen": {
+      "action": "store_true",
+      "help": "Regenerate computed metadata",
+      "default": False
+    },
     "log-level": {
       "choices": ['debug', 'info', 'warning', 'error', 'critical'],
       "help": "Log level",
       "default": 'info'
     },
-    "orig-data": {
-      "action": "store_true",
-      "help": "Include orig_data object returned by cdawmeta.metadata()",
-      "default": False
-    },
-    "no-orig-data": {
-      "action": "store_false",
-      "dest": "orig_data",
-      "help": "Exclude orig_data object  returned by cdawmeta.metadata() (sample object is also not created)",
-      "default": True
-    },
-    "spase": {
-      "action": "store_true",
-      "help": "Include SPASE object",
-      "default": False
-    },
-    "no-spase": {
-      "action": "store_false",
-      "dest": "spase",
-      "help": "Exclude SPASE in object",
-      "default": True
-    },
     "diffs": {
       "action": "store_true",
-      "help": "Compute response diffs",
+      "help": "Compute response diffs if --update",
       "default": False
     },
     "data-dir": {
@@ -77,29 +60,19 @@ def cli(script):
     del clkws['table-name']
     del clkws['port']
 
-  if script in ['hapi.py', 'soso.py']:
+  if script in ['hapi.py', 'soso.py', 'cadence.py']:
+    del clkws['max-workers']
     del clkws['embed-data']
     del clkws['port']
     del clkws['table-name']
-    del clkws['spase']
-    del clkws['no-spase']
 
   if script == 'table.py':
     del clkws['diffs']
-    del clkws['embed-data']
-    del clkws['orig-data']
-    del clkws['no-orig-data']
-    del clkws['spase']
-    del clkws['no-spase']
 
   if script == 'query.py':
     del clkws['diffs']
     del clkws['port']
     del clkws['table-name']
-    del clkws['orig-data']
-    del clkws['no-orig-data']
-    del clkws['spase']
-    del clkws['no-spase']
 
   import argparse
   parser = argparse.ArgumentParser()

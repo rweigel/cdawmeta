@@ -4,7 +4,7 @@ import cdawmeta
 
 args = cdawmeta.cli('hapi.py')
 
-metadata = cdawmeta.hapi(**args)
+metadata = cdawmeta.generate.hapi(**args)
 
 if args['id'] is not None and not args['id'].startswith('^'):
   import json

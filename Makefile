@@ -48,13 +48,16 @@ table-regen:
 	python table.py
 
 data/table/cdaweb.variable.sql:
-	python table.py --table_name cdaweb.variable
+	python table.py --table-name cdaweb.variable
 
 data/table/cdaweb.dataset.sql:
-	python table.py --table_name cdaweb.dataset
+	python table.py --table-name cdaweb.dataset
+
+data/table/spase.dataset.sql:
+	python table.py --table-name spase.dataset
 
 data/table/spase.parameter.sql:
-	python table.py --table_name spase.parameter
+	python table.py --table-name spase.parameter
 
 table-serve: data/table/cdaweb.variable.sql data/table/cdaweb.dataset.sql data/table/spase.parameter.sql data/table/spase.dataset.sql
 	$(PYTHON) table/table-ui/serve.py --port 8051 --sqldb data/table/cdaweb.variable.sql &

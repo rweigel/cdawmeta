@@ -1,7 +1,14 @@
 {
   "logger": {
-     "_comment": "Relative are relative to cdawmeta.DATA_DIR",
-     "cdaweb": {
+    "_comment": "Relative are relative to cdawmeta.DATA_DIR",
+    "default": {
+      "name": "default",
+      "file_log": "{name}/{name}.log",
+      "file_error": false,
+      "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
+      "color": true
+    },
+    "metadata": {
         "name": "cdaweb",
         "file_log": "{name}.log",
         "file_error": "{name}.errors.log",
@@ -14,6 +21,13 @@
           "file_error": false,
           "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
           "color": true
+    },
+    "cadence": {
+      "name": "cadence",
+      "file_log": "{name}/{name}.log",
+      "file_error": false,
+      "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
+      "color": true
     },
     "soso": {
           "name": "soso",
@@ -341,6 +355,9 @@
         "Link_title": "LINK_TITLE"
       },
       "paths": {
+        "allxml": {
+          "@ID": null
+        },
         "master/data/CDFFileInfo": {
           "FileName": null,
           "FileVersion": null,

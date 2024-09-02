@@ -3,6 +3,7 @@ __all__ = ['attrib', 'cli', 'error', 'generate', 'hapi', 'ids', 'io', 'logger', 
 from cdawmeta import attrib
 from cdawmeta import io
 from cdawmeta import util
+from cdawmeta import generate
 
 from cdawmeta.cli import cli
 from cdawmeta.error import error
@@ -10,10 +11,6 @@ from cdawmeta.metadata import ids
 from cdawmeta.logger import logger
 from cdawmeta.metadata import metadata
 from cdawmeta.table import table
-
-from cdawmeta.hapi import hapi
-from cdawmeta.soso import soso
-from cdawmeta.generate import generate
 
 def config():
   import os

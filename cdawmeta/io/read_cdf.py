@@ -273,10 +273,10 @@ def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601
         time_variable = varDescription['DataType'].startswith('CDF_EPOCH')
         time_variable = time_variable or (varDescription['DataType'] == 'CDF_TIME_TT2000')
         if time_variable:
-          epoch = cdflib.cdfepoch.encode(data[variable], iso_8601=True)
+          epoch = cdflib.cdfepoch.encode(meta[variable]['VarData'], iso_8601=True)
           meta[variable]['VarDataISO8601'] = epoch
       except Exception as e:
-        print(f"Error when executing cdflib.cdfepoch.encode({data[variable]}, iso_8601=True):\n  {e}")
+        print(f"Error when executing cdflib.cdfepoch.encode(..., iso_8601=True) for {variable}:\n  {e}")
         meta[variable]['VarDataISO8601'] = None
 
   return meta
