@@ -185,7 +185,7 @@ def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601
       'CDF_TIME_TT2000': 29
     }
     dataType = epoch['VarDescription']['DataType']
-    if not dataType in lens.keys():
+    if dataType not in lens.keys():
       msg = f"Data type {epoch['VarDescription']['DataType']} is not one of {lens.keys()}"
       raise ValueError(msg)
 
@@ -213,7 +213,7 @@ def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601
     variables = variables.split(",")
 
   if depend_0 is not None:
-    if not depend_0 in meta_all:
+    if depend_0 not in meta_all:
       raise ValueError(f"DEPEND_0 = '{depend_0}' is not a variable in file {file}")
 
     variables_depend_0 = []
@@ -226,7 +226,7 @@ def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601
       raise ValueError(f"No variables in {file} depend on {depend_0}")
 
     for variable in variables:
-      if not variable in variables_depend_0:
+      if variable not in variables_depend_0:
         raise ValueError(f"Requsted variable {variable} does not have DEPEND_0 = {depend_0}")
 
     variables = variables_depend_0
@@ -234,7 +234,6 @@ def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601
   if variables is None:
     variables = list(meta_all.keys())
 
-  data = {}
   meta = {}
   for variable in variables:
     meta[variable] = meta_all[variable]

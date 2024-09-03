@@ -5,7 +5,7 @@ import cdawmeta
 
 logger = None
 
-def table(id=None, table_name=None, embed_data=False, skip=None, update=False, max_workers=1, log_level='info'):
+def table(id=None, table_name=None, embed_data=False, skip=None, update=False, regen=False, max_workers=1, log_level='info'):
 
   global logger
   if logger is None:
@@ -18,8 +18,7 @@ def table(id=None, table_name=None, embed_data=False, skip=None, update=False, m
       raise ValueError(f"table_name='{table_name}' not in {table_names} in config.json")
     table_names = [table_name]
 
-  datasets = cdawmeta.metadata(id=id, skip=skip, update=update, embed_data=True, diffs=False, max_workers=max_workers)
-
+  datasets = cdawmeta.metadata(id=id, skip=skip, update=update, regen=regen, embed_data=True, diffs=False, max_workers=max_workers)
   info = {}
   for table_name in table_names:
     logger.info(f"Creating table '{table_name}'")
@@ -67,7 +66,7 @@ def _table(datasets, table_name='cdaweb.dataset'):
 
   logger.info(f"Creating {table_name} table rows")
   table = _table_walk(datasets, attributes, table_name, mode='rows')
-  logger.info(f"Created {table_name} table rows")
+  logger.info(f"Created {len(table)} {table_name} table rows")
 
   return header, table, attribute_counts
 
@@ -108,25 +107,36 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
 
   n_cols_last = None
   for id, dataset in datasets.items():
+    logger.info(f"Computing {mode} for {table_name}/{id}")
+    if omit_attributes is not None:
+      dataset = copy.deepcopy(dataset)
+
     if table_name == 'cdaweb.dataset' or table_name == 'spase.dataset':
       if mode == 'rows':
         row = [dataset['id']]
 
       for path in attributes.keys():
 
+        logger.info(f"  Reading {path}")
+
         data = cdawmeta.util.get_path(dataset, path.split('/'))
-        data = copy.deepcopy(data)
+
         if table_name == 'cdaweb.dataset' and path == 'allxml':
           data = cdawmeta.util.flatten_dicts(data)
+
+        if data is None:
+          if mode == 'rows':
+            logger.info(f"    Path '{path}' not found. Inserting '?' for all attribute values.")
+            # Insert "?" for all attributes
+            n_attribs = len(attributes[path])
+            fill = n_attribs*"?".split()
+            row = [*row, *fill]
+          continue
 
         if omit_attributes is not None:
           for key in list(data.keys()):
             for omit in omit_attributes:
               cdawmeta.util.rm_path(data, omit.split('/'))
-
-        if data is None:
-          logger.info(f"No data found for {id}/{path}")
-          continue
 
         if mode == 'attributes':
           _add_attributes(data, attributes[path], attribute_names, fixes, id + "/" + path)
@@ -134,6 +144,10 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
           _append_columns(data, attributes[path], row, fixes)
 
       if mode == 'rows':
+        logger.info(f"  {len(row)} columns")
+        if n_cols_last is not None and len(row) != n_cols_last:
+          raise Exception(f"Number of columns changed from {n_cols_last} to {len(row)} for {id}")
+        n_cols_last = len(row)
         table.append(row)
 
     if table_name == 'cdaweb.variable' or table_name == 'spase.parameter':
@@ -143,6 +157,7 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
         data = cdawmeta.util.get_path(dataset, path.split('/'))
         if data is None:
           continue
+
         for variable_name, variable in data.items():
 
           if mode == 'rows':
@@ -177,8 +192,10 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
 
           # Add row for variable
           if mode == 'rows':
+            logger.info(f"  {len(row)} columns")
             if n_cols_last is not None and len(row) != n_cols_last:
               raise Exception(f"Number of columns changed from {n_cols_last} to {len(row)} for {id}/{variable_name}")
+            n_cols_last = len(row)
             table.append(row)
 
   if mode == 'attributes':
@@ -347,13 +364,13 @@ def _sql_prep(header, body):
 
   logger.info("  Renaming non-unique column names")
   header = unique(header)
-  logger.info("Renamed non-unique column names")
+  logger.info("  Renamed non-unique column names")
 
   for i, row in enumerate(body):
     for j, _ in enumerate(row):
       body[i][j] = str(body[i][j])
 
   dt = "{:.2f} [s]".format(time.time() - start)
-  logger.info(f"Casted table elements to str {len(body)} rows and {len(header)} columns in {dt}")
+  logger.info(f"Casted table elements to str in {len(body)} rows and {len(header)} columns in {dt}")
 
   return header, body

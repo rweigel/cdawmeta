@@ -50,7 +50,10 @@ def ids(id=None, skip=None, update=True):
 
   return _remove_skips(ids_reduced)
 
-def metadata(id=None, skip=None, embed_data=False, update=True, regen=False, max_workers=1, diffs=False, log_level='info'):
+def metadata(id=None, skip=None, embed_data=False, write_catalog=False, update=False, regen=False, max_workers=1, diffs=False, log_level='info'):
+
+  if update:
+    regen = True
 
   logger = _logger(log_level)
 
@@ -64,32 +67,43 @@ def metadata(id=None, skip=None, embed_data=False, update=True, regen=False, max
   datasets_all = _datasets(allxml)
 
   def get_one(dataset):
-    dataset['master'] = _master(dataset, diffs=diffs, update=update)
-    dataset['orig_data'] = _orig_data(dataset, diffs=diffs, update=update)
-    dataset['spase'] = _spase(dataset['master'], diffs=diffs, update=update)
-    dataset['hapi'] = cdawmeta.generate.hapi(dataset, regen=regen, update=update)
-    dataset['soso'] = cdawmeta.generate.soso(dataset, regen=regen, update=update)
+    dataset['master'] = _master(dataset, update=update, diffs=diffs)
+    dataset['orig_data'] = _orig_data(dataset, update=update, diffs=diffs)
+    dataset['spase'] = _spase(dataset, update=update, diffs=diffs)
+    dataset['hapi'] = cdawmeta.generate.hapi(dataset, update=update, regen=regen)
+    dataset['soso'] = cdawmeta.generate.soso(dataset, update=update, regen=regen)
 
-    if not embed_data:
-      for key in ['master', 'orig_data', 'spase', 'hapi', 'soso']:
-        if 'data' in dataset[key]:
-          del dataset[key]['data']
+    if not write_catalog and not embed_data:
+      # If write_catalog = True, we need to keep data to save catalog-all.json and catalog.json
+      for meta_type in ['master', 'orig_data', 'spase', 'hapi', 'soso']:
+        if 'data' in dataset[meta_type]:
+          del dataset[meta_type]['data']
 
   if max_workers == 1 or len(dsids) == 1:
-    for id in dsids:
-      get_one(datasets_all[id])
+    for dsid in dsids:
+      get_one(datasets_all[dsid])
   else:
     from concurrent.futures import ThreadPoolExecutor
-    def call(id):
+    def call(dsid):
       try:
-        get_one(datasets_all[id])
+        get_one(datasets_all[dsid])
       except Exception as e:
         import traceback
         logger.error(f"Error: {datasets_all['id']}: {traceback.print_exc()}")
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
       pool.map(call, dsids)
 
-  return {key: datasets_all[key] for key in dsids}
+  metadata_ = {key: datasets_all[key] for key in dsids}
+
+  if write_catalog:
+    _write_catalog(metadata_, id)
+    if not embed_data:
+      for key in metadata_.keys():
+        for meta_type in ['master', 'orig_data', 'spase', 'hapi', 'soso']:
+          if 'data' in metadata_[key][meta_type]:
+            del metadata_[key][meta_type]['data']
+
+  return metadata_
 
 def _datasets(allxml):
   '''
@@ -150,9 +164,10 @@ def _allxml(update=False, diffs=False):
     return _allxml.allxml
 
   allurl = cdawmeta.CONFIG['cdaweb']['allurl']
-  allxml = _fetch(allurl, 'all', 'all', timeout=timeout, update=update)
+  allxml = _fetch(allurl, 'all', 'all', timeout=timeout, update=update, diffs=diffs)
+
   # Curry result
-  _allxml. allxml = allxml
+  _allxml.allxml = allxml
 
   return allxml
 
@@ -169,8 +184,9 @@ def _master(dataset, update=False, diffs=False):
     master['data'] = _restructure_master(master['data'], logger=logger)
   return master
 
-def _spase(master, update=True, diffs=False):
+def _spase(dataset, update=True, diffs=False):
 
+  master = dataset['master']
   restructure=True
   timeout = cdawmeta.CONFIG['cdaweb']['timeouts']['spase']
 
@@ -237,6 +253,8 @@ def _restructure_spase(spase, logger=None):
   if 'NumericalData' not in spase['Spase']:
     return spase
   if 'Parameter' in spase['Spase']['NumericalData']:
+    if not isinstance(spase['Spase']['NumericalData']['Parameter'], list):
+      spase['Spase']['NumericalData']['Parameter'] = [spase['Spase']['NumericalData']['Parameter']]
     for pidx, parameter in enumerate(spase['Spase']['NumericalData']['Parameter']):
       if 'ParameterKey' not in parameter:
         logger.error(f'Error[SPASE]: No ParameterKey in Parameter array element {pidx}: {parameter}')
@@ -374,6 +392,40 @@ def CachedSession(cache_dir):
   session.mount('https://', HTTPAdapter(max_retries=5))
 
   return session
+
+def _write_catalog(metadata_, id):
+
+  # Write catalog-all.json and catalog.json
+  #meta_types = ['master', 'orig_data', 'spase', 'hapi', 'soso']
+  # orig_data is too large; allxml is already downloaded as single file.
+  meta_types = ['master', 'spase', 'hapi', 'soso']
+  for meta_type in meta_types:
+    data = []
+    for dsid in metadata_.keys():
+      if meta_type not in metadata_[dsid]:
+        logger.error(f"Error: {dsid}: No {meta_type} metadata")
+
+      if 'data' in metadata_[dsid][meta_type]:
+        data.append(metadata_[dsid][meta_type]['data'])
+
+    subdir = ''
+    qualifier = ''
+    if id is not None and id.startswith('^'):
+      subdir = 'catalog-partial'
+      qualifier = f'-{id}'
+    fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog-all{qualifier}')
+    cdawmeta.util.write(fname + ".json", data, logger=logger)
+    cdawmeta.util.write(fname + ".pkl", data, logger=logger)
+
+    if meta_type == 'hapi':
+      from copy import deepcopy
+      data_copy = deepcopy(data)
+      for metadatum in data_copy:
+        if 'data' in metadatum:
+          del metadatum['data']['info']
+
+      fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}.json')
+      cdawmeta.util.write(fname, data_copy, logger=logger)
 
 def _fetch_request_log(resp, diff):
   # Combine into single string to deal with parallel processing

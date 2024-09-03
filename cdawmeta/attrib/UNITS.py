@@ -1,5 +1,5 @@
 import cdawmeta
-from cdawmeta.generate.hapi import cdf2hapitype
+from cdawmeta.generate.hapi import CDFDataType2HAPItype
 
 def UNITS(dsid, name, all_variables, x=None):
 
@@ -20,7 +20,7 @@ def UNITS(dsid, name, all_variables, x=None):
     if "UNIT_PTR" in variable['VarAttributes']:
       ptr_name = variable['VarAttributes']['UNIT_PTR']
       if ptr_name in all_variables:
-          if 'string' == cdf2hapitype(all_variables[ptr_name]['VarDescription']['DataType']):
+          if 'string' == CDFDataType2HAPItype(all_variables[ptr_name]['VarDescription']['DataType']):
             if 'VarData' in all_variables[ptr_name]:
               units = all_variables[ptr_name]['VarData']
             else:

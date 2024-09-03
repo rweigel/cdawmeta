@@ -196,6 +196,7 @@ def logger(name=None,
   if debug_logger:
     print(f"---\nLogger with name='{name}' configuration:")
     print(f'  Logging output {msgx}to: {file_log}')
+    print("---\n")
 
   if file_error:
     if debug_logger:

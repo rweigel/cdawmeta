@@ -15,12 +15,12 @@
         "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
         "color": true
     },
-    "hapi": {
-          "name": "hapi",
-          "file_log": "{name}/{name}.log",
-          "file_error": false,
-          "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
-          "color": true
+  "hapi": {
+      "name": "hapi",
+      "file_log": "{name}/{name}.log",
+      "file_error": false,
+      "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
+      "color": true
     },
     "cadence": {
       "name": "cadence",
@@ -47,7 +47,8 @@
         "name": "query",
         "file_log": "{name}/{name}.log",
         "file_error": "{name}/{name}.errors.log",
-        "console_format": "%(pathname)s:%(lineno)d %(levelname)s %(name)s %(message)s",
+        "console_format": "%(message)s",
+        "file_format": "%(message)s",
         "color": true
     }
   },
