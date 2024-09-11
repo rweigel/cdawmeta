@@ -1,20 +1,12 @@
-import os
 import re
 
 import cdawmeta
 
 logger = None
 
-def hapi(metadatum=None, update=True, regen=False, diffs=False, log_level='info'):
-  from .generate import generate
+def hapi(metadatum, _logger):
   global logger
-  if logger is None:
-    logger = cdawmeta.logger('hapi')
-    logger.setLevel(log_level.upper())
-
-  return generate(metadatum, _hapi, logger, update=update, regen=regen, diffs=diffs)
-
-def _hapi(metadatum):
+  logger = _logger
 
   id = metadatum['id']
 
@@ -78,6 +70,11 @@ def _hapi(metadatum):
 
     depend_0_names.append(depend_0_name)
 
+  #if len(depend_0_names) == 0:
+  #  msg = f"  No datasets could be created for {id}"
+  #  cdawmeta.error(id, None, msg, logger)
+  #  return None
+
   depend_0_names = _order_depend0s(id, depend_0_names)
 
   catalog = []
@@ -100,19 +97,22 @@ def _hapi(metadatum):
       'description': None,
       'info': {
         **_info_head(metadatum),
-        "sampleStartDate": None,
-        "sampleStopDate": None,
         'parameters': parameters
       }
     }
 
-    if False:
-      if sample is not None:
-        dataset_new['info']['sampleStartDate'] = sample['sampleStartDate']
-        dataset_new['info']['sampleStopDate'] = sample['sampleStopDate']
-      else:
-        del dataset_new['info']['sampleStartDate']
-        del dataset_new['info']['sampleStopDate']
+    if 'cadence' in metadatum:
+      counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
+      note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'note'])
+      if counts is not None:
+        cadence = counts[0]['duration_iso8601']
+        fraction = counts[0]['fraction']
+        dataset_new['info']['cadence'] = cadence
+        dataset_new['info']['x_cadence_fraction'] = fraction
+        dataset_new['info']['x_cadence_note'] = note
+    else:
+      del dataset_new['info']['cadence']
+      del dataset_new['info']['x_cadence_note']
 
     if metadatum['allxml'].get('description') and metadatum['allxml']['description'].get('@short'):
       dataset_new['description'] = metadatum['allxml']['description'].get('@short')
@@ -142,9 +142,23 @@ def _info_head(metadatum):
   info = {
       'startDate': startDate,
       'stopDate': stopDate,
+      'sampleStartDate': None,
+      'sampleStopDate': None,
+      'cadence': None,
+      'x_cadence_fraction': None,
+      'x_cadence_note': None,
       'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{id[0]}.html#{id}',
       'contact': contact
   }
+
+  if 'sample_start_stop' in metadatum:
+    sample_start_stop = metadatum['sample_start_stop']['data']
+    info['sampleStartDate'] = sample_start_stop['sampleStartDate']
+    info['sampleStopDate'] = sample_start_stop['sampleStopDate']
+  else:
+    logger.warn(f"  Warning: No sample_start_stop for {id}")
+    info['sampleStartDate']
+    info['sampleStopDate']
 
   return info
 
@@ -153,17 +167,17 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
   depend_0_variable = all_variables[depend_0_name]
 
   if 'DataType' not in depend_0_variable['VarDescription']:
-    msg = f"    Error: DEPEND_0 variable '{dsid}'/{depend_0_name} has no DataType attribute. Dropping variables associated with it"
-    cdawmeta.error(dsid, depend_0_name, msg, logger)
+    msg = f"Error: CDF[MissingDataType]: DEPEND_0 variable '{dsid}'/{depend_0_name} has no DataType attribute. Dropping variables associated with it"
+    cdawmeta.error(dsid, depend_0_name, "    " + msg, logger)
     return None
 
   DEPEND_0_DataType = depend_0_variable['VarDescription']['DataType']
-  DEPEND_0_length = cdftimelen(DEPEND_0_DataType)
+  DEPEND_0_length = _cdftimelen(DEPEND_0_DataType)
 
   if DEPEND_0_length is None:
-    msg = f"    Warning: DEPEND_0 variable '{dsid}'/{depend_0_name} has unhandled type: '{DEPEND_0_DataType}'. "
+    msg = f"Error: DEPEND_0 variable '{dsid}'/{depend_0_name} has unhandled type: '{DEPEND_0_DataType}'. "
     msg += "Dropping variables associated with it"
-    logger.info(msg)
+    logger.info("    " + msg)
     return None
 
   parameters = [
@@ -173,7 +187,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
                     'units': 'UTC',
                     'length': DEPEND_0_length,
                     'fill': None,
-                    'x_cdf_depend_0_name': depend_0_name
+                    'x_cdf_NAME': depend_0_name
                   }
                 ]
 
@@ -182,7 +196,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     VAR_TYPE, emsg = cdawmeta.attrib.VAR_TYPE(dsid, name, variable, x=None)
     if emsg is not None:
       # Should not happen because variable will be dropped in _split_variables
-      cdawmeta.error(dsid, name, emsg, logger)
+      cdawmeta.error(dsid, name, "    " + emsg, logger)
       continue
 
     if VAR_TYPE != 'data':
@@ -195,8 +209,8 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     type = CDFDataType2HAPItype(variable['VarDescription']['DataType'])
     if type is None and print_info:
-      msg = f"    Error: '{name}' has unhandled DataType: {variable['VarDescription']['DataType']}. Dropping variable."
-      cdawmeta.error(dsid, name, msg, logger)
+      msg = f"Error: HAPI[NotImplemented]: Variable '{name}' has unhandled DataType: {variable['VarDescription']['DataType']}. Dropping variable."
+      cdawmeta.error(dsid, name, "      " + msg, logger)
       continue
 
     length = None
@@ -215,14 +229,14 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
         NumElements = variable['VarDescription']['NumElements']
 
       if PadValue is None and FillValue is None and NumElements is None:
-        msg = "    Error: Dropping '{name}' because CDFDataType2HAPItype(VAR_TYPE) returns string but no PadValue, FillValue, or NumElements given to allow length to be determined."
-        cdawmeta.error(dsid, name, msg, logger)
+        emsg = "Error: CDF[MissingInfo]: Dropping '{name}' because CDFDataType2HAPItype(VAR_TYPE) returns string but no PadValue, FillValue, or NumElements given to allow length to be determined."
+        cdawmeta.error(dsid, name, "      " + emsg, logger)
         continue
 
       if NumElements is None:
         if PadValue is not None and FillValue is not None and PadValue != FillValue:
-          msg = f"    Error: Dropping '{name}' because PadValue and FillValue lengths differ."
-          cdawmeta.error(dsid, name, msg, logger)
+          emsg = f"Error: CDF[LengthMismatch]: Dropping '{name}' because PadValue and FillValue lengths differ."
+          cdawmeta.error(dsid, name, "      " + emsg, logger)
           continue
 
       if PadValue is not None:
@@ -234,7 +248,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     UNITS, emsg = cdawmeta.attrib.UNITS(dsid, name, all_variables, x=None)
     if emsg is not None and print_info:
-      cdawmeta.error(dsid, name, emsg, logger)
+      cdawmeta.error(dsid, name, "    " + emsg, logger)
 
     parameter = {
       "name": name,
@@ -250,7 +264,6 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     if fill is not None:
       parameter['fill'] = fill
 
-
     ptrs = _pointers(dsid, name, all_variables, print_info=print_info)
 
     LABLAXIS, emsg = cdawmeta.attrib.LABLAXIS(dsid, name, variable, ptrs)
@@ -261,25 +274,30 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     format_f, emsg = cdawmeta.attrib.FORMAT(dsid, name, all_variables, c_specifier=False)
     if format_f is not None:
-      format_c, emsg = cdawmeta.attrib.FORMAT(dsid, name, all_variables, c_specifier=True)
-      parameter['x_format'] = format_c
-      parameter['x_fractionDigits'] = ''.join(d for d in format_c if d.isdigit())
       parameter['x_cdf_FORMAT'] = format_f
+    parameter['x_cdf_FORMAT'] = format_f
+    if format_f is not None:
+      format_c, emsg = cdawmeta.attrib.FORMAT(dsid, name, all_variables, c_specifier=True)
+      if format_c is not None:
+        parameter['x_format'] = format_c
+        parameter['x_fractionDigits'] = ''.join(d for d in format_c if d.isdigit())
       if emsg is not None and print_info:
-        cdawmeta.error(dsid, name, emsg, logger)
+        cdawmeta.error(dsid, name, "    " + emsg, logger)
 
     if 'DataType' in variable['VarDescription']:
       parameter['x_cdf_DataType'] = variable['VarDescription']['DataType']
+
+    FIELDNAM, emsg = cdawmeta.attrib.FIELDNAM(dsid, name, variable)
+    if FIELDNAM is not None:
+      parameter['x_cdf_FIELDNAM'] = FIELDNAM
 
     parameter["x_cdf_VIRTUAL"] = virtual
     DISPLAY_TYPE, emsg = cdawmeta.attrib.DISPLAY_TYPE(dsid, name, variable)
     if DISPLAY_TYPE is not None:
       parameter['x_cdf_DISPLAY_TYPE'] = DISPLAY_TYPE
-      if print_info:
-        logger.info(f"     DISPLAY_TYPE = {DISPLAY_TYPE}")
     if emsg is not None and print_info:
       if cdawmeta.CONFIG['hapi']['log_display_type_issues']:
-        cdawmeta.error(dsid, name, emsg, logger)
+        cdawmeta.error(dsid, name, "    " + emsg, logger)
 
     # TODO: Finish.
     #deltas = _extract_deltas(dsid, name, variable, print_info=cdawmeta.CONFIG['hapi']['log_delta_issues'])
@@ -295,8 +313,8 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       parameter['size'] = variable['VarDescription']['DimSizes']
 
     if 'DataType' not in variable['VarDescription']:
-      msg = f"    Error: variable '{dsid}'/{depend_0_name} has no DataType attribute. Dropping variables associated with it"
-      cdawmeta.error(dsid, name, msg, logger)
+      msg = f"Error: CDF[MissingDataType]: Variable '{dsid}'/{depend_0_name} has no DataType attribute. Dropping variables associated with it"
+      cdawmeta.error(dsid, name, "      " + msg, logger)
       return None
 
     n_depend_values = 0
@@ -317,7 +335,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
           if ptrs['LABL_PTR_VALUES'][x] != ptrs['DEPEND_VALUES'][x]:
             differ = True
             if differ and print_info:
-              msg = f'     Warning: NotImplemented[RedundantDependValues]: DEPEND_{x} has is string type and LABL_PTR_{x} given. They differ; using LABL_PTR_{x} for HAPI label attribute.'
+              msg = f'    Warning: NotImplemented[RedundantDependValues]: DEPEND_{x} has is string type and LABL_PTR_{x} given. They differ; using LABL_PTR_{x} for HAPI label attribute.'
               logger.info(msg)
               break
 
@@ -329,13 +347,13 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     if print_info:
       for key, value in parameter.items():
-        logger.info(f"       {key} = {value}")
+        logger.info(f"      {key} = {value}")
       if bins_object is not None:
         for idx, bin in enumerate(bins_object):
           bin_copy = bin.copy()
           if 'centers' in bin and len(bin['centers']) > 10:
             bin_copy['centers'] = f'{bin["centers"][0]} ... {bin["centers"][-1]}'  
-          logger.info(f"      bins[{idx}] = {bin_copy}")
+          logger.info(f"     bins[{idx}] = {bin_copy}")
 
     parameters.append(parameter)
 
@@ -349,22 +367,22 @@ def _bins(dsid, name, all_variables, depend_xs, print_info=False):
   DimVariances = variable['VarDescription'].get('DimVariances', [])
 
   if print_info:
-    logger.info(f"     NumDims: {NumDims}")
-    logger.info(f"     DimSizes: {DimSizes}")
-    logger.info(f"     DimVariances: {DimVariances}")
+    logger.info(f"      NumDims: {NumDims}")
+    logger.info(f"      DimSizes: {DimSizes}")
+    logger.info(f"      DimVariances: {DimVariances}")
 
   if NumDims != len(DimSizes):
     if print_info:
-      msg = f"     Error: ISTP: DimSizes mismatch: NumDims = {NumDims} "
+      msg = f"Error: CDF[DimSizes]: DimSizes mismatch: NumDims = {NumDims} "
       msg += "!= len(DimSizes) = {len(DimSizes)}"
-      cdawmeta.error(dsid, name, msg, logger)
+      cdawmeta.error(dsid, name, "      " + msg, logger)
     return None
 
   if len(DimSizes) != len(DimVariances):
     if print_info:
-      msg = f"     Error: DimVariances mismatch: len(DimSizes) = {DimSizes} "
+      msg = f"Error: CDF[DimVariance]: DimVariances mismatch: len(DimSizes) = {DimSizes} "
       msg += "!= len(DimVariances) = {len(DimVariances)}"
-      cdawmeta.error(dsid, name, msg, logger)
+      cdawmeta.error(dsid, name, "      " + msg, logger)
     return None
 
   bins_objects = []
@@ -390,29 +408,29 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
   if "RecVariance" in DEPEND_x['VarDescription']:
     RecVariance = DEPEND_x['VarDescription']["RecVariance"]
     if print_info:
-      logger.info(f"     DEPEND_{x} has RecVariance = " + RecVariance)
+      logger.info(f"      DEPEND_{x} has RecVariance = " + RecVariance)
 
   if RecVariance == "VARY":
     if print_info:
-      logger.info(f"     Warning: NotImplemented[TimeVaryingBins]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY'. Not creating bins b/c Nand does not for this case.")
+      logger.info(f"      Warning: NotImplemented[TimeVaryingBins]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY'. Not creating bins b/c Nand does not for this case.")
     return None
 
   _, emsg = cdawmeta.attrib.VAR_TYPE(dsid, name, DEPEND_x, x=x)
   if emsg is not None:
     if print_info:
       emsg = emsg +  " Not creating bins."
-      cdawmeta.error(dsid, name, emsg, logger)
+      cdawmeta.error(dsid, name, "      " + emsg, logger)
     return None
 
   ptrs = _pointers(dsid, DEPEND_x_NAME, all_variables, print_info=print_info)
 
   UNITS, emsg = cdawmeta.attrib.UNITS(dsid, DEPEND_x_NAME, all_variables, x=x)
   if emsg is not None and print_info:
-    cdawmeta.error(dsid, DEPEND_x_NAME, emsg, logger)
+    cdawmeta.error(dsid, DEPEND_x_NAME, "      " + emsg, logger)
 
   LABLAXIS, emsg = cdawmeta.attrib.LABLAXIS(dsid, name, DEPEND_x, ptrs, x=x)
   if emsg is not None and print_info:
-    cdawmeta.error(dsid, name, emsg, logger)
+    cdawmeta.error(dsid, name, "      " + emsg, logger)
 
   if 'VarData' in DEPEND_x:
     bins_object = {
@@ -425,7 +443,7 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
     return bins_object
   else:
     if print_info:
-      logger.info(f"     Warning: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
+      logger.info(f"      Warning: HAPI: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
     return None
 
 def _order_depend0s(id, depend0_names):
@@ -439,7 +457,7 @@ def _order_depend0s(id, depend0_names):
 
   for depend0_name in order_wanted:
     if depend0_name not in depend0_names:
-      logger.error(f'Error: {id}\n  DEPEND_0 {depend0_name} in new order list is not a depend0 in dataset ({depend0_names})')
+      logger.error(f'Error[HAPI]: {id}\n  DEPEND_0 {depend0_name} in new order list is not a depend0 in dataset ({depend0_names})')
       logger.error('  Exiting with code 1')
       exit(1)
 
@@ -464,14 +482,14 @@ def _order_variables(id, variables):
   order_wanted = fixes['variableOrder'][id]
   order_given = variables.keys()
   if len(order_wanted) != len(order_wanted):
-    logger.error(f'Error: {id}\n  Number of variables in new order list ({len(order_wanted)}) does not match number found in dataset ({len(order_given)})')
+    logger.error(f'Error[HAPI]: {id}\n  Number of variables in new order list ({len(order_wanted)}) does not match number found in dataset ({len(order_given)})')
     logger.error(f'  New order:   {order_wanted}')
     logger.error(f'  Given order: {list(order_given)}')
     logger.error('  Exiting with code 1')
     exit(1)
 
   if sorted(order_wanted) != sorted(order_wanted):
-    logger.error(f'Error: {id}\n  Mismatch in variable names between new order list and dataset')
+    logger.error(f'Error[HAPI]: {id}\n  Mismatch in variable names between new order list and dataset')
     logger.error(f'  New order:   {order_wanted}')
     logger.error(f'  Given order: {list(order_given)}')
     logger.error('  Exiting with code 1')
@@ -493,12 +511,12 @@ def _split_variables(id, variables):
     variable_meta = variables[name]
 
     if 'VarAttributes' not in variable_meta:
-      msg = f"  Error: ISTP: Dropping variable '{name}' b/c it has no VarAttributes"
+      msg = f"  Error: ISTP[NoVarAttributes]: Dropping variable '{name}' b/c it has no VarAttributes"
       cdawmeta.error(id, name, msg, logger)
       continue
 
     if 'VAR_TYPE' not in variable_meta['VarAttributes']:
-      msg = f"  Error: ISTP: Dropping variable '{name}' b/c it has no has no VAR_TYPE"
+      msg = f"  Error: ISTP[NoVAR_TYPE]: Dropping variable '{name}' b/c it has no has no VAR_TYPE"
       cdawmeta.error(id, name, msg, logger)
       continue
 
@@ -509,7 +527,7 @@ def _split_variables(id, variables):
       depend_0_name = variable_meta['VarAttributes']['DEPEND_0']
 
       if depend_0_name not in variables:
-        msg = f"  Error: ISTP: Dropping '{name}' b/c it has a DEPEND_0 ('{depend_0_name}') that is not in dataset"
+        msg = f"  Error: CDF[MissingDEPEND_0]: Dropping '{name}' b/c it has a DEPEND_0 ('{depend_0_name}') that is not in dataset"
         cdawmeta.error(id, name, msg, logger)
         continue
 
@@ -539,25 +557,25 @@ def _omit_dataset(id, depend_0=None):
     if id in fixes['omitAll'].keys():
       if omit_datasets:
         logger.info(id)
-        logger.info(f"    Warning: Dropping dataset {id} b/c it is not in Nand's list")
+        logger.info(f"  Warning: Dropping dataset {id} b/c it is not in Nand's list")
         return True
       else:
         logger.info(id)
-        logger.info(f"    Warning: Keeping dataset {id} even though it is not in Nand's list")
+        logger.info(f"  Warning: Keeping dataset {id} even though it is not in Nand's list")
         return False
     for pattern in fixes['omitAllPattern']:
       if re.search(pattern, id):
         if omit_datasets:
           logger.info(id)
-          logger.info(f"    Warning: Dropping dataset {id} b/c it is not in Nand's list")
+          logger.info(f"  Warning: Dropping dataset {id} b/c it is not in Nand's list")
           return True
         else:
           logger.info(id)
-          logger.info(f"    Warning: Keeping dataset {id} even though it is not in Nand's list")
+          logger.info(f"  Warning: Keeping dataset {id} even though it is not in Nand's list")
           return False
   else:
     if id in fixes['omitSubset'].keys() and depend_0 in fixes['omitSubset'][id]:
-      logger.info(f"    Warning: Dropping variables associated with DEPEND_0 = \"{depend_0}\" b/c this DEPEND_0 is not in Nand's list")
+      logger.info(f"  Warning: Dropping variables associated with DEPEND_0 = \"{depend_0}\" b/c this DEPEND_0 is not in Nand's list")
       return True
   return False
 
@@ -595,19 +613,13 @@ def _description(dsid, name, variable, x=None, print_info=False):
   if CATDESC is None:
     CATDESC = ""
   if emsg is not None and print_info:
-    cdawmeta.error(dsid, name, emsg, logger)
+    cdawmeta.error(dsid, name, "      " + emsg, logger)
 
   VAR_NOTES, emsg = cdawmeta.attrib.VAR_NOTES(dsid, name, variable)
   if VAR_NOTES is None:
     VAR_NOTES = ""
   if emsg is not None and print_info:
-    cdawmeta.error(dsid, name, emsg, logger)
-
-  FIELDNAM, emsg = cdawmeta.attrib.FIELDNAM(dsid, name, variable)
-  if FIELDNAM is None:
-    FIELDNAM = ""
-  if emsg is not None and print_info:
-    cdawmeta.error(dsid, name, emsg, logger)
+    cdawmeta.error(dsid, name, "      " + emsg, logger)
 
   if VAR_NOTES == CATDESC:
     desc = f"{CATDESC}"
@@ -642,10 +654,9 @@ def _pointers(dsid, name, all_variables, print_info=False):
         if x_NAME not in all_variables:
           ptrs[prefix+"_VALID"][x-1] = False
           if print_info:
-            msg = f"Error: ISTP[BadReference]: Bad {prefix} reference: '{name}' has {prefix}_{x} "
+            msg = f"Error: CDF[BadReference]: Bad {prefix} reference: '{name}' has {prefix}_{x} "
             msg += f"named '{x_NAME}', which is not a variable."
-            msg += f"     {msg}"
-            cdawmeta.error(dsid, name, msg, logger)
+            cdawmeta.error(dsid, name, "      " + msg, logger)
         elif prefix == 'LABL_PTR' or (prefix == 'DEPEND' and 'string' == CDFDataType2HAPItype(all_variables[x_NAME]['VarDescription']['DataType'])):
           if 'VarData' in all_variables[x_NAME]:
             ptrs[prefix+"_VALID"][x-1] = True
@@ -653,8 +664,8 @@ def _pointers(dsid, name, all_variables, print_info=False):
             values = cdawmeta.util.trim(all_variables[x_NAME]['VarData'])
             ptrs[prefix+"_VALUES"][x-1] = values
             if print_info:
-              logger.info(f"     {prefix}_{x}: {x_NAME}")
-              logger.info(f"     {prefix}_{x} trimmed values: {values}")
+              logger.info(f"      {prefix}_{x}: {x_NAME}")
+              logger.info(f"      {prefix}_{x} trimmed values: {values}")
           else:
             ptrs[prefix+"_VALID"][x-1] = False
             if print_info:
@@ -662,8 +673,7 @@ def _pointers(dsid, name, all_variables, print_info=False):
                 msg = f"Error: ISTP[Pointer]: {x_NAME} has no VarData"
               else:
                 msg = f"Error: ISTP[Pointer]: {x_NAME} is a string type but has no VarData"
-              msg += f"     {msg}"
-              cdawmeta.error(dsid, name, msg, logger)
+              cdawmeta.error(dsid, name, "      " + msg, logger)
         else:
           ptrs[prefix+"_VALID"][x-1] = True
           ptrs[prefix][x-1] = x_NAME
@@ -681,7 +691,7 @@ def _pointers(dsid, name, all_variables, print_info=False):
           s = "s"
         msg = f"Error: ISTP: '{name}' has {n_invalid} invalid element{s}."
         if print_info:
-          cdawmeta.error(dsid, name, f"     {msg}")
+          cdawmeta.error(dsid, name, f"      {msg}")
     elif prefix != 'COMPONENT':
       if n_valid != len(DimSizes):
         ptrs[prefix] = None
@@ -691,7 +701,7 @@ def _pointers(dsid, name, all_variables, print_info=False):
           msg = f"Error: ISTP: '{name}' has {n_valid} valid elements {prefix}_{{1,2,3}}, but need "
           msg += f"len(DimSizes) = {len(DimSizes)}."
           if print_info:
-            cdawmeta.error(dsid, name, f"     {msg}")
+            cdawmeta.error(dsid, name, f"    {msg}")
       if n_found != 0 and n_found != len(DimSizes):
         ptrs[prefix] = None
         if False and print_info:
@@ -716,6 +726,21 @@ def _pointers(dsid, name, all_variables, print_info=False):
 
   return ptrs
 
+def _cdftimelen(cdf_type):
+
+  # Based on table at https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html
+  # Could also get from PadValue or FillValue, but they are not always present (!).
+  if cdf_type == 'CDF_EPOCH':
+    return len('0000-01-01:00:00:00.000Z')
+  if cdf_type == 'CDF_TIME_TT2000':
+    return len('0000-01-01:00:00:00.000000000Z')
+  if cdf_type == 'CDF_EPOCH16':
+    return len('0000-01-01:00:00:00.000000000000Z')
+
+  return None
+
+
+# Used here and in UNITS.py
 def CDFDataType2HAPItype(cdf_type):
 
   if cdf_type in ['CDF_CHAR', 'CDF_UCHAR']:
@@ -732,15 +757,12 @@ def CDFDataType2HAPItype(cdf_type):
 
   return None
 
-def cdftimelen(cdf_type):
+# Used here, soso.py, and spase_alt.py
+def flatten_parameters(hapi):
 
-  # Based on table at https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html
-  # Could also get from PadValue or FillValue, but they are not always present (!).
-  if cdf_type == 'CDF_EPOCH':
-    return len('0000-01-01:00:00:00.000Z')
-  if cdf_type == 'CDF_TIME_TT2000':
-    return len('0000-01-01:00:00:00.000000000Z')
-  if cdf_type == 'CDF_EPOCH16':
-    return len('0000-01-01:00:00:00.000000000000Z')
+  if isinstance(hapi, list):
+    parameters = {}
+    for _, ds in enumerate(hapi):
+      return [*parameters, *ds['info']['parameters']]
 
-  return None
+  return hapi['info']['parameters']

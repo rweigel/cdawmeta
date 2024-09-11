@@ -1,29 +1,31 @@
 import os
 import re
 import shutil
-import xmltodict
 import deepdiff
 
 import cdawmeta
 
-# TODO: Find a better way to handle this.
-# Can't call cdawmeta.logger('cdaweb') here because it calls cdawmeta.DATA_DIR
+# Can't call logger = cdawmeta.logger('cdaweb') here because it calls cdawmeta.DATA_DIR
 # which is set to a default. If user modifies using cdawmeta.DATA_DIR = ...,
 # logger does not know about the change.
+# TODO: Find a better way to handle this. 
 logger = None
+
 def _logger(log_level='info'):
   global logger
   if logger is None:
-    logger = cdawmeta.logger('metadata')
-    logger.setLevel(log_level.upper())
+    logger = cdawmeta.logger(name='metadata', log_level=log_level)
   return logger
 
-def ids(id=None, skip=None, update=True):
+def ids(id=None, skip=None, update=False):
 
   # Needed to set logger for any called underscore functions.
+  # TODO: Find a better way to handle this.
   logger = _logger()
 
   def _remove_skips(ids_reduced):
+    if skip is None:
+      return ids_reduced
     regex = re.compile(skip)
     return [id for id in ids_reduced if not regex.match(id)]
 
@@ -32,7 +34,7 @@ def ids(id=None, skip=None, update=True):
   ids_all = datasets_all.keys()
 
   if id is None:
-    return _remove_skips(ids_all)
+    return _remove_skips(list(ids_all))
 
   if isinstance(id, str):
     if id.startswith('^'):
@@ -50,12 +52,18 @@ def ids(id=None, skip=None, update=True):
 
   return _remove_skips(ids_reduced)
 
-def metadata(id=None, skip=None, embed_data=False, write_catalog=False, update=False, regen=False, max_workers=1, diffs=False, log_level='info'):
+def metadata(meta_type=None, id=None, skip=None, embed_data=False, write_catalog=True, update=False, regen=False, max_workers=1, diffs=False, log_level='info'):
+
+  if not update and not regen:
+    # TODO: Read cached catalog files.
+    #       Need to account for fact that full catalog for orig_data was not
+    #       created and allxml is a single file and there is no info/ subdir.
+    pass
 
   if update:
     regen = True
 
-  logger = _logger(log_level)
+  logger = _logger(log_level=log_level)
 
   if diffs and not update:
     logger.warning("diffs=True but update=False. No diffs can be computed.")
@@ -66,16 +74,28 @@ def metadata(id=None, skip=None, embed_data=False, write_catalog=False, update=F
   allxml = _allxml(update=update)
   datasets_all = _datasets(allxml)
 
+  meta_types_generated = cdawmeta._generate.generators
+  meta_types = ['master', 'orig_data', 'spase', *meta_types_generated]
+
   def get_one(dataset):
     dataset['master'] = _master(dataset, update=update, diffs=diffs)
     dataset['orig_data'] = _orig_data(dataset, update=update, diffs=diffs)
     dataset['spase'] = _spase(dataset, update=update, diffs=diffs)
-    dataset['hapi'] = cdawmeta.generate.hapi(dataset, update=update, regen=regen)
-    dataset['soso'] = cdawmeta.generate.soso(dataset, update=update, regen=regen)
+
+    # TODO: Here we generate all metadata types. This function has an unused
+    #       input of meta_type, which could be a string or an array of strings.
+    #       In this case, we should only generate the metadata types in meta_type.
+    #       The complication is that some metadata types depend on others, so
+    #       we would need to determine the order and which ones to generate.
+    for meta_type in meta_types_generated:
+      logger.info("Generating: " + meta_type)
+      _logger = cdawmeta.logger(meta_type, log_level=log_level)
+      dataset[meta_type] = cdawmeta.generate(dataset, meta_type, _logger, update=update, regen=regen)
 
     if not write_catalog and not embed_data:
-      # If write_catalog = True, we need to keep data to save catalog-all.json and catalog.json
-      for meta_type in ['master', 'orig_data', 'spase', 'hapi', 'soso']:
+      # If no catalog is being written and data is not being embedded, remove
+      # data from metadata and keep only id and data-file in object.
+      for meta_type in meta_types:
         if 'data' in dataset[meta_type]:
           del dataset[meta_type]['data']
 
@@ -96,12 +116,13 @@ def metadata(id=None, skip=None, embed_data=False, write_catalog=False, update=F
   metadata_ = {key: datasets_all[key] for key in dsids}
 
   if write_catalog:
-    _write_catalog(metadata_, id)
+    meta_types.remove('orig_data')
+    _write_catalog(metadata_, id, meta_types)
     if not embed_data:
       for key in metadata_.keys():
-        for meta_type in ['master', 'orig_data', 'spase', 'hapi', 'soso']:
-          if 'data' in metadata_[key][meta_type]:
-            del metadata_[key][meta_type]['data']
+        datum = cdawmeta.util.get_path(metadata_[key], ['meta_type', 'data'])
+        if datum is not None:
+          del datum
 
   return metadata_
 
@@ -149,7 +170,7 @@ def _datasets(allxml):
       continue
 
     if restructure:
-      dataset['allxml'] = _restructure_allxml(dataset['allxml'], logger=logger)
+      dataset['allxml'] = cdawmeta.restructure.allxml(dataset['allxml'], logger=logger)
 
     datasets_[id] = dataset
 
@@ -157,13 +178,13 @@ def _datasets(allxml):
 
 def _allxml(update=False, diffs=False):
 
-  timeout = cdawmeta.CONFIG['cdaweb']['timeouts']['allxml']
+  timeout = cdawmeta.CONFIG['metadata']['timeouts']['allxml']
 
   if hasattr(_allxml, 'allxml'):
     # Use curried result (So update only updates all.xml once per execution of main program)
     return _allxml.allxml
 
-  allurl = cdawmeta.CONFIG['cdaweb']['allurl']
+  allurl = cdawmeta.CONFIG['metadata']['allurl']
   allxml = _fetch(allurl, 'all', 'all', timeout=timeout, update=update, diffs=diffs)
 
   # Curry result
@@ -174,21 +195,21 @@ def _allxml(update=False, diffs=False):
 def _master(dataset, update=False, diffs=False):
 
   restructure=True
-  timeout = cdawmeta.CONFIG['cdaweb']['timeouts']['master']
+  timeout = cdawmeta.CONFIG['metadata']['timeouts']['master']
 
   mastercdf = dataset['allxml']['mastercdf']['@ID']
   url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
 
   master = _fetch(url, dataset['id'], 'master', timeout=timeout, update=update, diffs=diffs)
   if restructure and 'data' in master:
-    master['data'] = _restructure_master(master['data'], logger=logger)
+    master['data'] = cdawmeta.restructure.master(master['data'], logger=logger)
   return master
 
 def _spase(dataset, update=True, diffs=False):
 
   master = dataset['master']
-  restructure=True
-  timeout = cdawmeta.CONFIG['cdaweb']['timeouts']['spase']
+  restructure = True
+  timeout = cdawmeta.CONFIG['metadata']['timeouts']['spase']
 
   id = master['id']
   if 'data' not in master:
@@ -211,14 +232,14 @@ def _spase(dataset, update=True, diffs=False):
   spase = _fetch(url, id, 'spase', timeout=timeout, diffs=diffs, update=update)
 
   if restructure and 'data' in spase:
-    spase['data'] = _restructure_spase(spase['data'], logger=logger)
+    spase['data'] = cdawmeta.restructure.spase(spase['data'], logger=logger)
   return spase
 
 def _orig_data(dataset, update=True, diffs=False):
 
-  timeout = cdawmeta.CONFIG['cdaweb']['timeouts']['orig_data']
+  timeout = cdawmeta.CONFIG['metadata']['timeouts']['orig_data']
 
-  wsbase = cdawmeta.CONFIG['cdaweb']['wsbase']
+  wsbase = cdawmeta.CONFIG['metadata']['wsbase']
   start = dataset['allxml']['@timerange_start'].replace(" ", "T").replace("-","").replace(":","") + "Z"
   stop = dataset['allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z"
   url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop
@@ -226,193 +247,30 @@ def _orig_data(dataset, update=True, diffs=False):
   headers = {'Accept': 'application/json'}
   return _fetch(url, dataset['id'], 'orig_data', headers=headers, timeout=timeout, update=update, diffs=diffs)
 
-def _restructure_allxml(allxml, logger=None):
-  if 'mission_group' in allxml:
-    mission_groups = cdawmeta.util.array_to_dict(allxml['mission_group'],'@ID')
-    allxml['mission_group'] = mission_groups
-  if 'instrument_type' in allxml:
-    instrument_type = cdawmeta.util.array_to_dict(allxml['instrument_type'],'@ID')
-    allxml['instrument_type'] = instrument_type
-  if 'links' in allxml:
-    links = cdawmeta.util.array_to_dict(allxml['link'],'@URL')
-    allxml['links'] = links
-  for key, val in allxml.items():
-    #if val is not None and '@ID' in val:
-      # e.g., allxml['observatory] = {'@ID': 'ACE', ...} ->
-      #       allxml['observatory']['ACE'] = {'@ID': 'ACE', ...}
-      #allxml[key] = {val['@ID']: val}
-    # TODO: Read all.xsd file and check if any others are lists that converted to dicts.
-    if isinstance(val, list):
-      logger.warning(f"Warning[all.xml]: {id}: {key} is a list and was not restructured.")
+def _write_catalog(metadata_, id, meta_types):
 
-  return allxml
-
-def _restructure_spase(spase, logger=None):
-  if 'Spase' not in spase:
-    return spase
-  if 'NumericalData' not in spase['Spase']:
-    return spase
-  if 'Parameter' in spase['Spase']['NumericalData']:
-    if not isinstance(spase['Spase']['NumericalData']['Parameter'], list):
-      spase['Spase']['NumericalData']['Parameter'] = [spase['Spase']['NumericalData']['Parameter']]
-    for pidx, parameter in enumerate(spase['Spase']['NumericalData']['Parameter']):
-      if 'ParameterKey' not in parameter:
-        logger.error(f'Error[SPASE]: No ParameterKey in Parameter array element {pidx}: {parameter}')
-    data = spase['Spase']['NumericalData']['Parameter']
-    spase['Spase']['NumericalData']['Parameter'] = cdawmeta.util.array_to_dict(data, 'ParameterKey', ignore_error=True)
-  return spase
-
-def _restructure_master(master, logger=None):
-
-  """
-  Convert dict with arrays of objects to objects with objects. For example
-    { "Epoch": [ 
-        {"VarDescription": [{"DataType": "CDF_TIME_TT2000"}, ...] },
-        {"VarAttributes": [{"CATDESC": "Default time"}, ...] }
-      ],
-      ...
-    }
-  is converted to
-    {
-      "Epoch": {
-        "VarDescription": {
-          "DataType": "CDF_TIME_TT2000",
-          ...
-        },
-        "VarAttributes": {
-          "CATDESC": "Default time",
-          ...
-        }
-      }
-    }
-  """
-
-  def sort_keys(obj):
-    return {key: obj[key] for key in sorted(obj)}
-
-  # TODO: Check that only one key.
-  file = list(master.keys())[0]
-
-  fileinfo_r = cdawmeta.util.array_to_dict(master[file]['CDFFileInfo'])
-
-  variables = master[file]['CDFVariables']
-  variables_r = {}
-
-  for variable in variables:
-
-    variable_keys = list(variable.keys())
-    if len(variable_keys) > 1:
-      msg = "Expected only one variable key in variable object. Exiting witih code 1."
-      logger.error(msg)
-      exit(1)
-
-    variable_name = variable_keys[0]
-    variable_array = variable[variable_name]
-    variable_dict = cdawmeta.util.array_to_dict(variable_array)
-
-    for key, value in variable_dict.items():
-
-      if key == 'VarData':
-        variable_dict[key] = value
-      else:
-        variable_dict[key] = sort_keys(cdawmeta.util.array_to_dict(value))
-
-    variables_r[variable_name] = variable_dict
-
-  # Why do they use lower-case G? Inconsistent with CDFFileInfo and CDFVariables.
-  globals = master[file]['CDFglobalAttributes'] 
-  globals_r = {}
-
-  for _global in globals:
-    gkey = list(_global.keys())
-    if len(gkey) > 1:
-      if logger is not None:
-        msg = "Expected only one key in _global object."
-        logger.error(msg)
-    gvals = _global[gkey[0]]
-    text = []
-    for gval in gvals:
-      line = gval[list(gval.keys())[0]]
-      text.append(str(line))
-
-    globals_r[gkey[0]] = "\n".join(text)
-
-  master = {
-              'CDFFileInfo': {'FileName': file, **fileinfo_r},
-              'CDFglobalAttributes': globals_r,
-              'CDFVariables': variables_r
-            }
-
-  return master
-
-def CachedSession(cache_dir):
-  import requests_cache
-  from requests.adapters import HTTPAdapter
-
-  # https://requests-cache.readthedocs.io/en/stable/#settings
-  # https://requests-cache.readthedocs.io/en/stable/user_guide/headers.html
-
-  import logging
-  logging.getLogger("requests").setLevel(logging.ERROR)
-  logging.getLogger('requests_cache').setLevel(logging.ERROR)
-  logging.getLogger("urllib3").setLevel(logging.ERROR)
-
-  # Cache dir
-  copts = {
-    # Save files in the default user cache dir
-    "use_cache_dir": True,
-
-    # Use Cache-Control response headers for expiration, if available
-    "cache_control": True,
-
-    # Expire responses after expire_after if no cache control header
-    # This causes caching to not work.
-    # "expire_after": expire_after,
-
-    # Cache responses with these status codes
-    "allowable_codes": [200],
-
-    # In case of request errors, use stale cache data if possible
-    "stale_if_error": True,
-
-    "serializer": "json",
-
-    # This causes caching to not work unless decode_content = False
-    # See https://github.com/requests-cache/requests-cache/issues/963
-    "backend": "filesystem",
-
-    "decode_content": False
-  }
-
-  # CachedSession does not handle relative paths properly.
-  if not os.path.isabs(cache_dir):
-    cache_dir = os.path.abspath(cache_dir)
-
-  session = requests_cache.CachedSession(cache_dir, **copts)
-  session.mount('https://', HTTPAdapter(max_retries=5))
-
-  return session
-
-def _write_catalog(metadata_, id):
-
-  # Write catalog-all.json and catalog.json
-  #meta_types = ['master', 'orig_data', 'spase', 'hapi', 'soso']
-  # orig_data is too large; allxml is already downloaded as single file.
-  meta_types = ['master', 'spase', 'hapi', 'soso']
   for meta_type in meta_types:
     data = []
     for dsid in metadata_.keys():
-      if meta_type not in metadata_[dsid]:
-        logger.error(f"Error: {dsid}: No {meta_type} metadata")
+      datum = cdawmeta.util.get_path(metadata_[dsid], ['meta_type', 'data'])
 
-      if 'data' in metadata_[dsid][meta_type]:
-        data.append(metadata_[dsid][meta_type]['data'])
+      if data is None:
+        logger.error(f"Error: {dsid}: No {meta_type} metadata")
+        continue
+
+      if isinstance(datum, list):
+        # This is for HAPI metadata, which can have multiple datasets
+        for d in datum:
+          data.append(d)
+      else:
+        data.append(datum)
 
     subdir = ''
     qualifier = ''
-    if id is not None and id.startswith('^'):
+    if id is not None:
       subdir = 'catalog-partial'
       qualifier = f'-{id}'
+
     fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog-all{qualifier}')
     cdawmeta.util.write(fname + ".json", data, logger=logger)
     cdawmeta.util.write(fname + ".pkl", data, logger=logger)
@@ -420,14 +278,71 @@ def _write_catalog(metadata_, id):
     if meta_type == 'hapi':
       from copy import deepcopy
       data_copy = deepcopy(data)
-      for metadatum in data_copy:
-        if 'data' in metadatum:
-          del metadatum['data']['info']
+      for datum in data_copy:
+        if datum is not None and 'data' in datum:
+          # The non-"all" HAPI catalog does not have "info" nodes.
+          del datum['data']['info']
 
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}.json')
       cdawmeta.util.write(fname, data_copy, logger=logger)
 
-def _fetch_request_log(resp, diff):
+def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
+
+  cache_dir = os.path.join(cdawmeta.DATA_DIR, 'CachedSession', what)
+  subdir = '' if what == 'all' else 'info'
+  json_file = os.path.join(cdawmeta.DATA_DIR, what, subdir, f"{id}.json")
+  pkl_file = os.path.join(cdawmeta.DATA_DIR, what, subdir, f"{id}.pkl")
+
+  if not update and os.path.exists(pkl_file):
+    msg = "update = False; bypassing CachedSession request and using last result."
+    logger.info(msg)
+    data = cdawmeta.util.read(pkl_file, logger=logger)
+    data['request']["log"] = msg
+    return data
+
+  logger.info(f'Getting using requests-cache: {url}')
+
+  result = {'id': id, 'url': url}
+
+  get = cdawmeta.util.get_json(url, cache_dir=cache_dir, headers=headers, timeout=timeout, diffs=diffs)
+
+  if get['emsg']:
+    emsg = f"Error[{what}]: {id}: {get['emsg']}"
+    logger.error(msg)
+    result['error'] = emsg
+    return result
+
+  cache_file = os.path.join(cache_dir, get['response'].cache_key + ".json")
+
+  result['id'] = id
+  result['url'] = url
+  result['data-file'] = json_file
+  result['data'] = get['data']
+
+  result['request'] = {}
+  result['request']["url"] = url
+  result['request']["log"] = _fetch_log(get['response'], get['diff'])
+  result['request']["diff"] = get['diff']
+  result['request']["file"] = cache_file
+  result['request']["file-header"] = dict(get['response'].headers)
+
+  logger.info(result['request']["log"])
+
+  if not os.path.exists(json_file):
+    try:
+      cdawmeta.util.write(json_file, result, logger=logger)
+    except Exception as e:
+      logger.error(f"Error writing {json_file}: {e}")
+
+  if not os.path.exists(pkl_file):
+    try:
+      cdawmeta.util.write(pkl_file, result, logger=logger)
+    except Exception as e:
+      logger.error(f"Error writing {pkl_file}: {e}")
+
+  return result
+
+def _fetch_log(resp, diff):
   # Combine into single string to deal with parallel processing
 
   req_cache_headers = {k: v for k, v in resp.request.headers.items() if k in ['If-None-Match', 'If-Modified-Since']}
@@ -454,102 +369,3 @@ def _fetch_request_log(resp, diff):
       json_indented = "\n    ".join(diff['diff'].to_json(indent=2).split('\n'))
       msg += f"{json_indented}\n"
   return msg
-
-def _fetch_diff(cache_dir, cache_key):
-
-  subdir = os.path.join(cache_dir, cache_key)
-  file_last = os.path.join(subdir, cache_key + ".json")
-  os.makedirs(subdir, exist_ok=True)
-
-  file_now = os.path.join(cache_dir, cache_key + ".json")
-  try:
-    data_now = cdawmeta.util.read(file_now, logger=logger)
-  except Exception as e:
-    logger.error(f"Error reading {file_now}: {e}")
-    return {"diff": None, "file_now": None, "file_last": None}
-
-  if not os.path.exists(file_last):
-    return {"diff": None, "file_now": file_now, "file_last": None}
-
-  try:
-    data_last = cdawmeta.util.read(file_last, logger=logger)
-  except Exception as e:
-    logger.error(f"Error reading {file_last}: {e}")
-    return {"diff": None, "file": file_now, "file_last": None}
-
-  diff = deepdiff.DeepDiff(data_last, data_now)
-  file_diff = os.path.join(subdir, cache_key + ".diff.json")
-  cdawmeta.util.write(file_diff, diff.to_json(), logger=logger)
-
-  shutil.copyfile(file_now, file_last)
-
-  return {"diff": diff, "file_now": file_now, "file_last": file_last}
-
-def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
-
-  cache_dir = os.path.join(cdawmeta.DATA_DIR, 'CachedSession', what)
-  file_out_json = os.path.join(cdawmeta.DATA_DIR, what, f"{id}.json")
-  file_out_pkl = os.path.join(cdawmeta.DATA_DIR, what, f"{id}.pkl")
-
-  if not update and os.path.exists(file_out_pkl):
-    msg = "update = False; bypassing CachedSession request and using last result."
-    logger.info(msg)
-    data = cdawmeta.util.read(file_out_pkl, logger=logger)
-    data['request']["log"] = msg
-    return data
-
-  session = CachedSession(cache_dir)
-
-  logger.info('CachedSession get: ' + url)
-
-  result = {'id': id, 'url': url}
-  try:
-    resp = session.get(url, headers=headers, timeout=timeout)
-    resp.raise_for_status()
-    if resp.headers['Content-Type'] == 'text/xml':
-      text = resp.text
-      json_dict = xmltodict.parse(text)
-    else:
-      json_dict = resp.json()
-
-  except Exception as e:
-    msg = f"Error[{what}]: {id}: {e}"
-    logger.error(msg)
-    result['error'] = msg
-    return result
-
-  cache_file = os.path.join(cache_dir, resp.cache_key + ".json")
-
-  result['id'] = id
-  result['url'] = url
-  result['data-file'] = file_out_json
-  result['data'] = json_dict
-
-  result['request'] = {}
-  result['request']["url"] = url
-  result['request']["file"] = cache_file
-  result['request']["file-header"] = dict(resp.headers)
-
-  diff = None
-  if diffs:
-    logger.info("Computing diff")
-    diff = _fetch_diff(cache_dir, resp.cache_key)
-    result['request']["diff"] = diff
-
-  #_fetch_request_log(resp, url, diff)
-  result['request']["log"] = _fetch_request_log(resp, diff)
-  logger.info(result['request']["log"])
-
-  if not os.path.exists(file_out_json):
-    try:
-      cdawmeta.util.write(file_out_json, result, logger=logger)
-    except Exception as e:
-      logger.error(f"Error writing {file_out_json}: {e}")
-
-  if not os.path.exists(file_out_pkl):
-    try:
-      cdawmeta.util.write(file_out_pkl, result, logger=logger)
-    except Exception as e:
-      logger.error(f"Error writing {file_out_pkl}: {e}")
-
-  return result

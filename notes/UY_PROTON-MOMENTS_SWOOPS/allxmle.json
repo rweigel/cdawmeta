@@ -1,0 +1,107 @@
+{
+  "@ID": "uy_proton-moments_swoops_cdaweb",
+  "@nssdc_ID": "(None) ",
+  "@serviceprovider_ID": "UY_PROTON-MOMENTS_SWOOPS",
+  "@timerange_start": "1990-11-18 02:52:56",
+  "@timerange_stop": "2009-06-30 15:54:11",
+  "access": {
+    "@filenaming": "uy_proton-moments_swoops_%Y%m%d_%Q.cdf",
+    "@protocol": "https",
+    "@subdividedby": "%Y",
+    "@timerange_start": "1990-11-18 02:52:56",
+    "@timerange_stop": "2009-06-30 15:54:11",
+    "URL": "https://cdaweb.gsfc.nasa.gov/pub/data/ulysses/plasma/swoops_cdaweb/proton-moments_swoops"
+  },
+  "other_info": null,
+  "observatory": {
+    "@ID": "Ulysses",
+    "@nssdc_ID": "None",
+    "@serviceprovider_ID": "Ulysses",
+    "description": {
+      "@short": "Ulysses"
+    }
+  },
+  "instrument": {
+    "@ID": "SWOOPS",
+    "@nssdc_ID": "None",
+    "@serviceprovider_ID": "SWOOPS",
+    "description": {
+      "@short": "SWOOPS"
+    }
+  },
+  "data_producer": {
+    "@affiliation": "Princeton/PPPL",
+    "@name": "David. J. McComas",
+    "@title": "None"
+  },
+  "mission_group": {
+    "@ID": "Ulysses",
+    "@serviceprovider_ID": "Ulysses",
+    "description": {
+      "@short": "Ulysses"
+    }
+  },
+  "instrument_type": {
+    "@ID": "Plasma and Solar Wind",
+    "@serviceprovider_ID": "Plasma and Solar Wind"
+  },
+  "description": {
+    "@short": "Moments of the distribution function of protons              - David. J. McComas (Princeton/PPPL)"
+  },
+  "mastercdf": {
+    "@ID": "https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS/uy_proton-moments_swoops_00000000_v01.cdf",
+    "@serviceprovider_ID": "https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS/uy_proton-moments_swoops_00000000_v01.cdf"
+  },
+  "AccessInformation": [
+    {
+      "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF/CDAWeb/CDF",
+      "Availability": "Online",
+      "AccessRights": "Open",
+      "Acknowledgement": "SPDF/CDAWeb. Please also acknowledge the data producer: David. J. McComas at Princeton/PPPL",
+      "AccessURL": {
+        "Name": "HTTPS from SPDF",
+        "URL": "https://cdaweb.gsfc.nasa.gov/pub/data/ulysses/plasma/swoops_cdaweb/proton-moments_swoops",
+        "Description": "In CDF via HTTP from CDAWeb",
+        "AccessFilenameTemplate": "uy_proton-moments_swoops_%Y%m%d_%Q.cdf",
+        "AccessDirectoryTemplate": "%Y",
+        "DataExtent": 42983978
+      },
+      "Format": [
+        "CDF"
+      ]
+    },
+    {
+      "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF/CDAWeb/CDAWS",
+      "Availability": "Online",
+      "AccessRights": "Open",
+      "Acknowledgement": "SPDF/CDAWeb. Please also acknowledge the data producer: David. J. McComas at Princeton/PPPL",
+      "AccessURL": {
+        "Name": "CDAWeb Web Service",
+        "URL": "https://cdaweb.gsfc.nasa.gov/cgi-bin/eval2.cgi?index=sp_phys&dataset=UY_PROTON-MOMENTS_SWOOPS",
+        "ProductKey": "UY_PROTON-MOMENTS_SWOOPS"
+      },
+      "Format": [
+        "CDF",
+        "Text.ASCII"
+      ]
+    },
+    {
+      "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF/CDAWeb/HAPI",
+      "Availability": "Online",
+      "AccessRights": "Open",
+      "Acknowledgement": "SPDF/CDAWeb. Please also acknowledge the data producer: David. J. McComas at Princeton/PPPL",
+      "AccessURL": {
+        "Name": "CDAWeb HAPI Server",
+        "URL": "https://hapi-server.org/servers/#server=CDAWeb&dataset=UY_PROTON-MOMENTS_SWOOPS",
+        "Style": "HAPI",
+        "ProductKey": "UY_PROTON-MOMENTS_SWOOPS",
+        "Description": "Web Service to this product using the HAPI interface."
+      },
+      "Format": [
+        "CSV",
+        "JSON",
+        "Binary"
+      ]
+    }
+  ]
+}

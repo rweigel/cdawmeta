@@ -21,6 +21,7 @@ def table(id=None, table_name=None, embed_data=False, skip=None, update=False, r
   datasets = cdawmeta.metadata(id=id, skip=skip, update=update, regen=regen, embed_data=True, diffs=False, max_workers=max_workers)
   info = {}
   for table_name in table_names:
+    logger.info(40*"-")
     logger.info(f"Creating table '{table_name}'")
     header, body, attribute_counts = _table(datasets, table_name=table_name)
     if len(body) > 0 and len(header) != len(body[0]):
@@ -64,9 +65,9 @@ def _table(datasets, table_name='cdaweb.dataset'):
   # Create table header based on attributes dict.
   header = _table_header(attributes, table_name)
 
-  logger.info(f"Creating {table_name} table rows")
+  logger.info(f"Creating {table_name} table row(s)")
   table = _table_walk(datasets, attributes, table_name, mode='rows')
-  logger.info(f"Created {len(table)} {table_name} table rows")
+  logger.info(f"Created {len(table)} {table_name} table row(s)")
 
   return header, table, attribute_counts
 
@@ -92,7 +93,9 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
     if cdawmeta.CONFIG['table'][table_name]['fix_attributes']:
       if 'fixes' in cdawmeta.CONFIG['table'][table_name]:
         fixes_file = os.path.join(os.path.dirname(cdawmeta.__file__), 'config.json')
-        logger.info(f"with fixes for {table_name} found in {fixes_file}")
+        if mode == 'attributes':
+          logger.info(f"Using fixes for {table_name} found in ")
+          logger.info(f"  {fixes_file}")
         fixes = cdawmeta.CONFIG['table'][table_name]['fixes']
       else:
         msg = f"Error: cdawmeta.CONFIG['table'][{table_name}]['fix_attributes'] = True, "
@@ -144,7 +147,7 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
           _append_columns(data, attributes[path], row, fixes)
 
       if mode == 'rows':
-        logger.info(f"  {len(row)} columns")
+        logger.debug(f"  {len(row)} columns in row {len(table)}")
         if n_cols_last is not None and len(row) != n_cols_last:
           raise Exception(f"Number of columns changed from {n_cols_last} to {len(row)} for {id}")
         n_cols_last = len(row)
@@ -244,7 +247,7 @@ def _add_attributes(data, attributes, attribute_names, fixes, path):
     if fixes is None or attribute_name not in fixes:
       attributes[attribute_name] = None
     else:
-      logger.error(f"Fixing attribute name: {path}/{attribute_name} -> {fixes[attribute_name]}")
+      logger.warning(f"  Fixing attribute name: {path}/{attribute_name} -> {fixes[attribute_name]}")
       attributes[fixes[attribute_name]] = None
 
 
@@ -279,21 +282,22 @@ def _write_files(table_name, header, body, counts, id=id):
   cdawmeta.util.write(files['header'], header)
   logger.info(f"Writing: {files['body']}")
   cdawmeta.util.write(files['body'], body)
-
+ 
   logger.info(f"Writing: {files['csv']}")
   cdawmeta.util.write(files['csv'], [header, *body])
 
   logger.info(f"Writing: {files['sql']}")
-  if os.path.exists(files['sql']):
-    logger.info(f"  Removing existing SQLite database file '{files['sql']}'")
-    os.remove(files['sql'])
   _write_sqldb(header, body, file=f"{files['sql']}", name=table_name)
 
   return files
 
 def _write_sqldb(header, body, file="table1.db", name="table1"):
-
+  indent = "   "
   import sqlite3
+
+  if os.path.exists(file):
+    logger.info(f"{indent}Removing existing SQLite database file '{file}'")
+    os.remove(file)
 
   header, body = _sql_prep(header, body)
 
@@ -307,40 +311,43 @@ def _write_sqldb(header, body, file="table1.db", name="table1"):
   create  = f'CREATE TABLE `{name}` {column_spec}'
   execute = f'INSERT INTO `{name}` {column_names} VALUES {column_vals}'
 
-  logger.info(f"  Creating and connecting to file '{file}'")
+  logger.debug(f"{indent}Creating and connecting to file '{file}'")
   conn = sqlite3.connect(file)
-  logger.info(f"  Created and connecting to file '{file}'")
+  logger.debug(f"{indent}Created and connecting to file '{file}'")
 
-  logger.info(f"  Getting cursor from connection to '{file}'")
+  logger.info(f"{indent}Getting cursor from connection to '{file}'")
   cursor = conn.cursor()
-  logger.info(f"  Got cursor from connection to '{file}'")
+  logger.info(f"{indent}Got cursor from connection to '{file}'")
 
-  logger.info(f"  Creating index using cursor.execute('{create}')")
+  logger.debug(f"{indent}Creating index using cursor.execute('{create}')")
   cursor.execute(create)
-  logger.info("  Done")
+  logger.debug(f"{indent}Done")
 
-  logger.info(f"  Inserting rows using cursor.executemany('{execute}', body)")
+  logger.info(f"{indent}Inserting rows")
+  logger.debug(f"{indent}using cursor.executemany('{execute}', body)")
   cursor.executemany(execute, body)
-  logger.info("  Done")
+  logger.info(f"{indent}Done")
 
-  logger.info("  Executing: commit()")
+  logger.debug(f"{indent}Executing: commit()")
   conn.commit()
-  logger.info("  Done")
+  logger.debug(f"{indent}Done")
 
   if header is not None:
     index = f"CREATE INDEX idx0 ON `{name}` ({header[0]})"
-    logger.info(f"  Creating index using cursor.execute('{index}')")
+    logger.debug(f"{indent}Creating index using cursor.execute('{index}')")
     cursor.execute(index)
-    logger.info("  Done")
+    logger.debug(f"{indent}Done")
 
-    logger.info("  Executing: commit()")
+    logger.debug(f"{indent}Executing: commit()")
     conn.commit()
-    logger.info("  Done")
+    logger.debug(f"{indent}Done")
 
   conn.close()
 
 def _sql_prep(header, body):
   import time
+
+  indent = "   "
 
   def unique(header):
 
@@ -350,27 +357,27 @@ def _sql_prep(header, body):
       indices = [i for i, x in enumerate(headerlc) if x == val.lower()]
       if len(indices) > 1:
         dups = [header[i] for i in indices]
-        logger.error(f"Warning: Duplicate column names when cast to lower case: {str(dups)}.")
-        logger.error("         Renaming duplicates by appending _$DUPLICATE_NUMBER$ to the column name.")
+        logger.warning(f"{indent}Duplicate column names when cast to lower case: {str(dups)}.")
+        logger.warning(f"{indent}Renaming duplicates by appending _$DUPLICATE_NUMBER$ to the column name.")
         for r, idx in enumerate(indices):
           if r > 0:
             newname = header[idx] + "_$" + str(r) + "$"
-            logger.info(f"Renaming {header[idx]} to {newname}")
+            logger.info(f"{indent}Renaming {header[idx]} to {newname}")
             headeru[idx] = newname
     return headeru
 
-  logger.info("  Casting table elements to str.")
-  start = time.time()
 
-  logger.info("  Renaming non-unique column names")
+  logger.info(f"{indent}Renaming non-unique column names")
   header = unique(header)
-  logger.info("  Renamed non-unique column names")
+  logger.info(f"{indent}Renamed non-unique column names")
 
+  logger.info(f"{indent}Casting table elements to str.")
+  start = time.time()
   for i, row in enumerate(body):
     for j, _ in enumerate(row):
       body[i][j] = str(body[i][j])
 
   dt = "{:.2f} [s]".format(time.time() - start)
-  logger.info(f"Casted table elements to str in {len(body)} rows and {len(header)} columns in {dt}")
+  logger.info(f"{indent}Casted table elements to str in {len(body)} rows and {len(header)} columns in {dt}")
 
   return header, body

@@ -1,3 +1,19 @@
+https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/CdfJavaDataSource/src/org/autoplot/cdf/CdfVirtualVars.java
+
+https://github.com/rweigel/CDAWlib/blob/952a28b08658413081e75714bd3b9bd3ba9167b9/virtual_funcs.pro
+
+how to handle parameters when multiple DEPEND_0s?
+
+Prefix things not in SPASE schema with _
+
+curl -s -H "Accept: application/xml" "https://heliophysicsdata.gsfc.nasa.gov/WS/hdp/1/Spase?ResourceID=spase://NASA/NumericalData/ACE/Ephemeris/PT12M"
+
+https://cdaweb.gsfc.nasa.gov/registry/hdp/hapi/hapiHtml.html#url=https://cdaweb.gsfc.nasa.gov/hapi&id=VOYAGER1_10S_MAG@0,VOYAGER1_10S_MAG@1
+
+How is https://www.w3.org/TR/vocab-dcat/ related to https://github.com/ESIPFed/science-on-schema.org/?
+
+https://heliophysicsdata.gsfc.nasa.gov/websearch/dispatcher?action=TEXT_SEARCH_PANE_ACTION&inputString=VOYAGER1_10S_MAG
+
 The following notes are based on results from the [`cdawmeta` package](https://github.com/rweigel/cdawmeta/), which was developed for creating metadata for the new CDAWeb HAPI server. The code in this package produces metadata stored in http://mag.gmu.edu/git-data/cdawmeta/data/ and the searchable [CDAWeb](https://hapi-server.org/meta/cdaweb/) and [HAPI](https://hapi-server.org/meta/hapi/) metadata tables.
 
 1\. These `FILLVALs` are suspect:
@@ -8,6 +24,7 @@ The following notes are based on results from the [`cdawmeta` package](https://g
 
 * [1.0000000331813535e+32](https://hapi-server.org/meta/cdaweb/#FILLVAL=1.0000000331813535e%2b32)
 
+https://github.com/rweigel/CDAWlib/blob/952a28b08658413081e75714bd3b9bd3ba9167b9/virtual_funcs.pro#L3345
 
 2\. Nand often has `FILL=-2.14748006E9` for `integer` type variables. To see the occurrences, [search the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `-2.14748006E9`. I suspect the reason is similar to that in item 3. below. I also see Nand having a fill of `99999.9` when the master has `100000.0` and also NaN when the master has `-1e+31`. ([Search on the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `99999.9` and `NaN`).
 

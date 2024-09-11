@@ -1,0 +1,23 @@
+{
+  "_comment": "Paths are relative to cdawmeta.DATA_DIR",
+  "default": {
+    "name": "default",
+    "file_log": "{dir_name}/{name}.log",
+    "file_error": "{dir_name}/{name}.error.log",
+    "console_format": "%(name)s %(levelname)s %(message)s",
+    "console_format_debug": "%(name)s %(levelname)s %(filename)s:%(lineno)d %(message)s",
+    "color": true
+  },
+  "metadata": {
+    "name": "metadata",
+    "file_log": "{name}.log",
+    "file_error": "{name}.error.log",
+    "color": true
+  },
+  "hapi": {
+    "name": "hapi",
+    "file_log": "{name}/{name}.log",
+    "file_error": false,
+    "color": true
+  }
+}

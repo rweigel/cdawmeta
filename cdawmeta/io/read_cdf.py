@@ -1,10 +1,12 @@
 import os
+
 import cdflib
+
 import cdawmeta
 
 def _cache_dir(dir):
   if dir is None:
-    dir = cdawmeta.DATA_DIR
+    dir = os.path.join(cdawmeta.DATA_DIR, 'ws')
   return os.path.abspath(dir)
 
 def url2file(url):
@@ -246,24 +248,28 @@ def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601
         if depend_0 not in meta:
           meta[depend_0] = meta_all[depend_0]
         if 'VarData' not in meta[depend_0]:
-          print(f"Reading DEPEND_0 = '{depend_0}' for variable = '{variable}'")
+          if logger is not None:
+            logger.info(f"Reading DEPEND_0 = '{depend_0}' for variable = '{variable}'")
           meta[depend_0]['VarData'] = cdffile.varget(variable=depend_0)
 
         rr[depend_0] = record_range(meta[depend_0], start, stop)
 
     try:
       if depend_0 is None:
-        print(f"Reading variable = {variable}")
+        if logger is not None:
+          logger.info(f"Reading variable = {variable}")
         meta[variable]['VarData'] = cdffile.varget(variable=variable)
       else:
-        print(f"Reading variable = {variable}[{rr[depend_0][0]}:{rr[depend_0][1]}]")
+        if logger is not None:
+          logger.info(f"Reading variable = {variable}[{rr[depend_0][0]}:{rr[depend_0][1]}]")
         meta[variable]['VarData'] = cdffile.varget(variable=variable, startrec=rr[depend_0][0], endrec=rr[depend_0][1])
     except Exception as e:
       if depend_0 is None:
         call_str = f"cdffile.varget(variable='{variable}')"
       else:
         call_str = f"cdffile.varget(variable='{variable}', startrec={rr[depend_0][0]}, endrec={rr[depend_0][1]})"
-      print(f"Error executing {call_str} for file {file}:\n  {e}")
+      if logger is not None:
+        logger.info(f"Error executing {call_str} for file {file}:\n  {e}")
       meta[variable]['VarData'] = None
 
     if iso8601:
@@ -275,7 +281,8 @@ def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601
           epoch = cdflib.cdfepoch.encode(meta[variable]['VarData'], iso_8601=True)
           meta[variable]['VarDataISO8601'] = epoch
       except Exception as e:
-        print(f"Error when executing cdflib.cdfepoch.encode(..., iso_8601=True) for {variable}:\n  {e}")
+        if logger is not None:
+          logger.error(f"Error when executing cdflib.cdfepoch.encode(..., iso_8601=True) for {variable}:\n  {e}")
         meta[variable]['VarDataISO8601'] = None
 
   return meta
@@ -392,12 +399,18 @@ def subset_meta(meta, DEPEND_0=None, VAR_TYPE='data', RecVariance=True):
 
   return meta_sub
 
-def read(id=id, start=None, stop=None, logger=None, cache_dir=None, update=False):
+def files(id=id, start=None, stop=None, logger=None, cache_dir=None, update=False):
 
   cache_dir = _cache_dir(cache_dir)
 
-  metadata = cdawmeta.metadata(id=id, data_dir=cache_dir, update=update, embed_data=True, no_orig_data=False)
+  if logger is not None:
+    logger.info(f"Getting file URLs for {id} between {start} and {stop}")
+
+  metadata = cdawmeta.metadata(id=id, update=update, embed_data=True, write_catalog=False)
   files_all = metadata[id]['orig_data']['data']['FileDescription']
+  if logger is not None:
+    logger.info(f"Total of {len(files_all)} URLs for {id}")
+
   files_needed = []
   start = cdawmeta.util.pad_iso8601(start.strip())
   stop = cdawmeta.util.pad_iso8601(stop.strip())
@@ -411,12 +424,15 @@ def read(id=id, start=None, stop=None, logger=None, cache_dir=None, update=False
     if file_stop >= stop:
       break
 
+  if logger is not None:
+    logger.info(f"Total {len(files_needed)} URLs for {id} between {start} and {stop}")
+
   return files_needed
 
 if __name__ == '__main__':
 
-  files = read(id='AC_OR_SSC', start='2020-01-01T00:00:00Z', stop='2020-01-01T01:00:00Z')
-  print(files)
+  files_ = files(id='AC_OR_SSC', start='2020-01-01T00:00:00Z', stop='2020-01-01T01:00:00Z')
+  print(files_)
   exit()
   read_cdf_test1()
   read_cdf_test2()

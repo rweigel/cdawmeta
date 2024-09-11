@@ -1,0 +1,140 @@
+{
+  "CDAWeb/HTTPS/CDF": {
+    "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
+    "Availability": "Online",
+    "AccessRights": "Open",
+    "Acknowledgement": "SPDF/CDAWeb",
+    "Format": ["CDF"],
+    "Style": "Listing",
+    "AccessURL": {
+        "Name": "HTTPS from SPDF",
+        "URL": null,
+        "Description": "In CDF via HTTP from CDAWeb"
+    }
+  },
+  "CDAWeb/FTPS/CDF": {
+    "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
+    "Availability": "Online",
+    "AccessRights": "Open",
+    "Acknowledgement": "SPDF/CDAWeb",
+    "Format": ["CDF"],
+    "Style": "Listing",
+    "AccessURL": {
+        "Name": "FTPS from SPDF",
+        "URL": null,
+        "Description": "In CDF via HTTP from CDAWeb"
+    }
+  },
+  "CDAWeb/CDAWS": {
+    "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
+    "Availability": "Online",
+    "AccessRights": "Open",
+    "Acknowledgement": "SPDF/CDAWeb",
+    "Format": ["CDF", "CSV", "GIF", "NetCDF", "PNG", "PS", "PDF", "_Script.IDL", "_Script.Python", "Text.ASCII", "_WAV", "XML"],
+    "AccessURL": {
+        "Name": "CDAWeb Web Service",
+        "URL": "https://cdaweb.gsfc.nasa.gov/WebServices/",
+        "Style": "WebService",
+        "Description": "Instructions for using web services to access this dataset an other other metadata and options for CDAWeb datasets. The ProductKey here corresponds to {dataset} in 'URI' in the tables in which it applies."
+    }
+  },
+  "CDAWeb/CDAWS/UI": {
+    "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
+    "Availability": "Online",
+    "AccessRights": "Open",
+    "Acknowledgement": "SPDF/CDAWeb",
+    "Format": ["CDF", "GIF", "PDF", "Text.ASCII", "_WAV"],
+    "AccessURL": {
+        "Name": "CDAWeb Web Service user interface",
+        "URL": "https://cdaweb.gsfc.nasa.gov/cgi-bin/eval2.cgi?index=sp_phys&dataset={dsid}",
+        "Style": "WebService",
+        "ProductKey": null,
+        "Description": "Web service user interface for this product."
+    }
+  },
+  "CDAWeb/CDAWS/Program": {
+    "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
+    "Availability": "Online",
+    "AccessRights": "Open",
+    "Acknowledgement": "SPDF/CDAWeb",
+    "Format": ["_Script.IDL", "_Script.Python"],
+    "AccessURL": {
+        "Name": "CDAWeb Python Script",
+        "URL": "https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/{dsid}/clientLibraryExample/",
+        "ProductKey": null,
+        "Style": "WebService",
+        "Description": "Web service that generates a Python script to access this product."
+    }
+  },
+  "SSCWeb/SSCWS": {
+    "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
+    "Availability": "Online",
+    "AccessRights": "Open",
+    "Acknowledgement": "SPDF/SSCWeb",
+    "Format": ["Text.ASCII"],
+    "AccessURL": {
+      "Name": "SSCWeb Web Service",
+      "URL": "https://sscweb.gsfc.nasa.gov/cgi-bin/Locator.cgi",
+      "ProductKey": null,
+      "Style": "WebService",
+      "Description": "Web Service to this product."
+    }
+  },
+  "CDAWeb/HAPI": {
+    "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
+    "Availability": "Online",
+    "AccessRights": "Open",
+    "Acknowledgement": "SPDF/CDAWeb",
+    "Format": ["CSV", "JSON", "Binary"],
+    "AccessURL": {
+      "Name": "CDAWeb HAPI Server",
+      "URL": "https://hapi-server.org/servers/#server=CDAWeb&dataset={dsid}",
+      "Style": "HAPI",
+      "ProductKey": null,
+      "Description": "Web Service to this product using the HAPI interface.",
+      "x_Description": "Note: A HAPI dataset has a collection of parameters, each having the same time stamps. This CDAWeb dataset contains {n_keys} HAPI-type datasets. The @0, ... at the end of the ParameterKeys indicates the index of the CDAWeb dataset. (The dataset index <=> CDF file time variable pairs are {time_variable_names}.)"
+    }
+  },
+  "CDAWeb/HAPI/Program": {
+    "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
+    "Availability": "Online",
+    "AccessRights": "Open",
+    "Acknowledgement": "SPDF/CDAWeb",
+    "Format": null,
+    "AccessURL": {
+      "Name": "CDAWeb HAPI Script in Multiple Languages",
+      "URL": "https://hapi-server.org/servers/#server=CDAWeb&dataset={dsid}&return=script",
+      "Style": "HAPI",
+      "ProductKey": null,
+      "Description": "Web Service user interface that generates scripts in {hapi_languages} to access this product. See https://hapi-server.org/servers/api for the API."
+    }
+  },
+  "SSCWeb/HAPI": {
+    "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
+    "Availability": "Online",
+    "AccessRights": "Open",
+    "Acknowledgement": "SPDF/SSCWeb",
+    "Format": ["CSV", "JSON", "Binary"],
+    "AccessURL": {
+      "Name": "CDAWeb HAPI Server",
+      "URL": "https://hapi-server.org/servers/#server=SSCWeb&dataset={dsid}",
+      "Style": "HAPI",
+      "ProductKey": null,
+      "Description": "Web Service to this product using the HAPI interface."
+    }
+  },
+  "SSCWeb/HAPI/Program": {
+    "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
+    "Availability": "Online",
+    "AccessRights": "Open",
+    "Acknowledgement": "SPDF/CDAWeb",
+    "Format": null,
+    "AccessURL": {
+      "Name": "CDAWeb HAPI Script in multiple languages",
+      "URL": "https://hapi-server.org/servers/#server=CDAWeb&dataset={dsid}&return=script",
+      "Style": "HAPI",
+      "ProductKey": null,
+      "Description": "Web Service that generates scripts in {hapi_languages} to access this product. See https://hapi-server.org/servers/api for the API."
+    }
+  }
+}

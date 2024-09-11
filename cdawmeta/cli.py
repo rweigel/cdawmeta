@@ -1,6 +1,14 @@
 def cli(script):
 
+  import cdawmeta
+  meta_types_generated = cdawmeta._generate.generators
+
   clkws = {
+    "meta-type": {
+      "help": "Type of metadata to generate",
+      "default": 'all',
+      "choices": ['all', 'master', 'orig_data', 'spase', *meta_types_generated]
+    },
     "id": {
       "help": "ID or pattern for dataset IDs to include (prefix with ^ to use pattern match, e.g., '^A|^B') (default: ^.*)"
     },
@@ -12,7 +20,7 @@ def cli(script):
     "write-catalog": {
       "action": "store_true",
       "help": "Write catalog-all.json files (and catalog.json for HAPI metadata)",
-      "default": False
+      "default": True
     },
     "max-workers": {
       "metavar": "N",
@@ -73,9 +81,12 @@ def cli(script):
 
   if script == 'table.py':
     del clkws['diffs']
+    del clkws['write-catalog']
+    del clkws['meta-type']
 
   if script == 'query.py':
     del clkws['diffs']
+    del clkws['write-catalog']
 
   import argparse
   parser = argparse.ArgumentParser()

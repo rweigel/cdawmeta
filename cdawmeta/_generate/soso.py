@@ -1,17 +1,6 @@
 import cdawmeta
 
-logger = None
-
-def soso(metadatum=None, update=True, regen=False, diffs=False, log_level='info'):
-  from .generate import generate
-  global logger
-  if logger is None:
-    logger = cdawmeta.logger('soso')
-    logger.setLevel(log_level.upper())
-
-  return generate(metadatum, _soso, logger, update=update, regen=regen, diffs=diffs)
-
-def _soso(metadatum):
+def soso(metadatum, logger):
 
   jsonld = {
     "@context": [
@@ -26,31 +15,31 @@ def _soso(metadatum):
 
   include_variableMeasured = True
 
-  allxml = metadatum['allxml']
-  master = metadatum['master']
+  keywords = []
 
   jsonld['@id'] = metadatum['id']
+
+  allxml = metadatum['allxml']
   jsonld['identifier'] = allxml['@ID']
   jsonld['startDate'] = allxml['@timerange_start'].replace(' ', 'T') + "Z"
   jsonld['endDate'] = allxml['@timerange_stop'].replace(' ', 'T') + "Z"
-  jsonld['name'] = cdawmeta.util.get_path(master, ['data', 'CDFglobalAttributes', 'TITLE'])
-  jsonld['description'] = cdawmeta.util.get_path(allxml, ['description', '@short'])
-
-  keywords = []
   keywords.append(cdawmeta.util.get_path(allxml, ['observatory', 'description', '@short']))
   keywords.append(cdawmeta.util.get_path(allxml, ['instrument', 'description', '@short']))
-  discipline = cdawmeta.util.get_path(master, ['data', 'CDFglobalAttributes', 'Discipline']).split('>')
-  keywords = [*keywords, *discipline]
-  jsonld['keywords'] = keywords
+
+
+  master = metadatum['master']
+  jsonld['name'] = cdawmeta.util.get_path(master, ['data', 'CDFglobalAttributes', 'TITLE'])
+  jsonld['description'] = cdawmeta.util.get_path(allxml, ['description', '@short'])
+  discipline = cdawmeta.util.get_path(master, ['data', 'CDFglobalAttributes', 'Discipline'])
+  if discipline is None:
+    discipline = []
+  else:
+    discipline = discipline.split(',')
+  jsonld['keywords'] = [*keywords, *discipline]
 
   if include_variableMeasured:
     # TODO: We are using HAPI metadata because all of the issues with master CDF
-    # metadata has been handled. One should really modify the code so we create
-    # "emaster" which handles all of the issues and also creates UNITS_VO* and
-    # then use metadatum['emaster']['data'].
-    #
-    # *In _variableMeasured, we are using the raw CDF units, which do not
-    # conform to a schema but marking them as conforming to vounits.
+    # metadata has been handled.
     hapi = metadatum['hapi']['data']
     jsonld['variableMeasured'] = _variableMeasured(hapi)
 
@@ -78,15 +67,14 @@ def _cdf2xmltype(cdf_type):
 
 def _variableMeasured(hapi):
 
-  if isinstance(hapi, list):
-    # TODO: Loop over all
-    hapi = hapi[0]
-
   #vounits_url = 'https://www.ivoa.net/documents/VOUnits/20231215/REC-VOUnits-1.1.html#tth_sEc2.4'
   xmlschema_url = 'https://www.w3.org/TR/xmlschema-2/'
 
+  from cdawmeta._generate.hapi import flatten_parameters
+  parameters = flatten_parameters(hapi)
+
   variableMeasured = []
-  for parameter in hapi['info']['parameters']:
+  for parameter in parameters:
     element = {
       "@type": "PropertyValue",
       "name": parameter['name'],
@@ -94,10 +82,10 @@ def _variableMeasured(hapi):
 
     if 'description' in parameter:
       element['description'] = parameter['description']
+
     if 'units' in parameter:
       element['unitText'] = parameter['units']
       element['qudt:hasUnit'] = {"@id": parameter['units']}
-
       if 'x_cdf_DataType' in parameter:
         xml_unit = _cdf2xmltype(parameter['x_cdf_DataType'])
         element['qudt:dataType'] = f"{xmlschema_url}#{xml_unit}"

@@ -6,16 +6,17 @@ import pickle
 def write(fname, data, logger=None):
   import cdawmeta
 
-  #if not os.path.isabs(fname):
-  #  fname = os.path.abspath(fname)
-
   cdawmeta.util.mkdir(os.path.dirname(fname), logger=logger)
 
   if logger is not None:
     logger.info(f"Writing {fname}")
 
-  ext = os.path.splitext(fname)[1]
-  exception = None
+  exto = os.path.splitext(fname)[1]
+  if len(exto) == 1:
+    # No extension.
+    ext = '.txt'
+  else:
+    ext = exto.lower()
 
   if '.pkl' == ext:
     try:
@@ -29,6 +30,9 @@ def write(fname, data, logger=None):
 
   iscsv = isinstance(data, list) or isinstance(data, tuple)
   if '.csv' == ext and iscsv:
+    if not isinstance(data[0], list):
+      # Assume data = ["a", "b", "c"] means one row.
+      data = [data]
     try :
       with open(fname, 'w', newline='') as f:
         # https://github.com/python/cpython/issues/97503 for escapechar need
@@ -45,7 +49,6 @@ def write(fname, data, logger=None):
         _finish(fname, logger=logger)
         return
       except Exception as e:
-        exception = e
         emsg = f"csv.writerows() raised: {e}"
         with open(fname, 'w', newline='') as f:
           writer = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
@@ -62,6 +65,9 @@ def write(fname, data, logger=None):
     except Exception as e:
       emsg = f"json.dumps() raised: {e}"
       _finish(fname, logger=logger, e=e, emsg=emsg)
+
+  if not isinstance(data, str):
+    raise ValueError(f"Unknown data type: {type(data)} for file extension '{ext}'")
 
   try:
     f = open(fname, 'w', encoding='utf-8')

@@ -1,5 +1,6 @@
 def logger(name=None,
            console_format=u"%(asctime)s %(levelname)s %(name)s %(message)s",
+           console_format_debug=u"%(asctime)s %(levelname)s %(name)s %(message)s",
            file_format=u"%(asctime)s %(levelname)s %(name)s %(message)s",
            file_log=None,
            file_error=None,
@@ -73,15 +74,15 @@ def logger(name=None,
       if levelname.startswith('\033'):
         return levelname
       if levelname == 'DEBUG':
-        return '\033[94m' + levelname + '\033[0m'
+        return '\033[94m' + 'DEBUG' + '\033[0m'
       if levelname == 'INFO':
-        return '\033[92m' + levelname + '\033[0m'
+        return '\033[92m' + 'INFO ' + '\033[0m'
       if levelname == 'WARNING':
-        return '\033[93m' + levelname + '\033[0m'
+        return '\033[93m' + 'WARN ' + '\033[0m'
       if levelname == 'ERROR':
-        return '\033[91m' + levelname + '\033[0m'
+        return '\033[91m' + 'ERROR' + '\033[0m'
       if levelname == 'CRITICAL':
-        return '\033[95m' + levelname + '\033[0m'
+        return '\033[95m' + 'CRIT ' + '\033[0m'
       return levelname
 
   if name is None:

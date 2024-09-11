@@ -1,0 +1,1080 @@
+{
+  "id": "UY_PROTON-MOMENTS_SWOOPS",
+  "url": "https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/uy_proton-moments_swoops_00000000_v01.json",
+  "data-file": "./data/master/UY_PROTON-MOMENTS_SWOOPS.json",
+  "data": {
+    "uy_proton-moments_swoops_00000000_v01.cdf": {
+      "CDFFileInfo": [
+        {
+          "FileVersion": "3.8.0"
+        },
+        {
+          "Format": "SINGLE"
+        },
+        {
+          "Compression": "GZIP.6"
+        },
+        {
+          "Majority": "ROW"
+        },
+        {
+          "Encoding": "IBMPC"
+        }
+      ],
+      "CDFglobalAttributes": [
+        {
+          "Project": [
+            {
+              "0": "Ulysses"
+            }
+          ]
+        },
+        {
+          "Source_name": [
+            {
+              "0": "Ulysses"
+            }
+          ]
+        },
+        {
+          "Discipline": [
+            {
+              "0": "Solar Physics>Heliospheric Physics"
+            }
+          ]
+        },
+        {
+          "Data_type": [
+            {
+              "0": "H1>Hot Plasma Moments"
+            }
+          ]
+        },
+        {
+          "Data_version": [
+            {
+              "0": " "
+            }
+          ]
+        },
+        {
+          "Descriptor": [
+            {
+              "0": "SWOOPS"
+            }
+          ]
+        },
+        {
+          "PI_name": [
+            {
+              "0": "David. J. McComas"
+            }
+          ]
+        },
+        {
+          "PI_affiliation": [
+            {
+              "0": "Princeton/PPPL"
+            }
+          ]
+        },
+        {
+          "Instrument_type": [
+            {
+              "0": "Plasma and Solar Wind"
+            }
+          ]
+        },
+        {
+          "Mission_group": [
+            {
+              "0": "Ulysses"
+            }
+          ]
+        },
+        {
+          "Logical_source": [
+            {
+              "0": "uy_proton-moments_swoops"
+            }
+          ]
+        },
+        {
+          "Logical_source_description": [
+            {
+              "0": "Moments of the distribution function of protons             "
+            }
+          ]
+        },
+        {
+          "Logical_file_id": [
+            {
+              "0": "uy_proton-moments_swoops_00000000_v01"
+            }
+          ]
+        },
+        {
+          "Acknowledgement": [
+            {
+              "0": "B. G. Goldstein, M. Neugebauer, A. Tenerani"
+            }
+          ]
+        },
+        {
+          "Generated_by": [
+            {
+              "0": "A. Tenerani"
+            }
+          ]
+        },
+        {
+          "Generation_date": [
+            {
+              "0": " "
+            }
+          ]
+        },
+        {
+          "Time_resolution": [
+            {
+              "0": "4 minutes"
+            }
+          ]
+        },
+        {
+          "TEXT": [
+            {
+              "0": "This file contains the moments obtained from the distribution function of protons after deconvolution using the same magnetic field values used to construct the matrices. The vector magnetic field and the particle velocity are given in inertial RTN coordinates. The magnetic field was obtained for the time at which the peak of the proton distribution function was measured. The particle velocity was obtained after rotating the fluid velocity from spacecraft to RTN coordinates and taking into account the spacecraft velocity. During periods of spacecraft nutation only the bulk speed and density are reliable, individual velocity components and temperatures are invalid. The beginning of scientifically useful SWOOPS data is at Day 322, 00:59 of 1990; at that time the spacecraft was already nutating; nutation ceased as of Day 351, 22:00, 1990. There are small systematic uncertainties in the velocity components. These are due to such effects as uncertainty in the accuracy of alignment on the spacecraft, relatively wide angular bins, variation in gains between channeltrons, etc. The velocity component data should not be used for studies of large scale, long term, solar wind deflection. The data are generally suitable for all other studies."
+            }
+          ]
+        },
+        {
+          "spase_DatasetResourceID": [
+            {
+              "0": "spase://NASA/NumericalData/Ulysses/SWOOPS/Proton/Moments/PT4M"
+            }
+          ]
+        }
+      ],
+      "CDFVariables": [
+        {
+          "Epoch": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_EPOCH"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": "0000-01-01T00:00:00.000"
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Epoch"
+                },
+                {
+                  "FIELDNAM": "Epoch"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "Epoch"
+                },
+                {
+                  "UNITS": "ms"
+                },
+                {
+                  "VALIDMIN": "18-Nov-1990 00:00:00.000"
+                },
+                {
+                  "VALIDMAX": "01-Jul-2009 00:00:00.000"
+                },
+                {
+                  "VAR_TYPE": "support_data"
+                },
+                {
+                  "MONOTON": "INCREASE"
+                },
+                {
+                  "FORMAT": "E14.8"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "heliographicLatitude": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Heliographic latitude"
+                },
+                {
+                  "FIELDNAM": "Heliographic latitude"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "HG_Lat"
+                },
+                {
+                  "UNITS": "deg"
+                },
+                {
+                  "VALIDMIN": -90.0
+                },
+                {
+                  "VALIDMAX": 90.0
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f7.1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "heliocentricDistance": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Heliocentric Distance"
+                },
+                {
+                  "FIELDNAM": "Heliocentric Distance"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "Ulysses_Dist"
+                },
+                {
+                  "UNITS": "AU"
+                },
+                {
+                  "VALIDMIN": 0.0
+                },
+                {
+                  "VALIDMAX": 99999.0
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f8.2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "BR": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Magnetic field component BR in inertial RTN coordinates"
+                },
+                {
+                  "FIELDNAM": "BR (RTN)"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "BR_(RTN)"
+                },
+                {
+                  "UNITS": "nT"
+                },
+                {
+                  "VALIDMIN": -9999.0
+                },
+                {
+                  "VALIDMAX": 9999.0
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f10.4"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "BT": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Magnetic field component BT in inertial RTN coordinates"
+                },
+                {
+                  "FIELDNAM": "BT (RTN)"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "BT_(RTN)"
+                },
+                {
+                  "UNITS": "nT"
+                },
+                {
+                  "VALIDMIN": -9999.0
+                },
+                {
+                  "VALIDMAX": 9999.0
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f10.4"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "BN": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Magnetic field component BN in inertial RTN coordinates"
+                },
+                {
+                  "FIELDNAM": "BN (RTN)"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "BN_(RTN)"
+                },
+                {
+                  "UNITS": "nT"
+                },
+                {
+                  "VALIDMIN": -9999.0
+                },
+                {
+                  "VALIDMAX": 9999.0
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f10.4"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "B_MAG": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Magnetic field magnitude"
+                },
+                {
+                  "FIELDNAM": "Magnetic field magnitude"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "B_MAG"
+                },
+                {
+                  "UNITS": "nT"
+                },
+                {
+                  "VALIDMIN": 0.0
+                },
+                {
+                  "VALIDMAX": 9999.0
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f10.4"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "V_MAG": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Proton speed in inertial RTN coordinates"
+                },
+                {
+                  "FIELDNAM": "ABS(V) (RTN)"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "V_MAG (RTN)"
+                },
+                {
+                  "UNITS": "km/s"
+                },
+                {
+                  "VALIDMIN": 0.0
+                },
+                {
+                  "VALIDMAX": 999999.0
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f8.1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "VR": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Proton velocity component VR in inertial RTN coordinates"
+                },
+                {
+                  "FIELDNAM": "VR (RTN)"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "VR_(RTN)"
+                },
+                {
+                  "UNITS": "km/s"
+                },
+                {
+                  "VALIDMIN": -99999.0
+                },
+                {
+                  "VALIDMAX": 99999.0
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f8.1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "VT": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Proton velocity component VT in inertial RTN coordinates"
+                },
+                {
+                  "FIELDNAM": "VT (RTN)"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "VT_(RTN)"
+                },
+                {
+                  "UNITS": "km/s"
+                },
+                {
+                  "VALIDMIN": -99999.0
+                },
+                {
+                  "VALIDMAX": 99999.0
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f8.1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "VN": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Proton velocity component VN in inertial RTN coordinates"
+                },
+                {
+                  "FIELDNAM": "VN (RTN)"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "VN_(RTN)"
+                },
+                {
+                  "UNITS": "km/s"
+                },
+                {
+                  "VALIDMIN": -99999.0
+                },
+                {
+                  "VALIDMAX": 99999.0
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f8.1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Tpar": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Proton temperature parallel to the magnetic field"
+                },
+                {
+                  "FIELDNAM": "T_par H+"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "T_par"
+                },
+                {
+                  "UNITS": "K"
+                },
+                {
+                  "VALIDMIN": 0.0
+                },
+                {
+                  "VALIDMAX": [
+                    10000000.0,
+                    7.09453985847514e+22,
+                    0.0,
+                    7.588360153445457e+31,
+                    5.084270032659153e+31,
+                    7.096159803261105e+22,
+                    3.097890014722421e+32
+                  ]
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f9.0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Tper": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Proton temperature perpendicular to the magnetic field"
+                },
+                {
+                  "FIELDNAM": "T_per H+"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "T_per"
+                },
+                {
+                  "UNITS": "K"
+                },
+                {
+                  "VALIDMIN": 0.0
+                },
+                {
+                  "VALIDMAX": 10000000.0
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f9.0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "dens": [
+            {
+              "VarDescription": [
+                {
+                  "DataType": "CDF_FLOAT"
+                },
+                {
+                  "NumElements": 1
+                },
+                {
+                  "NumDims": 0
+                },
+                {
+                  "RecVariance": "VARY"
+                },
+                {
+                  "PadValue": -1e+30
+                }
+              ]
+            },
+            {
+              "VarAttributes": [
+                {
+                  "CATDESC": "Number density of protons"
+                },
+                {
+                  "FIELDNAM": "Density H+"
+                },
+                {
+                  "DEPEND_0": "Epoch"
+                },
+                {
+                  "DISPLAY_TYPE": "time_series"
+                },
+                {
+                  "FILLVAL": -1e+31
+                },
+                {
+                  "LABLAXIS": "Dens"
+                },
+                {
+                  "UNITS": "1/cm^3"
+                },
+                {
+                  "VALIDMIN": 0.0
+                },
+                {
+                  "VALIDMAX": [
+                    99999.0,
+                    0.0,
+                    0.0,
+                    1.7902199730428508e+28,
+                    4.3064798864302565e+21
+                  ]
+                },
+                {
+                  "VAR_TYPE": "data"
+                },
+                {
+                  "SCALETYP": "linear"
+                },
+                {
+                  "FORMAT": "f11.5"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "EmptyAttributes": [
+        {
+          "VariableAttributes": [
+            "VAR_NOTES"
+          ]
+        }
+      ]
+    }
+  },
+  "request": {
+    "url": "https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/uy_proton-moments_swoops_00000000_v01.json",
+    "file": "./data/CachedSession/master/76c493c29c73f1e3.json",
+    "file-header": {
+      "Accept-Ranges": "bytes",
+      "Access-Control-Allow-Methods": "GET",
+      "Access-Control-Allow-Origin": "*",
+      "Connection": "Keep-Alive",
+      "Content-Length": "8947",
+      "Content-Security-Policy": "frame-ancestors 'self' *.gsfc.nasa.gov;",
+      "Content-Type": "application/json",
+      "Date": "Mon, 02 Sep 2024 03:54:27 GMT",
+      "ETag": "\"22f3-61eb7a970da0d\"",
+      "Keep-Alive": "timeout=5, max=100",
+      "Last-Modified": "Fri, 02 Aug 2024 18:40:30 GMT",
+      "Server": "Apache",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
+    },
+    "log": "\n  Status code: 200\n  From cache: True\n  Request Cache-Related Headers:\n  Response Cache-Related Headers:\n    ETag: \"22f3-61eb7a970da0d\"\n    Last-Modified: Fri, 02 Aug 2024 18:40:30 GMT\n"
+  }
+}

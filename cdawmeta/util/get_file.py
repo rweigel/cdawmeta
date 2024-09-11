@@ -1,5 +1,8 @@
 def get_file(url, logger=None, url2file=None, use_cache=True, cache_dir=None):
 
+  # TODO: Do HEAD request to determine if file needs to be downloaded if
+  #       file.header.ext exists. Use keyword "update" instead of "use_cache"
+  #       to be consistent with get().
   import os
   import secrets
   from urllib.request import urlopen
@@ -17,10 +20,14 @@ def get_file(url, logger=None, url2file=None, use_cache=True, cache_dir=None):
   if cache_dir is not None:
     file_name = os.path.join(cache_dir, file_name)
 
-  if use_cache and os.path.exists(file_name):
+  if use_cache:
+    if os.path.exists(file_name):
+      if logger is not None:
+        logger.info(f"Using cached file: {file_name}")
+      return file_name
+  else:
     if logger is not None:
-      logger.info(f"Using cached file: {file_name}")
-    return file_name
+      logger.info(f"Ignoring cached file: {file_name} because use_cache=False")
 
   cdawmeta.util.mkdir(os.path.dirname(file_name), logger=logger)
 

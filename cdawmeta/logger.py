@@ -1,7 +1,7 @@
 
 loggers = {}
 
-def logger(name=None):
+def logger(name=None, dir_name=None, log_level='info'):
   import os
   import sys
 
@@ -9,6 +9,9 @@ def logger(name=None):
 
   if name is None:
     name = sys._getframe(1).f_code.co_name
+
+  if dir_name is None:
+    dir_name = name
 
   if name in loggers:
     # Note that with threading, it is possible for the logger to be created
@@ -23,13 +26,14 @@ def logger(name=None):
 
   data_dir = cdawmeta.DATA_DIR
 
+  msgs = [f"Creating logger for {name}"]
+  config_default = cdawmeta.CONFIG['logger']['default']
   if name in cdawmeta.CONFIG['logger']:
-    config = cdawmeta.CONFIG['logger'][name]
+    config = {**config_default, **cdawmeta.CONFIG['logger'][name]}
   else:
-    config = cdawmeta.CONFIG['logger']['default']
+    config = config_default.copy()
     config['name'] = name
-    msg = f'No logger configuration for name {name} in config.json'
-    print(msg)
+    msgs.append(f'No logger configuration for name {name} in config.json. Using default configuration.')
     #raise ValueError(f'No logger configuration for name {name} in config.json')
 
   #rm_string = os.path.dirname(os.path.abspath(os.path.join(__file__, '..')))
@@ -38,10 +42,15 @@ def logger(name=None):
   for file_type in ['file_log', 'file_error']:
     config = config.copy()
     if config[file_type]:
-      file_ = os.path.normpath(config[file_type].format(name=name))
+      file_ = os.path.normpath(config[file_type].format(dir_name=dir_name, name=name))
       if not os.path.isabs(file_):
         config[file_type] = os.path.join(data_dir, file_)
 
+
   loggers[name] = cdawmeta.util.logger(**config)
+  loggers[name].setLevel(log_level.upper())
+
+  for msg in msgs:
+    loggers[name].debug(msg)
 
   return loggers[name]
