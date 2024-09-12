@@ -36,7 +36,7 @@ def cadence(metadatum, logger):
       return None
 
     try:
-      # TODO: Can fail b/c VIRTUAL. Use read_ws() instead.
+      # TODO: Can fail b/c VIRTUAL DEPEND_0 (!). Use read_ws() instead.
       data[depend_0_name]['VarData']
     except Exception as e:
       logger.error(f"Error: {url}: {e}")
@@ -63,18 +63,3 @@ def cadence(metadatum, logger):
 
   return [depend_0_counts]
 
-if False:
-  args = {'max_workers': 1}
-  if args['max_workers'] == 1:
-    for dataset in datasets:
-      counts = cadence(dataset, update=False, logger=logger)
-  else:
-    from concurrent.futures import ThreadPoolExecutor
-    def call(dataset):
-      try:
-        cadence(dataset, update=False, logger=logger)
-      except Exception as e:
-        import traceback
-        logger.error(f"Error: {dataset['id']}: {traceback.print_exc()}")
-    with ThreadPoolExecutor(max_workers=args['max_workers']) as pool:
-      pool.map(call, datasets)

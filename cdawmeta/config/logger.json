@@ -8,6 +8,14 @@
     "console_format_debug": "%(name)s %(levelname)s %(filename)s:%(lineno)d %(message)s",
     "color": true
   },
+  "query-hpde.io-ids": {
+    "name": "query-hpde.io-ids",
+    "file_log": "{dir_name}/{name}.log",
+    "file_error": "{dir_name}/{name}.error.log",
+    "file_format": "%(levelname)s %(message)s",
+    "console_format": "%(levelname)s %(message)s",
+    "color": true
+  },
   "metadata": {
     "name": "metadata",
     "file_log": "{name}.log",

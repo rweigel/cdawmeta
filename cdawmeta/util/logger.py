@@ -39,14 +39,14 @@ def logger(name=None,
         print("  self.datefmt", self)
 
     def formatTime(self, record, datefmt=None):
-        ct = self.converter(record.created)
-        if datefmt:
-            s = ct.strftime(datefmt)
-        else:
-          s = ct.strftime("%Y-%m-%dT%H:%M:%S.%f")
-        if utc_timestamps:
-          s = s + "Z"
-        return s
+      ct = self.converter(record.created)
+      if datefmt:
+          s = ct.strftime(datefmt)
+      else:
+        s = ct.strftime("%Y-%m-%dT%H:%M:%S.%f")
+      if utc_timestamps:
+        s = s + "Z"
+      return s
 
     def format(self, record):
 

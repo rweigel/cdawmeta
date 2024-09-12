@@ -70,9 +70,19 @@ Other issues not related to the generation of HAPI metadata were also noticed.
 
    SPASE records can only have a cadence that applies to all parameters, but the listed cadence in the SPASE record for [`VOYAGER1_10S_MAG` is `PT9.6S`](https://hpde.io/NASA/NumericalData/Voyager1/MAG/CDF/PT9.6S.json) is not correct for the parameters with a `DEPEND_0` of `Epoch`. This is inaccurate and misleading and potentially confusing for the user. The fact that some parameters have a different cadence should be noted in the SPASE record.
 
+6. Dubious information has been created. For example,
+
 Although HAPI has an `additionalMetadata` attribute, we are reluctant to reference existing SPASE records due to these issues (primarily 2. and 3.). We conclude that it makes more sense to link to less extensive but correct metadata (for example, to CDF Master metadata or documentation on the CDAWeb website, than to more extensive SPASE metadata that is confusing (see 4.) or incomplete and in some cases incorrect (see items 2.-3.).
 
 After encountering these issues, realized that solving all of the problems could be achieved with some additions to the existing CDAWeb to HAPI metadata code.
+
+## Comments
+
+* The generation of SPASE metadata should be split
+  1. Someone who writes code to generate and check the metadata.
+  2. Domain scientists who create additional metadata. 
+
+An example of decoupling: Initially we had used `spase_DatasetResourceID` in CDF Masters to find SPASE records associated with a CDAWeb dataset. We were later told that not all available SPASE records are listed in CDF Masters. So we had to switch over to drawing directly from the hpde.io repository. 
 
 # Running
 

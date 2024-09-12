@@ -40,12 +40,18 @@ def read(fname, logger=None):
       if logger is not None:
         logger.info(msg)
       raise e
+  elif '.csv' == os.path.splitext(fname)[1]:
+    lines = f.readlines()
+    data = []
+    for line in lines:
+      line = line.split(',')
+      data.append([col.strip() for col in line])
   else:
     try:
-      data = f.readlines()
+      data = f.read()
       if logger is not None:
         logger.info(f"Read {fname}")
-    except:
+    except Exception as e:
       msg = f"Error reading {fname}: {e}"
       if logger is not None:
         logger.error(msg)

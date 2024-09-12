@@ -231,8 +231,8 @@ def _spase(dataset, update=True, diffs=False):
 
   spase = _fetch(url, id, 'spase', timeout=timeout, diffs=diffs, update=update)
 
-  if restructure and 'data' in spase:
-    spase['data'] = cdawmeta.restructure.spase(spase['data'], logger=logger)
+  #if restructure and 'data' in spase:
+  #  spase['data'] = cdawmeta.restructure.spase(spase['data'], logger=logger)
   return spase
 
 def _orig_data(dataset, update=True, diffs=False):
@@ -308,7 +308,7 @@ def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
 
   if get['emsg']:
     emsg = f"Error[{what}]: {id}: {get['emsg']}"
-    logger.error(msg)
+    logger.error(emsg)
     result['error'] = emsg
     return result
 

@@ -23,7 +23,9 @@ def spase_alt(metadatum, logger):
 
     p = ['Spase', 'NumericalData', 'ObservedRegion']
     NumericalData['ObservedRegion'] = cdawmeta.util.get_path(spase, p)
-
+  else:
+    # Compute ResourceID based on CDAWeb ID and cadence.
+    pass
 
   master = metadatum['master']['data']
   p = ['CDFglobalAttributes', 'Logical_source_description']
@@ -53,10 +55,13 @@ def spase_alt(metadatum, logger):
       links = [links]
 
     for link in links:
+      if '@URL' not in link:
+        continue
       InformationURL = {
-        "Name": link['@title'],
         "URL": link['@URL'],
       }
+      if '@title' in link:
+        InformationURL['Name'] = link['@title']
       if '#text' in link:
         InformationURL['Description'] = link['#text']
       InformationURLs.append(InformationURL)

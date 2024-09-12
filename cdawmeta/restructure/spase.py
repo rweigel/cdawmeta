@@ -5,6 +5,7 @@ def spase(spase, logger=None):
 
   spase_r = copy.deepcopy(spase)
 
+  # Convert Parameter array to a dict with keys of ParameterKey
   Parameter = cdawmeta.util.get_path(spase_r, ['Spase', 'NumericalData', 'Parameter'])
   if Parameter is not None:
     if not isinstance(Parameter, list):
@@ -14,10 +15,13 @@ def spase(spase, logger=None):
     if Parameter is not None:
       spase_r['Spase']['NumericalData']['Parameter'] = Parameter
 
-  AccessInformation = cdawmeta.util.get_path(spase_r, ['Spase', 'NumericalData', 'AccessInformation'])
+  # Flatten AccessInformation so that each array element (Repository) only has
+  # one AccessURL. If a Repository has N AccessURLs, create N Repositories, each
+  # with one AccessURL with all other Repository fields the same.
+  p = ['Spase', 'NumericalData', 'AccessInformation']
+  AccessInformation = cdawmeta.util.get_path(spase_r, p)
   if AccessInformation is not None:
     AccessInformation = AccessInformation.copy()
-    #cdawmeta.util.print_dict(AccessInformation, style='json')
     if isinstance(AccessInformation, dict):
       # Single Repository
       # AccessInformation = {"RepositoryID": ...} -> [{"RepositoryID": ...}]
@@ -36,10 +40,10 @@ def spase(spase, logger=None):
         AccessURL = [AccessURL]
 
       # If Repository contains multiple AccessURLs, create one Repository for each.
-      repo = Repository.copy()
       for _, obj in enumerate(AccessURL):
-        repo['AccessURL'] = obj
-        Repositories.append(repo)
+        SubRepository = Repository.copy()
+        SubRepository['AccessURL'] = obj
+        Repositories.append(SubRepository)
 
     spase_r['Spase']['NumericalData']['AccessInformation'] = Repositories
 

@@ -6,7 +6,17 @@ how to handle parameters when multiple DEPEND_0s?
 
 Prefix things not in SPASE schema with _
 
+# From Bernie
+
+----
+That hapi implementation is running inside the HDP database so it searches the spase documents for ones with //AccessInformation/AccessURL[name = ‘CDAWeb’ and ProductKey = ‘whatever’].  “Sufficiently described” meant that the cdaweb information was in the spase documents.  At the time that code was written, there were many cdaweb datasets that didn’t have spase descriptions or the spase descriptions didn’t contain the cdaweb access information.  Even now, spase is usually missing the most recent cdaweb datasets but it’s not too far behind.
+
+This https://heliophysicsdata.gsfc.nasa.gov/queries/index_resolver.html describes a resolver service.  To get all datasets at once, you might want to use https://heliophysicsdata.gsfc.nasa.gov/queries/CDAWeb_SPASE.html.  Also note that https://cdaweb.gsfc.nasa.gov/WebServices/REST/#Get_Datasets returns the spase ResourceID.  For example,
+
+$ curl -s -H "Accept: application/json" “https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets?idPattern=AC_H0_MFI” |jq -jr '.DatasetDescription[]|(.Id,", ",.SpaseResourceId,"\n")'
+
 curl -s -H "Accept: application/xml" "https://heliophysicsdata.gsfc.nasa.gov/WS/hdp/1/Spase?ResourceID=spase://NASA/NumericalData/ACE/Ephemeris/PT12M"
+----
 
 https://cdaweb.gsfc.nasa.gov/registry/hdp/hapi/hapiHtml.html#url=https://cdaweb.gsfc.nasa.gov/hapi&id=VOYAGER1_10S_MAG@0,VOYAGER1_10S_MAG@1
 

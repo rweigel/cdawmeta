@@ -33,14 +33,14 @@ def write(fname, data, logger=None):
     if not isinstance(data[0], list):
       # Assume data = ["a", "b", "c"] means one row.
       data = [data]
-    try :
+    try:
       with open(fname, 'w', newline='') as f:
         # https://github.com/python/cpython/issues/97503 for escapechar need
         writer = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
         writer.writerows(data)
         _finish(fname, logger=logger)
         return
-    except:
+    except Exception as e:
       try:
         with open(fname, 'w', newline='') as f:
           # https://github.com/python/cpython/issues/97503
