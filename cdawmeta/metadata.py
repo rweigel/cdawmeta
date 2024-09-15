@@ -194,7 +194,7 @@ def _allxml(update=False, diffs=False):
 
 def _master(dataset, update=False, diffs=False):
 
-  restructure=True
+  restructure = True
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['master']
 
   mastercdf = dataset['allxml']['mastercdf']['@ID']
@@ -208,7 +208,6 @@ def _master(dataset, update=False, diffs=False):
 def _spase(dataset, update=True, diffs=False):
 
   master = dataset['master']
-  restructure = True
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['spase']
 
   id = master['id']

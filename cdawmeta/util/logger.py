@@ -1,6 +1,5 @@
 def logger(name=None,
            console_format=u"%(asctime)s %(levelname)s %(name)s %(message)s",
-           console_format_debug=u"%(asctime)s %(levelname)s %(name)s %(message)s",
            file_format=u"%(asctime)s %(levelname)s %(name)s %(message)s",
            file_log=None,
            file_error=None,

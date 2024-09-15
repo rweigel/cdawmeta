@@ -1,3 +1,13 @@
+
+`LastRecord=-1` and `Num=300`?
+```
+url = 'https://cdaweb.gsfc.nasa.gov/sp_phys/data/psp/fields/l3/rfs_hfr/2023/psp_fld_l3_rfs_hfr_20231031_v03.cdf'
+depend_0_name = 'epoch_hfr_coher_V1_V2'
+data = cdawmeta.io.read_cdf(url, variables=depend_0_name, iso8601=False)
+print(data)
+{'epoch_hfr_coher_V1_V2': {'VarDescription': {'BlockingFactor': 0, 'Compress': 0, 'DataTypeValue': 33, 'DataType': 'CDF_TIME_TT2000', 'DimSizes': [], 'DimVariances': [], 'LastRecord': -1, 'Num': 300, 'NumDims': 0, 'NumElements': 1, 'PadValue': array([-9223372036854775807]), 'RecVariance': True, 'SparseRecords': 'No_sparse', 'VarType': 'zVariable', 'VariableName': 'epoch_hfr_coher_V1_V2'}, 'VarAttributes': {'FIELDNAM': 'epoch_hfr_coher_V1_V2', 'MONOTON': 'INCREASE', 'FORMAT': 'I22', 'LABLAXIS': 'epoch', 'VAR_TYPE': 'support_data', 'FILLVAL': -9223372036854775808, 'DISPLAY_TYPE': 'time_series', 'VALIDMIN': 315576066184000000, 'VALIDMAX': 1577880069183999999, 'SCALEMIN': -9223372036854775807, 'SCALEMAX': -9223372036854775807, 'UNITS': 'ns', 'CATDESC': 'Time for HFR Cross Coherence, Ch0: V1 Ch1: V2', 'TIME_BASE': 'J2000'}, 'VarData': None}}
+```
+
 https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/CdfJavaDataSource/src/org/autoplot/cdf/CdfVirtualVars.java
 
 https://github.com/rweigel/CDAWlib/blob/952a28b08658413081e75714bd3b9bd3ba9167b9/virtual_funcs.pro

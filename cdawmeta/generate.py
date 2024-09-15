@@ -41,6 +41,16 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
                 'log': msg,
                 'data-file': file_name
               }
+      file_name = os.path.join(cdawmeta.DATA_DIR, gen_name, sub_dir, f'{id}.error.txt')
+      if os.path.exists(file_name):
+        msg = "Using cached error response because update = regen = False or gen_name = 'cadence' and found cached error file."
+        logger.info(msg)
+        return {
+                'log': msg,
+                'data': None,
+                'data-file': None,
+                'error': cdawmeta.util.read(file_name, logger=logger)
+              }
 
   dsid = metadatum['id']
 
@@ -50,8 +60,11 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
     datasets = gen_func(metadatum, logger)
   except Exception as e:
     import traceback
-    logger.error(f"Error: {dsid}: {e}")
-    print(traceback.format_exc())
+    trace = traceback.format_exc()
+    emsg = f"{dsid}:\n{trace}"
+    logger.error(f"Error: {emsg}")
+    file_name = os.path.join(cdawmeta.DATA_DIR, gen_name, sub_dir, f"{id}.error.txt")
+    cdawmeta.util.write(file_name, trace, logger=logger)
     return None
 
   if datasets is None:

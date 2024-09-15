@@ -1,7 +1,7 @@
 def cli(script):
 
   import cdawmeta
-  meta_types_generated = cdawmeta._generate.generators
+  meta_types_generated = cdawmeta.generators
 
   clkws = {
     "meta-type": {
@@ -62,6 +62,10 @@ def cli(script):
       "help": "Name of table to create (default: all tables)",
       "default": None
     },
+    "query-name": {
+      "help": "Name of query to execute (default: all queries)",
+      "default": None
+    },
     "port": {
       "metavar": "PORT",
       "type": int,
@@ -74,6 +78,9 @@ def cli(script):
     del clkws['port']
     del clkws['table-name']
 
+  if script != 'query.py':
+    del clkws['query-name']
+
   if script in ['hapi.py', 'soso.py', 'cadence.py']:
     del clkws['diffs']
     del clkws['embed-data']
@@ -81,11 +88,12 @@ def cli(script):
 
   if script == 'table.py':
     del clkws['diffs']
-    del clkws['write-catalog']
     del clkws['meta-type']
+    del clkws['write-catalog']
 
   if script == 'query.py':
     del clkws['diffs']
+    del clkws['meta-type']
     del clkws['write-catalog']
 
   import argparse

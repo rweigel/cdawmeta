@@ -46,6 +46,11 @@ def logger(name=None, dir_name=None, log_level='info'):
       if not os.path.isabs(file_):
         config[file_type] = os.path.join(data_dir, file_)
 
+  if log_level.lower() == 'debug':
+    #config['debug_logger'] = True
+    config['console_format'] = config['console_format_debug']
+  del config['console_format_debug']
+
   loggers[name] = cdawmeta.util.logger(**config)
   loggers[name].setLevel(log_level.upper())
 

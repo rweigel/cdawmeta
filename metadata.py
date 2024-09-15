@@ -2,7 +2,7 @@
 
 import cdawmeta
 
-args = cdawmeta.cli('cdaweb.py')
+args = cdawmeta.cli('metadata.py')
 metadata = cdawmeta.metadata(**args)
 
 if args['id'] is not None and not args['id'].startswith('^'):

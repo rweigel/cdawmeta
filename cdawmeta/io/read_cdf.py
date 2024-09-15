@@ -67,6 +67,7 @@ def open_cdf(file, logger=None, cache_dir=None, use_cache=True):
       'cache_dir': cache_dir,
       'use_cache': use_cache,
     }
+
     file_path = cdawmeta.util.get_file(file, **kwargs)
     if file_path is None:
       return None

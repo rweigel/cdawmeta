@@ -1,10 +1,6 @@
 import os
 import cdawmeta
 
-name = 'f2c_specifier'
-name = 'units'
-name = 'hpde.io-ids'
-
 logger = None
 
 def f2c_specifier(query_name, dir_name, clargs):
@@ -72,6 +68,8 @@ def units(query_name, dir_name, clargs):
   master_units_dict = {}
 
   meta = cdawmeta.metadata(**clargs)
+  missing_units = {}
+
   for dsid in meta.keys():
     logger.info(f"\n-----{dsid}-----")
 
@@ -82,84 +80,123 @@ def units(query_name, dir_name, clargs):
       logger.info("  SPASE: x No SPASE node")
       continue
 
-    hapi = cdawmeta.util.get_path(meta[dsid], ['hapi', 'data'])
-    if hapi is None:
-      logger.info("  HAPI: x No HAPI node")
+    if "master" not in meta[dsid]:
+      continue
+
+    master = cdawmeta.util.get_path(meta[dsid], ['master', 'data'])
+    if master is None:
+      logger.info("  Master: x No Master data")
+      continue
+
+    if "CDFVariables" not in master:
+      logger.info("  Master: x No CDFVariables in Master")
       continue
 
     logger.info(f"  CDF:   {meta[dsid]['master']['request']['url']}")
     logger.info(f"  SPASE: {meta[dsid]['spase']['request']['url']}")
 
-    # TODO: Draw units from CDF Master instead of HAPI metadata.
-    #       Code for units and f2c_specifier queries should be merged.
-    if isinstance(hapi, list):
-      parameters = {}
-      for _, ds in enumerate(hapi):
-        logger.info(ds['info']['parameters'])
-        parameters = [*parameters, *ds['info']['parameters']]
-    else:
-      parameters = hapi['info']['parameters']
+    variables = master['CDFVariables']
+    for variable_name, variable in variables.items():
 
-    for parameter in parameters:
-
-      name = parameter['name']
-      description = ""
-      if 'description' in parameter:
-        description = " - '" + parameter['description'] + "'"
-      logger.info(f"  {name}{description}")
-
-      units = None
-      if 'units' in parameter:
-        units = parameter['units']
-        if units not in master_units_dict:
-          master_units_dict[units] = []
-        logger.info(f"    CDF:   '{units}'")
-
-      Parameters = cdawmeta.util.get_path(spase, ['Spase', 'NumericalData', 'Parameter'])
-      if name == 'Time':
+      logger.info(variable_name)
+      if "VarAttributes" not in variable or "VarDescription" not in variable:
         continue
 
-      if Parameters is not None and name in Parameters:
-        if 'Units' in Parameters[name]:
-          if units is not None:
-            Units = Parameters[name]['Units']
-            master_units_dict[units].append(Units)
+      UNITS, emsg = cdawmeta.attrib.UNITS(dsid, variable_name, variables)
+      if emsg is not None:
+        logger.error("    " + emsg)
+
+      if not isinstance(UNITS, list):
+        UNITS = [UNITS]
+
+      missing_units[dsid] = {variable_name: []}
+      for UNIT in UNITS:
+        if UNIT is None:
+          missing_units[dsid][variable_name].append("cdawmeta.attrib.UNITS() returned None")
+        elif UNIT.strip() == "":
+          missing_units[dsid][variable_name].append("UNITS.strip() = ''")
+        elif UNIT not in master_units_dict:
+          master_units_dict[UNIT] = []
+
+      if len(missing_units[dsid][variable_name]) > 0:
+        UNITS = None
+        if len(missing_units[dsid][variable_name]) == 1:
+          logger.info(f"    CDF:   x {missing_units[dsid][variable_name][0]}")
+        else:
+          logger.info(f"    CDF:   x {missing_units[dsid][variable_name]}")
+      else:
+        if len(UNITS) == 1:
+          logger.info(f"    CDF:   '{UNITS[0]}'")
+        else:
+          logger.info(f"    CDF:    {UNITS}")
+
+      if len(missing_units[dsid][variable_name]) == 0:
+        del missing_units[dsid]
+      elif len(missing_units[dsid][variable_name]) == 1:
+        missing_units[dsid][variable_name] = missing_units[dsid][variable_name][0]
+
+      Parameters = cdawmeta.util.get_path(spase, ['Spase', 'NumericalData', 'Parameter'])
+      if variable_name == 'Time':
+        continue
+
+      if Parameters is not None and variable_name in Parameters:
+        if 'Units' in Parameters[variable_name]:
+
+          Units = Parameters[variable_name]['Units']
+          if isinstance(Units, list):
+            logger.error('    SPASE: NOT IMPLEMENTED - Units is a list')
+
+          if UNITS is not None:
+            if list(set(UNITS)) != UNITS:
+              for UNIT in UNITS:
+                master_units_dict[UNIT].append(Units)
+            else:
+              master_units_dict[UNITS[0]].append(Units)
+
           logger.info(f"    SPASE: '{Units}'")
         else:
           logger.info("    SPASE: x No Units attribute")
       else:
         logger.info("    SPASE: x Parameter not found")
 
+  fname = os.path.join(dir_name, 'Missing_UNITS.json')
+  cdawmeta.util.write(fname, missing_units, logger=logger)
+
   from collections import Counter
   for key in master_units_dict:
     uniques = dict(Counter(master_units_dict[key]))
     master_units_dict[key] = uniques
 
-  doc = "Each keys is a unique CDF master unit found across all variables. "
-  doc += "The value is an object with keys of associated SPASE Units and "
-  doc += "values of counts."
-
-  fname = os.path.join(dir_name, 'query', f'{query_name}.md')
-  cdawmeta.util.write(fname, doc, logger=logger)
   fname = os.path.join(dir_name, 'query', f'{query_name}.json')
   cdawmeta.util.write(fname, master_units_dict, logger=logger)
 
-  master_units_list = [["CDFunits", "VOUNIT"]]
+  unique_dict = {}
   for key in master_units_dict.keys():
-    if key.strip() == "":
+    if key is None or (key is not None and key.strip() == ""):
       continue
-    master_units_list.append([key, '?'])
+    unique_dict[key.strip()] = "?"
 
   fname = os.path.join(dir_name, 'CDFUNITS_to_VOUNITS.csv')
   if os.path.exists(fname):
-    master_units_list_last = cdawmeta.util.read(fname, logger=logger)
-    for _, row in enumerate(master_units_list.copy()[1:]):
-      if row[0] not in master_units_dict:
-        logger.info(f"New CDF Master unit found: {row[0]}. Adding to list.")
-        master_units_list_last.append([row[0], "?"])
-    cdawmeta.util.write(fname, master_units_list_last, logger=logger)
-  else:
-    cdawmeta.util.write(fname, master_units_list, logger=logger)
+
+    unique_list_last = cdawmeta.util.read(fname, logger=logger)
+    unique_dict_last = {}
+    for _, row in enumerate(unique_list_last[1:]):
+      if row[0] is None or (row[0] is not None and row[0].strip() == ""):
+        continue
+      unique_dict_last[row[0].strip()] = row[1].strip()
+
+    diff = set(unique_dict.keys()) - set(unique_dict_last.keys())
+    if len(diff) > 0:
+      logger.warning(f"Warning: New units in CDF metadata: {diff}")
+
+    unique_dict = {**unique_dict, **unique_dict_last}
+
+  header = [["CDFunits", "VOUNIT"]]
+  master_units_list = header
+  for key, val in unique_dict.items():
+    master_units_list.append([key, val])
+  cdawmeta.util.write(fname, master_units_list, logger=logger)
 
 def hpde_io_ids(query_name, dir_name, clargs):
 
@@ -275,7 +312,7 @@ def hpde_io_ids(query_name, dir_name, clargs):
     lines.append(line)
     logger.info(f"  {line[0]}: {line[1]}")
 
-  fname = os.path.join(dir_name, 'query', f"{query_name}-map.csv")
+  fname = os.path.join(dir_name, "ids.csv")
   cdawmeta.util.write(fname, lines, logger=logger)
 
   logger.info("\n")
@@ -286,21 +323,25 @@ def hpde_io_ids(query_name, dir_name, clargs):
   cdawmeta.util.write(fname, urls, logger=logger)
 
 
-clargs = cdawmeta.cli('query.py')
-clargs['embed_data'] = True
+query_names = ['f2c_specifier', 'hpde.io-ids', 'units']
 
-query_name = f'query-{name}'
+clargs = cdawmeta.cli('query.py')
+query_name = clargs['query_name']
+
+query_file_basename = f'query-{query_name}'
 dir_name = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-additions')
 
-logger = cdawmeta.logger(name=query_name, dir_name=dir_name)
+clargs['embed_data'] = True
+del clargs['query_name']
 
-if name == 'units':
-  units(query_name, dir_name, clargs)
+logger = cdawmeta.logger(name='query', dir_name='cdawmeta-additions/query')
 
-if name == 'f2c_specifier':
-  f2c_specifier(query_name, dir_name, clargs)
-
-if name == 'hpde.io-ids':
-  if clargs['id'] is not None:
-    exit("Error: --id given on command line, but not supported for hpde.io-ids query.")
-  hpde_io_ids(query_name, dir_name, clargs)
+if query_name is None:
+  for query_name in query_names:
+    query_function = locals()[query_name]
+    query_function(query_file_basename, dir_name, clargs)
+else:
+  if query_name not in query_names:
+    exit(f"Error: query_name = '{query_name}' not in {query_names}")
+  query_function = locals()[query_name]
+  query_function(query_file_basename, dir_name, clargs)

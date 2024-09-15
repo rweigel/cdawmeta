@@ -13,6 +13,9 @@ FORMAT = FORMAT.FORMAT
 from . import LABLAXIS
 LABLAXIS = LABLAXIS.LABLAXIS
 
+from . import _resolve_ptrs
+_resolve_ptrs = _resolve_ptrs._resolve_ptrs
+
 from . import UNITS
 UNITS = UNITS.UNITS
 
