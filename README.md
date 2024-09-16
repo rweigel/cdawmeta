@@ -61,7 +61,7 @@ The implication is that a scientist who executes a search backed by SPASE record
 ## 3 Units
 
 We considered using SPASE `Units` for variables when they were available because although CDAWeb Master metadata has a `UNITS` attribute, no consistent convention is followed for the syntax and in some cases, `UNITS` are not a scientific unit but a label (e.g. `0=good` and `<|V|>`). This effort stopped when we noticed instances where the SPASE `Units` were wrong.
-For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/ac_h2_ule_00000000_v01.json) and `Units = '(cm^2 s sr MeV)^-1)'` [in SPASE](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json). See [a dump of the unique Master `UNITS` to SPASE `Units` pairs](http://mag.gmu.edu/git-data/cdawmeta/data/cdawmeta-additions/query/query-units.json), which is explained in [query-units.md](http://mag.gmu.edu/git-data/cdawmeta/data/cdawmeta-additions/query/query-units.md).
+For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/ac_h2_ule_00000000_v01.json) and `Units = '(cm^2 s sr MeV)^-1)'` [in SPASE](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json). See [a dump of the unique Master `UNITS` to SPASE `Units` pairs](https://github.com/rweigel/cdawmeta-additions/query/query-units.json), which is explained in [query-units.md](https://github.com/rweigel/cdawmeta-additions/query/query-units.md).
 
 The implication is a scientist using SPASE `Units` to label their plots risks the plot being incorrect.
 
@@ -71,9 +71,9 @@ In addition, although there is more consistency in the strings used for SPASE `U
 
 We concluded that if we wanted to represent CDAWeb variables in HAPI with units that adhered to a syntax so the string could be validated, we would need to:
 
-1. Determine the VOUnit representation of all unique units (~1000), if possible. See [CDFUNITS_to_VOUNITS.csv](http://mag.gmu.edu/git-data/cdawmeta/data/cdawmeta-additions/CDFUNITS_to_VOUNITS.csv).
+1. Determine the VOUnit representation of all unique units (~1000), if possible. See [CDFUNITS_to_VOUNITS.csv](https://github.com/rweigel/cdawmeta-additions/CDFUNITS_to_VOUNITS.csv).
 
-2. Determine the VOUnit for all variables that do not have a `UNITS` attribute or a `UNITS` value that is all whitespace (~20,000), which we label as "missing"; see [Missing_UNITS.json](http://mag.gmu.edu/git-data/cdawmeta/data/cdawmeta-additions/Missing_UNITS.json). Although the ISTP conventions require units for variables with `VAR_TYPE = data`, ~20% of variables have "missing" `UNITS`.
+2. Determine the VOUnit for all variables that do not have a `UNITS` attribute or a `UNITS` value that is all whitespace (~20,000), which we label as "missing"; see [Missing_UNITS.json](https://github.com/rweigel/cdawmeta-additions/Missing_UNITS.json). Although the ISTP conventions require units for variables with `VAR_TYPE = data`, ~20% of variables have "missing" `UNITS`.
 
 3. Validating determinations made for 1. and 2. are correct. This could done in two ways: (a) Have two people independently make determinations and (b) for case 1., use AstroPy to compute the SI conversion and compare with the `SI_{conversion,conv,CONVERSION}` (all three versions are found in [CDF Masters](http://mag.gmu.edu/git-data/cdawmeta/data/table/cdaweb.variable.attribute_counts.csv) and the ISTP convention documentation) attribute value in the CDF. I emphasize that results must be checked and verified. Putting incorrect units in metadata is unacceptable.
 
@@ -131,6 +131,8 @@ It is often found that SPASE records contain information that is only available 
    * Table is not same as shown in [omni2.text](https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/omni2.text) (new annotations added)
    * SPASE does not reference column 55, which is mentioned in [omni2.text](https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/omni2.text).
 
+This is a complicated problem. We are considering also serving CDF data of type `VAR_DATA=support_data`. In this case, the HAPI metadata will reference many more parameters than found in SPASE and the SPASE record will be inconsistent with the HAPI metadata.
+
 ## 6 Odd differences in text
 
 PIs writing has been modified (I'm assuming PI did not request the SPASE Description to be a modified version of what is in the CDF):
@@ -153,37 +155,59 @@ The `StopDate`s are relative even though the actual stop date is available in [a
 
 Although HAPI has an `additionalMetadata` attribute, we are reluctant to reference existing SPASE records due to these issues (primarily 2., 3., and 5.). We conclude that it makes more sense to link to less extensive but correct metadata (for example, to CDF Master metadata or documentation on the CDAWeb website, than to more extensive SPASE metadata that is confusing (see 4.) or incomplete and in some cases incorrect (see items 2., 3., and 5.).
 
+Remarkably, CDAWeb includes links to SPASE records that are wrong. For example, [NotesA.html#AC_H2_SIS](https://cdaweb.gsfc.nasa.gov/misc/NotesA.html#AC_H2_SIS) links to 
+[ACE/ULEIS/Ion/Fluxes/L2/PT1H.json](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json) which, as discussed earlier, has wrong units for some variables. SPASE records with missing parameters are also linked to.
+
 The primary problem with existing CDAWeb SPASE records is
 
 1. that they appear to have been created ad-hoc by different authors who follow different conventions and include different levels of detail.
 2. there is no automated mechanism for updating or syncing the SPASE records with CDAWeb metadata.
 
-CDAWeb SPASE records have been under development since 2009. I suggest a different approach is needed.
+CDAWeb SPASE records have been under development since 2009 and yet these problems persist. I suggest a different approach is needed.
 
 After encountering these issues, we realized that solving all of the problems (except for item 3.) could be achieved with some additions to the existing CDAWeb to HAPI metadata code.
 
 We suggest that CDAWeb SPASE metadata should be created by this automated process, which requires primarily existing CDAWeb metadata information and some additional metadata that can be stored in version controlled tables.
 
 1. The primary table has columns of CDAWeb dataset ID, SPASE ID, DOI, Region, InstrumentID, and MeasurementType. Also, if the `Description` derived form `all.xml` is not acceptable, a column with an alternative description could be included (however, it seems to make more sense to modify the content of `all.xml` - why have two versions of the same thing?)
+
 2. A table that contains additional `InformationURLs` (however, all.xml already has the equivalent, so perhaps additional URLs should be added in it).
+
 3. Optionally, there could be a table that maps CDF `UNITS` to `VOUnits` for use in SPASE `Units`.
 
 It appears that some SPASE record have additional details about CDAWeb variables that the automated process does not capture. For example, `Qualifier`, `RenderingHints`, `CoordinateSystem`, `SupportQuantity`, and `Particle`, `Field`, etc. This could also be address by a table that had this information. However, there are over ~100,000 CDAWeb variables and the search use case for much of this information is not clear. That is, if only 10% of SPASE records include this information, a search on it will not be useful. I would argue that `CoordinateSystem` is important, but why not add it to the CDF Masters so that the users of it have access?. Also, some of the additional metadata is not useful for search, such as `Valid{Min,Max}`, `FillValue`, and `RenderingHints`. This information would be useful if the SPASE record was being used for automated extraction and plotting. However, much more information is needed to enable automated extraction and even then, given the issues described above, this may not be possible.
 
-# Running
+# Installing and Running
 
 ```
 git clone https://github.com/rweigel/cdawmeta.git
-cd cdawmeta
+cd cdawmeta;
+pip install -e .
 ```
 
-# Compare
+In the following, use `--update` to update the input metadata. See `python metadata.py --help` for more options, which include generation by an `id` regular expression.
 
-To compare the new HAPI metadata with Nand's, first execute `cdaweb.py` then
+**Examples**
 
+Create and display all metadata types
 ```
-python hapi/hapi-nl.py   # creates data/hapi/catalog-all.nl.json using requests to
- # https://cdaweb.gsfc.nasa.gov/hapi/{catalog,info}
-make compare [--include='PATTERN'] # creates data/hapi/compare.log
-# PATTERN is a dataset ID regular expression, e.g., '^AC_'
+python metadata.py --id AC_OR_SSC
+```
+
+Create and display HAPI; the output of this command can be viewed at
+[hapi/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info/AC_OR_SSC.json)
+```
+python metadata.py --id AC_OR_SSC --meta-type hapi
+```
+
+Create and display proof-of-concept SOSO; the output of this command can be viewed at
+[soso/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/soso/info/AC_OR_SSC.json)
+```
+python metadata.py --id AC_OR_SSC --meta-type soso
+```
+
+Create and display proof-of-concept auto-generated SPASE; the output of this command can be viewed at
+[spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json). See the `_Note` for context.
+```
+python metadata.py --id AC_OR_SSC --meta-type spase_auto
 ```

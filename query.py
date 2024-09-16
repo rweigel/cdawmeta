@@ -74,9 +74,6 @@ def units(query_name, dir_name, clargs):
   for dsid in meta.keys():
     logger.info(f"\n-----{dsid}-----")
 
-    spase = cdawmeta.util.get_path(meta[dsid], ['spase', 'data'])
-    spase = cdawmeta.restructure.spase(spase, logger=logger)
-
     if "master" not in meta[dsid]:
       logger.info("  Master: x No Master")
 
@@ -89,10 +86,12 @@ def units(query_name, dir_name, clargs):
       logger.info("  Master: x No CDFVariables in Master")
       continue
 
-    have_spase = False
-    if not have_spase:
+    spase = cdawmeta.util.get_path(meta[dsid], ['spase', 'data'])
+    have_spase = True
+    if not spase:
       logger.info("  SPASE: x No SPASE available")
       have_spase = False
+    spase = cdawmeta.restructure.spase(spase, logger=logger)
 
     logger.info(f"  CDF:   {meta[dsid]['master']['request']['url']}")
     if have_spase:
@@ -110,7 +109,7 @@ def units(query_name, dir_name, clargs):
         VAR_TYPE = variable['VarAttributes']['VAR_TYPE']
 
       #if VAR_TYPE not in ['data', 'support_data']:
-      if VAR_TYPE == 'data':
+      if VAR_TYPE != 'data':
         continue
 
       logger.info(variable_name)
@@ -361,7 +360,7 @@ dir_name = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-additions')
 clargs['embed_data'] = True
 del clargs['query_name']
 
-logger = cdawmeta.logger(name='query', dir_name='cdawmeta-additions/query')
+logger = cdawmeta.logger(name=f'query-{query_name}', dir_name='cdawmeta-additions/query')
 
 if query_name is None:
   for query_name in query_names:

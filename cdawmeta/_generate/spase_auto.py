@@ -9,7 +9,8 @@ def spase_auto(metadatum, logger):
       "xmlns": "http://www.spase-group.org/data/schema",
       "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
       "xsi:schemaLocation": "http://www.spase-group.org/data/schema http://www.spase-group.org/data/schema/spase-2_6_1.xsd",
-      "Version": "2.6.1"
+      "Version": "2.6.1",
+      "_Note": "Nodes prefixed with an _ were auto-generated. Values prefixed with an _ are not valid SPASE, but are needed for completenes."
       }
     }
 
@@ -182,7 +183,7 @@ def spase_auto(metadatum, logger):
 
   if spase is not None:
     Parameter = cdawmeta.util.get_path(spase, ['Spase', 'NumericalData', 'Parameter'])
-    NumericalData['_Parameter'].append(Parameter)
+    NumericalData['Parameter'] = Parameter
 
   spase_auto_['Spase']['NumericalData'] = NumericalData
 

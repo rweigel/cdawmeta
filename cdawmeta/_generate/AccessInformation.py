@@ -64,7 +64,7 @@ def AccessInformation(metadatum, logger):
   AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description'] = Description.format(hapi_languages=hapi_languages)
   hapi_language_formats = []
   for language in hapi_languages.split(', '):
-    hapi_language_formats.append(f"Script.{language.strip()}")
+    hapi_language_formats.append(f"_Script.{language.strip()}")
   AccessInformation['CDAWeb/HAPI/Program']['Format'] = hapi_language_formats
 
   if ssc:
