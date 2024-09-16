@@ -1,5 +1,7 @@
 import cdawmeta
 
+dependencies = ['orig_data']
+
 def sample_links(metadatum, logger):
 
   def reformat_dt(dt):

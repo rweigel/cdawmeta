@@ -1,3 +1,5 @@
+dependencies = ['orig_data']
+
 def sample_start_stop(metadatum, logger):
 
   orig_data = metadatum["orig_data"]['data']

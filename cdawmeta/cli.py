@@ -5,9 +5,9 @@ def cli(script):
 
   clkws = {
     "meta-type": {
-      "help": "Type of metadata to generate",
-      "default": 'all',
-      "choices": ['all', 'master', 'orig_data', 'spase', *meta_types_generated]
+      "help": "Type of metadata to generate. Default is to generate all types.",
+      "default": None,
+      "choices": ['master', 'orig_data', 'spase', *meta_types_generated]
     },
     "id": {
       "help": "ID or pattern for dataset IDs to include (prefix with ^ to use pattern match, e.g., '^A|^B') (default: ^.*)"
@@ -20,7 +20,7 @@ def cli(script):
     "write-catalog": {
       "action": "store_true",
       "help": "Write catalog-all.json files (and catalog.json for HAPI metadata)",
-      "default": True
+      "default": False
     },
     "max-workers": {
       "metavar": "N",
@@ -40,7 +40,7 @@ def cli(script):
     },
     "regen": {
       "action": "store_true",
-      "help": "Regenerate computed metadata.",
+      "help": "Regenerate computed metadata. Use for testing computed metadata code changes.",
       "default": False
     },
     "log-level": {

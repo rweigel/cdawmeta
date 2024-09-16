@@ -1,24 +1,6 @@
 import os
 import cdawmeta
 
-def _write_errors(name, logger):
-  # Write all errors to a single file if all datasets were requested. Errors
-  # were already written to log file, but here we need to do additional formatting
-  # that is more difficult if errors were written as they occur.
-
-  errors = ""
-  fname = os.path.join(cdawmeta.DATA_DIR, name, f'{name}.errors.log')
-  for dsid, vars in cdawmeta.error.errors.items():
-    if isinstance(vars, str):
-      errors += f"{dsid}: {vars}\n"
-      continue
-    errors += f"{dsid}:\n"
-    for vid, msgs in vars.items():
-      errors += f"  {vid}:\n"
-      for msg in msgs:
-        errors += f"    {msg}\n"
-  cdawmeta.util.write(fname, errors, logger=logger)
-
 def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False):
 
   # Remove the leading underscore. Need a better way to do this.
@@ -65,10 +47,13 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
     logger.error(f"Error: {emsg}")
     file_name = os.path.join(cdawmeta.DATA_DIR, gen_name, sub_dir, f"{id}.error.txt")
     cdawmeta.util.write(file_name, trace, logger=logger)
-    return None
-
-  if datasets is None:
-    return None
+    return {
+              'id': id,
+              'log': None,
+              'data': None,
+              'data-file': None,
+              'error': emsg
+            }
 
   data = []
   data_file = []
@@ -93,10 +78,5 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
 
   if len(data) == 1:
     data = data[0]
-
-  if regen or update:
-    # This should be moved into metadata.py. It is re-writing file for
-    # each dataset, each time with additional information.
-    _write_errors(gen_name, logger)
 
   return {"id": id, "data": data, "data-file": data_file}

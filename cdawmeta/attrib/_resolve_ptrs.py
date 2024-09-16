@@ -47,13 +47,12 @@ def _resolve_ptrs(dsid, name, all_variables, ptr_names=None):
     for x in [1, 2, 3]:
       if f'{prefix}_{x}' in variable['VarAttributes']:
         x_NAME = variable['VarAttributes'][f'{prefix}_{x}']
-        hapi_type = CDFDataType2HAPItype(all_variables[x_NAME]['VarDescription']['DataType'])
         if x_NAME not in all_variables:
           ptrs[prefix+"_VALID"][x-1] = False
           msg = f"Error: CDF[BadReference]: Bad {prefix} reference: '{name}' has {prefix}_{x} "
           msg += f"named '{x_NAME}', which is not a variable in dataset."
           ptrs[prefix+"_ERROR"][x-1] = msg
-        elif prefix == 'LABL_PTR' or (prefix == 'DEPEND' and 'string' == hapi_type):
+        elif prefix == 'LABL_PTR' or (prefix == 'DEPEND' and 'string' == CDFDataType2HAPItype(all_variables[x_NAME]['VarDescription']['DataType'])):
           if 'VarData' in all_variables[x_NAME]:
             ptrs[prefix+"_VALID"][x-1] = True
             ptrs[prefix][x-1] = x_NAME

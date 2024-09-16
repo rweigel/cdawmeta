@@ -80,6 +80,20 @@
       "Description": "Web Service to this product."
     }
   },
+  "SSCWeb/4DOrbit": {
+    "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
+    "Availability": "Online",
+    "AccessRights": "Open",
+    "Acknowledgement": "SPDF/SSCWeb",
+    "Format": ["HTML"],
+    "AccessURL": {
+      "Name": "4D Orbit Viewer",
+      "URL": "https://sscweb.gsfc.nasa.gov/4dorbit/?sc={dsid}",
+      "ProductKey": null,
+      "Style": "_Visualization",
+      "Description": "Web Service to this product."
+    }
+  },
   "CDAWeb/HAPI": {
     "RepositoryID": "spase://SMWG/Repository/NASA/GSFC/SPDF",
     "Availability": "Online",

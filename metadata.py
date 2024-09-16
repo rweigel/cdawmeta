@@ -7,7 +7,7 @@ metadata = cdawmeta.metadata(**args)
 
 if args['id'] is not None and not args['id'].startswith('^'):
   import json
-  if args['meta_type'] == 'all':
+  if args['meta_type'] is None:
     print(json.dumps(metadata[args['id']], indent=2))
   else:
     for meta_type in args['meta_type'].split(','):

@@ -1,11 +1,13 @@
-def error(id, name, msg, logger):
+def error(generator, id, name, msg, logger):
   logger.error(msg)
-  if id not in error.errors:
-    error.errors[id] = {}
+  if generator not in error.errors:
+    error.errors[generator] = {}
+  if id not in error.errors[generator]:
+    error.errors[generator][id] = {}
   if name is None:
-    error.errors[id] = msg.lstrip()
+    error.errors[generator][id]["_"] = msg.lstrip()
   else:
-    if name not in error.errors[id]:
-      error.errors[id][name] = []
-    error.errors[id][name].append(msg.lstrip())
+    if name not in error.errors[generator][id]:
+      error.errors[generator][id][name] = []
+    error.errors[generator][id][name].append(msg.lstrip())
 error.errors = {}

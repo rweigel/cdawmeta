@@ -5,7 +5,7 @@ import deepdiff
 
 import cdawmeta
 
-# Can't call logger = cdawmeta.logger('cdaweb') here because it calls cdawmeta.DATA_DIR
+# Can't call logger = cdawmeta.logger(...) here because it calls cdawmeta.DATA_DIR
 # which is set to a default. If user modifies using cdawmeta.DATA_DIR = ...,
 # logger does not know about the change.
 # TODO: Find a better way to handle this. 
@@ -18,6 +18,17 @@ def _logger(log_level='info'):
   return logger
 
 def ids(id=None, skip=None, update=False):
+  '''Generate list of CDAWeb dataset IDs.
+
+  IDs are generated from all.xml.
+
+  If `id` is `None`, all IDs are returned. `id` is treated a regular expression
+  if it starts with `^`.
+
+  `skip` is a regular expression string; IDs that match `skip` are not returned.
+
+  `update` is a boolean. If `True`, all.xml is updated before generating IDs.
+  '''
 
   # Needed to set logger for any called underscore functions.
   # TODO: Find a better way to handle this.
@@ -52,7 +63,14 @@ def ids(id=None, skip=None, update=False):
 
   return _remove_skips(ids_reduced)
 
-def metadata(meta_type=None, id=None, skip=None, embed_data=False, write_catalog=True, update=False, regen=False, max_workers=1, diffs=False, log_level='info'):
+def metadata(meta_type=None, id=None, skip=None, embed_data=False, write_catalog=False,
+             update=False, regen=False, max_workers=1, diffs=False, log_level='info'):
+  '''
+  Options are documented in cli.py.
+
+  Returns a dict of metadata. Keys are dataset IDs and values are dicts of
+  metadata types.
+  '''
 
   if not update and not regen:
     # TODO: Read cached catalog files.
@@ -74,55 +92,88 @@ def metadata(meta_type=None, id=None, skip=None, embed_data=False, write_catalog
   allxml = _allxml(update=update)
   datasets_all = _datasets(allxml)
 
-  meta_types_generated = cdawmeta._generate.generators
-  meta_types = ['master', 'orig_data', 'spase', *meta_types_generated]
+  meta_type_requested = meta_type
+  logger.info(f"Requested meta_type: {meta_type}")
 
-  def get_one(dataset):
-    dataset['master'] = _master(dataset, update=update, diffs=diffs)
-    dataset['orig_data'] = _orig_data(dataset, update=update, diffs=diffs)
-    dataset['spase'] = _spase(dataset, update=update, diffs=diffs)
+  if meta_type_requested is None:
+    meta_types = cdawmeta._generate.dependencies['all']
+  else:
+    if isinstance(meta_type, list):
+      meta_types = []
+      for _type in meta_type:
+        deps = cdawmeta._generate.dependencies[_type]
+        print(deps)
+        if deps is None:
+          meta_types.append(_type)
+          continue
+        for dep in deps:
+          if dep not in meta_types:
+            meta_types.append(dep)
+    else:
+      meta_types = [*cdawmeta._generate.dependencies[meta_type], meta_type]
+      meta_type_requested = [meta_type_requested]
 
-    # TODO: Here we generate all metadata types. This function has an unused
-    #       input of meta_type, which could be a string or an array of strings.
-    #       In this case, we should only generate the metadata types in meta_type.
-    #       The complication is that some metadata types depend on others, so
-    #       we would need to determine the order and which ones to generate.
-    for meta_type in meta_types_generated:
+  logger.info(f"Given requested meta_type, need to create: {meta_types}")
+
+  not_generated = ['master', 'orig_data', 'spase']
+
+  mloggers = {}
+  for meta_type in meta_types:
+    if meta_type in not_generated:
+      continue
+    mloggers[meta_type] = cdawmeta.logger(meta_type, log_level=log_level)
+
+  def get_one(dataset, mloggers):
+
+    if 'master' in meta_types:
+      dataset['master'] = _master(dataset, update=update, diffs=diffs)
+    if 'orig_data' in meta_types:
+      dataset['orig_data'] = _orig_data(dataset, update=update, diffs=diffs)
+    if 'spase' in meta_types:
+      dataset['spase'] = _spase(dataset, update=update, diffs=diffs)
+
+    for meta_type in meta_types:
+      if meta_type in not_generated:
+        continue
       logger.info("Generating: " + meta_type)
-      _logger = cdawmeta.logger(meta_type, log_level=log_level)
-      dataset[meta_type] = cdawmeta.generate(dataset, meta_type, _logger, update=update, regen=regen)
+      dataset[meta_type] = cdawmeta.generate(dataset, meta_type, mloggers[meta_type], update=update, regen=regen)
 
-    if not write_catalog and not embed_data:
-      # If no catalog is being written and data is not being embedded, remove
-      # data from metadata and keep only id and data-file in object.
-      for meta_type in meta_types:
-        if 'data' in dataset[meta_type]:
-          del dataset[meta_type]['data']
+    for meta_type in meta_types:
+      if meta_type_requested is not None and meta_type not in meta_type_requested:
+        logger.info(f"Removing {meta_type} from metadata")
+        del dataset[meta_type]
+        continue
+      if not embed_data and 'data' in dataset[meta_type]:
+        logger.info(f"Removing data from {meta_type}")
+        del dataset[meta_type]['data']
 
   if max_workers == 1 or len(dsids) == 1:
     for dsid in dsids:
-      get_one(datasets_all[dsid])
+      get_one(datasets_all[dsid], mloggers)
   else:
-    from concurrent.futures import ThreadPoolExecutor
     def call(dsid):
       try:
-        get_one(datasets_all[dsid])
+        get_one(datasets_all[dsid], mloggers)
       except Exception as e:
         import traceback
-        logger.error(f"Error: {datasets_all['id']}: {traceback.print_exc()}")
+        logger.error(f"Error: {datasets_all[dsid]}: {traceback.print_exc()}")
+
+      return dsid
+
+    from concurrent.futures import ThreadPoolExecutor
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
       pool.map(call, dsids)
 
   metadata_ = {key: datasets_all[key] for key in dsids}
 
+  if regen or update:
+    _write_errors()
+
   if write_catalog:
-    meta_types.remove('orig_data')
-    _write_catalog(metadata_, id, meta_types)
-    if not embed_data:
-      for key in metadata_.keys():
-        datum = cdawmeta.util.get_path(metadata_[key], ['meta_type', 'data'])
-        if datum is not None:
-          del datum
+    if meta_type_requested is None:
+      _write_catalog(metadata_, id, meta_types)
+    else:
+      _write_catalog(metadata_, id, [meta_type_requested])
 
   return metadata_
 
@@ -208,6 +259,7 @@ def _master(dataset, update=False, diffs=False):
 def _spase(dataset, update=True, diffs=False):
 
   master = dataset['master']
+  restructure = True
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['spase']
 
   id = master['id']
@@ -248,14 +300,40 @@ def _orig_data(dataset, update=True, diffs=False):
 
 def _write_catalog(metadata_, id, meta_types):
 
+  logger.info("----")
+  logger.info(f"Writing catalog files for: {meta_types}")
+
   for meta_type in meta_types:
+    if meta_type == 'orig_data':
+      logger.info("Not creating orig_data catalog file.")
+      continue
+
     data = []
     for dsid in metadata_.keys():
-      datum = cdawmeta.util.get_path(metadata_[dsid], ['meta_type', 'data'])
+      logger.debug(f"Preparing catalog file for: {dsid}/{meta_type}")
 
-      if data is None:
-        logger.error(f"Error: {dsid}: No {meta_type} metadata")
+      if meta_type not in metadata_[dsid]:
+        # Should not happen. Was happening with threads.
+        logger.error("Error: {dsid}: No {meta_type}?. Skipping.")
         continue
+
+      datum = metadata_[dsid][meta_type].get('data', None)
+
+      if datum is None:
+        datum_file = metadata_[dsid][meta_type].get('data-file', None)
+        if datum_file is None:
+          logger.error(f"Error: {dsid}: No data or data-file in metadata")
+          continue
+
+        if not isinstance(datum_file, list):
+          dataum_files = [datum_file]
+        else:
+          dataum_files = datum_file
+
+        datum = []
+        for dataum_file in dataum_files:
+          d = cdawmeta.util.read(dataum_file.replace('.json', '.pkl'), logger=logger)
+          datum.append(d)
 
       if isinstance(datum, list):
         # This is for HAPI metadata, which can have multiple datasets
@@ -284,6 +362,33 @@ def _write_catalog(metadata_, id, meta_types):
 
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}.json')
       cdawmeta.util.write(fname, data_copy, logger=logger)
+
+def _write_errors(name=None):
+  '''
+  Write all errors to a single file if all datasets were requested. Errors
+  were already written to log file, but here we need to do additional formatting
+  that is more difficult if errors were written as they occur.
+  '''
+
+  if name is None:
+    for key in cdawmeta.error.errors.keys():
+      # If generator used calls to cdawmeta.error(), the generator will have
+      # a key.
+      _write_errors(name=key)
+    return
+
+  errors = ""
+  fname = os.path.join(cdawmeta.DATA_DIR, name, f'{name}.errors.log')
+  for dsid, vars in cdawmeta.error.errors.copy().items():
+    if isinstance(vars, str):
+      errors += f"{dsid}: {vars}\n"
+      continue
+    errors += f"{dsid}:\n"
+    for vid, msgs in vars.items():
+      errors += f"  {vid}:\n"
+      for msg in msgs:
+        errors += f"    {msg}\n"
+  cdawmeta.util.write(fname, errors, logger=logger)
 
 def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
 

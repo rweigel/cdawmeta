@@ -2,6 +2,8 @@ import os
 
 import cdawmeta
 
+dependencies = ['orig_data', 'hapi']
+
 def AccessInformation(metadatum, logger):
 
   fname = os.path.join(os.path.abspath(__file__).replace(".py", ".json"))

@@ -5,6 +5,8 @@ from timedelta_isoformat import timedelta
 
 import cdawmeta
 
+dependencies = ['orig_data']
+
 def cadence(metadatum, logger):
 
   import numpy
@@ -22,33 +24,31 @@ def cadence(metadatum, logger):
   # read_file() handle headers to determine if content has change and a
   # re-download is needed.
   #import pdb; pdb.set_trace()
+
+  # FORMOSAT5_AIP_IDN
+  if url.endswith('.nc'):
+    # Use read_ws() instead.
+    raise NotImplementedError("'.nc' not handled for {url}")
+
   depend_0_names = cdawmeta.io.read_cdf_depend_0s(url, logger=logger, use_cache=use_cache, cache_dir=cache_dir)
 
   if depend_0_names is None:
-    logger.error(f"cdawmeta.io.read_cdf_depend_0s('{url}') failed.")
-    return None
+    raise Exception(f"cdawmeta.io.read_cdf_depend_0s('{url}') failed.")
 
   depend_0_counts = {}
   logger.info(f"DEPEND_0s: {depend_0_names}")
 
   for depend_0_name in depend_0_names:
 
-    if url.endswith('.nc'):
-      # Use read_ws() instead.
-      msg = "'.nc' not handled for {url}"
-      msg = logger.error(f"Error: {msg}")
-      raise NotImplementedError(msg)
-
     try:
       data = cdawmeta.io.read_cdf(url, variables=depend_0_name, iso8601=False)
     except Exception as e:
-      logger.error(f"Error: {url}: cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) raised:")
-      logger.error(f"{e}")
-      raise e
+      emsg = f"Error: {url}: cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) raised: \n{e}"
+      raise Exception(emsg)
 
     if data is None:
-      logger.error(f"Error: {url}: cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) returned None.")
-      return None
+      emsg = f"Error: {url}: cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) returned None."
+      raise Exception(emsg)
 
     meta = f"; CDF metadata = {data}"
 
@@ -56,27 +56,26 @@ def cadence(metadatum, logger):
     VarAttributes = data[depend_0_name].get('VarAttributes', None)
     if VarAttributes is None:
       emsg = f"{depend_0_name}['VarAttributes'] = Nonein {url}{meta}"
+      raise NotImplementedError(emsg)
 
     if 'VarData' not in data[depend_0_name]:
       emsg = f"Error: {depend_0_name} has no 'VarData' in {url}{meta}"
+      raise NotImplementedError(emsg)
 
     if data[depend_0_name]['VarData'] is None:
       emsg = f"{depend_0_name}['VarData'] = None in {url}{meta}"
+      raise NotImplementedError(emsg)
 
     # THA_L2_ESA
     if 'VIRTUAL' in VarAttributes and VarAttributes['VIRTUAL'].lower().strip() == 'true':
       emsg = f"VIRTUAL DEPEND_0 ({depend_0_name}) not handled in {url}{meta}"
-
-    if emsg is not None:
-      #logger.error(f"Error: {emsg}")
       raise NotImplementedError(emsg)
 
     try:
       diff = numpy.diff(data[depend_0_name]['VarData'])
     except Exception as e:
       emsg = f"{url}: numpy.diff({depend_0_name}['VarData']) error: {e}"
-      logger.error(f"Error: {emsg}")
-      raise e
+      raise Exception(emsg)
 
     counts = Counter(diff)
     total = sum(counts.values())

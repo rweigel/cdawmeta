@@ -41,11 +41,11 @@ def read(fname, logger=None):
         logger.info(msg)
       raise e
   elif '.csv' == os.path.splitext(fname)[1]:
-    lines = f.readlines()
+    import csv
+    reader = csv.reader(f)
     data = []
-    for line in lines:
-      line = line.split(',')
-      data.append([col.strip() for col in line])
+    for row in reader:
+      data.append(row)
   else:
     try:
       data = f.read()

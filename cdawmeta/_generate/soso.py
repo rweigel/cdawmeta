@@ -1,5 +1,7 @@
 import cdawmeta
 
+dependencies = ['master', 'hapi']
+
 def soso(metadatum, logger):
 
   jsonld = {
@@ -25,7 +27,6 @@ def soso(metadatum, logger):
   jsonld['endDate'] = allxml['@timerange_stop'].replace(' ', 'T') + "Z"
   keywords.append(cdawmeta.util.get_path(allxml, ['observatory', 'description', '@short']))
   keywords.append(cdawmeta.util.get_path(allxml, ['instrument', 'description', '@short']))
-
 
   master = metadatum['master']
   jsonld['name'] = cdawmeta.util.get_path(master, ['data', 'CDFglobalAttributes', 'TITLE'])

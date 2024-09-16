@@ -4,6 +4,8 @@ import cdawmeta
 
 logger = None
 
+dependencies = ['master', 'cadence', 'sample_start_stop']
+
 def hapi(metadatum, _logger):
   global logger
   logger = _logger
@@ -12,7 +14,7 @@ def hapi(metadatum, _logger):
 
   if 'data' not in metadatum['master']:
     msg = f"{id}: Not creating dataset for {id} b/c it has no 'data' key"
-    cdawmeta.error(id, None, msg, logger)
+    cdawmeta.error('hapi', id, None, msg, logger)
     return None
 
   master = metadatum["master"]['data']
@@ -72,7 +74,7 @@ def hapi(metadatum, _logger):
 
   #if len(depend_0_names) == 0:
   #  msg = f"  No datasets could be created for {id}"
-  #  cdawmeta.error(id, None, msg, logger)
+  #  cdawmeta.error('hapi', id, None, msg, logger)
   #  return None
 
   depend_0_names = _order_depend0s(id, depend_0_names)
@@ -80,7 +82,6 @@ def hapi(metadatum, _logger):
   catalog = []
   for depend_0_name in depend_0_names:
 
-    logger.info("-----")
     logger.info(f"  Creating HAPI dataset for DEPEND_0 = '{depend_0_name}'")
 
     info_head = _info_head(metadatum, depend_0_name)
@@ -154,7 +155,7 @@ def _info_head(metadatum, depend_0_name):
   if 'cadence' in metadatum:
     if 'error' in metadatum['cadence']:
       #no_cadence_msg = f"  Error: {id}: No cadence information available due to: {metadatum['cadence']['error']}"
-      no_cadence_msg = f"  Error: {id}: No cadence information available"
+      no_cadence_msg = f"  Error: No cadence information available"
     else:
       counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
       note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'note'])
@@ -168,7 +169,7 @@ def _info_head(metadatum, depend_0_name):
         no_cadence_msg = f"  Error: {id}: No cadence information available due to no counts object."
 
   if no_cadence_msg is not None:
-    #logger.error(no_cadence_msg)
+    cdawmeta.error('hapi', id, None, no_cadence_msg, logger)
     del info['cadence']
     del info['x_cadence_fraction']
     del info['x_cadence_note']
@@ -181,7 +182,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
   if 'DataType' not in depend_0_variable['VarDescription']:
     msg = f"Error: CDF[MissingDataType]: DEPEND_0 variable '{dsid}'/{depend_0_name} has no DataType attribute. Dropping variables associated with it"
-    cdawmeta.error(dsid, depend_0_name, "    " + msg, logger)
+    cdawmeta.error('hapi', dsid, depend_0_name, "    " + msg, logger)
     return None
 
   DEPEND_0_DataType = depend_0_variable['VarDescription']['DataType']
@@ -209,7 +210,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     VAR_TYPE, emsg = cdawmeta.attrib.VAR_TYPE(dsid, name, variable, x=None)
     if emsg is not None:
       # Should not happen because variable will be dropped in _split_variables
-      cdawmeta.error(dsid, name, "    " + emsg, logger)
+      cdawmeta.error('hapi', dsid, name, "    " + emsg, logger)
       continue
 
     if VAR_TYPE != 'data':
@@ -223,7 +224,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     type = CDFDataType2HAPItype(variable['VarDescription']['DataType'])
     if type is None and print_info:
       msg = f"Error: HAPI[NotImplemented]: Variable '{name}' has unhandled DataType: {variable['VarDescription']['DataType']}. Dropping variable."
-      cdawmeta.error(dsid, name, "      " + msg, logger)
+      cdawmeta.error('hapi', dsid, name, "      " + msg, logger)
       continue
 
     length = None
@@ -243,13 +244,13 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
       if PadValue is None and FillValue is None and NumElements is None:
         emsg = "Error: CDF[MissingInfo]: Dropping '{name}' because CDFDataType2HAPItype(VAR_TYPE) returns string but no PadValue, FillValue, or NumElements given to allow length to be determined."
-        cdawmeta.error(dsid, name, "      " + emsg, logger)
+        cdawmeta.error('hapi', dsid, name, "      " + emsg, logger)
         continue
 
       if NumElements is None:
         if PadValue is not None and FillValue is not None and PadValue != FillValue:
           emsg = f"Error: CDF[LengthMismatch]: Dropping '{name}' because PadValue and FillValue lengths differ."
-          cdawmeta.error(dsid, name, "      " + emsg, logger)
+          cdawmeta.error('hapi', dsid, name, "      " + emsg, logger)
           continue
 
       if PadValue is not None:
@@ -272,7 +273,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     UNITS, emsg = cdawmeta.attrib.UNITS(dsid, name, all_variables, x=None)
     parameter['units'] = UNITS
     if emsg is not None and print_info:
-      cdawmeta.error(dsid, name, "      " + emsg, logger)
+      cdawmeta.error('hapi', dsid, name, "      " + emsg, logger)
 
     LABLAXIS, emsg = cdawmeta.attrib.LABLAXIS(dsid, name, all_variables, x=None)
     if LABLAXIS is not None and cdawmeta.CONFIG['hapi']['keep_label']:
@@ -290,7 +291,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
         parameter['x_format'] = format_c
         parameter['x_fractionDigits'] = ''.join(d for d in format_c if d.isdigit())
       if emsg is not None and print_info:
-        cdawmeta.error(dsid, name, "    " + emsg, logger)
+        cdawmeta.error('hapi', dsid, name, "    " + emsg, logger)
 
     if 'DataType' in variable['VarDescription']:
       parameter['x_cdf_DataType'] = variable['VarDescription']['DataType']
@@ -305,7 +306,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       parameter['x_cdf_DISPLAY_TYPE'] = DISPLAY_TYPE
     if emsg is not None and print_info:
       if cdawmeta.CONFIG['hapi']['log_display_type_issues']:
-        cdawmeta.error(dsid, name, "    " + emsg, logger)
+        cdawmeta.error('hapi', dsid, name, "    " + emsg, logger)
 
     # TODO: Finish.
     #deltas = _extract_deltas(dsid, name, variable, print_info=cdawmeta.CONFIG['hapi']['log_delta_issues'])
@@ -322,7 +323,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     if 'DataType' not in variable['VarDescription']:
       msg = f"Error: CDF[MissingDataType]: Variable '{dsid}'/{depend_0_name} has no DataType attribute. Dropping variables associated with it"
-      cdawmeta.error(dsid, name, "      " + msg, logger)
+      cdawmeta.error('hapi', dsid, name, "      " + msg, logger)
       return None
 
     ptr_names = ['DEPEND','LABL_PTR']
@@ -332,7 +333,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
         for x in range(len(ptrs[ptr_name])):
           emsg = ptrs[ptr_name+'_ERROR'][x]
           if emsg is not None:
-            cdawmeta.error(dsid, name, f'      {emsg}', logger)
+            cdawmeta.error('hapi', dsid, name, f'      {emsg}', logger)
 
     n_depend_values = 0
     if ptrs['DEPEND_VALUES'] is not None:
@@ -392,14 +393,14 @@ def _bins(dsid, name, all_variables, depend_xs, print_info=False):
     if print_info:
       msg = f"Error: CDF[DimSizes]: DimSizes mismatch: NumDims = {NumDims} "
       msg += "!= len(DimSizes) = {len(DimSizes)}"
-      cdawmeta.error(dsid, name, "      " + msg, logger)
+      cdawmeta.error('hapi', dsid, name, "      " + msg, logger)
     return None
 
   if len(DimSizes) != len(DimVariances):
     if print_info:
       msg = f"Error: CDF[DimVariance]: DimVariances mismatch: len(DimSizes) = {DimSizes} "
       msg += "!= len(DimVariances) = {len(DimVariances)}"
-      cdawmeta.error(dsid, name, "      " + msg, logger)
+      cdawmeta.error('hapi', dsid, name, "      " + msg, logger)
     return None
 
   bins_objects = []
@@ -436,16 +437,16 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
   if emsg is not None:
     if print_info:
       emsg = emsg +  " Not creating bins."
-      cdawmeta.error(dsid, name, "      " + emsg, logger)
+      cdawmeta.error('hapi', dsid, name, "      " + emsg, logger)
     return None
 
   UNITS, emsg = cdawmeta.attrib.UNITS(dsid, DEPEND_x_NAME, all_variables, x=x)
   if emsg is not None and print_info:
-    cdawmeta.error(dsid, DEPEND_x_NAME, "      " + emsg, logger)
+    cdawmeta.error('hapi', dsid, DEPEND_x_NAME, "      " + emsg, logger)
 
   LABLAXIS, emsg = cdawmeta.attrib.LABLAXIS(dsid, DEPEND_x_NAME, all_variables, x=x)
   if emsg is not None and print_info:
-    cdawmeta.error(dsid, name, "      " + emsg, logger)
+    cdawmeta.error('hapi', dsid, name, "      " + emsg, logger)
 
   if 'VarData' in DEPEND_x:
     bins_object = {
@@ -527,12 +528,12 @@ def _split_variables(id, variables):
 
     if 'VarAttributes' not in variable_meta:
       msg = f"  Error: ISTP[NoVarAttributes]: Dropping variable '{name}' b/c it has no VarAttributes"
-      cdawmeta.error(id, name, msg, logger)
+      cdawmeta.error('hapi', id, name, msg, logger)
       continue
 
     if 'VAR_TYPE' not in variable_meta['VarAttributes']:
       msg = f"  Error: ISTP[NoVAR_TYPE]: Dropping variable '{name}' b/c it has no has no VAR_TYPE"
-      cdawmeta.error(id, name, msg, logger)
+      cdawmeta.error('hapi', id, name, msg, logger)
       continue
 
     if _omit_variable(id, name):
@@ -543,7 +544,7 @@ def _split_variables(id, variables):
 
       if depend_0_name not in variables:
         msg = f"  Error: CDF[MissingDEPEND_0]: Dropping '{name}' b/c it has a DEPEND_0 ('{depend_0_name}') that is not in dataset"
-        cdawmeta.error(id, name, msg, logger)
+        cdawmeta.error('hapi', id, name, msg, logger)
         continue
 
       if depend_0_name not in depend_0_dict:
@@ -628,13 +629,13 @@ def _description(dsid, name, variable, x=None, print_info=False):
   if CATDESC is None:
     CATDESC = ""
   if emsg is not None and print_info:
-    cdawmeta.error(dsid, name, "      " + emsg, logger)
+    cdawmeta.error('hapi', dsid, name, "      " + emsg, logger)
 
   VAR_NOTES, emsg = cdawmeta.attrib.VAR_NOTES(dsid, name, variable)
   if VAR_NOTES is None:
     VAR_NOTES = ""
   if emsg is not None and print_info:
-    cdawmeta.error(dsid, name, "      " + emsg, logger)
+    cdawmeta.error('hapi', dsid, name, "      " + emsg, logger)
 
   if VAR_NOTES == CATDESC:
     desc = f"{CATDESC}"
@@ -683,7 +684,7 @@ def CDFDataType2HAPItype(cdf_type):
 
   return None
 
-# Used here, soso.py, and spase_alt.py
+# Used here, soso.py, and spase_auto.py
 def flatten_parameters(hapi):
 
   if isinstance(hapi, list):
