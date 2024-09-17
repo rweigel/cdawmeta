@@ -65,6 +65,9 @@ For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master
 
 The implication is a scientist using SPASE `Units` to label their plots risks the plot being incorrect.
 
+CDAWeb includes links to SPASE records with incorrect units. For example, [NotesA.html#AC_H2_SIS](https://cdaweb.gsfc.nasa.gov/misc/NotesA.html#AC_H2_SIS) links to 
+[ACE/ULEIS/Ion/Fluxes/L2/PT1H.json](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json).
+
 There was a second complicating factor. Some SPASE records do not have `Parameters` for all `VAR_TYPE=data`.
 
 In addition, although there is more consistency in the strings used for SPASE `Units`, SPASE does not require the use of a standard for the syntax (such as [VOUnits](https://www.ivoa.net/documents/VOUnits/20231215/REC-VOUnits-1.1.html), [udunits2](https://docs.unidata.ucar.edu/udunits/current/#Database), or [QUDT](http://qudt.org/vocab/unit/)). HAPI has the option to state the standard used for `unit` strings so that a validator can check and units-aware software (e.g., the [AstroPy Units](https://eteq.github.io/astropy/units/index.html) module) can use it to make automatic unit conversions when mathematical operations on are performed.
