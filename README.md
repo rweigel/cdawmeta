@@ -71,9 +71,9 @@ In addition, although there is more consistency in the strings used for SPASE `U
 
 We concluded that if we wanted to represent CDAWeb variables in HAPI with units that adhered to a syntax so the string could be validated, we would need to:
 
-1. Determine the VOUnit representation of all unique units (~1000), if possible. See [CDFUNITS_to_VOUNITS.csv](https://github.com/rweigel/cdawmeta-additions/CDFUNITS_to_VOUNITS.csv).
+1. Determine the VOUnit representation of all unique units (~1000), if possible. See [CDFUNITS_to_VOUNITS.csv](https://github.com/rweigel/cdawmeta-additions/blob/main/CDFUNITS_to_VOUNITS.csv).
 
-2. Determine the VOUnit for all variables that do not have a `UNITS` attribute or a `UNITS` value that is all whitespace (~20,000), which we label as "missing"; see [Missing_UNITS.json](https://github.com/rweigel/cdawmeta-additions/Missing_UNITS.json). Although the ISTP conventions require units for variables with `VAR_TYPE = data`, ~20% of variables have "missing" `UNITS`.
+2. Determine the VOUnit for all variables that do not have a `UNITS` attribute or a `UNITS` value that is all whitespace (~20,000), which we label as "missing"; see [Missing_UNITS.json](https://github.com/rweigel/cdawmeta-additions/blob/main/Missing_UNITS.json). Although the ISTP conventions require units for variables with `VAR_TYPE = data`, ~20% of variables have "missing" `UNITS`.
 
 3. Validating determinations made for 1. and 2. are correct. This could done in two ways: (a) Have two people independently make determinations and (b) for case 1., use AstroPy to compute the SI conversion and compare with the `SI_{conversion,conv,CONVERSION}` (all three versions are found in [CDF Masters](http://mag.gmu.edu/git-data/cdawmeta/data/table/cdaweb.variable.attribute_counts.csv) and the ISTP convention documentation) attribute value in the CDF. I emphasize that results must be checked and verified. Putting incorrect units in metadata is unacceptable.
 
