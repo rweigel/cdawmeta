@@ -54,9 +54,9 @@ The implication is that CDAWeb SPASE records cannot be used for one of the inten
 
 ## 2 Update
 
-The SPASE metadata is not updated frequently. There are instances where variables have been added to CDAWeb datasets but the SPASE records do not have them. In some instances, SPASE records are missing variables even for datasets that have not changed. Examples are given in the `Parameter` subsection.
+The SPASE metadata is not updated frequently. There are instances where variables have been added to CDAWeb datasets but the SPASE records do not have them. Sometimes, SPASE records are missing variables, even for datasets that have not changed. Examples are given in the `Parameter` subsection.
 
-The implication is that a scientist who executes a search backed by SPASE records may erroneously conclude that variables or datasets are not available.
+The implication is that a scientist who executes a search backed by SPASE records may erroneously conclude that variables or datasets are unavailable.
 
 ## 3 Units
 
@@ -75,7 +75,7 @@ We concluded that if we wanted to represent CDAWeb variables in HAPI with units 
 
 2. Determine the VOUnit for all variables that do not have a `UNITS` attribute or a `UNITS` value that is all whitespace (~20,000), which we label as "missing"; see [Missing_UNITS.json](https://github.com/rweigel/cdawmeta-additions/blob/main/Missing_UNITS.json). Although the ISTP conventions require units for variables with `VAR_TYPE = data`, ~20% of variables have "missing" `UNITS`.
 
-3. Validating determinations made for 1. and 2. are correct. This could done in two ways: (a) Have two people independently make determinations and (b) for case 1., use AstroPy to compute the SI conversion and compare with the `SI_{conversion,conv,CONVERSION}` (all three versions are found in [CDF Masters](http://mag.gmu.edu/git-data/cdawmeta/data/table/cdaweb.variable.attribute_counts.csv) and the ISTP convention documentation) attribute value in the CDF. I emphasize that results must be checked and verified. Putting incorrect units in metadata is unacceptable.
+3. Validating determinations made for 1. and 2. are correct. This could done in two ways: (a) Have two people independently make determinations and (b) for case 1., use AstroPy to compute the SI conversion and compare with the `SI_{conversion,conv,CONVERSION}` (all three versions are found in [CDF Masters](http://mag.gmu.edu/git-data/cdawmeta/data/table/cdaweb.variable.attribute_counts.csv) and the [ISTP convention documentation](https://github.com/rweigel/cdawmeta/issues/14). I emphasize that results must be checked and verified. Putting incorrect units in metadata is unacceptable.
 
 Finally, I think that the correct source of the updated units is not SPASE—it should be the CDF Masters; SPASE records should draw this information from the CDF Masters. Many people use CDF Masters for metadata, and if the VOUnits only existed in SPASE, they would have access to them. (For example, [CDAWeb](https://cdaweb.gsfc.nasa.gov/cgi-bin/eval1.cgi?index=sp_phys&group=ACE) links to the Master file in the Metadata links and Autoplot, HAPI, etc. used Master CDF metadata.)
 
