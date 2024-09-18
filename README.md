@@ -52,29 +52,32 @@ The implication is that CDAWeb `NumericalData` SPASE records cannot be used for 
 
 ## 2 Updates
 
-The SPASE metadata is not updated frequently. There are instances where variables have been added to CDAWeb datasets but the SPASE records do not have them. In some instances, CDAWeb `NumericalData` SPASE records are missing variables even for datasets that have not changed. Examples are given in the `Parameter` subsection.
+The SPASE metadata is not updated frequently. There are instances where variables have been added to CDAWeb datasets but the SPASE records do not have them. Sometimes, SPASE records are missing variables, even for datasets that have not changed. Examples are given in the `Parameter` subsection.
 
-The implication is that a scientist who executes a search backed by CDAWeb `NumericalData` SPASE records may erroneously conclude that variables or datasets are not available.
+The implication is that a scientist who executes a search backed by SPASE records may erroneously conclude that variables or datasets are unavailable.
 
 ## 3 Units
 
 We considered using SPASE `Units` for variables when they were available because although CDAWeb Master metadata has a `UNITS` attribute, no consistent convention is followed for the syntax and in some cases, `UNITS` are not a scientific unit but a label (e.g. `0=good` and `<|V|>`). This effort stopped when we noticed instances where the SPASE `Units` were wrong.
 
-For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/ac_h2_ule_00000000_v01.json) and `Units = '(cm^2 s sr MeV)^-1)'` [in SPASE](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json). See [a dump of the unique Master `UNITS` to SPASE `Units` pairs](https://github.com/rweigel/cdawmeta-additions/query/query-units.json), which is explained in [query-units.md](https://github.com/rweigel/cdawmeta-additions/query/query-units.md).
+For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/ac_h2_ule_00000000_v01.json) and `Units = '(cm^2 s sr MeV)^-1)'` [in SPASE](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json). See [a dump of the unique Master `UNITS` to SPASE `Units` pairs](https://github.com/rweigel/cdawmeta-additions/blob/main/query/query-units.json), which is explained in [query-units.md](https://github.com/rweigel/cdawmeta-additions/blob/main/query/query-units.md).
 
 The implication is a scientist using SPASE `Units` to label their plots risks the plot being incorrect.
 
-There was a second complicating factor. Some CDAWeb `NumericalData` SPASE records do not have `Parameters` for all `VAR_TYPE=data`.
+CDAWeb includes links to SPASE records with incorrect units. For example, [NotesA.html#AC_H2_SIS](https://cdaweb.gsfc.nasa.gov/misc/NotesA.html#AC_H2_SIS) links to 
+[ACE/ULEIS/Ion/Fluxes/L2/PT1H.json](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json).
+
+There was a second complicating factor. Some SPASE records do not have `Parameters` for all `VAR_TYPE=data`.
 
 Although there is more consistency in the strings used for SPASE `Units`, SPASE does not require the use of a standard for the syntax (such as [VOUnits](https://www.ivoa.net/documents/VOUnits/20231215/REC-VOUnits-1.1.html), [udunits2](https://docs.unidata.ucar.edu/udunits/current/#Database), or [QUDT](http://qudt.org/vocab/unit/)). HAPI has the option to state the standard used for `unit` strings so that a validator can check and units-aware software (e.g., the [AstroPy Units](https://eteq.github.io/astropy/units/index.html) module) can use it to make automatic unit conversions when mathematical operations on are performed.
 
 We concluded that if we wanted to represent CDAWeb variables in HAPI with units that adhered to a syntax so the string could be validated, we would need to:
 
-1. Determine the [VOUnit](https://www.ivoa.net/documents/VOUnits/20231215/REC-VOUnits-1.1.html) representation of all unique units (~1000), if possible. See [CDFUNITS_to_VOUNITS.csv](https://github.com/rweigel/cdawmeta-additions/CDFUNITS_to_VOUNITS.csv).
+1. Determine the VOUnit representation of all unique units (~1000), if possible. See [CDFUNITS_to_VOUNITS.csv](https://github.com/rweigel/cdawmeta-additions/blob/main/CDFUNITS_to_VOUNITS.csv).
 
-2. Determine the [VOUnit](https://www.ivoa.net/documents/VOUnits/20231215/REC-VOUnits-1.1.html) for all variables that do not have a `UNITS` attribute or a `UNITS` value that is all whitespace (~20,000), which we label as "missing"; see [Missing_UNITS.json](https://github.com/rweigel/cdawmeta-additions/Missing_UNITS.json). Although the ISTP conventions require units for variables with `VAR_TYPE = data`, ~20% of variables have "missing" `UNITS`.
+2. Determine the VOUnit for all variables that do not have a `UNITS` attribute or a `UNITS` value that is all whitespace (~20,000), which we label as "missing"; see [Missing_UNITS.json](https://github.com/rweigel/cdawmeta-additions/blob/main/Missing_UNITS.json). Although the ISTP conventions require units for variables with `VAR_TYPE = data`, ~20% of variables have "missing" `UNITS`.
 
-3. Validating determinations made for 1. and 2. are correct. This could done in two ways: (a) Have two people independently make determinations and (b) for case 1., use AstroPy to compute the SI conversion and compare with the `SI_{conversion,conv,CONVERSION}` (all three versions are found in [CDF Masters](http://mag.gmu.edu/git-data/cdawmeta/data/table/cdaweb.variable.attribute_counts.csv) and the ISTP convention documentation) attribute value in the CDF. I emphasize that results must be checked and verified. Putting incorrect units in metadata is unacceptable.
+3. Validating determinations made for 1. and 2. are correct. This could done in two ways: (a) Have two people independently make determinations and (b) for case 1., use AstroPy to compute the SI conversion and compare with the `SI_{conversion,conv,CONVERSION}` (all three versions are found in [CDF Masters](http://mag.gmu.edu/git-data/cdawmeta/data/table/cdaweb.variable.attribute_counts.csv) and the [ISTP convention documentation](https://github.com/rweigel/cdawmeta/issues/14). I emphasize that results must be checked and verified. Putting incorrect units in metadata is unacceptable.
 
 Finally, I think that the correct source of the updated units is not SPASE—it should be the CDF Masters; SPASE records should draw this information from the CDF Masters. Many people use CDF Masters for metadata, and if the VOUnits only existed in SPASE, they would have access to them. (For example, [CDAWeb](https://cdaweb.gsfc.nasa.gov/cgi-bin/eval1.cgi?index=sp_phys&group=ACE) links to the Master file in the Metadata links and Autoplot, HAPI, etc. used Master CDF metadata.)
 
