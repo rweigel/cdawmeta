@@ -6,4 +6,3 @@ def sort_dict(d):
   for key in d:
     d[key] = sort_dict(d[key])
   return d
-

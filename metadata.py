@@ -6,7 +6,6 @@ args = cdawmeta.cli('metadata.py')
 
 if args['id'] is not None and not args['id'].startswith('^'):
   args['embed_data'] = True
-print(args)
 metadata = cdawmeta.metadata(**args)
 
 if args['id'] is not None and not args['id'].startswith('^'):

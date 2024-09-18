@@ -1,41 +1,3 @@
-
-`LastRecord=-1` and `Num=300`?
-```
-url = 'https://cdaweb.gsfc.nasa.gov/sp_phys/data/psp/fields/l3/rfs_hfr/2023/psp_fld_l3_rfs_hfr_20231031_v03.cdf'
-depend_0_name = 'epoch_hfr_coher_V1_V2'
-data = cdawmeta.io.read_cdf(url, variables=depend_0_name, iso8601=False)
-print(data)
-{'epoch_hfr_coher_V1_V2': {'VarDescription': {'BlockingFactor': 0, 'Compress': 0, 'DataTypeValue': 33, 'DataType': 'CDF_TIME_TT2000', 'DimSizes': [], 'DimVariances': [], 'LastRecord': -1, 'Num': 300, 'NumDims': 0, 'NumElements': 1, 'PadValue': array([-9223372036854775807]), 'RecVariance': True, 'SparseRecords': 'No_sparse', 'VarType': 'zVariable', 'VariableName': 'epoch_hfr_coher_V1_V2'}, 'VarAttributes': {'FIELDNAM': 'epoch_hfr_coher_V1_V2', 'MONOTON': 'INCREASE', 'FORMAT': 'I22', 'LABLAXIS': 'epoch', 'VAR_TYPE': 'support_data', 'FILLVAL': -9223372036854775808, 'DISPLAY_TYPE': 'time_series', 'VALIDMIN': 315576066184000000, 'VALIDMAX': 1577880069183999999, 'SCALEMIN': -9223372036854775807, 'SCALEMAX': -9223372036854775807, 'UNITS': 'ns', 'CATDESC': 'Time for HFR Cross Coherence, Ch0: V1 Ch1: V2', 'TIME_BASE': 'J2000'}, 'VarData': None}}
-```
-
-https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/CdfJavaDataSource/src/org/autoplot/cdf/CdfVirtualVars.java
-
-https://github.com/rweigel/CDAWlib/blob/952a28b08658413081e75714bd3b9bd3ba9167b9/virtual_funcs.pro
-
-how to handle parameters when multiple DEPEND_0s?
-
-Prefix things not in SPASE schema with _
-
-# From Bernie
-
-----
-That hapi implementation is running inside the HDP database so it searches the spase documents for ones with //AccessInformation/AccessURL[name = ‘CDAWeb’ and ProductKey = ‘whatever’].  “Sufficiently described” meant that the cdaweb information was in the spase documents.  At the time that code was written, there were many cdaweb datasets that didn’t have spase descriptions or the spase descriptions didn’t contain the cdaweb access information.  Even now, spase is usually missing the most recent cdaweb datasets but it’s not too far behind.
-
-This https://heliophysicsdata.gsfc.nasa.gov/queries/index_resolver.html describes a resolver service.  To get all datasets at once, you might want to use https://heliophysicsdata.gsfc.nasa.gov/queries/CDAWeb_SPASE.html.  Also note that https://cdaweb.gsfc.nasa.gov/WebServices/REST/#Get_Datasets returns the spase ResourceID.  For example,
-
-$ curl -s -H "Accept: application/json" “https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets?idPattern=AC_H0_MFI” |jq -jr '.DatasetDescription[]|(.Id,", ",.SpaseResourceId,"\n")'
-
-curl -s -H "Accept: application/xml" "https://heliophysicsdata.gsfc.nasa.gov/WS/hdp/1/Spase?ResourceID=spase://NASA/NumericalData/ACE/Ephemeris/PT12M"
-----
-
-https://cdaweb.gsfc.nasa.gov/registry/hdp/hapi/hapiHtml.html#url=https://cdaweb.gsfc.nasa.gov/hapi&id=VOYAGER1_10S_MAG@0,VOYAGER1_10S_MAG@1
-
-How is https://www.w3.org/TR/vocab-dcat/ related to https://github.com/ESIPFed/science-on-schema.org/?
-
-https://heliophysicsdata.gsfc.nasa.gov/websearch/dispatcher?action=TEXT_SEARCH_PANE_ACTION&inputString=VOYAGER1_10S_MAG
-
-The following notes are based on results from the [`cdawmeta` package](https://github.com/rweigel/cdawmeta/), which was developed for creating metadata for the new CDAWeb HAPI server. The code in this package produces metadata stored in http://mag.gmu.edu/git-data/cdawmeta/data/ and the searchable [CDAWeb](https://hapi-server.org/meta/cdaweb/) and [HAPI](https://hapi-server.org/meta/hapi/) metadata tables.
-
 1\. These `FILLVALs` are suspect:
 
 * [-9.999999796611898e-32](https://hapi-server.org/meta/cdaweb/#FILLVAL=-9.999999796611898e-32) (given [`-1e+31` returns ~50k hits](https://hapi-server.org/meta/cdaweb/#FILLVAL=-1e%2b31))
@@ -46,6 +8,7 @@ The following notes are based on results from the [`cdawmeta` package](https://g
 
 https://github.com/rweigel/CDAWlib/blob/952a28b08658413081e75714bd3b9bd3ba9167b9/virtual_funcs.pro#L3345
 
+
 2\. Nand often has `FILL=-2.14748006E9` for `integer` type variables. To see the occurrences, [search the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `-2.14748006E9`. I suspect the reason is similar to that in item 3. below. I also see Nand having a fill of `99999.9` when the master has `100000.0` and also NaN when the master has `-1e+31`. ([Search on the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `99999.9` and `NaN`).
 
 
@@ -54,22 +17,6 @@ https://github.com/rweigel/CDAWlib/blob/952a28b08658413081e75714bd3b9bd3ba9167b9
 
 4\. Not all data variables have a `DEPEND_0` in [`BAR_2L_L2_HKPG`](https://hapi-server.org/meta/cdaweb/#datasetID=BAR_2L_L2_HKPG)
 
-
-5\. In `WI_OR_DEF/SUN_VECTOR`, Nand has a description of
-
-`'GCI Sun Position Vector'  ` 
-
-but the master has 'Position' misspelled and right whitespace padding:
-
-`'GCI Sun Postion Vector     '`
-
-Given I am using masters, this is unexpected. Is this something that Nand corrects in his code, and if so, why was the correction not made in the master?
-
-6\. My code (which uses the JSON representation of the master CDFs) claims that the units for `ISS_SP_FPMU/TCC` is the ASCII `null`. I see `"UNITS":"\u0000"` in a.json from
-
-```
-curl "https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/iss_sp_fpmu_00000000_v01.json" > a.json
-```
 
 7\. If you search [the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/catalog-all.log) for `Error:`, errors in the master CDFs associated with missing
 
@@ -101,37 +48,11 @@ and
 
 9\.
 
-From https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html, "ISTP attribute names must be capitalized". I find "sig_digits" and "SI_conv" confusing because it seems that it is an ISTP attribute name. Are some of the names on this page not ISTP attributes?
-
-Also, a while back I mentioned the mixed usage of `SI_conv` and `SI_conversion` at https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html. Which is it?
-
 To create the [SQL table of CDAWeb metadata](https://hapi-server.org/meta/cdaweb/), I had to treat certain attribute names as equivalent (SQL column names are case insensitive, so one cannot create a column named `A` if a column named `a` is not allowed.).
 
 Using [cdaweb.table.variable_attributes.counts.csv](https://github.com/rweigel/cdawmeta/blob/main/table/report/cdaweb.table.variable_attributes.counts.csv), I renamed many CDF attributes that differed by case (to address SQL column name constraint) or looked to be misspelled for equivalent to another more-used attribute name. The reaming mapping is in ([cdaweb.table.variable_attributes.fixes.json](https://github.com/rweigel/cdawmeta/blob/main/table/cdaweb.table.variable_attributes.fixes.json)).
 
-10\.
-
-There does not appear to be a consistent convention for `UNITS`. All of the unique units found in CDF masters are in [master-units.txt](https://github.com/rweigel/cdawmeta/blob/main/spase/master-units.txt).
-
-It looks like the SPASE developers modified many of the units, but they, too, don't use a consistent convention. The left-hand column of [master2spase-units.txt](https://github.com/rweigel/cdawmeta/blob/main/spase/master2spase-units.txt) has unique units in CDAWeb masters. The right-hand side shows how they have been represented in SPASE.
-
-It seems most sensible to use a consistent convention in the master CDFs (given that they are "masters"). Without this, the HAPI and SPASE codes that generate metadata from master CDFs would not need special replacement tables that need maintenance.
-
-We've discussed before the idea of adding an ISTP attribute such as `UNITS_STANDARD` that would represent units according to an existing standard such as `udunits2`.
-
 11\.
-
-Are the `Error?:` cases in [catalog-all.log](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/catalog-all.log) errors?
-
-12\.
-
-SOLO is not listed at https://cdaweb.gsfc.nasa.gov/
-
-14\.
-
-No file list for DAWN_HELIO1DAY_POSITION
-
-15\.
 
 How are you able to show a menu for He energy center with options for telescope 1 and telescope 2 in the checkboxes
 

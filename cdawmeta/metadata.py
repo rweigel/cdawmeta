@@ -125,7 +125,8 @@ def metadata(meta_type=None, id=None, skip=None, embed_data=False, write_catalog
 
   def get_one(dataset, mloggers):
 
-    if 'master' in meta_types:
+    if 'master' in meta_types or 'spase' in meta_types:
+      # 'spase' needs master to get spase_DatasetResourceID
       dataset['master'] = _master(dataset, update=update, diffs=diffs)
     if 'orig_data' in meta_types:
       dataset['orig_data'] = _orig_data(dataset, update=update, diffs=diffs)
@@ -259,31 +260,30 @@ def _master(dataset, update=False, diffs=False):
 def _spase(dataset, update=True, diffs=False):
 
   master = dataset['master']
-  restructure = True
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['spase']
 
   id = master['id']
   if 'data' not in master:
-    return {'error': 'No spase_DatasetResourceID because no master'}
+    msg = 'No spase_DatasetResourceID because no master'
+    return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
   global_attributes = master['data']['CDFglobalAttributes']
   if 'spase_DatasetResourceID' not in global_attributes:
     msg = f"Error[master]: {master['id']}: Missing or invalid spase_DatasetResourceID attribute in master"
     logger.error(msg)
-    return {'error': msg}
+    return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
   if 'spase_DatasetResourceID' in global_attributes:
     spase_id = global_attributes['spase_DatasetResourceID']
     if spase_id and not spase_id.startswith('spase://'):
       msg = f"Error[master]: {master['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
       logger.error(msg)
-      return {'error': msg}
+      return {'id': id, 'error': msg, 'data-file': None, 'data': None}
+
     url = spase_id.replace('spase://', 'https://hpde.io/') + '.json'
 
   spase = _fetch(url, id, 'spase', timeout=timeout, diffs=diffs, update=update)
 
-  #if restructure and 'data' in spase:
-  #  spase['data'] = cdawmeta.restructure.spase(spase['data'], logger=logger)
   return spase
 
 def _orig_data(dataset, update=True, diffs=False):
@@ -406,7 +406,7 @@ def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
 
   logger.info(f'Getting using requests-cache: {url}')
 
-  result = {'id': id, 'url': url}
+  result = {'id': id, 'url': url, 'data-file': None, 'data': None}
 
   get = cdawmeta.util.get_json(url, cache_dir=cache_dir, headers=headers, timeout=timeout, diffs=diffs)
 

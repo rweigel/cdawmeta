@@ -48,6 +48,11 @@ def cli(script):
       "help": "Log level",
       "default": 'info'
     },
+    "debug": {
+      "action": "store_true",
+      "help": "Same as --log-level debug",
+      "default": False
+    },
     "diffs": {
       "action": "store_true",
       "help": "Compute response diffs if --update",
@@ -102,6 +107,10 @@ def cli(script):
     parser.add_argument(f'--{k}', **v)
 
   args = vars(parser.parse_args())
+
+  if args['debug']:
+    args['log_level'] = 'debug'
+  del args['debug']
 
   # Hyphens are converted to underscores when parsing
   if args['data_dir']:

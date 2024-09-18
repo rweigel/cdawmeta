@@ -5,12 +5,20 @@ import cdawmeta
 
 logger = None
 
-def table(id=None, table_name=None, embed_data=False, skip=None, update=False, regen=False, max_workers=1, log_level='info'):
+def table(id=None, table_name=None, embed_data=False, skip=None,
+          update=False, regen=False, max_workers=1, log_level='info'):
 
   global logger
   if logger is None:
     logger = cdawmeta.logger('table')
     logger.setLevel(log_level.upper())
+
+  if table_name is None:
+    meta_type = ['master', 'spase']
+  elif table_name.startswith('spase'):
+    meta_type = ['spase']
+  elif table_name.startswith('cdaweb'):
+    meta_type = ['master']
 
   table_names = list(cdawmeta.CONFIG['table'].keys())
   if table_name is not None:
@@ -18,9 +26,17 @@ def table(id=None, table_name=None, embed_data=False, skip=None, update=False, r
       raise ValueError(f"table_name='{table_name}' not in {table_names} in config.json")
     table_names = [table_name]
 
-  datasets = cdawmeta.metadata(id=id, skip=skip, update=update, regen=regen, embed_data=True, diffs=False, max_workers=max_workers)
+  datasets = cdawmeta.metadata(id=id, meta_type=meta_type, skip=skip,
+                               update=update, regen=regen, embed_data=True,
+                               diffs=False, max_workers=max_workers)
+
   info = {}
   for table_name in table_names:
+    if table_name.startswith('spase'):
+      for id in datasets.keys():
+        logger.debug(f"{id}: Reading and restructuring SPASE Parameter")
+        datasets[id]['spase']['data'] = cdawmeta.restructure.spase(datasets[id]['spase']['data'])
+
     logger.info(40*"-")
     logger.info(f"Creating table '{table_name}'")
     header, body, attribute_counts = _table(datasets, table_name=table_name)
@@ -43,12 +59,10 @@ def table(id=None, table_name=None, embed_data=False, skip=None, update=False, r
 
 def _table(datasets, table_name='cdaweb.dataset'):
 
-
   attributes = {}
   paths = cdawmeta.CONFIG['table'][table_name]['paths']
   for path in paths:
     attributes[path] = cdawmeta.CONFIG['table'][table_name]['paths'][path]
-
 
   attribute_counts = None
   if cdawmeta.CONFIG['table'][table_name]['use_all_attributes']:
@@ -195,7 +209,7 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
 
           # Add row for variable
           if mode == 'rows':
-            logger.info(f"  {len(row)} columns")
+            logger.debug(f"  {len(row)} columns")
             if n_cols_last is not None and len(row) != n_cols_last:
               raise Exception(f"Number of columns changed from {n_cols_last} to {len(row)} for {id}/{variable_name}")
             n_cols_last = len(row)
@@ -250,14 +264,13 @@ def _add_attributes(data, attributes, attribute_names, fixes, path):
       logger.warning(f"  Fixing attribute name: {path}/{attribute_name} -> {fixes[attribute_name]}")
       attributes[fixes[attribute_name]] = None
 
-
 def _files(table_name, id=None):
   data_dir = cdawmeta.DATA_DIR
 
   subdir = ''
   if id is not None:
     logger.warning("Using id to create subdirectory for table files. If id is a regex, expect trouble.")
-    subdir = id
+    subdir = os.path.join('partial', id)
   files = {
     'header': os.path.join(data_dir, 'table', subdir, f'{table_name}.head.json'),
     'body': os.path.join(data_dir, 'table', subdir, f'{table_name}.body.json'),

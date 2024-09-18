@@ -7,31 +7,37 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
   sub_dir = 'info'
 
   id = metadatum['id']
+  file_name = os.path.join(cdawmeta.DATA_DIR, gen_name, sub_dir, f'{id}.pkl')
 
   # Special case for cadence is because generation is slow; it requires reading
   # data file. Will need a special keyword such as regen_cadence=True to
-  # pass to generate() to force regeneration.
+  # pass to generate() to force regeneration. Perhaps an option "retry"
+  # that will retry a failed request.
   if (not update and not regen) or gen_name == 'cadence':
     if id is not None and not id.startswith('^'):
-      # This will not catch case when there is and id@0, id@1, etc. Need to read all
-      # files that match pattern id@*. and loop over.
-      file_name = os.path.join(cdawmeta.DATA_DIR, gen_name, sub_dir, f'{id}.pkl')
+      # This will not catch case when there is and id@0, id@1, etc. Need to
+      # read all files that match pattern id@*. and loop over.
       if os.path.exists(file_name):
-        msg = "Using cache because update = regen = False or gen_name = 'cadence' and found cached file."
+        msg = "Using cache because update = regen = False or gen_name = "
+        msg += "'cadence' and found cached file."
         logger.info(msg)
-        return {'data': cdawmeta.util.read(file_name, logger=logger),
+        return {
+                'id': id,
                 'log': msg,
-                'data-file': file_name
+                'data-file': file_name,
+                'data': cdawmeta.util.read(file_name, logger=logger)
               }
       file_name = os.path.join(cdawmeta.DATA_DIR, gen_name, sub_dir, f'{id}.error.txt')
       if os.path.exists(file_name):
-        msg = "Using cached error response because update = regen = False or gen_name = 'cadence' and found cached error file."
+        msg = "Using cached error response because update = regen = False "
+        msg += "or gen_name = 'cadence' and found cached error file."
         logger.info(msg)
         return {
+                'id': id,
                 'log': msg,
-                'data': None,
+                'error': cdawmeta.util.read(file_name, logger=logger),
                 'data-file': None,
-                'error': cdawmeta.util.read(file_name, logger=logger)
+                'data': None
               }
 
   dsid = metadatum['id']
@@ -45,14 +51,13 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
     trace = traceback.format_exc()
     emsg = f"{dsid}:\n{trace}"
     logger.error(f"Error: {emsg}")
-    file_name = os.path.join(cdawmeta.DATA_DIR, gen_name, sub_dir, f"{id}.error.txt")
     cdawmeta.util.write(file_name, trace, logger=logger)
     return {
               'id': id,
               'log': None,
-              'data': None,
+              'error': emsg,
               'data-file': None,
-              'error': emsg
+              'data': None,
             }
 
   data = []
@@ -79,4 +84,4 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
   if len(data) == 1:
     data = data[0]
 
-  return {"id": id, "data": data, "data-file": data_file}
+  return {"id": id, "data-file": data_file, "data": data}

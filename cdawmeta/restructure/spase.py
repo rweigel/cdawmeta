@@ -2,6 +2,8 @@ import copy
 import cdawmeta
 
 def spase(spase, logger=None):
+  if spase is None:
+    return None
 
   spase_r = copy.deepcopy(spase)
 
@@ -11,9 +13,12 @@ def spase(spase, logger=None):
     if not isinstance(Parameter, list):
       Parameter = [Parameter]
 
-    Parameter = cdawmeta.util.array_to_dict(Parameter, 'ParameterKey')
-    if Parameter is not None:
+    _Parameter = cdawmeta.util.array_to_dict(Parameter, 'ParameterKey')
+    if _Parameter is None:
+      Parameter = cdawmeta.util.array_to_dict(Parameter, 'Name')
       spase_r['Spase']['NumericalData']['Parameter'] = Parameter
+    else:
+      spase_r['Spase']['NumericalData']['Parameter'] = _Parameter
 
   # Flatten AccessInformation so that each array element (Repository) only has
   # one AccessURL. If a Repository has N AccessURLs, create N Repositories, each

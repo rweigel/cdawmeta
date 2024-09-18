@@ -138,25 +138,35 @@
     }
   },
   "spase.dataset": {
-    "use_all_attributes": true,
-    "omit_attributes": [
-      "Parameter",
-      "Contact",
-      "PublicationInfo",
-      "RevisionHistory",
-      "AccessInformation",
-      "PriorID"
-    ],
+    "use_all_attributes": false,
     "paths": {
+      "spase/data/Spase": {
+        "Version": null
+      },
+      "spase/data/Spase/NumericalData/ResourceHeader": {
+        "ReleaseDate": null,
+        "DOI": null,
+        "ResourceName": null,
+        "AlternateName": null,
+        "Acknowledgement": null
+      },
+      "spase/data/Spase/NumericalData/TemporalDescription/TimeSpan": {
+        "StartDate": null,
+        "StopDate": null,
+        "Note": null
+      },
+      "spase/data/Spase/NumericalData/TemporalDescription": {
+        "Cadence": null
+      },
       "spase/data/Spase/NumericalData": {
         "ResourceID": null,
         "InstrumentID": null,
         "MeasurementType": null,
         "ObservedRegion": null,
-        "ProviderProcessingLevel": null
-      },
-      "spase/data/Spase/NumericalData/ResourceHeader": {
-        "ResourceName": null
+        "ProviderProcessingName": null,
+        "ProviderProcessingLevel": null,
+        "Caveats": null,
+        "Keyword": null
       }
     }
   },
