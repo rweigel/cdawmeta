@@ -30,7 +30,7 @@ def write(fname, data, logger=None):
 
   iscsv = isinstance(data, list) or isinstance(data, tuple)
   if '.csv' == ext and iscsv:
-    if not isinstance(data[0], list):
+    if not isinstance(data[0], list) and not isinstance(data[0], tuple):
       # Assume data = ["a", "b", "c"] means one row.
       data = [data]
     try:

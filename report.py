@@ -3,14 +3,13 @@ import cdawmeta
 
 logger = None
 
-def f2c_specifier(query_name, dir_name, clargs):
+def f2c_specifier(report_name, dir_name, clargs):
 
   # TODO: This metadata is available in x_keys in HAPI metadata.
   #       Rewrite to use it.
 
   # Compare given FORMAT/FORM_PTR with computed FORMAT specifier.
   meta = cdawmeta.metadata(**clargs)
-
   formats = []
   for id in meta.keys():
     if "master" not in meta[id]:
@@ -28,13 +27,13 @@ def f2c_specifier(query_name, dir_name, clargs):
       if FORMAT_given is None:
         continue
       if emsg is not None:
-        print(f"{id}\n{emsg}")
+        logger.error(f"{id}\n{emsg}")
 
       FORMAT_computed, emsg = cdawmeta.attrib.FORMAT(id, variable_name, variables)
       if FORMAT_given is None:
         continue
       if emsg is not None:
-        print(f"{id}\n{emsg}")
+        logger.error(f"{id}\n{emsg}")
 
       if 'DataType' in variable['VarDescription']:
         DataType = variable['VarDescription']['DataType']
@@ -57,13 +56,13 @@ def f2c_specifier(query_name, dir_name, clargs):
         line = f"{unique[1]}, {unique[0]}, {unique[2]}"
       else:
         line = f"{unique[1]}, '{unique[0]}', '{unique[2]}'"
-    print(line)
+    logger.info(line)
     lines += line + "\n"
 
-  fname = os.path.join(dir_name, 'query', f"{query_name}.txt")
-  cdawmeta.util.write(fname, lines)
+  fname = os.path.join(dir_name, f"{report_name}.txt")
+  cdawmeta.util.write(fname, lines, logger=logger)
 
-def units(query_name, dir_name, clargs):
+def units(report_name, dir_name, clargs):
 
   master_units_dict = {}
 
@@ -169,22 +168,26 @@ def units(query_name, dir_name, clargs):
       else:
         logger.info("    SPASE: x Parameter not found")
 
-  fname = os.path.join(dir_name, 'Missing_UNITS.json')
+  fname_missing = os.path.join(dir_name, f'{report_name}-CDFvariables-with-missing.json')
+  fname_report = os.path.join(dir_name, f'{report_name}-CDFUNITS_to_SPASEUnit-map.json')
+  fname_vounits = os.path.join(dir_name, '../', 'CDFUNITS_to_VOUNITS-map.csv')
+
+  # Write fname_missing
   n_missing = 0
   for key in missing_units.copy():
     n_missing += len(missing_units[key])
     if len(missing_units[key]) == 0:
       del missing_units[key]
-  cdawmeta.util.write(fname, missing_units, logger=logger)
+  cdawmeta.util.write(fname_missing, missing_units, logger=logger)
 
+  # Write fname_report
   from collections import Counter
   for key in master_units_dict:
     uniques = dict(Counter(master_units_dict[key]))
     master_units_dict[key] = uniques
+  cdawmeta.util.write(fname_report, master_units_dict, logger=logger)
 
-  fname = os.path.join(dir_name, 'query', f'{query_name}.json')
-  cdawmeta.util.write(fname, master_units_dict, logger=logger)
-
+  # Read and update fname_vounits
   unique_dict = {}
   for key in master_units_dict.keys():
     if key is None or (key is not None and key.strip() == ""):
@@ -194,10 +197,9 @@ def units(query_name, dir_name, clargs):
   if clargs['id'] is not None:
     unique_dict_o = unique_dict.copy()
 
-  fname = os.path.join(dir_name, 'CDFUNITS_to_VOUNITS.csv')
-  if os.path.exists(fname):
+  if os.path.exists(fname_vounits):
 
-    unique_list_last = cdawmeta.util.read(fname, logger=logger)
+    unique_list_last = cdawmeta.util.read(fname_vounits, logger=logger)
     unique_dict_last = {}
     for _, row in enumerate(unique_list_last[1:]):
       if row[0] is None or (row[0] is not None and row[0].strip() == ""):
@@ -214,8 +216,9 @@ def units(query_name, dir_name, clargs):
   master_units_list = header
   for key, val in unique_dict.items():
     master_units_list.append([key, val])
-  cdawmeta.util.write(fname, master_units_list, logger=logger)
+  cdawmeta.util.write(fname_vounits, master_units_list, logger=logger)
 
+  # Print and log summary
   coda = ""
   if clargs['id'] is not None:
     logger.info(f"{len(unique_dict_o)} unique units for id='{clargs['id']}'")
@@ -224,7 +227,7 @@ def units(query_name, dir_name, clargs):
   msg = "with missing a UNITS attribute or an all-whitespace UNITS value"
   logger.info(f"{n_missing} variables of VAR_TYPE = 'data' {msg}")
 
-def hpde_io_ids(query_name, dir_name, clargs):
+def hpde_io_ids(report_name, dir_name, clargs):
 
   non_spdf_urls = {}
   # TODO: Count number of CDAWeb datasets with spase_DatasetResourceIDs
@@ -316,7 +319,7 @@ def hpde_io_ids(query_name, dir_name, clargs):
   logger.info(f"{len(spase_resource_ids_with_cdaweb_dataset_id)} SPASE Records with CDAWeb ProductKey")
   spase_resource_ids_with_cdaweb_dataset_id = cdawmeta.util.sort_dict(spase_resource_ids_with_cdaweb_dataset_id)
   for key, val in spase_resource_ids_with_cdaweb_dataset_id.items():
-    print(f"  {val}: {key}")
+    logger.info(f"  {val}: {key}")
 
   logger.info("\n")
   logger.info("----- Summary -----")
@@ -344,30 +347,29 @@ def hpde_io_ids(query_name, dir_name, clargs):
   logger.info("\n")
   logger.info(f"{len(non_spdf_urls)} non-spdf/cdaweb URLs")
 
-  fname = os.path.join(dir_name, 'query', f"{query_name}-urls.txt")
+  fname = os.path.join(dir_name, 'report', f"{report_name}-urls.txt")
   urls = "\n".join(list(non_spdf_urls.keys()))
   cdawmeta.util.write(fname, urls, logger=logger)
 
 
-query_names = ['f2c_specifier', 'hpde.io-ids', 'units']
+cldefs = cdawmeta.cli('report.py', defs=True)
+report_names = cldefs['report-name']['choices']
 
-clargs = cdawmeta.cli('query.py')
-query_name = clargs['query_name']
-
-query_file_basename = f'query-{query_name}'
-dir_name = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-additions')
+clargs = cdawmeta.cli('report.py')
+report_name = clargs['report_name']
 
 clargs['embed_data'] = True
-del clargs['query_name']
+del clargs['report_name']
 
-logger = cdawmeta.logger(name=f'query-{query_name}', dir_name='cdawmeta-additions/query')
+dir_name = 'cdawmeta-additions/reports'
 
-if query_name is None:
-  for query_name in query_names:
-    query_function = locals()[query_name]
-    query_function(query_file_basename, dir_name, clargs)
+if report_name is None:
+  if report_name not in report_names:
+    exit(f"Error: report_name = '{report_name}' not in {report_names}")
 else:
-  if query_name not in query_names:
-    exit(f"Error: query_name = '{query_name}' not in {query_names}")
-  query_function = locals()[query_name]
-  query_function(query_file_basename, dir_name, clargs)
+  report_names = [report_name]
+
+for report_name in report_names:
+  logger = cdawmeta.logger(name=f'{report_name}', dir_name=dir_name)
+  report_function = locals()[report_name]
+  report_function(report_name, os.path.join(cdawmeta.DATA_DIR, dir_name), clargs)

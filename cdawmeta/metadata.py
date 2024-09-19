@@ -102,7 +102,6 @@ def metadata(meta_type=None, id=None, skip=None, embed_data=False, write_catalog
       meta_types = []
       for _type in meta_type:
         deps = cdawmeta._generate.dependencies[_type]
-        print(deps)
         if deps is None:
           meta_types.append(_type)
           continue

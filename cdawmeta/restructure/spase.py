@@ -2,6 +2,7 @@ import copy
 import cdawmeta
 
 def spase(spase, logger=None):
+
   if spase is None:
     return None
 

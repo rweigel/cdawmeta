@@ -62,6 +62,7 @@ def logger(name=None,
         if debug_logger:
           print('  record.levelname:', record.levelname)
       else:
+        record.levelname = self.pad_levelname(record.levelname)
         if debug_logger:
           print(f'  Not applying color to record.levelname = "{record.levelname}"')
 
@@ -69,19 +70,31 @@ def logger(name=None,
       record.levelname = levelname_original
       return ret
 
+    def pad_levelname(self, levelname):
+      if levelname == 'DEBUG':
+        return 'DEBUG'
+      if levelname == 'INFO':
+        return 'INFO '
+      if levelname == 'WARNING':
+        return 'WARN '
+      if levelname == 'ERROR':
+        return 'ERROR'
+      if levelname == 'CRITICAL':
+        return 'CRIT '
+
     def color_levelname(self, levelname):
       if levelname.startswith('\033'):
         return levelname
       if levelname == 'DEBUG':
-        return '\033[94m' + 'DEBUG' + '\033[0m'
+        return '\033[94m' + self.pad_levelname(levelname) + '\033[0m'
       if levelname == 'INFO':
-        return '\033[92m' + 'INFO ' + '\033[0m'
+        return '\033[92m' + self.pad_levelname(levelname) + '\033[0m'
       if levelname == 'WARNING':
-        return '\033[93m' + 'WARN ' + '\033[0m'
+        return '\033[93m' + self.pad_levelname(levelname) + '\033[0m'
       if levelname == 'ERROR':
-        return '\033[91m' + 'ERROR' + '\033[0m'
+        return '\033[91m' + self.pad_levelname(levelname) + '\033[0m'
       if levelname == 'CRITICAL':
-        return '\033[95m' + 'CRIT ' + '\033[0m'
+        return '\033[95m' + self.pad_levelname(levelname) + '\033[0m'
       return levelname
 
   if name is None:

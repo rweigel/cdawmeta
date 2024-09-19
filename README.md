@@ -13,6 +13,8 @@ The code reads and combines information from
 * The list of URLs associated with all CDF files associated with a dataset using the CDASR [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) endpoint.
 * A CDF file referenced in the [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) response (for computing cadence).
 
+Comments on issues with CDAWeb metadata are in the [CDAWeb](#CDAWeb) section.
+
 As discussed in the [SPASE](#SPASE) section, an attempt to use existing SPASE records was abandoned.
 
 The code uses [requests-cache](https://github.com/requests-cache/requests-cache/) so re-downloads of any files are only made if the HTTP headers indicate it is needed. When metadata are downloaded, a diff is stored if it changed.
@@ -37,6 +39,43 @@ and
 
 4. proof-of-concept SPASE records that do not have most of the major issues described in [SPASE](#SPASE) section below (see [spase_auto/info](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto)).
 
+<a id="CDAWeb"></a>
+# CDAWeb
+
+CDAWeb provides access to metadata they used to drive their data services in the form of all.xml and Master CDFs. They have also provided important guidance and insight into the development of HAPI metadata based on these resources.
+
+The CDF files uploaded or pulled into CDAWeb typically roughly are compliant with their [https://spdf.gsfc.nasa.gov/istp_guide/istp_guide.html](ISTP metadata guidelines), there is a high variability. In many cases, "patches" to these CDF files are needed for their software to work or other corrections are needed. To manage this, they provide "Master CDFs" which are used when a user requests data from their web services. In this case, the master metadata is used. In addition, CDF-specific metadata is included such as plot rendering information used by their IDL plot generation. Also, variables used by the CDAWeb plotting software are often added. For example, if variable that depends on time, energy, and pitch angle is in the raw CDF, they may add one variable for pitch angle by defining a "VIRTUAL" variable that is defined in [IDL code](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib//source/virtual_funcs.pro).
+
+From [0MASTERS/00readme.txt](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS/00readme.txt)
+
+> The following collections of Master CDF files were generated from a single data CDF or netCDF, for each dataset, for use in the  CDAWeb system (https://cdaweb.gsfc.nasa.gov).
+>
+> They are provided to the public for easier viewing/searching the metadata and quantities available in the data sets.
+>
+> In many cases the Master CDF is changed to improve the metadata in the original data files (especially to improve their compliance with the ISTP Metadata Guidelines), and often to add CDAWeb-specific metadata and addition plotting capabilities.
+>
+> Since the Master files are created using skeletontable/skeletoncdf tools from a data file and not necessarily reviewed and edited (especially for historical datasets), THEY SHOULD BE USED WITH CAUTION.
+
+We have found that few Master CDFs are fully [https://spdf.gsfc.nasa.gov/istp_guide/istp_guide.html](ISTP convention compliant). Issues encountered have been posted to this repositories [issue tracker](https://github.com/rweigel/cdawmeta/issues).
+
+We suggest that the community would benefit if Master CDF metadata was improved. This would
+
+1. improve the quality of SPASE generated based on Master CDF metadata
+2. reduce duplication of effort by scientists and developers in handling non-compliance. For example,
+   * [pytplot](https://github.com/MAVENSDC/PyTplot/blob/master/pytplot/importers/cdf_to_tplot.py#L213) account for the fact that both `SI_CONVERSION` and `SI_CONV` are used as attributes in Master CDFs, but they missed `SI_conv`, which is [also found](https://github.com/rweigel/cdawmeta/issues/14).
+   * [pytplot](At https://github.com/MAVENSDC/PyTplot/blob/master/pytplot/importers/cdf_to_tplot.py#L140) checks for only `DISPLAY_TYPE` but misses the fact that `Display_Type` and `DISPLAYTYPE` are also found in CDF Masters. The [CDAWeb IDL library](https://github.com/rweigel/cdawlib) [does not look for `DISPLAYTYPE`](https://github.com/search?q=repo%3Arweigel%2FCDAWlib%20DISPLAYTYPE&type=code) and neither does [ADAPT](https://github.com/search?q=repo%3Aspase-group%2Fadapt%20DISPLAY_TYPE&type=code).
+   * [pytplot](https://github.com/MAVENSDC/PyTplot/blob/master/pytplot/importers/cdf_to_tplot.py#L158) accounts for `DEPEND_TIME` meaning the same thing as `DEPEND_0`. We missed this when developing HAPI metadata and could find no documentation of it.
+   * [Autoplot](https://github.com/autoplot/app/tree/master) has worked around many CDF and Master CDF metadata issues.
+   * In the early days of SPASE, Jan Merka was creating SPASE records using CDAWeb metadata and he encountered many of the same issues we did (which we learned to late).
+
+We also recommend the following. 
+* documentation of known issues and suggested workarounds - many developers who have re-discover issues, or missed issues, would benefit;
+* an issue tracker, and encouragement by the community to use it, for CDAWeb metadata. Although CDAWeb is responsive to many reports on errors in Master CDFs, we have found in discussions that many developers have encountered the same issues and workarounds and have not reported them. With such a tracker, other developers would benefit from knowledge of issues and for issues that will not be fixed, they will benefit from discussion on how to fully work around an issue; and
+* documentation of non-ISTP attributes so that users know if an attribute is important for interpretation.
+* a clearer indication of, or documentation about, attributes that are CDAWeb-software specific and the more general attributes.
+
+Early indications are that much of this is out-of-scope of the CDAWeb project. For example, CDAWeb does not control the content of the files or quality of the files that they host and improving the metadata for use my non CDAWeb software is not supported. However, addressing these issues will have a high impact on the quality of code and metadata downstream; if it is out-of-scope, leadership should find support for addressing these perennial issues.
+
 <a id="SPASE"></a>
 # SPASE
 
@@ -60,7 +99,7 @@ The implication is that a scientist who executes a search backed by SPASE record
 
 We considered using SPASE `Units` for variables when they were available because although CDAWeb Master metadata has a `UNITS` attribute, no consistent convention is followed for the syntax and in some cases, `UNITS` are not a scientific unit but a label (e.g. `0=good` and `<|V|>`). This effort stopped when we noticed instances where the SPASE `Units` were wrong.
 
-For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/ac_h2_ule_00000000_v01.json) and `Units = '(cm^2 s sr MeV)^-1)'` [in SPASE](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json). See [a dump of the unique Master `UNITS` to SPASE `Units` pairs](https://github.com/rweigel/cdawmeta-additions/blob/main/query/query-units.json), which is explained in [query-units.md](https://github.com/rweigel/cdawmeta-additions/blob/main/query/query-units.md).
+For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/ac_h2_ule_00000000_v01.json) and `Units = '(cm^2 s sr MeV)^-1)'` [in SPASE](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json). See [a dump of the unique Master `UNITS` to SPASE `Units` pairs](https://github.com/rweigel/cdawmeta-additions/blob/main/reports/units-CDFUNITS_to_SPASEUnit-map), which is explained in [units.md](https://github.com/rweigel/cdawmeta-additions/blob/main/report/units.md).
 
 The implication is a scientist using SPASE `Units` to label their plots risks the plot being incorrect.
 

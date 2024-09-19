@@ -2,10 +2,22 @@
 # mkdir -p data/mongodb
 # ~/mongodb-macos-x86_64-7.0.14/bin/mongod --dbpath data/mongodb --logpath data/mongo.log --fork
 
+import cdawmeta
+
 from pymongo import MongoClient
 
-db_name = "db1"
-collection_name = "collection1"
+clargs = cdawmeta.cli('table.py')
+print(clargs)
+print(cdawmeta.DATA_DIR)
+exit()
+db_name = "spase"
+collection_name = clargs['id']
+
+meta = cdawmeta.metadata(id=id, )
+documents = []
+for key, value in meta.items():
+  spase = meta[key]['spase']['data']['Spase']
+  documents.append({"_id": key, **spase})
 
 client = MongoClient('localhost', 27017)
 
@@ -14,24 +26,22 @@ print(f"Database list: {db_list}")
 
 db = client[db_name]
 if db_name in db_list:
-  print(f"Database {db_name} exists.")
+  print(f"Database {db_name} exists. Dropping it.")
+  client.drop_database(db_name)
 
-collection_list = db.list_collection_names()
-print(f"Collection list in {db_name}: {collection_list}")
+if False:
+  collection_list = db.list_collection_names()
+  print(f"Collection list in {db_name}: {collection_list}")
 
 collection = db[collection_name]
-if collection_name in collection_list:
-  print(f"Collection {collection_name} in {db_name} exists.")
+#if collection_name in collection_list:
+#  print(f"Collection {collection_name} in {db_name} exists.")
 
-document = { "name": "John", "address": "Highway 37" }
-x = collection.insert_one(document)
+x = collection.insert_many(documents)
 
-
-for x in collection.find():
-  print(x)
-
-
-query = { "address": "Highway 37" }
+query = {"Version": "2.4.1"}
+count = collection.count_documents(query)
+print(f"{count} documents with Version 2.4.1:")
 documents = collection.find(query)
 for x in documents:
-  print(x)
+  print(x["Version"])

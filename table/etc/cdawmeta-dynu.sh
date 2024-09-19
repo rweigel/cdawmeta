@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cd ..; make serve-cdaweb-sql
+cd ../..; make table-serve

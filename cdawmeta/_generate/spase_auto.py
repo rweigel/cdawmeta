@@ -4,8 +4,8 @@ dependencies = ['spase', 'master', 'cadence', 'hapi', 'AccessInformation']
 
 def spase_auto(metadatum, logger):
 
-  include_parameters = False
-  include_access_information = False
+  include_parameters = True
+  include_access_information = True
 
   allxml = metadatum['allxml']
   master = metadatum['master']['data']
@@ -13,7 +13,7 @@ def spase_auto(metadatum, logger):
   cadence = metadatum['cadence']['data']
   hapi = metadatum['hapi']['data']
   # TODO: Switch to using master instead of HAPI for Parameter now that HAPI
-  #  generation code was refactored.
+  # generation code was refactored.
 
   _Version = "2.6.1"
   spase_auto_ = {

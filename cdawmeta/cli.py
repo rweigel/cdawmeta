@@ -1,4 +1,4 @@
-def cli(script):
+def cli(script, defs=False):
 
   import cdawmeta
   meta_types_generated = cdawmeta.generators
@@ -67,8 +67,9 @@ def cli(script):
       "help": "Name of table to create (default: all tables)",
       "default": None
     },
-    "query-name": {
-      "help": "Name of query to execute (default: all queries)",
+    "report-name": {
+      "help": "Name of report to execute (default: all queries)",
+      "choices": ['f2c_specifier', 'hpde_io_ids', 'units'],
       "default": None
     },
     "port": {
@@ -83,8 +84,8 @@ def cli(script):
     del clkws['port']
     del clkws['table-name']
 
-  if script != 'query.py':
-    del clkws['query-name']
+  if script != 'report.py':
+    del clkws['report-name']
 
   if script in ['hapi.py', 'soso.py', 'cadence.py']:
     del clkws['diffs']
@@ -96,10 +97,13 @@ def cli(script):
     del clkws['meta-type']
     del clkws['write-catalog']
 
-  if script == 'query.py':
+  if script == 'report.py':
     del clkws['diffs']
     del clkws['meta-type']
     del clkws['write-catalog']
+
+  if defs:
+    return clkws
 
   import argparse
   parser = argparse.ArgumentParser()

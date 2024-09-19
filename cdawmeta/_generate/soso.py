@@ -4,6 +4,13 @@ dependencies = ['master', 'hapi']
 
 def soso(metadatum, logger):
 
+  # Note: This is a proof-of-concept and has not been validated.
+  #
+  # TODO: Switch to using spase_auto now that it is complete (regular SPASE
+  # has incomplete coverage and is often out-of-date and missing parameters and
+  # in some places has incorrect units). Also consider using
+  # https://soso.readthedocs.io/en/latest/user/quickstart.html
+
   jsonld = {
     "@context": [
         "https://schema.org/",

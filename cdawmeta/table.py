@@ -20,28 +20,35 @@ def table(id=None, table_name=None, embed_data=False, skip=None,
   elif table_name.startswith('cdaweb'):
     meta_type = ['master']
 
-  table_names = list(cdawmeta.CONFIG['table'].keys())
+  table_names = list(cdawmeta.CONFIG['table']['tables'].keys())
   if table_name is not None:
     if table_name not in table_names:
       raise ValueError(f"table_name='{table_name}' not in {table_names} in config.json")
     table_names = [table_name]
 
   datasets = cdawmeta.metadata(id=id, meta_type=meta_type, skip=skip,
-                               update=update, regen=regen, embed_data=True,
-                               diffs=False, max_workers=max_workers)
+                              update=update, regen=regen, embed_data=True,
+                              diffs=False, max_workers=max_workers)
 
   info = {}
+
   for table_name in table_names:
+
     if table_name.startswith('spase'):
-      for id in datasets.keys():
-        logger.debug(f"{id}: Reading and restructuring SPASE Parameter")
-        datasets[id]['spase']['data'] = cdawmeta.restructure.spase(datasets[id]['spase']['data'])
+      for dsid in datasets.keys():
+        logger.debug(f"{dsid}: Reading and restructuring SPASE Parameter")
+        datasets[dsid]['spase']['data'] = cdawmeta.restructure.spase(datasets[dsid]['spase']['data'])
+      break
+
+  for table_name in table_names:
 
     logger.info(40*"-")
     logger.info(f"Creating table '{table_name}'")
     header, body, attribute_counts = _table(datasets, table_name=table_name)
+
     if len(body) > 0 and len(header) != len(body[0]):
       raise Exception(f"len(header) == {len(header)} != len(body[0]) = {len(body[0])}")
+
     if len(body) == 0:
       raise Exception(f"No rows in {table_name} table for id='{id}'")
 
@@ -51,7 +58,9 @@ def table(id=None, table_name=None, embed_data=False, skip=None,
       info[table_name]['header'] = header
       info[table_name]['body'] = body
       if attribute_counts is not None:
-        info[table_name]['counts'] = attribute_counts
+        info[table_name]['counts'] = {}
+        for count in attribute_counts:
+          info[table_name]['counts'][count[0]] = count[1]
 
   if len(table_names) == 1:
     return info[table_names[0]]
@@ -60,12 +69,13 @@ def table(id=None, table_name=None, embed_data=False, skip=None,
 def _table(datasets, table_name='cdaweb.dataset'):
 
   attributes = {}
-  paths = cdawmeta.CONFIG['table'][table_name]['paths']
+  table_config = cdawmeta.CONFIG['table']['tables'][table_name]
+  paths = table_config['paths']
   for path in paths:
-    attributes[path] = cdawmeta.CONFIG['table'][table_name]['paths'][path]
+    attributes[path] = table_config['paths'][path]
 
   attribute_counts = None
-  if cdawmeta.CONFIG['table'][table_name]['use_all_attributes']:
+  if table_config['use_all_attributes']:
     # Modify attributes dict to include all unique attributes found in all variables. If
     # an attribute is misspelled, it is mapped to the correct spelling and placed
     # in the attributes dict if there is a fixes for table_name in config.json.
@@ -100,20 +110,21 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
 
   assert mode in ['attributes', 'rows']
 
-  omit_attributes = cdawmeta.CONFIG['table'][table_name].get('omit_attributes', None)
+  table_config = cdawmeta.CONFIG['table']['tables'][table_name]
+  omit_attributes = table_config.get('omit_attributes', None)
 
   fixes = None
-  if 'fix_attributes' in cdawmeta.CONFIG['table'][table_name]:
-    if cdawmeta.CONFIG['table'][table_name]['fix_attributes']:
-      if 'fixes' in cdawmeta.CONFIG['table'][table_name]:
+  if 'fix_attributes' in table_config:
+    if table_config['fix_attributes']:
+      if 'fixes' in table_config:
         fixes_file = os.path.join(os.path.dirname(cdawmeta.__file__), 'config.json')
         if mode == 'attributes':
           logger.info(f"Using fixes for {table_name} found in ")
           logger.info(f"  {fixes_file}")
-        fixes = cdawmeta.CONFIG['table'][table_name]['fixes']
+        fixes = table_config['fixes']
       else:
-        msg = f"Error: cdawmeta.CONFIG['table'][{table_name}]['fix_attributes'] = True, "
-        msg += "but no file cdawmeta.CONFIG['table'][{table_name}]['fixes'] set."
+        msg = f"Error: cdawmeta.CONFIG['table']['tables'][{table_name}]['fix_attributes'] = True, "
+        msg += "but no file cdawmeta.CONFIG['table']['tables'][{table_name}]['fixes'] set."
         logger.error(msg)
 
   if mode == 'attributes':
@@ -123,10 +134,10 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
     row = []
 
   n_cols_last = None
+  datasets = copy.deepcopy(datasets)
+
   for id, dataset in datasets.items():
     logger.info(f"Computing {mode} for {table_name}/{id}")
-    if omit_attributes is not None:
-      dataset = copy.deepcopy(dataset)
 
     if table_name == 'cdaweb.dataset' or table_name == 'spase.dataset':
       if mode == 'rows':
@@ -209,7 +220,7 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
 
           # Add row for variable
           if mode == 'rows':
-            logger.debug(f"  {len(row)} columns")
+            logger.debug(f"  row #{len(table)}: {len(row)} columns")
             if n_cols_last is not None and len(row) != n_cols_last:
               raise Exception(f"Number of columns changed from {n_cols_last} to {len(row)} for {id}/{variable_name}")
             n_cols_last = len(row)
@@ -264,6 +275,7 @@ def _add_attributes(data, attributes, attribute_names, fixes, path):
       logger.warning(f"  Fixing attribute name: {path}/{attribute_name} -> {fixes[attribute_name]}")
       attributes[fixes[attribute_name]] = None
 
+
 def _files(table_name, id=None):
   data_dir = cdawmeta.DATA_DIR
 
@@ -281,30 +293,70 @@ def _files(table_name, id=None):
 
   return files
 
+def _table_metadata(table_name, header, files):
+  import datetime
+  creationDate = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+
+  data_dir = cdawmeta.DATA_DIR
+  path = files['csv'].replace(data_dir, "data").replace("csv", "")
+
+  config = cdawmeta.CONFIG['table']
+  meta_link = f'<a href="{config["url"]}{path}meta.json">{table_name}.meta.json</a>'
+  db_links = []
+  for ext in ["csv", "sql", "json"]:
+    href = f"{config['url']}{path}{ext}"
+    db_link = f'<a href="{href}">{ext}</a>'
+    db_links.append(db_link)
+  db_links = " | ".join(db_links)
+
+  description = cdawmeta.CONFIG['table']['description'].format(db_links=db_links, meta_link=meta_link)
+  db_links = " | ".join(db_links)
+
+  table_config = cdawmeta.CONFIG['table']['tables'][table_name]
+  description = f"{description} {table_config['description']}"
+  table_metadata = {
+    "description": description,
+    "creationDate": creationDate,
+    "column_definitions": {}
+  }
+  column_defs = table_config['column_definitions']
+  for column_name in header:
+    if column_name not in column_defs:
+      logger.warning(f"   Column name '{column_name}' not in column_definitions for table '{table_name}'")
+    table_metadata["column_definitions"][column_name] = None
+
+  return table_metadata
+
 def _write_files(table_name, header, body, counts, id=id):
 
   files = _files(table_name, id=id)
+
+  table_metadata = _table_metadata(table_name, header, files)
 
   if counts is None:
     del files['counts']
   else:
     logger.info(f"Writing: {files['counts']}")
-    cdawmeta.util.write(files['counts'], counts)
+    cdawmeta.util.write(files['counts'], [["attribute", "count"], *counts])
+
+  file = files['header'].replace("head", "meta")
+  logger.info(f"Writing: {file}")
+  cdawmeta.util.write(file, table_metadata)
 
   logger.info(f"Writing: {files['header']}")
   cdawmeta.util.write(files['header'], header)
   logger.info(f"Writing: {files['body']}")
   cdawmeta.util.write(files['body'], body)
- 
+
   logger.info(f"Writing: {files['csv']}")
   cdawmeta.util.write(files['csv'], [header, *body])
 
   logger.info(f"Writing: {files['sql']}")
-  _write_sqldb(header, body, file=f"{files['sql']}", name=table_name)
+  _write_sqldb(table_name, header, body, f"{files['sql']}", table_metadata)
 
   return files
 
-def _write_sqldb(header, body, file="table1.db", name="table1"):
+def _write_sqldb(name, header, body, file, metadata):
   indent = "   "
   import sqlite3
 
@@ -341,7 +393,7 @@ def _write_sqldb(header, body, file="table1.db", name="table1"):
   cursor.executemany(execute, body)
   logger.info(f"{indent}Done")
 
-  logger.debug(f"{indent}Executing: commit()")
+  logger.debug(f"{indent}Executing: connection.commit()")
   conn.commit()
   logger.debug(f"{indent}Done")
 
@@ -355,6 +407,28 @@ def _write_sqldb(header, body, file="table1.db", name="table1"):
     conn.commit()
     logger.debug(f"{indent}Done")
 
+  conn.close()
+
+  conn = sqlite3.connect(file)
+  cursor = conn.cursor()
+  name_desc = f'{name}.metadata'
+  logger.info(f"{indent}Creating table {name_desc} with table metadata stored as a JSON string")
+
+  spec = "(TableName TEXT NOT NULL, Metadata TEXT)"
+  execute = f"CREATE TABLE `{name_desc}` {spec}"
+  logger.debug(f"{indent}Executing: {execute}")
+  conn.execute(execute)
+  logger.debug(f"{indent}Done")
+
+  import json
+  metadata = json.dumps(metadata)
+  metadata = metadata.replace("'","''")
+  values = f"('{name_desc}', '{metadata}')"
+  insert = f'INSERT INTO `{name_desc}` ("TableName", "Metadata") VALUES {values}'
+  logger.debug(f"{indent}Executing: connection.execute('{insert})'")
+  conn.execute(insert)
+  logger.debug(f"{indent}Done.")
+  conn.commit()
   conn.close()
 
 def _sql_prep(header, body):

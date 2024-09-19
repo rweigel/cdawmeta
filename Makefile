@@ -60,6 +60,7 @@ data/table/spase.parameter.sql:
 	python table.py --table-name spase.parameter
 
 table-serve: data/table/cdaweb.variable.sql data/table/cdaweb.dataset.sql data/table/spase.parameter.sql data/table/spase.dataset.sql
+	-pkill -f "python table/table-ui/serve.py"
 	$(PYTHON) table/table-ui/serve.py --port 8051 --sqldb data/table/cdaweb.variable.sql &
 	$(PYTHON) table/table-ui/serve.py --port 8052 --sqldb data/table/cdaweb.dataset.sql &
 	$(PYTHON) table/table-ui/serve.py --port 8053 --sqldb data/table/spase.parameter.sql &
