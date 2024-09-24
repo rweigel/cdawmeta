@@ -6,6 +6,13 @@
   "_comment": "Attributes are renamed according to fixes ('given': 'new')",
   "url": "http://mag.gmu.edu/git-data/cdawmeta/",
   "description": "The contents of this database available in {db_links}. Additional table metadata is available in {meta_link}",
+  "mongo": {
+    "host": "localhost",
+    "port": 27017,
+    "dbs": {
+      "spase": {}
+    }
+  },
   "tables": {
     "cdaweb.dataset": {
       "use_all_attributes": true,

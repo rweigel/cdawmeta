@@ -22,19 +22,17 @@ def logger(name=None, dir_name=None, log_level='info'):
     return loggers[name]
   else:
     pass
-    #print(f'Creating logger {name}')
 
   data_dir = cdawmeta.DATA_DIR
 
-  msgs = [f"Creating logger for {name}"]
+  msgs = [f"Creating logger with name = '{name}'"]
   config_default = cdawmeta.CONFIG['logger']['default']
   if name in cdawmeta.CONFIG['logger']:
     config = {**config_default, **cdawmeta.CONFIG['logger'][name]}
   else:
     config = config_default.copy()
     config['name'] = name
-    msgs.append(f'No logger configuration for name {name} in config.json. Using default configuration.')
-    #raise ValueError(f'No logger configuration for name {name} in config.json')
+    msgs.append(f"No logger configuration for name '{name}' in config.json. Using default configuration.")
 
   #rm_string = os.path.dirname(os.path.abspath(os.path.join(__file__, '..')))
   #config['rm_string'] = rm_string + "/"
@@ -54,7 +52,10 @@ def logger(name=None, dir_name=None, log_level='info'):
   loggers[name] = cdawmeta.util.logger(**config)
   loggers[name].setLevel(log_level.upper())
 
-  for msg in msgs:
-    loggers[name].debug(msg)
+  if log_level.lower() == 'debug':
+    for msg in msgs:
+      loggers[name].debug(msg)
+
+    loggers[name].debug(f"Logger config: {config}")
 
   return loggers[name]

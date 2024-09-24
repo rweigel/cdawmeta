@@ -1,106 +1,128 @@
 def cli(script, defs=False):
 
+  import os
   import cdawmeta
-  meta_types_generated = cdawmeta.generators
+
+  meta_types = cdawmeta.dependencies['all']
 
   clkws = {
+    "id": {
+      "help": "ID or pattern for dataset IDs to include (prefix with ^ to use pattern match, e.g., '^A|^B') (default: ^.*)",
+      "_used_by_all": True,
+    },
     "meta-type": {
       "help": "Type of metadata to generate. Default is to generate all types.",
       "default": None,
-      "choices": ['master', 'orig_data', 'spase', *meta_types_generated]
-    },
-    "id": {
-      "help": "ID or pattern for dataset IDs to include (prefix with ^ to use pattern match, e.g., '^A|^B') (default: ^.*)"
+      "choices": meta_types,
+      "_used_by": ['metadata.py']
     },
     "skip": {
       "metavar": "ID",
+      "help": "ID or pattern for dataset IDs to exclude (prefix with ^ to use pattern match, e.g., '^A|^B') (default: None)",
       "default": "AIM_CIPS_SCI_3A",
-      "help": "ID or pattern for dataset IDs to exclude (prefix with ^ to use pattern match, e.g., '^A|^B') (default: None)"
+      "_used_by_all": True,
     },
     "write-catalog": {
       "action": "store_true",
       "help": "Write catalog-all.json files (and catalog.json for HAPI metadata)",
-      "default": False
+      "default": False,
+      "_used_by": ['metadata.py']
     },
     "max-workers": {
       "metavar": "N",
       "type": int,
       "help": "Number of threads to use for downloading",
-      "default": 3
+      "default": 3,
+      "_used_by_all": True,
     },
     "embed-data": {
       "action": "store_true",
       "help": "Embed data in returned dict",
-      "default": False
+      "default": False,
+      "_used_by": ['metadata.py']
     },
     "update": {
       "action": "store_true",
       "help": "Update existing cached HTTP responses and regenerate computed metadata.",
-      "default": False
+      "default": False,
+      "_used_by_all": True
     },
     "regen": {
       "action": "store_true",
       "help": "Regenerate computed metadata. Use for testing computed metadata code changes.",
-      "default": False
+      "default": False,
+      "_used_by_all": True
     },
     "log-level": {
-      "choices": ['debug', 'info', 'warning', 'error', 'critical'],
       "help": "Log level",
-      "default": 'info'
+      "default": 'info',
+      "choices": ['debug', 'info', 'warning', 'error', 'critical'],
+      "_used_by_all": True
     },
     "debug": {
       "action": "store_true",
       "help": "Same as --log-level debug",
-      "default": False
+      "default": False,
+      "_used_by_all": True
     },
     "diffs": {
       "action": "store_true",
       "help": "Compute response diffs if --update",
-      "default": False
+      "default": False,
+      "used_by": ['metadata.py']
     },
     "data-dir": {
       "metavar": "DIR",
       "help": "Directory to save files",
-      "default": './data'
+      "default": './data',
+      "_used_by_all": True
+    },
+    "report-name": {
+      "help": "Name of report to execute (default: all reports)",
+      "default": None,
+      "choices": ['f2c_specifier', 'hpde_io', 'units'],
+      "_used_by": ['report.py']
     },
     "table-name": {
       "help": "Name of table to create (default: all tables)",
-      "default": None
+      "default": None,
+      "choices": list(cdawmeta.CONFIG['table']['tables'].keys()),
+      "_used_by": ['table.py']
     },
-    "report-name": {
-      "help": "Name of report to execute (default: all queries)",
-      "choices": ['f2c_specifier', 'hpde_io_ids', 'units'],
-      "default": None
+    "collection-name": {
+      "help": "Name of MongoDB collection to create (default: all collections)",
+      "default": None,
+      "choices": list(cdawmeta.CONFIG['table']['mongo']['dbs'].keys()),
+      "_used_by": ['query.py']
+    },
+    "mongod-binary": {
+      "help": "Path to mongod binary",
+      "default": os.path.expanduser("~/mongodb/bin/mongod"),
+      "_used_by": ['query.py']
+    },
+    "filter": {
+      "help": "Filter to apply to MongoDB collection (default: {})",
+      "default": "{}",
+      "_used_by": ['query.py']
     },
     "port": {
       "metavar": "PORT",
       "type": int,
       "help": "Serve table as a web page at http://localhost:port. Must specify --table_name",
-      "default": None
+      "default": None,
+      "_used_by": ['table.py', 'query.py']
     }
   }
 
-  if script != 'table.py':
-    del clkws['port']
-    del clkws['table-name']
-
-  if script != 'report.py':
-    del clkws['report-name']
-
-  if script in ['hapi.py', 'soso.py', 'cadence.py']:
-    del clkws['diffs']
-    del clkws['embed-data']
-    del clkws['max-workers']
-
-  if script == 'table.py':
-    del clkws['diffs']
-    del clkws['meta-type']
-    del clkws['write-catalog']
-
-  if script == 'report.py':
-    del clkws['diffs']
-    del clkws['meta-type']
-    del clkws['write-catalog']
+  for key, val in clkws.copy().items():
+    keep = '_used_by_all' in val and val['_used_by_all']
+    keep = keep or ('_used_by' in val and script in val['_used_by'])
+    if not keep:
+      del clkws[key]
+    if '_used_by_all' in val:
+      del val['_used_by_all']
+    if '_used_by' in val:
+      del val['_used_by']
 
   if defs:
     return clkws
@@ -110,15 +132,14 @@ def cli(script, defs=False):
   for k, v in clkws.items():
     parser.add_argument(f'--{k}', **v)
 
+  # Note that hyphens are converted to underscores when parsing
   args = vars(parser.parse_args())
 
   if args['debug']:
     args['log_level'] = 'debug'
   del args['debug']
 
-  # Hyphens are converted to underscores when parsing
   if args['data_dir']:
-    import cdawmeta
     cdawmeta.DATA_DIR = args['data_dir']
   del args['data_dir']
 

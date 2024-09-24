@@ -7,6 +7,11 @@ There are also attribute names that are similar but not case-insensitive equival
 The reaming mapping we use is ([cdaweb.table.variable_attributes.fixes.json](https://github.com/rweigel/cdawmeta/blob/main/table/cdaweb.table.variable_attributes.fixes.json)).
 
 
+2\.BAR_2L_L2_HKPG missing DEPEND_0s
+
+Not all data variables have a `DEPEND_0` in [`BAR_2L_L2_HKPG`](https://hapi-server.org/meta/cdaweb/variable/#datasetID=BAR_2L_L2_HKPG)
+
+
 2\. These `FILLVALs` are suspect:
 
 * [-9.999999796611898e-32](https://hapi-server.org/meta/cdaweb/#FILLVAL=-9.999999796611898e-32) (given [`-1e+31` returns ~50k hits](https://hapi-server.org/meta/cdaweb/#FILLVAL=-1e%2b31))
@@ -17,18 +22,13 @@ The reaming mapping we use is ([cdaweb.table.variable_attributes.fixes.json](htt
 
 https://github.com/rweigel/CDAWlib/blob/952a28b08658413081e75714bd3b9bd3ba9167b9/virtual_funcs.pro#L3345
 
-
 Nand often has `FILL=-2.14748006E9` for `integer` type variables. To see the occurrences, [search the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `-2.14748006E9`. I suspect the reason is similar to that in item 3. below. I also see Nand having a fill of `99999.9` when the master has `100000.0` and also NaN when the master has `-1e+31`. ([Search on the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `99999.9` and `NaN`).
 
 
 3\. There are many instances where Nand's server has a type of `double`, but I get `integer` based on CDF master metadata. The reason may be that Nand is using different non-CDF master metadata. My understanding is that CDAWeb does not correct errors in non-master CDFs, but I could see it causing problems with people who read CDFs posted at CDAWeb directly without using the master (many do). To see the occurrences, search [the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `double`.
 
 
-4\. Not all data variables have a `DEPEND_0` in [`BAR_2L_L2_HKPG`](https://hapi-server.org/meta/cdaweb/#datasetID=BAR_2L_L2_HKPG)
-
-
 7\. If you search [the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/catalog-all.log) for `Error:`, errors in the master CDFs associated with missing
-
 
 1. `VarAttributes`
 

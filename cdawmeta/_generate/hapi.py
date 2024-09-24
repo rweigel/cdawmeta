@@ -146,6 +146,7 @@ def _info_head(metadatum, depend_0_name):
     sample_start_stop = metadatum['sample_start_stop']['data']
     info['sampleStartDate'] = sample_start_stop['sampleStartDate']
     info['sampleStopDate'] = sample_start_stop['sampleStopDate']
+    import pdb; pdb.set_trace()
   else:
     logger.warn(f"  Warning: No sample_start_stop for {id}")
     info['sampleStartDate']

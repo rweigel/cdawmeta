@@ -13,7 +13,7 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
   # data file. Will need a special keyword such as regen_cadence=True to
   # pass to generate() to force regeneration. Perhaps an option "retry"
   # that will retry a failed request.
-  if (not update and not regen) or gen_name == 'cadence':
+  if (not update and not regen):# or gen_name == 'cadence':
     if id is not None and not id.startswith('^'):
       # This will not catch case when there is and id@0, id@1, etc. Need to
       # read all files that match pattern id@*. and loop over.

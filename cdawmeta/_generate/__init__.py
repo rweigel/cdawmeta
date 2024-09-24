@@ -59,6 +59,8 @@ generators = [*set_order, *diff]
 all_dependencies['master'] = None
 all_dependencies['orig_data'] = None
 all_dependencies['spase'] = None
+all_dependencies['spase_hpde_io'] = None
+
 dependencies = {}
 for d in all_dependencies.keys():
   dependencies[d] = _find_deps(all_dependencies[d], all_dependencies)

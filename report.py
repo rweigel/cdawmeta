@@ -9,6 +9,8 @@ def f2c_specifier(report_name, dir_name, clargs):
   #       Rewrite to use it.
 
   # Compare given FORMAT/FORM_PTR with computed FORMAT specifier.
+
+  clargs['meta_type'] = ['master']
   meta = cdawmeta.metadata(**clargs)
   formats = []
   for id in meta.keys():
@@ -170,7 +172,7 @@ def units(report_name, dir_name, clargs):
 
   fname_missing = os.path.join(dir_name, f'{report_name}-CDFvariables-with-missing.json')
   fname_report = os.path.join(dir_name, f'{report_name}-CDFUNITS_to_SPASEUnit-map.json')
-  fname_vounits = os.path.join(dir_name, '../', 'CDFUNITS_to_VOUNITS-map.csv')
+  fname_vounits = os.path.join(dir_name, '../', 'Units.csv')
 
   # Write fname_missing
   n_missing = 0
@@ -227,129 +229,86 @@ def units(report_name, dir_name, clargs):
   msg = "with missing a UNITS attribute or an all-whitespace UNITS value"
   logger.info(f"{n_missing} variables of VAR_TYPE = 'data' {msg}")
 
-def hpde_io_ids(report_name, dir_name, clargs):
+def hpde_io(report_name, dir_name, clargs):
 
-  non_spdf_urls = {}
-  # TODO: Count number of CDAWeb datasets with spase_DatasetResourceIDs
+  dir_name = os.path.join(dir_name, "..")
 
-  spase_resource_ids_with_cdaweb_dataset_id = {}
-  spase_resource_ids_no_cdaweb_dataset_id = []
-  files_spase = []
+  meta_type = 'spase_hpde_io'
+  meta = cdawmeta.metadata(id=clargs['id'], meta_type=meta_type, update=False)
+  dsids = meta.keys()
 
-  import glob
-  files = glob.glob("../hpde.io/**/NumericalData/**/*.json", recursive=True)
-  logger.info(f"{len(files)} Numerical Data files before removing Deprecated")
-  for file in files:
-    if 'Deprecated' in file:
-      del files[files.index(file)]
-  logger.info(f"{len(files)} Numerical Data files after removing Deprecated")
+  attributes = {
+    'ObservedRegion': {},
+    'InstrumentID': {},
+    'MeasurementType': {},
+    'DOI': {}
+  }
 
-  for file in files:
+  n_found = attributes.copy()
+  for attribute in attributes.keys():
+    n_spase = 0
+    n_found[attribute] = 0
 
-    files_spase.append(file)
-
-    data = cdawmeta.util.read(file)
-
-    ResourceID = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'ResourceID'])
-    if ResourceID is None:
-      logger.error(f"  Error - No ResourceID in {file}")
-      continue
-
-    hpde_url = f'{ResourceID.replace("spase://", "http://hpde.io/")}'
-    logger.info(f'\n\n{hpde_url}.json')
-
-    # Flattens AccessInformation so is a list of objects, each with one AccessURL.
-    data = cdawmeta.restructure.spase(data, logger=logger)
-    AccessInformation = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'AccessInformation'])
-
-    if AccessInformation is None:
-      logger.error(f"  Error - No AccessInformation in {file}")
-      continue
-
-    s = "s" if len(AccessInformation) > 1 else ""
-    logger.info(f"  {len(AccessInformation)} Repository object{s} in AccessInformation")
-
-    found = False
-    ProductKeyCDAWeb = None
-    for ridx, Repository in enumerate(AccessInformation):
-      AccessURL = Repository['AccessURL']
-      if AccessURL is not None:
-        Name = AccessURL.get('Name', None)
-        if Name is None:
-          logger.warning(f"  Warning - No Name in {AccessURL}")
-
-        URL = AccessURL.get('URL', None)
-        if URL is None:
-          logger.error(f"  Error - No URL in {AccessURL} for {hpde_url}")
-          continue
-
-        if 'spdf' not in URL and 'cdaweb' not in URL:
-          non_spdf_urls[URL.strip()] = None
-
-        logger.info(f"    {ridx+1}. {Name}: {URL}")
-
-        if Name is None or URL is None:
-          continue
-
-        if Name == 'CDAWeb':
-          if found:
-            logger.error(f"      Error - Duplicate AccessURL/Name = 'CDAWeb' in {hpde_url}")
-          else:
-            if 'ProductKey' in Repository['AccessURL']:
-              found = True
-              ProductKeyCDAWeb = Repository['AccessURL']['ProductKey']
-              spase_resource_ids_with_cdaweb_dataset_id[ProductKeyCDAWeb] = ResourceID
-
-    if ProductKeyCDAWeb is None:
-      spase_resource_ids_no_cdaweb_dataset_id.append(ResourceID)
-      logger.info("  x Did not find CDAWeb ProductKey in any Repository")
+    path = ['Spase', 'NumericalData']
+    if attribute == 'DOI':
+      path = [*path, 'ResourceHeader', attribute]
     else:
-      logger.info(f"  + Found CDAWeb ProductKey: {ProductKeyCDAWeb}")
+      path = [*path, attribute]
 
+    for dsid_spase in meta.keys():
+      spase = cdawmeta.util.get_path(meta[dsid_spase], [meta_type, 'data'])
+      if spase is None:
+        #logger.error(f"No SPASE for {dsid_spase}")
+        continue
+      n_spase += 1
 
-  cdaweb_dataset_ids = cdawmeta.ids()
+      attributes[attribute][dsid_spase] = None
+      value = cdawmeta.util.get_path(spase, path)
+      if value is not None:
+        if attribute == 'ObservedRegion':
+          if not isinstance(value, list):
+            value = [value]
+          sc_id = dsid_spase.split('_')[0]
+          if sc_id not in attributes[attribute]:
+            attributes[attribute][sc_id] = value
+          else:
+            if attributes[attribute][sc_id] != value:
+              logger.error(f"  {dsid_spase}: Region for this ID differs from first found value with id = {sc_id}")
+              logger.error(f"  {dsid_spase}: First value = {attributes[attribute][sc_id]}")
+              logger.error(f"  {dsid_spase}: This value  = {value}")
+              logger.error("  Combining values.")
+              attributes[attribute][sc_id] = list(set(attributes[attribute][sc_id]) | set(value))
+        else:
+          attributes[attribute][dsid_spase] = value
+        n_found[attribute] += 1
 
-  logger.info("\n")
-  logger.info(f"{len(spase_resource_ids_no_cdaweb_dataset_id)} SPASE Records with no CDAWeb ProductKey")
-  spase_resource_ids_no_cdaweb_dataset_id.sort()
-  for rid in spase_resource_ids_no_cdaweb_dataset_id:
-    logger.info(f"  {rid}")
+  msg = f"Number of CDAWeb datasets:  {len(dsids)}"
+  logger.info(msg)
+  msg = f"Number found in hpde.io:    {n_spase}"
+  logger.info(msg)
 
-  logger.info("\n")
-  logger.info(f"{len(spase_resource_ids_with_cdaweb_dataset_id)} SPASE Records with CDAWeb ProductKey")
-  spase_resource_ids_with_cdaweb_dataset_id = cdawmeta.util.sort_dict(spase_resource_ids_with_cdaweb_dataset_id)
-  for key, val in spase_resource_ids_with_cdaweb_dataset_id.items():
-    logger.info(f"  {val}: {key}")
+  for key in attributes.keys():
+    logger.info(f"Found {key} in {n_found[key]} of {n_spase} SPASE records.")
+    fname = f'{dir_name}/{key}.json'
+    logger.info(f"  Writing {fname}")
+    cdawmeta.util.write(fname, attributes[key])
 
-  logger.info("\n")
-  logger.info("----- Summary -----")
-  logger.info(f"Known number of CDAWeb ProductKeys (datasets): {len(cdaweb_dataset_ids)}")
-  logger.info(f"Number of hpde.io/NASA/NumericalData records:  {len(files_spase)}")
-  logger.info(f"Number where CDAWeb ProductKey found:          {len(spase_resource_ids_with_cdaweb_dataset_id)}")
+  ResourceIDs_file = os.path.join(dir_name, "ResourceIDs.json")
 
-  n = 0
-  for cdaweb_dataset_id in cdaweb_dataset_ids:
-    if cdaweb_dataset_id not in spase_resource_ids_with_cdaweb_dataset_id:
-      n += 1
+  dsids_spase = list(meta.keys())
+  ResourceIDs = {}
+  n_found = 0
+  for dsid in dsids:
+    ResourceIDs[dsid] = None
+    if dsid in dsids_spase:
+      p = [meta_type, 'data', 'Spase', 'NumericalData', 'ResourceID']
+      ResourceID = cdawmeta.util.get_path(meta[dsid], p)
+      ResourceIDs[dsid] = ResourceID
+    #logger.info(f"  {dsid}: {ResourceID}")
+    n_found += 1
 
-  logger.info("\nCDAWeb dataset ID, hpde.io ResourceID")
-  lines = []
-  for cdaweb_dataset_id in cdaweb_dataset_ids:
-    line = [cdaweb_dataset_id, "???"]
-    if cdaweb_dataset_id in spase_resource_ids_with_cdaweb_dataset_id:
-      line = [cdaweb_dataset_id, spase_resource_ids_with_cdaweb_dataset_id[cdaweb_dataset_id]]
-    lines.append(line)
-    logger.info(f"  {line[0]}: {line[1]}")
-
-  fname = os.path.join(dir_name, "ids.csv")
-  cdawmeta.util.write(fname, lines, logger=logger)
-
-  logger.info("\n")
-  logger.info(f"{len(non_spdf_urls)} non-spdf/cdaweb URLs")
-
-  fname = os.path.join(dir_name, 'report', f"{report_name}-urls.txt")
-  urls = "\n".join(list(non_spdf_urls.keys()))
-  cdawmeta.util.write(fname, urls, logger=logger)
+  logger.info(f"  Writing {ResourceIDs_file}")
+  cdawmeta.util.write(ResourceIDs_file, ResourceIDs)
 
 
 cldefs = cdawmeta.cli('report.py', defs=True)
@@ -358,15 +317,11 @@ report_names = cldefs['report-name']['choices']
 clargs = cdawmeta.cli('report.py')
 report_name = clargs['report_name']
 
-clargs['embed_data'] = True
 del clargs['report_name']
 
 dir_name = 'cdawmeta-additions/reports'
 
-if report_name is None:
-  if report_name not in report_names:
-    exit(f"Error: report_name = '{report_name}' not in {report_names}")
-else:
+if report_name is not None:
   report_names = [report_name]
 
 for report_name in report_names:

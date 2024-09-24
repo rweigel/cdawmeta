@@ -10,70 +10,96 @@ import requests_cache
 import urllib3
 import deepdiff
 
+import cdawmeta
 from hapiclient import hapitime2datetime
 
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('--include', help="Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)")
-args = parser.parse_args()
 
-base_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
-catalog_all = os.path.join(base_dir, 'hapi', 'catalog-all.json')
+def cli(config):
+  data_dir = os.path.join(os.path.dirname(__file__), '..', 'data', 'compare')
 
-# mode = 'update' or 'exact'.
-# If update, warnings for backwards compatible differences
-opts = {
-  'compare_data': False,
-  'parallel': False,
-  'base_dir': base_dir,
-  'mode': 'exact'
-}
+  clkws = {
+    "include": {
+      "help": "Pattern for dataset IDs to include, e.g., '^A|^B' (default: .*)"
+    },
+    "mode": {
+      "help": "'update' or 'exact'; if 'update', warnings for backwards compatible differences",
+      "default": "update"
+    },
+    "conf": {
+      "help": "Configuration options to use from compare.json (default: CDAWeb-metadata)",
+      "default": "CDAWeb",
+      "choices": list(config.keys())
+    },
+    "warn": {
+      "action": "store_true",
+      "help": "Print warnings",
+      "default": False
+    },
+    "data-dir": {
+      "help": "Data directory",
+      "default": data_dir
+    },
+    "parallel": {
+      "action": "store_true",
+      "help": "Make parallel requests",
+      "default": False
+    },
+    "compare-data": {
+      "action": "store_true",
+      "help": "Compare data",
+      "default": False
+    },
+    "log-level": {
+      "help": "Log level",
+      "default": 'info',
+      "choices": ['debug', 'info', 'warning', 'error', 'critical']
+    },
+    "debug": {
+      "action": "store_true",
+      "help": "Same as --log-level debug",
+      "default": False
+    }
+  }
 
-if False:
-  opts = {**opts,
-          'keep': r'^a',
-          "sample_duration": {"days": 1},
+  import argparse
+  parser = argparse.ArgumentParser()
+  for k, v in clkws.items():
+    parser.add_argument(f'--{k}', **v)
 
-          "s1": "chunk",
-          "url1": "https://hapi-server.org/servers/SSCWeb/hapi",
-          "s1_expire_after": {"days": 1},
+  # Note that hyphens are converted to underscores when parsing
+  args = vars(parser.parse_args())
+  if args['conf'] == 'CDAWeb-metadata' and args['compare_data']:
+    raise ValueError("CDAWeb-metadata does not support comparing data.")
 
-          "s2": "chunk-ltfloats-parallel",
-          "url2": "http://localhost:8999/SSCWeb/hapi",
-          "s2_expire_after": {"days": 1}
-        }
+  if args['debug']:
+    args['log_level'] = 'debug'
 
-if False:
-  opts = {**opts,
-          "s1": "jf",
-          "s2": "nl",
-          "url1": "https://cottagesystems.com/server/cdaweb/hapi",
-          "url2": "https://cdaweb.gsfc.nasa.gov/hapi",
-          "s1_expire_after": {"days": 1},
-          "s2_expire_after": {"days": 1},
-          "sample_duration": {"days": 1}
-        }
+  args['data_dir'] = os.path.abspath(args['data_dir'])
 
-if True:
-  opts = {**opts,
-          "mode": "update",
-          "s1": "nl",
-          "s2": "bw",
-          "url1": os.path.join(base_dir, 'hapi', 'catalog-all.nl.json'),
-          "url2": catalog_all,
-          "s1_expire_after": {"days": 1},
-          "s2_expire_after": None,
-          "s2_omits": ['stopDate', 'sampleStartDate', 'sampleStopDate'],
-          "sample_duration": {"days": 1}
-        }
+  return args
+
+def _logger(log_level):
+  config_logger = {
+      "name": "config",
+      "file_log": f"{opts['data_dir']}/config.log",
+      "file_error": f"{opts['data_dir']}/config.error.log",
+      "console_format": "%(name)s %(levelname)s %(message)s",
+      "color": True,
+      "debug_logger": False
+  }
+  if log_level.lower() == 'debug':
+    config_logger["console_format"] = "%(name)s %(levelname)s %(filename)s:%(lineno)d %(message)s"
+  logger = cdawmeta.util.logger(**config_logger)
+  logger.setLevel(args['log_level'].upper())
+  return logger
 
 def omit(id):
   # TODO: This is a copy of function in cdaweb.py. Move to a common module.
   import re
   if id == 'AIM_CIPS_SCI_3A':
     return True
-  if args.include:
-    if re.search(args.include, id):
+  if opts['include'] is not None:
+    if re.search(opts['include'], id):
       return False
     return True
   else:
@@ -81,26 +107,31 @@ def omit(id):
 
 def compare_metadata(datasets_s1, datasets_s2, opts):
 
+  indent = '  '
+
   for dsid in datasets_s2.keys():
     if omit(dsid):
       continue
 
-    if not dsid in datasets_s1:
-      msg = f"{dsid} not in {opts['s1']}"
+    if dsid not in datasets_s1:
+      msg = f"Not in {opts['s1']}"
       if opts['mode'] == 'update':
-        report(msg, 'warn', pad='')
+        if opts['warn']:
+          logger.info(f"{dsid}")
+          logger.warn(indent + msg)
       else:
-        report(msg, 'fail', pad='')
+        logger.info(f"{dsid}")
+        logger.error(indent + msg)
       dsid0 = dsid + "@0"
       if dsid[-2] != "@" and dsid0 in list(datasets_s1.keys()):
-        report(f"  But {dsid0} in {opts['s1']}",'info')
+        logger.error(f"{indent}But {dsid0} in {opts['s1']}")
 
   for dsid in datasets_s1.keys():
 
     if omit(dsid):
       continue
 
-    report(f"{dsid} - Checking metadata")
+    logger.info(f"{dsid} - Checking metadata")
 
     extra = ""
     if "x_cdf_depend_0_name" in datasets_s1[dsid]["info"]["parameters"][0]:
@@ -108,12 +139,12 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
       x_cdf_depend_0_name = datasets_s1[dsid]["info"]["parameters"][0]["x_cdf_depend_0_name"]
       extra = f'for s1 DEPEND_0 = {x_cdf_depend_0_name}'
 
-    if not dsid in datasets_s2:
+    if dsid not in datasets_s2:
 
-      report(f"{dsid} not in {opts['s2']} {extra}",'fail')
+      logger.error(f"{indent}{dsid} not in {opts['s2']} {extra}")
       dsid0 = dsid + "@0"
       if dsid[-2] != "@" and dsid0 in list(datasets_s2.keys()):
-        report(f"  But {dsid0} in {opts['s2']}",'info')
+        logger.error(f"{indent}But {dsid0} in {opts['s2']}")
 
     else:
 
@@ -128,55 +159,72 @@ def compare_metadata(datasets_s1, datasets_s2, opts):
       if n_params_s2 != n_params_s1:
         m = min(n_params_s2, n_params_s1)
         if list(keys_s1)[0:m] != list(keys_s2)[0:m]:
-          report(f"n_params_{opts['s2']} = {n_params_s2} != n_params_{opts['s1']} = {n_params_s1} {extra}",'fail')
-          report(f"   Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
-          report(f"   Error because first {m} parameters are not identical.",'info')
+          logger.error(f"{indent}n_params_{opts['s2']} = {n_params_s2} != n_params_{opts['s1']} = {n_params_s1} {extra}")
+          logger.error(f"{indent}Differences: {set(keys_s1) ^ set(keys_s2)}")
+          logger.error(f"{indent}Error because first {m} parameters are not identical.")
         else:
+          msgx = f"{indent}Differences: {set(keys_s1) ^ set(keys_s2)}"
           if opts['mode'] == 'update':
             msg = f"n_params_{opts['s2']} = {n_params_s2} != n_params_{opts['s1']} = {n_params_s1} {extra}"
-            report(msg,'warn')
+            logger.warn(indent + msg)
+            logger.warn(msgx)
           else:
-            report(msg,'fail')
-          report(f"   Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
+            logger.error(msg)
+            logger.error(msgx)
           if n_params_s2 > n_params_s1:
-            report(f"First {m} parameters are identical, mode = 'update', and n_params_{opts['s2']} > n_params_{opts['s1']}",'warn')
+            msg = "First {m} parameters are identical, mode = 'update', "
+            msg += "and n_params_{opts['s2']} > n_params_{opts['s1']}"
+            logger.warn(msg)
           else:
-            report(f"First {m} parameters are identical but n_params_{opts['s2']} < n_params_{opts['s1']}",'fail')
+            msg = f"First {m} parameters are identical but n_params_{opts['s2']} < n_params_{opts['s1']}"
+            logger.warn(msg)
           parameters = list(keys_s1)[0:m]
-          compare_data(dsid, datasets_s1, datasets_s2, opts, parameters=parameters, datasets_s0=datasets_s0)
+          compare_data(dsid, datasets_s1, datasets_s2, opts, parameters=parameters)
       else:
         if keys_s2 != keys_s1:
-          report(f'Order differs {extra}','fail')
-          report(f"  {opts['s2_padded']}: {list(keys_s2)}",'info')
-          report(f"  {opts['s1_padded']}: {list(keys_s1)}",'info')
+          logger.error(f'Order differs {extra}','fail')
+          logger.error(f"  {opts['s2_padded']}: {list(keys_s2)}",'info')
+          logger.error(f"  {opts['s1_padded']}: {list(keys_s1)}",'info')
         else:
           for i in range(len(datasets_s2[dsid]["info"]["parameters"])):
             param_s2 = datasets_s2[dsid]["info"]["parameters"][i]
             param_s1 = datasets_s1[dsid]["info"]["parameters"][i]
             compare_parameter(dsid, param_s2, param_s1)
 
-          compare_data(dsid, datasets_s1, datasets_s2, opts, datasets_s0=datasets_s0)
+          compare_data(dsid, datasets_s1, datasets_s2, opts)
 
 def compare_info(dsid, info_s2, info_s1):
 
-  keys_s2 = list(info_s2.keys())
   keys_s1 = list(info_s1.keys())
+  keys_s2 = list(info_s2.keys())
 
-  keys_s1 = remove_keys(keys_s1)
-  keys_s2 = remove_keys(keys_s2)
+  keys_s1 = remove_keys(keys_s1, 's1', opts)
+  keys_s2 = remove_keys(keys_s2, 's2', opts)
 
   n_keys_s2 = len(keys_s2)
   n_keys_s1 = len(keys_s1)
+
   if n_keys_s2 != n_keys_s1:
-    #print(f"{dsid}")
-    report(f'n_keys_{opts["s2"]} = {n_keys_s2} != n_keys_{opts["s1"]} = {n_keys_s1}','fail')
-    report(f"   Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
+    logger.error(f'n_keys_{opts["s2"]} = {n_keys_s2} != n_keys_{opts["s1"]} = {n_keys_s1}')
+    logger.error(f"  Differences: {set(keys_s1) ^ set(keys_s2)}",'info')
   else:
     common_keys = set(keys_s2) & set(keys_s1)
     for key in common_keys:
       if info_s2[key] != info_s1[key]:
-        #print(f"{dsid}/info/{key}")
-        report(f'{key} val_{opts["s2"]} = {info_s2[key]} != val_{opts["s1"]} = {info_s1[key]}','fail')
+        if key.endswith('Date'):
+          date1 = hapitime2datetime(info_s1[key])[0]
+          date2 = hapitime2datetime(info_s2[key])[0]
+          if date1 != date2:
+            msg = f'{key} (datetime comparison) val_{opts["s2"]} = {info_s2[key]} '
+            msg += '!= val_{opts["s1"]} = {info_s1[key]}'
+            logger.error(msg)
+          elif args['warn']:
+            msg = f'{key} val_{opts["s2"]} = {info_s2[key]} != '
+            msg += 'val_{opts["s1"]} = {info_s1[key]} but datetime equivalent.'
+            logger.warn(msg)
+        else:
+          msg = f'{key} val_{opts["s2"]} = {info_s2[key]} != val_{opts["s1"]} = {info_s1[key]}'
+          logger.error(msg)
 
 def compare_parameter(dsid, param_s2, param_s1):
 
@@ -195,9 +243,11 @@ def compare_parameter(dsid, param_s2, param_s1):
   n_param_keys_s2 = len(param_s2_keys)
   if n_param_keys_s1 != n_param_keys_s2:
     if {'bins'} != set(param_s1_keys) ^ set(param_s2_keys):
-      report(f"{param_s2['name']}",'info')
-      report(f"n_param_keys_{opts['s2']} = {n_param_keys_s2} != n_param_keys_{opts['s1']} = {n_param_keys_s1}",'fail')
-      report(f"  Differences: {set(param_s1_keys) ^ set(param_s2_keys)}",'info')
+      logger.info(f"{param_s2['name']}")
+      msg = f"n_param_keys_{opts['s2']} = {n_param_keys_s2} != "
+      msg += "n_param_keys_{opts['s1']} = {n_param_keys_s1}"
+      logger.error(msg)
+      logger.error(f"  Differences: {set(param_s1_keys) ^ set(param_s2_keys)}")
 
   common_keys = set(param_s2_keys) & set(param_s1_keys)
   for key in common_keys:
@@ -209,43 +259,43 @@ def compare_parameter(dsid, param_s2, param_s1):
         b = (param_s1['type'] == 'int' or param_s1['type'] == 'double')
         if a and b:
           if float(param_s2[key]) != float(param_s1[key]):
-            report(f"{param_s2['name']}/{key}",'info')
+            logger.info(f"{param_s2['name']}/{key}")
             msg = f"val_{opts['s2']} = {param_s2[key]} != val_{opts['s1']} = {param_s1[key]}"
             if opts['mode'] == 'update':
-              report(msg,'warn')
+              logger.warn(msg)
             else:
-              report(msg,'fail')
+              logger.error(msg)
       elif key == 'size' and isinstance(param_s2[key],list) and isinstance(param_s1[key],list):
         if param_s2[key] != param_s1[key]:
-          report(f"{param_s2['name']}/{key}",'info')
-          report(f"val_{opts['s2']} = {param_s2[key]} != val_{opts['s1']} = {param_s1[key]}",'fail')
-      elif type(param_s2[key]) != type(param_s1[key]):
-        report(f"{param_s2['name']}/{key}",'info')
+          logger.info(f"{param_s2['name']}/{key}")
+          logger.info(f"val_{opts['s2']} = {param_s2[key]} != val_{opts['s1']} = {param_s1[key]}")
+      elif not isinstance(param_s2[key], param_s1[key]):
+        logger.info(f"{param_s2['name']}/{key}")
         msg = f"type_{opts['s2']} = {type(param_s2[key])} != type_{opts['s1']} = {type(param_s1[key])}"
         if opts['mode'] == 'update':
-          report(msg,'warn')
+          logger.warn(msg)
         else:
-          report(msg,'fail')
+          logger.error(msg)
       else:
-        report(f"{param_s2['name']}/{key}",'info')
+        logger.info(f"{param_s2['name']}/{key}")
         if key == 'description':
           msg1 = f"val_{opts['s2']} = '{param_s2[key]}'"
-          msg2 = f"!="
+          msg2 = "!="
           msg3 = f"val_{opts['s1']} = '{param_s1[key]}'"
           if opts['mode'] == 'update':
-            report(msg1,'warn')
-            report(msg2,'warn')
-            report(msg3,'warn')
+            logger.warn(msg1)
+            logger.warn(msg2)
+            logger.warn(msg3)
           else:
-            report(msg1,'warn')
-            report(msg2,'warn')
-            report(msg3,'warn')
+            logger.error(msg1)
+            logger.error(msg2)
+            logger.error(msg3)
         else:
           msg = f"val_{opts['s2']} = '{param_s2[key]}' != val_{opts['s1']} = '{param_s1[key]}'"
           if opts['mode'] == 'update':
-            report(msg,'warn')
+            logger.warn(msg)
           else:
-            report(msg,'fail')
+            logger.error(msg)
 
 
   compare_bins(param_s2, param_s1)
@@ -255,35 +305,33 @@ def compare_bins(params_s2, params_s1):
   name_s2 = params_s2["name"]
   name_s1 = params_s1["name"]
   if 'bins' in params_s2:
-    if not 'bins' in params_s1:
-      report(f"  {name_s2}")
+    if 'bins' not in params_s1:
+      logger.info(f"  {name_s2}")
       msg = f"{opts['s2']} has bins for '{name_s2}' but {opts['s1']} does not"
       if opts['mode'] == 'update':
-        report(msg,'warn')
+        logger.warn(msg)
       else:
-        report(msg,'fail')
+        logger.error(msg)
   if 'bins' in params_s1:
-    if not 'bins' in params_s2:
-      report(f"  {name_s1}")
-      report(f"{opts['s1']} has bins for '{name_s1}' but {opts['s2']} does not",'fail')
+    if 'bins' not in params_s2:
+      logger.error(f"  {name_s1}")
+      logger.error(f"{opts['s1']} has bins for '{name_s1}' but {opts['s2']} does not")
   if 'bins' in params_s1:
     if 'bins' in params_s2:
       n_bins_s2 = len(params_s1["bins"])
       n_bins_s1 = len(params_s2["bins"])
       if n_bins_s2 != n_bins_s1:
-        print(f"  {params_s1}/bins")
-        report(f"{opts['s1']} has {n_bins_s1} bins objects; {opts['s2']} has {n_bins_s2}",'fail')
+        logger.error(f"  {params_s1}/bins")
+        logger.error(f"{opts['s1']} has {n_bins_s1} bins objects; {opts['s2']} has {n_bins_s2}")
       # TODO: Compare content at bins level
 
-def compare_data(dsid, datasets_s1, datasets_s2, opts, parameters="", datasets_s0=None):
+def compare_data(dsid, datasets_s1, datasets_s2, opts, parameters=""):
 
   if opts['compare_data'] is False:
     return
-  if datasets_s0 is not None and not dsid in datasets_s0:
+  if dsid not in datasets_s1:
     return
-  if not dsid in datasets_s1:
-    return
-  if not dsid in datasets_s2:
+  if dsid not in datasets_s2:
     return
 
   sampleStartDate = None
@@ -299,10 +347,6 @@ def compare_data(dsid, datasets_s1, datasets_s2, opts, parameters="", datasets_s
   if 'sampleStartDate' in datasets_s1[dsid]['info']:
     sampleStopDate = datasets_s1[dsid]['info']['sampleStopDate']
 
-  if datasets_s0 is not None and 'sampleStartDate' in datasets_s0[dsid]['info']:
-    sampleStartDate = datasets_s0[dsid]['info']['sampleStartDate']
-    sampleStopDate = datasets_s0[dsid]['info']['sampleStopDate']
-
   if sampleStartDate is None or sampleStopDate is None:
     startDate_s1 = hapitime2datetime(datasets_s1[dsid]['info']['startDate'])[0]
     startDate_s2 = hapitime2datetime(datasets_s2[dsid]['info']['startDate'])[0]
@@ -316,9 +360,6 @@ def compare_data(dsid, datasets_s1, datasets_s2, opts, parameters="", datasets_s
     sampleStartDate = sampleStartDate.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
     sampleStopDate = sampleStopDate.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
-  #print(f"  sampleStartDate = {sampleStartDate}")
-  #print(f"  sampleStopDate = {sampleStopDate}")
-
   times = 2*[None]
   resps = 2*[None]
 
@@ -331,12 +372,11 @@ def compare_data(dsid, datasets_s1, datasets_s2, opts, parameters="", datasets_s
 
   def get(i):
     start = time.time()
-    report(urls[i],'info')
-    #resps[i] = requests.get(urls[i])
+    logger.info("  Getting: " + urls[i])
     resps[i] = requests.get(urls[i], verify=False)
     times[i] = time.time() - start
 
-  report(f"{dsid} - Checking data")
+  logger.info(f"{dsid} - Checking data")
 
   if opts['parallel'] is False:
     get(0)
@@ -347,19 +387,68 @@ def compare_data(dsid, datasets_s1, datasets_s2, opts, parameters="", datasets_s
       pool.map(get, range(2))
 
   dt1 = "{0:.6f}".format(times[0])
+  msg1 = f"  {opts['s1_padded']} time = {dt1} [s]; status = {resps[0].status_code}"
+  if resps[0].status_code != 200:
+    logger.error(msg1)
+  else:
+    logger.info(msg1)
+
   dt2 = "{0:.6f}".format(times[1])
-  report(f"{opts['s1_padded']} time = {dt1} [s]; status = {resps[0].status_code}",'info')
-  report(f"{opts['s2_padded']} time = {dt2} [s]; status = {resps[1].status_code}",'info')
+  msg2 = f"  {opts['s2_padded']} time = {dt2} [s]; status = {resps[1].status_code}"
+  if resps[1].status_code != 200:
+    logger.error(msg2)
+  else:
+    logger.info(msg2)
 
   if resps[0].status_code != resps[1].status_code:
-    report(f"{opts['s2']} HTTP status = {resps[1].status_code} != {opts['s1']} HTTP status = {resps[0].status_code}",'fail')
-  elif resps[0].text != resps[1].text:
-    report(f"{opts['s2']} data (length = {len(resps[1].text)}) != {opts['s1']} data (length = {len(resps[0].text)})",'fail')
+    logger.error(f"  {opts['s2']} HTTP status = {resps[1].status_code} != {opts['s1']} HTTP status = {resps[0].status_code}")
+    return
 
+  after =  "after replacement of '\\r\\n' with '\\n' and trimming trailing whitespace."
 
-def remove_keys(keys):
+  body1 = resps[0].text
+  body2 = resps[1].text
+  body1r = body1.replace("\r\n", "\n").rstrip()
+  body2r = body2.replace("\r\n", "\n").rstrip()
+
+  delta1 = len(body1) - len(body1r)
+  if delta1 != 0:
+    logger.warning(f"  {opts['s1']} data length changed by {delta1} {after}")
+  delta2 = len(body2) - len(body2r)
+  if delta2 != 0:
+    logger.warning(f"  {opts['s2']} data length changed by {delta2} {after}")
+
+  if len(body1) != len(body2) and len(body1r) != len(body2r):
+    logger.error(f"  {opts['s2']} data (length = {len(body2)}) != {opts['s1']} data (length = {len(body1)})")
+    logger.error("  and")
+    logger.error(f"  {opts['s2']} data (length = {len(body2r)}) != {opts['s1']} data (length = {len(body1r)}) {after}")
+
+  if body1r != body2r:
+    body1s = body1r.splitlines()
+    body2s = body2r.splitlines()
+    if body1s == body2s:
+      logger.info(f"  {opts['s2']} data == {opts['s1']} data after splitlines()")
+
+    if len(body1s) == len(body2s):
+      logger.info(f"  {opts['s2']} data has {len(body2s)} lines; {opts['s1']} data has {len(body1s)} lines {after}")
+    else:
+      logger.error(f"  {opts['s2']} data has {len(body2s)} lines; {opts['s1']} data has {len(body1s)} lines {after}")
+
+    n = 0
+    for i in range(min(len(body1s), len(body2s))):
+      if body1s[i] != body2s[i]:
+        msg = f"  Line {i}:"
+        logger.error(msg)
+        logger.error(f"    {opts['s1_padded']}: {body1s[i]}")
+        logger.error(f"    {opts['s2_padded']}: {body2s[i]}")
+        n += 1
+        if n > 10:
+          logger.error("  More than 10 lines differ; not displaying more.")
+          break
+
+def remove_keys(keys, s, opts):
   for key in keys.copy():
-    if 's2_omits' in opts and key in opts['s2_omits']:
+    if f'{s}_omits' in opts and key in opts[f'{s}_omits']:
       keys.remove(key)
     if key.startswith("x_"):
       keys.remove(key)
@@ -371,21 +460,19 @@ def get_all_metadata(server_url, server_name, expire_after={"days": 1}):
 
   def server_dir(url):
     url_parts = urlparse(url)
-    url_dir = os.path.join(opts['base_dir'], 'compare', url_parts.netloc, *url_parts.path.split('/'))
+    url_dir = os.path.join(opts['data_dir'], 'CachedSession', 'compare', url_parts.netloc, *url_parts.path.split('/'))
     os.makedirs(url_dir, exist_ok=True)
     return url_dir
 
   if not server_url.startswith('http'):
-    print(f"Reading: {server_url}")
+    logger.info(f"Reading: {server_url}")
     with open(server_url, 'r', encoding='utf-8') as f:
       datasets = json.load(f)
-    print(f"Read: {server_url}")
+    logger.info(f"Read: {server_url}")
     return datasets
 
   cache_dir = server_dir(server_url)
-  out_file = os.path.join(cache_dir, f'hapi-{server_name}.json')
-  report(f"cache_dir = {cache_dir}")
-  os.makedirs(os.path.dirname(server_url), exist_ok=True)
+  logger.info("Getting catalog and info metadata")
 
   def CachedSession():
     # https://requests-cache.readthedocs.io/en/stable/#settings
@@ -406,7 +493,6 @@ def get_all_metadata(server_url, server_name, expire_after={"days": 1}):
   datasets = resp.json()['catalog']
 
   for dataset in datasets:
-
     id = dataset['id']
     if omit(id):
       continue
@@ -414,13 +500,13 @@ def get_all_metadata(server_url, server_name, expire_after={"days": 1}):
     url = server_url + '/info?id=' + id
 
     start = time.time()
-    report(f'Getting: {url}', msg_type='info')
+    logger.info(f'Getting {server_name}: {url}')
     resp = session.request('get', url, verify=False)
     if resp.from_cache:
-      report(f'Got: (from cache) {url}', msg_type='info')
+      logger.info(f'Got: (from cache) {url}')
     else:
       dt = "{0:.6f}".format(time.time() - start)
-      report(f'Got: (time = {dt} [s]) {url}', msg_type='info')
+      logger.info(f'Got: (time = {dt} [s]) {url}')
 
     if resp.status_code != 200:
       continue
@@ -428,11 +514,6 @@ def get_all_metadata(server_url, server_name, expire_after={"days": 1}):
     dataset['info'] = resp.json()
     del dataset['info']['status']
     del dataset['info']['HAPI']
-
-  print(f'Writing: {out_file}')
-  with open(out_file, 'w', encoding='utf-8') as f:
-    json.dump(datasets, f, indent=2)
-  print(f'Wrote: {out_file}')
 
   return datasets
 
@@ -450,29 +531,6 @@ def restructure(datasets):
       datasetsr[id]["info"]["_parameters"][name] = parameter
   return datasetsr
 
-def read_catalog_all(all_filename):
-
-  print(f"Reading: {all_filename}")
-  with open(all_filename, 'r', encoding='utf-8') as f:
-    datasets = json.load(f)
-  print(f"Read: {all_filename}")
-
-  return datasets
-
-def report(msg, msg_type=None, pad='    '):
-
-  prefix = ""
-  if msg_type == 'pass':
-    prefix = pad + "PASS "
-  if msg_type == 'fail':
-    prefix = pad + "FAIL "
-  if msg_type == 'warn':
-    prefix = pad + "WARN "
-  if msg_type == 'info':
-    prefix = "  "
-
-  print(prefix + msg)
-
 def pad_server_name(opts):
   l1 = len(opts['s1'])
   l2 = len(opts['s2'])
@@ -485,39 +543,57 @@ def pad_server_name(opts):
 
   return opts
 
+# Read configuration
+fname = os.path.join(os.path.dirname(__file__), 'compare.json')
+config = cdawmeta.util.read(fname)
+
+# Read command line arguments
+args = cli(config)
+opts = config[args['conf']]
+opts['data_dir'] = args['data_dir']
+opts.update(args)
+
+logger = _logger(args['log_level'])
+logger.debug(f"Logging output to {opts['data_dir']}")
+logger.debug(f"Cache directory: {opts['data_dir']}")
+
+# Special case where we are testing pre-generated metadata that is
+# not served from a HAPI server.
+if args['conf'] == 'CDAWeb-metadata':
+  catalog_all = os.path.join(opts['data_dir'], 'hapi', 'catalog-all.pkl')
+  if not os.path.exists(catalog_all):
+    raise FileNotFoundError(f"File not found: {catalog_all}")
+  opts['url2'] = catalog_all
+
 opts = pad_server_name(opts)
 
 if opts['mode'] == 'update':
-  report(f"Original server")
-report(f"{opts['s1']} = {opts['url1']}")
+  msg = "--mode = 'update'; Backward compatible differences will be treated as warnings."
+  logger.info(msg)
 
 if opts['mode'] == 'update':
-  report(f"\nUpdated server")
-report(f"{opts['s2']} = {opts['url2']}")
+  logger.info("Original server")
+logger.info(f"  {opts['s1']} = {opts['url1']}")
 
 if opts['mode'] == 'update':
-  report(f"\nmode='update'; Backward compatible differences will be treated as warnings.\n")
+  logger.info("Updated server")
+logger.info(f"  {opts['s2']} = {opts['url2']}")
 
-datasets_s0 = None
-if opts['s1'] == 'jf' and opts['s2'] == 'nl' and opts['compare_data'] is True:
-  # datasets_s0 has sample{Start,Stop} for all datasets. Needed for comparing data.
-  datasets_s0  = restructure(read_catalog_all(catalog_all))
-
-if opts['s1'] == 'bw':
-  datasets_s1o = read_catalog_all(catalog_all)
+datasets_s1o = get_all_metadata(opts['url1'], opts['s1'], expire_after=opts['s1_expire_after'])
+if args['conf'] == 'CDAWeb-metadata':
+  datasets_s2o = cdawmeta.util.read(opts['url2'])
 else:
-  datasets_s1o = get_all_metadata(opts['url1'], opts['s1'], expire_after=opts['s1_expire_after'])
+  datasets_s2o = get_all_metadata(opts['url2'], opts['s2'], expire_after=opts['s2_expire_after'])
 
-datasets_s2o = get_all_metadata(opts['url2'], opts['s2'], expire_after=opts['s2_expire_after'])
+logger.info("")
 
-report("")
-
-if False and {} == deepdiff.DeepDiff(datasets_s1o, datasets_s2o):
-  # Takes a long time for large catalogs.
-  report("All /info metadata is the same.\n")
-  if opts['compare_data'] is False:
-    report("Not checking data responses.")
-    exit(0)
+if False:
+  if {} == deepdiff.DeepDiff(datasets_s1o, datasets_s2o):
+    # Check to see if we abort metadata checks early.
+    # Takes a long time for large catalogs.
+    logger.info("All /info metadata is the same.")
+    if opts['compare_data'] is False:
+      exit(0)
 
 datasets_s1 = restructure(datasets_s1o)
 datasets_s2 = restructure(datasets_s2o)

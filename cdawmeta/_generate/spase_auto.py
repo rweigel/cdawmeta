@@ -21,7 +21,7 @@ def spase_auto(metadatum, logger):
       "xmlns": "http://www.spase-group.org/data/schema",
       "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
       "xsi:schemaLocation": "http://www.spase-group.org/data/schema http://www.spase-group.org/data/schema/spase-2_6_1.xsd",
-      "_Note": "Nodes prefixed with a _ were auto-generated. Values prefixed with an _ are not valid SPASE, but are needed for completenes.",
+      "_Note": "Nodes prefixed with a _ were auto-generated. Values prefixed with an x_ are not valid SPASE, but are needed for completenes.",
       "_Version": _Version,
       "_VersionRelease": _VersionRelease()[_Version]
       }

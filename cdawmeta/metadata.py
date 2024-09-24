@@ -63,8 +63,9 @@ def ids(id=None, skip=None, update=False):
 
   return _remove_skips(ids_reduced)
 
-def metadata(meta_type=None, id=None, skip=None, embed_data=False, write_catalog=False,
-             update=False, regen=False, max_workers=1, diffs=False, log_level='info'):
+def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
+             write_catalog=False, update=False, regen=False, max_workers=3,
+             diffs=False, log_level='info'):
   '''
   Options are documented in cli.py.
 
@@ -72,16 +73,45 @@ def metadata(meta_type=None, id=None, skip=None, embed_data=False, write_catalog
   metadata types.
   '''
 
+  logger = _logger(log_level=log_level)
+
+  meta_type_requested = meta_type
+  logger.info(f"Requested meta_type: {meta_type}")
+
+  if meta_type_requested is None:
+    meta_types = cdawmeta.dependencies['all']
+  else:
+    choices = cdawmeta.cli('metadata.py', defs=True)['meta-type']['choices']
+    if isinstance(meta_type, list):
+      meta_types = []
+      for _type in meta_type:
+        if _type not in choices:
+          raise ValueError(f"Error: {meta_type}: Not in {choices}")
+        deps = cdawmeta.dependencies[_type]
+        if deps is None:
+          meta_types.append(_type)
+          continue
+        for dep in deps:
+          if dep not in meta_types:
+            meta_types.append(dep)
+    else:
+      if meta_type_requested not in choices:
+        raise ValueError(f"Error: {meta_type}: Not in {choices}")
+      if meta_type in cdawmeta.dependencies:
+        if cdawmeta.dependencies[meta_type] is None:
+          meta_types = [meta_type]
+        else:
+          meta_types = [*cdawmeta.dependencies[meta_type], meta_type]
+      meta_type_requested = [meta_type_requested]
+
+  logger.info(f"Given requested meta_type = {meta_type_requested}, need to create: {meta_types}")
+
   if not update and not regen:
     # TODO: Read cached catalog files.
-    #       Need to account for fact that full catalog for orig_data was not
-    #       created and allxml is a single file and there is no info/ subdir.
     pass
 
   if update:
     regen = True
-
-  logger = _logger(log_level=log_level)
 
   if diffs and not update:
     logger.warning("diffs=True but update=False. No diffs can be computed.")
@@ -92,29 +122,7 @@ def metadata(meta_type=None, id=None, skip=None, embed_data=False, write_catalog
   allxml = _allxml(update=update)
   datasets_all = _datasets(allxml)
 
-  meta_type_requested = meta_type
-  logger.info(f"Requested meta_type: {meta_type}")
-
-  if meta_type_requested is None:
-    meta_types = cdawmeta._generate.dependencies['all']
-  else:
-    if isinstance(meta_type, list):
-      meta_types = []
-      for _type in meta_type:
-        deps = cdawmeta._generate.dependencies[_type]
-        if deps is None:
-          meta_types.append(_type)
-          continue
-        for dep in deps:
-          if dep not in meta_types:
-            meta_types.append(dep)
-    else:
-      meta_types = [*cdawmeta._generate.dependencies[meta_type], meta_type]
-      meta_type_requested = [meta_type_requested]
-
-  logger.info(f"Given requested meta_type, need to create: {meta_types}")
-
-  not_generated = ['master', 'orig_data', 'spase']
+  not_generated = ['master', 'orig_data', 'spase', 'spase_hpde_io']
 
   mloggers = {}
   for meta_type in meta_types:
@@ -122,15 +130,24 @@ def metadata(meta_type=None, id=None, skip=None, embed_data=False, write_catalog
       continue
     mloggers[meta_type] = cdawmeta.logger(meta_type, log_level=log_level)
 
+  if update and 'spase_hpde_io' in meta_types:
+    logger.info("Finding CDAWeb SPASE/Numerical data records in hpde.io repository.")
+    # This case is special because we need to determine the mapping from CDAWeb
+    # dataset id to SPASE record.
+    _spase_hpde_io(update=True, diffs=diffs)
+
   def get_one(dataset, mloggers):
 
     if 'master' in meta_types or 'spase' in meta_types:
-      # 'spase' needs master to get spase_DatasetResourceID
+      # 'spase' needs master to get spase_DatasetResourceID, so this must be before.
       dataset['master'] = _master(dataset, update=update, diffs=diffs)
     if 'orig_data' in meta_types:
       dataset['orig_data'] = _orig_data(dataset, update=update, diffs=diffs)
     if 'spase' in meta_types:
       dataset['spase'] = _spase(dataset, update=update, diffs=diffs)
+    if 'spase_hpde_io' in meta_types:
+      # Here we never update b/c update is done in earlier call to _spase_hpde_io
+      dataset['spase_hpde_io'] = _spase_hpde_io(dataset['id'], update=False)
 
     for meta_type in meta_types:
       if meta_type in not_generated:
@@ -138,13 +155,15 @@ def metadata(meta_type=None, id=None, skip=None, embed_data=False, write_catalog
       logger.info("Generating: " + meta_type)
       dataset[meta_type] = cdawmeta.generate(dataset, meta_type, mloggers[meta_type], update=update, regen=regen)
 
+    logger.debug("Removing metadata that was used to generate requested metadata.")
     for meta_type in meta_types:
       if meta_type_requested is not None and meta_type not in meta_type_requested:
-        logger.info(f"Removing {meta_type} from metadata")
-        del dataset[meta_type]
-        continue
+        if meta_type in dataset:
+          logger.debug(f"  Removing {meta_type} from metadata")
+          del dataset[meta_type]
+          continue
       if not embed_data and 'data' in dataset[meta_type]:
-        logger.info(f"Removing data from {meta_type}")
+        logger.debug(f"  embed_data=False; removing 'data' node from {meta_type}")
         del dataset[meta_type]['data']
 
   if max_workers == 1 or len(dsids) == 1:
@@ -284,6 +303,95 @@ def _spase(dataset, update=True, diffs=False):
   spase = _fetch(url, id, 'spase', timeout=timeout, diffs=diffs, update=update)
 
   return spase
+
+def _spase_hpde_io(id=None, update=True, diffs=False):
+
+  out_dir = os.path.join(cdawmeta.DATA_DIR, 'spase_hpde_io', 'info')
+  if id is not None:
+    pkl_file = os.path.join(out_dir, f"{id}.pkl")
+    if not update and os.path.exists(pkl_file):
+      return cdawmeta.util.read(pkl_file, logger=logger)
+    else:
+      logger.warn(f"{id}: No SPASE record in hpde.io repository.")
+      return
+
+  import glob
+  pattern = "../hpde.io/**/NumericalData/**/*.json"
+  logger.info(f"Getting list of files that match '{pattern}'")
+  files = glob.glob(pattern, recursive=True)
+  logger.info(f"{len(files)} NumericalData SPASE records before removing Deprecated")
+  for file in files:
+    if 'Deprecated' in file:
+      del files[files.index(file)]
+  logger.info(f"{len(files)} NumericalData SPASE records after removing Deprecated")
+
+  for file in files:
+
+    data = cdawmeta.util.read(file)
+
+    ResourceID = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'ResourceID'])
+    if ResourceID is None:
+      logger.error(f"  Error - No ResourceID in {file}")
+      continue
+
+    hpde_url = f'{ResourceID.replace("spase://", "http://hpde.io/")}'
+    logger.info(f'\n\n{hpde_url}.json')
+
+    # Flattens AccessInformation so is a list of objects, each with one AccessURL.
+    data = cdawmeta.restructure.spase(data, logger=logger)
+    AccessInformation = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'AccessInformation'])
+
+    if AccessInformation is None:
+      logger.error(f"  Error - No AccessInformation in {file}")
+      continue
+
+    s = "s" if len(AccessInformation) > 1 else ""
+    logger.info(f"  {len(AccessInformation)} Repository object{s} in AccessInformation")
+
+    found = False
+    ProductKeyCDAWeb = None
+    for ridx, Repository in enumerate(AccessInformation):
+      AccessURL = Repository['AccessURL']
+      if AccessURL is not None:
+        Name = AccessURL.get('Name', None)
+        if Name is None:
+          logger.warning(f"  Warning - No Name in {AccessURL}")
+
+        URL = AccessURL.get('URL', None)
+        if URL is None:
+          logger.error(f"  Error - No URL in {AccessURL} for {hpde_url}")
+          continue
+
+        logger.info(f"    {ridx+1}. {Name}: {URL}")
+
+        if Name is None or URL is None:
+          continue
+
+        if Name == 'CDAWeb':
+          if found:
+            logger.error(f"      Error - Duplicate AccessURL/Name = 'CDAWeb' in {hpde_url}")
+          else:
+            if 'ProductKey' in Repository['AccessURL']:
+              found = True
+              ProductKeyCDAWeb = Repository['AccessURL']['ProductKey']
+              if ProductKeyCDAWeb.strip() == '':
+                logger.error("      Error - Empty ProductKey")
+              else:
+                json_file = os.path.join(out_dir, f"{ProductKeyCDAWeb}.json")
+                pkl_file = os.path.join(out_dir, f"{ProductKeyCDAWeb}.pkl")
+                data = {
+                        'id': ProductKeyCDAWeb,
+                        'url': hpde_url,
+                        'data-file': json_file,
+                        'data': data
+                      }
+                cdawmeta.util.write(json_file, data, logger=logger)
+                cdawmeta.util.write(pkl_file, data, logger=logger)
+
+    if ProductKeyCDAWeb is None:
+      logger.info("  x Did not find CDAWeb ProductKey in any Repository")
+    else:
+      logger.info(f"  + Found CDAWeb ProductKey: {ProductKeyCDAWeb}")
 
 def _orig_data(dataset, update=True, diffs=False):
 

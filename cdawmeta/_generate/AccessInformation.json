@@ -30,7 +30,7 @@
     "Availability": "Online",
     "AccessRights": "Open",
     "Acknowledgement": "SPDF/CDAWeb",
-    "Format": ["CDF", "CSV", "GIF", "NetCDF", "PNG", "PS", "PDF", "_Script.IDL", "_Script.Python", "Text.ASCII", "_WAV", "XML"],
+    "Format": ["CDF", "CSV", "GIF", "NetCDF", "PNG", "PS", "PDF", "x_Script.IDL", "x_Script.Python", "Text.ASCII", "x_WAV", "XML"],
     "AccessURL": {
         "Name": "CDAWeb Web Service",
         "URL": "https://cdaweb.gsfc.nasa.gov/WebServices/",
@@ -43,7 +43,7 @@
     "Availability": "Online",
     "AccessRights": "Open",
     "Acknowledgement": "SPDF/CDAWeb",
-    "Format": ["CDF", "GIF", "PDF", "Text.ASCII", "_WAV"],
+    "Format": ["CDF", "GIF", "PDF", "Text.ASCII", "x_WAV"],
     "AccessURL": {
         "Name": "CDAWeb Web Service user interface",
         "URL": "https://cdaweb.gsfc.nasa.gov/cgi-bin/eval2.cgi?index=sp_phys&dataset={dsid}",
@@ -57,7 +57,7 @@
     "Availability": "Online",
     "AccessRights": "Open",
     "Acknowledgement": "SPDF/CDAWeb",
-    "Format": ["_Script.IDL", "_Script.Python"],
+    "Format": ["x_Script.IDL", "x_Script.Python"],
     "AccessURL": {
         "Name": "CDAWeb Python Script",
         "URL": "https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/{dsid}/clientLibraryExample/",

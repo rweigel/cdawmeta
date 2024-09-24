@@ -16,7 +16,7 @@ import json
 import requests_cache
 
 base_dir = os.path.dirname(__file__)
-out_file = os.path.join(base_dir, '..', 'data', 'hapi', f'catalog-all.{initial}.json')
+out_file = os.path.join(base_dir, '..', 'data', 'hapi', f'catalog-all.{initial}')
 os.makedirs(os.path.dirname(out_file), exist_ok=True)
 
 def CachedSession():
@@ -78,6 +78,6 @@ for idx, dataset in enumerate(datasets):
 
 datasets = [i for i in datasets if i is not None]
 
-with open(out_file, 'w', encoding='utf-8') as f:
-  json.dump(datasets, f, indent=2)
-print(f'Wrote: {out_file}')
+import cdawmeta
+cdawmeta.util.write(f'{out_file}.pkl', datasets)
+cdawmeta.util.write(f'{out_file}.json', datasets)
