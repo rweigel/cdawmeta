@@ -75,6 +75,8 @@ python metadata.py --id AC_OR_SSC --meta-type soso
 Create and display proof-of-concept auto-generated SPASE; the output of this command can be viewed at
 [spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json). See the `_Note` for context.
 ```
+mkdir -p ./data;
+git clone https://github.com/rweigel/cdawmeta-additions ./data
 python metadata.py --id AC_OR_SSC --meta-type spase_auto
 ```
 
@@ -86,6 +88,13 @@ python query.py --id '^A' \
  --mongod-binary ~/mongodb/bin/mongod --port 27018
 # 45 documents found
 # 40 documents match query
+```
+
+Create report based on content of [hpde.io repository](https://github.com/hpde/hpde.io)
+```
+mkdir -p ./data
+git clone --depth 1 https://github.com/hpde/hpde.io ./data
+python report.py --report-name hpde_io
 ```
 
 # CDAWeb
@@ -260,9 +269,15 @@ would be allowed, using, for example [MongoDB](https://mongodb.com/), [eXist-db]
 >
 >$ curl -s -H "Accept: application/json" "https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets?idPattern=AC_H0_MFI" |jq -jr '.DatasetDescription[]|(.Id,", ",.SpaseResourceId,"\n")'
 
-## 9 Inconsistent `Region`
+## 9 Inconsistent `ObservedRegion`
 
-Each CDAWeb dataset in the form `a_b_c` should have the same `Region` as a dataset that starts with `a_y_z`. This is frequently not the case; see the error messages in [hpde_io.log](https://github.com/rweigel/cdawmeta-additions/blob/main/reports/hpde_io.log).
+Each CDAWeb dataset in the form `a_b_c` should have the same `Region` as a dataset that starts with `a_y_z` (unless an instrument was not active while the spacecraft was in certain regions). This is frequently not the case; see the error messages in [hpde_io.log](https://github.com/rweigel/cdawmeta-additions/blob/main/reports/hpde_io.log).
+
+For example
+```
+VOYAGER1_48S_MAG-VIM: ['Heliosphere.Outer', 'Heliosphere.Heliosheath']
+VOYAGER2_PLS_COMPOSITION: ['Jupiter.Magnetosphere']
+```
 
 ## 10 Conclusion
 
@@ -288,6 +303,8 @@ CDAWeb SPASE `NumericalData` records have been under development since 2009 and 
 
 After encountering the issues described in parts 1.-3. of this section, we realized that solving all of the problems could be achieved with some additions to the existing CDAWeb to HAPI metadata code and the the creation of a table that contains metadata that does not exist, and is not desired to be in, CDAWeb metadata.
 
-We suggest that CDAWeb SPASE metadata should be created by this automated process, which requires primarily existing CDAWeb metadata information and some additional metadata that can be stored in version controlled tables. These tables are are described and listed in the [cdawmeta-addtions](https://github.com/rweigel/cdawmeta-addtions) repository. This table-based approach would have prevented errors such as those described in the Units and Region subsections.
+We suggest that CDAWeb SPASE metadata should be created by this automated process, which requires primarily existing CDAWeb metadata information and some additional metadata that can be stored in version controlled tables. Thus information is described in the [cdawmeta-addtions](https://github.com/rweigel/cdawmeta-addtions) repository. This approach would have prevented errors such as those described in the Units and Region subsections.
+
+Having complete of CDAWeb SPASE `NumericalData` records requires completing the `DOI` and `ResourceID.json` files.
 
 Note that not all existing content in `hpde.io` is yet used by the automated process. For example, some SPASE records have additional details about CDAWeb variables that the automated process does not use. For example, `Qualifier`, `RenderingHints`, `CoordinateSystem`, `SupportQuantity`, and `Particle`, `Field`, etc. This could also be addressed by a table that has this information. However, there should be discussion of this; there are over ~100,000 CDAWeb variables and the search use case for much of this information is not clear; not having this information should not prevent the 15-year effort to create correct and up-to-date SPASE `NumericalData` records. That is, if only 10% of SPASE records have a given attribute, a search on it will not be useful. Also, some of the not-yet used metadata is not useful for search, such as `Valid{Min,Max}`, `FillValue`, and `RenderingHints`. This information would be useful if the SPASE record was being used for automated extraction and plotting. However, much more information is needed to enable automated extraction and even then (as we found with attempts to use SPASE for HAPI), given the issues described above, this may not be possible or too time consuming. If it were possible, an application that uses it and could test the results should be identified first. As noted above, metadata that is not used by an application is likely to have problems.

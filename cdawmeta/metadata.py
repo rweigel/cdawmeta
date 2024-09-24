@@ -316,7 +316,14 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
       return
 
   import glob
-  pattern = "../hpde.io/**/NumericalData/**/*.json"
+  if not os.path.exits('data/hpde.io'):
+    import subprocess
+    cmd = ['git', 'clone', '--depth 1', 'https://github.com/hpde/hpde.io']
+    logger.info(f'Executing: {" ".join(cmd)}')
+    result = subprocess.run(cmd, stdout=subprocess.PIPE)
+    logger.info(result.stdout)
+
+  pattern = "data/hpde.io/**/NumericalData/**/*.json"
   logger.info(f"Getting list of files that match '{pattern}'")
   files = glob.glob(pattern, recursive=True)
   logger.info(f"{len(files)} NumericalData SPASE records before removing Deprecated")

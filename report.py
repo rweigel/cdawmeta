@@ -231,6 +231,11 @@ def units(report_name, dir_name, clargs):
 
 def hpde_io(report_name, dir_name, clargs):
 
+  repo = os.path.join(cdawmeta.DATA_DIR, 'hpde.io')
+  if not os.path.exists(repo):
+    logger.error(f"Need to git clone --depth 1 https://github.com/hpde/hpde.io in {cdawmeta.DATA_DIR}")
+    exit(1)
+
   dir_name = os.path.join(dir_name, "..")
 
   meta_type = 'spase_hpde_io'
@@ -245,6 +250,7 @@ def hpde_io(report_name, dir_name, clargs):
   }
 
   n_found = attributes.copy()
+  ObservedRegion = {}
   for attribute in attributes.keys():
     n_spase = 0
     n_found[attribute] = 0
@@ -264,23 +270,26 @@ def hpde_io(report_name, dir_name, clargs):
 
       attributes[attribute][dsid_spase] = None
       value = cdawmeta.util.get_path(spase, path)
+
       if value is not None:
-        if attribute == 'ObservedRegion':
+        if attribute != 'ObservedRegion':
+          attributes[attribute][dsid_spase] = value
+        else:
           if not isinstance(value, list):
             value = [value]
           sc_id = dsid_spase.split('_')[0]
-          if sc_id not in attributes[attribute]:
-            attributes[attribute][sc_id] = value
-          else:
-            if attributes[attribute][sc_id] != value:
-              logger.error(f"  {dsid_spase}: Region for this ID differs from first found value with id = {sc_id}")
-              logger.error(f"  {dsid_spase}: First value = {attributes[attribute][sc_id]}")
-              logger.error(f"  {dsid_spase}: This value  = {value}")
+          if sc_id not in ObservedRegion:
+            ObservedRegion[sc_id] = value
+            logger.info(f"  {dsid_spase}: Found first ObservedRegion for s/c ID = {sc_id}: {value}")
+          elif sorted(ObservedRegion[sc_id]) != sorted(value):
+              logger.error(f"  {dsid_spase}: ObservedRegion for this ID differs from first found value s/c ID = {sc_id}")
+              logger.error(f"  {dsid_spase}: First value = {sorted(ObservedRegion[sc_id])}")
+              logger.error(f"  {dsid_spase}: This value  = {sorted(value)}")
               logger.error("  Combining values.")
-              attributes[attribute][sc_id] = list(set(attributes[attribute][sc_id]) | set(value))
-        else:
-          attributes[attribute][dsid_spase] = value
+              ObservedRegion[sc_id] = list(set(ObservedRegion[sc_id]) | set(value))
         n_found[attribute] += 1
+
+  attributes['ObservedRegion'] = ObservedRegion
 
   msg = f"Number of CDAWeb datasets:  {len(dsids)}"
   logger.info(msg)
@@ -293,7 +302,7 @@ def hpde_io(report_name, dir_name, clargs):
     logger.info(f"  Writing {fname}")
     cdawmeta.util.write(fname, attributes[key])
 
-  ResourceIDs_file = os.path.join(dir_name, "ResourceIDs.json")
+  ResourceIDs_file = os.path.join(dir_name, "ResourceID.json")
 
   dsids_spase = list(meta.keys())
   ResourceIDs = {}
@@ -307,7 +316,7 @@ def hpde_io(report_name, dir_name, clargs):
     #logger.info(f"  {dsid}: {ResourceID}")
     n_found += 1
 
-  logger.info(f"  Writing {ResourceIDs_file}")
+  logger.info(f"Writing {ResourceIDs_file}")
   cdawmeta.util.write(ResourceIDs_file, ResourceIDs)
 
 
