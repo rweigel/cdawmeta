@@ -246,7 +246,8 @@ def hpde_io(report_name, dir_name, clargs):
     'ObservedRegion': {},
     'InstrumentID': {},
     'MeasurementType': {},
-    'DOI': {}
+    'DOI': {},
+    'InformationURL': {},
   }
 
   n_found = attributes.copy()
@@ -256,7 +257,7 @@ def hpde_io(report_name, dir_name, clargs):
     n_found[attribute] = 0
 
     path = ['Spase', 'NumericalData']
-    if attribute == 'DOI':
+    if attribute in ['DOI', 'InformationURL']:
       path = [*path, 'ResourceHeader', attribute]
     else:
       path = [*path, attribute]
@@ -290,6 +291,29 @@ def hpde_io(report_name, dir_name, clargs):
         n_found[attribute] += 1
 
   attributes['ObservedRegion'] = ObservedRegion
+
+  URLs = {}
+  for dsid in attributes['InformationURL'].keys():
+    InformationURLs = attributes['InformationURL'][dsid]
+    if InformationURLs is None:
+      continue
+    if not isinstance(InformationURLs, list):
+      InformationURLs = [InformationURLs]
+    for InformationURL in InformationURLs:
+      if InformationURL['URL'] not in URLs:
+        if dsid.startswith("BAR_"):
+          URLs[InformationURL['URL']] = {"InformationURL": InformationURL, "ids": ["^BAR"]}
+        else:
+          URLs[InformationURL['URL']] = {"InformationURL": InformationURL, "ids": [dsid]}
+      else:
+        if not dsid.startswith("BAR_"):
+          URLs[InformationURL['URL']]["ids"].append(dsid)
+
+  msg = f"Number of unique URLs in InformationURL: {len(URLs)}"
+  fname = f'{dir_name}/InformationURL.json'
+  logger.info(f"  Writing {fname}")
+  cdawmeta.util.write(fname, URLs)
+  del attributes['InformationURL']
 
   msg = f"Number of CDAWeb datasets:  {len(dsids)}"
   logger.info(msg)

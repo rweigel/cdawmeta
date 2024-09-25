@@ -12,7 +12,9 @@ install_requires = [
     "deepdiff",
     "cdasws",
     "cdflib",
-    "hapiclient"
+    "hapiclient",
+    "pymongo",
+    "timedelta_isoformat"
 ]
 
 setup(

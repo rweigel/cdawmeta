@@ -1,5 +1,8 @@
 import re
 
+import datetime
+import timedelta_isoformat
+
 import cdawmeta
 
 logger = None
@@ -138,6 +141,7 @@ def _info_head(metadatum, depend_0_name):
       'cadence': None,
       'x_cadence_fraction': None,
       'x_cadence_note': None,
+      'maxRequestDuration': 'P10D',
       'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{id[0]}.html#{id}',
       'contact': contact
   }
@@ -155,7 +159,7 @@ def _info_head(metadatum, depend_0_name):
   if 'cadence' in metadatum:
     if 'error' in metadatum['cadence']:
       #no_cadence_msg = f"  Error: {id}: No cadence information available due to: {metadatum['cadence']['error']}"
-      no_cadence_msg = f"  Error: No cadence information available"
+      no_cadence_msg = "  Error: No cadence information available"
     else:
       counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
       note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'note'])
@@ -173,6 +177,31 @@ def _info_head(metadatum, depend_0_name):
     del info['cadence']
     del info['x_cadence_fraction']
     del info['x_cadence_note']
+
+  # sample{Start,Stop}Date is based on time range of 1 file
+  # If sample{Start,Stop}Date available max duration is span of n_files files
+  n_files = 50
+  # If sample{Start,Stop}Date not available max duration is 1000*cadence
+  n_cadence = 1000
+  if 'sampleStartDate' in info and 'sampleStopDate' in info:
+    try:
+      stop = datetime.datetime.fromisoformat(info['sampleStopDate'][0:-1])
+      start = datetime.datetime.fromisoformat(info['sampleStartDate'][0:-1])
+      delta = stop - start
+      td = timedelta_isoformat.timedelta(milliseconds=n_files*1000*delta.total_seconds())
+      info['maxRequestDuration'] = td.isoformat()
+      logger.info(f"  maxRequestDuration = {td.isoformat()} (based on sample{{Start,Stop}}Date)")
+    except Exception as e:
+      cdawmeta.error('hapi', id, None, "  Calculation of maxRequestDuration from sample{{Start,Stop}}Date failed.", logger)
+  elif 'cadence' in info:
+    counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
+    if counts is not None:
+      try:
+        td = timedelta_isoformat.timedelta(milliseconds=n_cadence*counts[0]['duration_ms'])
+        info['maxRequestDuration'] = td.isoformat()
+        logger.info(f"  maxRequestDuration = {td.isoformat()} (based on cadence)")
+      except Exception as e:
+        cdawmeta.error('hapi', id, None, "  Calculation of maxRequestDuration from cadence failed.", logger)
 
   return info
 

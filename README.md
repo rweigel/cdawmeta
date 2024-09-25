@@ -49,13 +49,13 @@ cd cdawmeta;
 pip install -e .
 ```
 
-In the following, use `--update` to update the input metadata (source data changes on the order of days).
+In the following, use `--update` to update the input metadata (source data changes on the order of days, typically in the mornings Eastern time on weekdays).
 
-See `python metadata.py --help` for more options, including generation by an `id` regular expression.
+See `python metadata.py --help` for more options, including generation of metadata for only `id`s that match a regular expression.
 
 **Examples**
 
-Create and display all metadata types (see `python metadata.py --help` for a list)
+Create and display all metadata types for dataset `AC_OR_SSC`
 ```
 python metadata.py --id AC_OR_SSC
 ```
@@ -73,7 +73,7 @@ python metadata.py --id AC_OR_SSC --meta-type soso
 ```
 
 Create and display proof-of-concept auto-generated SPASE; the output of this command can be viewed at
-[spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json). See the `_Note` for context.
+[spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json). See the [`cdawmeta` repository](https://github.com/rweigel/cdawmeta-additions) for metadata used that is not available in Master CDFs and/or `all.xml`.
 ```
 mkdir -p ./data;
 git clone https://github.com/rweigel/cdawmeta-additions ./data
@@ -90,7 +90,7 @@ python query.py --id '^A' \
 # 40 documents match query
 ```
 
-Create report based on content of [hpde.io repository](https://github.com/hpde/hpde.io)
+Create report based on content of the [hpde.io repository](https://github.com/hpde/hpde.io).
 ```
 mkdir -p ./data
 git clone --depth 1 https://github.com/hpde/hpde.io ./data
@@ -279,13 +279,15 @@ VOYAGER1_48S_MAG-VIM: ['Heliosphere.Outer', 'Heliosphere.Heliosheath']
 VOYAGER2_PLS_COMPOSITION: ['Jupiter.Magnetosphere']
 ```
 
-## 10 Conclusion
+## 10 Inconsistent `InformationURL`s
+
+[InformationURL.json](https://github.com/rweigel/cdawmeta-additions/blob/main/InformationURL.json) contains keys of a `URL` in an `InformationURL` node and an array with all CDAWeb datasets it is associated with. There are many instances where a URL should apply to additional datasets. For example, all dataset IDs that end in `_SSC`, `_DEF`, and `_POSITION` should be associated with https://sscweb.gsfc.nasa.gov. Also, the Master CDFs contain information URLs that do not appear in CDAWeb SPASE NumericalData records. This represents an unnecessary loss of information.
+
+## 11 Conclusion
 
 Although HAPI has an `additionalMetadata` attribute, we are reluctant to reference existing SPASE records due to these issues (primarily 2., 3., and 5.). We conclude that it makes more sense to link to less extensive but correct metadata (for example, to CDF Master metadata or documentation on the CDAWeb website<sup>*</sup>, than to more extensive SPASE metadata that is confusing (see 4.) or incomplete and in some cases incorrect (see items 2., 3., and 5.).
 
-<sup>*</sup> Note that CDAWeb links to incorrect SPASE records.
-
-However, CDAWeb includes links to SPASE records that
+<sup>*</sup> This is not quite possible - CDAWeb includes links to SPASE records that
 
 * are wrong. For example, [NotesA.html#AC_H2_SIS](https://cdaweb.gsfc.nasa.gov/misc/NotesA.html#AC_H2_SIS) links to [ACE/ULEIS/Ion/Fluxes/L2/PT1H.json](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json) which, as discussed earlier, has wrong units for some variables. SPASE records with missing parameters are also linked to.
 * are missing information. For example, 
@@ -303,8 +305,6 @@ CDAWeb SPASE `NumericalData` records have been under development since 2009 and 
 
 After encountering the issues described in parts 1.-3. of this section, we realized that solving all of the problems could be achieved with some additions to the existing CDAWeb to HAPI metadata code and the the creation of a table that contains metadata that does not exist, and is not desired to be in, CDAWeb metadata.
 
-We suggest that CDAWeb SPASE metadata should be created by this automated process, which requires primarily existing CDAWeb metadata information and some additional metadata that can be stored in version controlled tables. Thus information is described in the [cdawmeta-addtions](https://github.com/rweigel/cdawmeta-addtions) repository. This approach would have prevented errors such as those described in the Units and Region subsections.
-
-Having complete of CDAWeb SPASE `NumericalData` records requires completing the `DOI` and `ResourceID.json` files.
+We suggest that CDAWeb SPASE metadata should be created by this automated process, which requires primarily existing CDAWeb metadata information and some additional metadata that can be stored in a few version controlled. Thus information is described in the [cdawmeta-additions](https://github.com/rweigel/cdawmeta-addtions) repository. This approach would have prevented the errors and inconsistencies described above and further detailed in the [cdawmeta-additions README](https://github.com/rweigel/cdawmeta-addtions)
 
 Note that not all existing content in `hpde.io` is yet used by the automated process. For example, some SPASE records have additional details about CDAWeb variables that the automated process does not use. For example, `Qualifier`, `RenderingHints`, `CoordinateSystem`, `SupportQuantity`, and `Particle`, `Field`, etc. This could also be addressed by a table that has this information. However, there should be discussion of this; there are over ~100,000 CDAWeb variables and the search use case for much of this information is not clear; not having this information should not prevent the 15-year effort to create correct and up-to-date SPASE `NumericalData` records. That is, if only 10% of SPASE records have a given attribute, a search on it will not be useful. Also, some of the not-yet used metadata is not useful for search, such as `Valid{Min,Max}`, `FillValue`, and `RenderingHints`. This information would be useful if the SPASE record was being used for automated extraction and plotting. However, much more information is needed to enable automated extraction and even then (as we found with attempts to use SPASE for HAPI), given the issues described above, this may not be possible or too time consuming. If it were possible, an application that uses it and could test the results should be identified first. As noted above, metadata that is not used by an application is likely to have problems.
