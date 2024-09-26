@@ -223,6 +223,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     logger.info("    " + msg)
     return None
 
+  x_description = _description(dsid, depend_0_name, all_variables[depend_0_name], x=None, print_info=print_info)
   parameters = [
                   {
                     'name': 'Time',
@@ -230,7 +231,9 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
                     'units': 'UTC',
                     'length': DEPEND_0_length,
                     'fill': None,
-                    'x_cdf_NAME': depend_0_name
+                    'x_description': x_description,
+                    'x_cdf_NAME': depend_0_name,
+                    'x_cdf_DataType': DEPEND_0_DataType,
                   }
                 ]
 
@@ -289,7 +292,11 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       if NumElements is not None:
         length = int(NumElements)
 
-    parameter = {"name": name, "type": type}
+    parameter = {
+      "name": name,
+      "type": type,
+      "x_cdf_DataType": variable['VarDescription']['DataType']
+    }
 
     parameter['description'] = _description(dsid, name, variable, print_info=print_info)
 
@@ -560,7 +567,7 @@ def _split_variables(id, variables):
       cdawmeta.error('hapi', id, name, msg, logger)
       continue
 
-    if 'VAR_TYPE' not in variable_meta['VarAttributes']:
+    if 'VAR_TYPE' not in variable_meta['VarAttributes'] and cdawmeta.CONFIG['hapi']['log_missing_var_type']:
       msg = f"  Error: ISTP[NoVAR_TYPE]: Dropping variable '{name}' b/c it has no has no VAR_TYPE"
       cdawmeta.error('hapi', id, name, msg, logger)
       continue
@@ -713,7 +720,7 @@ def CDFDataType2HAPItype(cdf_type):
 
   return None
 
-# Used here, soso.py, and spase_auto.py
+# Used here and in soso.py
 def flatten_parameters(hapi):
 
   if isinstance(hapi, list):

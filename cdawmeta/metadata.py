@@ -1,7 +1,5 @@
 import os
 import re
-import shutil
-import deepdiff
 
 import cdawmeta
 
@@ -64,7 +62,7 @@ def ids(id=None, skip=None, update=False):
   return _remove_skips(ids_reduced)
 
 def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
-             write_catalog=False, update=False, regen=False, max_workers=3,
+             write_catalog=False, update=False, regen=False, regen_cadence=False, max_workers=3,
              diffs=False, log_level='info'):
   '''
   Options are documented in cli.py.
@@ -152,18 +150,22 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
     for meta_type in meta_types:
       if meta_type in not_generated:
         continue
-      logger.info("Generating: " + meta_type)
-      dataset[meta_type] = cdawmeta.generate(dataset, meta_type, mloggers[meta_type], update=update, regen=regen)
+      logger.info(f"Generating: {meta_type} for {dataset['id']}")
+      regen_ = regen
+      if meta_type == 'cadence':
+        # Cadence takes much longer to generate, so given as special option.
+        regen_ = regen_cadence
+      dataset[meta_type] = cdawmeta.generate(dataset, meta_type, mloggers[meta_type], update=update, regen=regen_)
 
     logger.debug("Removing metadata that was used to generate requested metadata.")
     for meta_type in meta_types:
       if meta_type_requested is not None and meta_type not in meta_type_requested:
         if meta_type in dataset:
-          logger.debug(f"  Removing {meta_type} from metadata")
+          logger.debug(f"  Removing {meta_type} from {dataset['id']} metadata")
           del dataset[meta_type]
           continue
       if not embed_data and 'data' in dataset[meta_type]:
-        logger.debug(f"  embed_data=False; removing 'data' node from {meta_type}")
+        logger.debug(f"  embed_data=False; removing 'data' node from {meta_type} for {dataset['id']}")
         del dataset[meta_type]['data']
 
   if max_workers == 1 or len(dsids) == 1:
@@ -254,7 +256,7 @@ def _allxml(update=False, diffs=False):
     # Use curried result (So update only updates all.xml once per execution of main program)
     return _allxml.allxml
 
-  allurl = cdawmeta.CONFIG['metadata']['allurl']
+  allurl = cdawmeta.CONFIG['urls']['all.xml']
   allxml = _fetch(allurl, 'all', 'all', timeout=timeout, update=update, diffs=diffs)
 
   # Curry result
@@ -316,7 +318,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
       return
 
   import glob
-  if not os.path.exits('data/hpde.io'):
+  if not os.path.exists('data/hpde.io'):
     import subprocess
     cmd = ['git', 'clone', '--depth 1', 'https://github.com/hpde/hpde.io']
     logger.info(f'Executing: {" ".join(cmd)}')
@@ -334,6 +336,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
 
   for file in files:
 
+    logger.info(f'  Reading {file}')
     data = cdawmeta.util.read(file)
 
     ResourceID = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'ResourceID'])
@@ -342,7 +345,6 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
       continue
 
     hpde_url = f'{ResourceID.replace("spase://", "http://hpde.io/")}'
-    logger.info(f'\n\n{hpde_url}.json')
 
     # Flattens AccessInformation so is a list of objects, each with one AccessURL.
     data = cdawmeta.restructure.spase(data, logger=logger)
@@ -353,7 +355,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
       continue
 
     s = "s" if len(AccessInformation) > 1 else ""
-    logger.info(f"  {len(AccessInformation)} Repository object{s} in AccessInformation")
+    logger.debug(f"  {len(AccessInformation)} Repository object{s} in AccessInformation")
 
     found = False
     ProductKeyCDAWeb = None
@@ -369,7 +371,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
           logger.error(f"  Error - No URL in {AccessURL} for {hpde_url}")
           continue
 
-        logger.info(f"    {ridx+1}. {Name}: {URL}")
+        logger.debug(f"    {ridx+1}. {Name}: {URL}")
 
         if Name is None or URL is None:
           continue
@@ -392,19 +394,20 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
                         'data-file': json_file,
                         'data': data
                       }
-                cdawmeta.util.write(json_file, data, logger=logger)
-                cdawmeta.util.write(pkl_file, data, logger=logger)
+                logger.debug(f"      Writing {json_file.replace('.json', '')}.{{json,pkl}}")
+                cdawmeta.util.write(json_file, data)
+                cdawmeta.util.write(pkl_file, data)
 
     if ProductKeyCDAWeb is None:
-      logger.info("  x Did not find CDAWeb ProductKey in any Repository")
+      logger.debug("  x Did not find CDAWeb ProductKey in any Repository")
     else:
-      logger.info(f"  + Found CDAWeb ProductKey: {ProductKeyCDAWeb}")
+      logger.debug(f"  + Found CDAWeb ProductKey: {ProductKeyCDAWeb}")
 
 def _orig_data(dataset, update=True, diffs=False):
 
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['orig_data']
 
-  wsbase = cdawmeta.CONFIG['metadata']['wsbase']
+  wsbase = cdawmeta.CONFIG['urls']['cdasr']
   start = dataset['allxml']['@timerange_start'].replace(" ", "T").replace("-","").replace(":","") + "Z"
   stop = dataset['allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z"
   url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop

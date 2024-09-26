@@ -6,7 +6,7 @@ import cdawmeta
 logger = None
 
 def table(id=None, table_name=None, embed_data=False, skip=None,
-          update=False, regen=False, max_workers=3, log_level='info'):
+          update=False, regen=False, regen_cadence=False, max_workers=3, log_level='info'):
 
   global logger
   if logger is None:

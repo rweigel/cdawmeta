@@ -49,9 +49,15 @@ def cli(script, defs=False):
     },
     "regen": {
       "action": "store_true",
-      "help": "Regenerate computed metadata. Use for testing computed metadata code changes.",
+      "help": "Regenerate computed metadata except cadence. Use for testing computed metadata code changes.",
       "default": False,
       "_used_by_all": True
+    },
+    "regen-cadence": {
+      "action": "store_true",
+      "help": "Regenerate computed cadence.",
+      "default": False,
+      "_used_by_all": ['metadata.py']
     },
     "log-level": {
       "help": "Log level",

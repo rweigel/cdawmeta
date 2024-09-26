@@ -9,14 +9,8 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
   id = metadatum['id']
   file_name = os.path.join(cdawmeta.DATA_DIR, gen_name, sub_dir, f'{id}.pkl')
 
-  # Special case for cadence is because generation is slow; it requires reading
-  # data file. Will need a special keyword such as regen_cadence=True to
-  # pass to generate() to force regeneration. Perhaps an option "retry"
-  # that will retry a failed request.
-  if (not update and not regen):# or gen_name == 'cadence':
+  if not update and not regen:
     if id is not None and not id.startswith('^'):
-      # This will not catch case when there is and id@0, id@1, etc. Need to
-      # read all files that match pattern id@*. and loop over.
       if os.path.exists(file_name):
         msg = "Using cache because update = regen = False or gen_name = "
         msg += "'cadence' and found cached file."
@@ -76,8 +70,8 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
     file_name = os.path.join(cdawmeta.DATA_DIR, gen_name, sub_dir, f"{id}.pkl")
     cdawmeta.util.write(file_name, dataset, logger=logger)
 
-    # JSON file not used internally, but useful for debugging
-    file_name = os.path.join(cdawmeta.DATA_DIR, gen_name, sub_dir, f'{id}.json')
+    # JSON file not used internally, but useful for visual debugging
+    file_name = file_name.replace('.pkl', '.json')
     data_file.append(file_name)
     cdawmeta.util.write(file_name, dataset, logger=logger)
 

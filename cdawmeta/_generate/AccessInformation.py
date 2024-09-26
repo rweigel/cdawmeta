@@ -6,12 +6,14 @@ dependencies = ['orig_data', 'hapi']
 
 def AccessInformation(metadatum, logger):
 
-  repo = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-additions')
-  if not os.path.exists(repo):
-    logger.error(f"Need to clone https://github.io/rweigel/cdawmeta-additions in {cdawmeta.DATA_DIR}")
-    exit(1)
+  repo_path = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-additions')
+  if not os.path.exists(repo_path):
+    import git
+    repo_url = cdawmeta.CONFIG['urls']['cdawmeta-additions']
+    logger.info(f"Cloning {repo_url} into {repo_path}")
+    git.Repo.clone_from(repo_url, repo_path, depth=1)
 
-  fname = os.path.join(repo, 'AccessInformation.json')
+  fname = os.path.join(repo_path, 'AccessInformation.json')
   AccessInformation = cdawmeta.util.read(fname)
 
   allxml = metadatum['allxml']

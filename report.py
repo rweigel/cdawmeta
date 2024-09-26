@@ -172,7 +172,7 @@ def units(report_name, dir_name, clargs):
 
   fname_missing = os.path.join(dir_name, f'{report_name}-CDFvariables-with-missing.json')
   fname_report = os.path.join(dir_name, f'{report_name}-CDFUNITS_to_SPASEUnit-map.json')
-  fname_vounits = os.path.join(dir_name, '../', 'Units.csv')
+  fname_vounits = os.path.join(dir_name, '../', 'Units.json')
 
   # Write fname_missing
   n_missing = 0
@@ -194,31 +194,21 @@ def units(report_name, dir_name, clargs):
   for key in master_units_dict.keys():
     if key is None or (key is not None and key.strip() == ""):
       continue
-    unique_dict[key.strip()] = "?"
+    unique_dict[key.strip()] = None
 
   if clargs['id'] is not None:
     unique_dict_o = unique_dict.copy()
 
   if os.path.exists(fname_vounits):
 
-    unique_list_last = cdawmeta.util.read(fname_vounits, logger=logger)
-    unique_dict_last = {}
-    for _, row in enumerate(unique_list_last[1:]):
-      if row[0] is None or (row[0] is not None and row[0].strip() == ""):
-        continue
-      unique_dict_last[row[0].strip()] = row[1].strip()
-
+    unique_dict_last = cdawmeta.util.read(fname_vounits, logger=logger)
     diff = set(unique_dict.keys()) - set(unique_dict_last.keys())
     if len(diff) > 0:
       logger.warning(f"Warning: New units in CDF metadata: {diff}")
-
     unique_dict = {**unique_dict, **unique_dict_last}
+    unique_dict = cdawmeta.util.sort_dict(unique_dict)
 
-  header = [["CDFunits", "VOUNIT"]]
-  master_units_list = header
-  for key, val in unique_dict.items():
-    master_units_list.append([key, val])
-  cdawmeta.util.write(fname_vounits, master_units_list, logger=logger)
+  cdawmeta.util.write(fname_vounits, unique_dict, logger=logger)
 
   # Print and log summary
   coda = ""
@@ -231,10 +221,12 @@ def units(report_name, dir_name, clargs):
 
 def hpde_io(report_name, dir_name, clargs):
 
-  repo = os.path.join(cdawmeta.DATA_DIR, 'hpde.io')
-  if not os.path.exists(repo):
-    logger.error(f"Need to git clone --depth 1 https://github.com/hpde/hpde.io in {cdawmeta.DATA_DIR}")
-    exit(1)
+  repo_path = os.path.join(cdawmeta.DATA_DIR, 'hpde.io')
+  if not os.path.exists(repo_path):
+    import git
+    repo_url = cdawmeta.CONFIG['urls']['hpde.io']
+    logger.info(f"Cloning {repo_url} into {repo_path}")
+    git.Repo.clone_from(repo_url, repo_path, depth=1)
 
   dir_name = os.path.join(dir_name, "..")
 

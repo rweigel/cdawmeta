@@ -19,10 +19,11 @@ __all__ = [
 
 # TODO: Put the following imports in a loop over __all__.
 
+import utilrsw as util
+
 from cdawmeta import attrib
 from cdawmeta import db
 from cdawmeta import io
-from cdawmeta import util
 from cdawmeta import restructure
 
 from cdawmeta.cli import cli

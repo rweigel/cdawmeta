@@ -42,7 +42,7 @@ def cadence(metadatum, logger):
   depend_0_counts = {}
 
   for depend_0_name in depend_0_names:
-    logger.info(f"Computing cadence for DEPEND_0 = '{depend_0_name}'")
+    logger.info(f"Computing cadence for {metadatum['id']}/DEPEND_0 = '{depend_0_name}'")
 
     depend_0_counts[depend_0_name] = {'counts': []}
 
@@ -72,7 +72,7 @@ def cadence(metadatum, logger):
 
     # THA_L2_ESA
     if 'VIRTUAL' in VarAttributes and VarAttributes['VIRTUAL'].lower().strip() == 'true':
-      emsg = f"Not Implemented: VIRTUAL DEPEND_0 ({depend_0_name})"
+      emsg = f"Not Implemented: VIRTUAL DEPEND_0 ({metadatum['id']}/{depend_0_name})"
       logger.error("  " + emsg)
       depend_0_counts[depend_0_name]['counts'] = None
       depend_0_counts[depend_0_name]['error'] = emsg
@@ -107,42 +107,64 @@ def cadence(metadatum, logger):
       depend_0_counts[depend_0_name]['error'] = emsg
       continue
 
-    sf = 1 # CDF_EPOCH is in milliseconds
+    sf = 1e3 # CDF_EPOCH is in milliseconds
+    duration_unit = "ms"
     if DataType == 'CDF_TIME_TT2000':
-      sf = 1e6 # CDF_TIME_TT2000 is in nanoseconds
+      duration_unit = "ns"
+      sf = 1e9 # CDF_TIME_TT2000 is in nanoseconds
     if DataType == 'CDF_EPOCH16':
-      sf = 1e9 # CDF_EPOCH16 is in picoseconds
+      duration_unit = "ps"
+      sf = 1e12 # CDF_EPOCH16 is in picoseconds
 
     counts = Counter(diff)
     total = sum(counts.values())
     for value, count in sorted(counts.items(), key=lambda item: item[1], reverse=True):
       fraction = count / total
       if value != round(value):
-        logger.error(f"  Cadence {value} [ms] != {value/sf} [ms] in {url}{meta}")
-      value = round(value/sf)
-      if value >= 1:
-        t = timedelta(milliseconds=value)
-        duration = t.isoformat()
+        logger.warning(f"  Cadence {metadatum['id']}/{depend_0_name} {value} [ms] != {value/sf} [ms] in {url}{meta}")
+      # TODO: When there are fractional seconds, we should be rendering
+      # with a fixed number of significant digits and then trimming trailing
+      # zeros. Move this into a function and write tests. We should also 
+      # modify diffs to be to three significant digits so that there are fewer
+      # bins.
+      value_s = value/sf
+      if value_s >= 1:
+        t = timedelta(seconds=value_s)
+        duration_iso8601 = t.isoformat()
       else:
-        logger.error("  Cadence < 1 ms not handled. Setting cadence to 0 ms.")
-        duration = "PT0.000S"
+        # timedelta() returns 0 for less than microsecond.
+        if value_s > 1e-9:
+          duration_iso8601 = f"PT{value_s:.9f}S"
+        elif value_s > 1e-12:
+          duration_iso8601 = f"PT{value_s:.12f}S"
+        else:
+          duration_iso8601 = f"PT{value_s:.15f}S"
       count_dict = {
         "count": count,
-        "duration_ms": value,
-        "duration_iso8601": duration,
+        "duration": int(value), # Int for JSON serialization (so not numpy type)
+        "duration_unit": duration_unit,
+        "duration_iso8601": duration_iso8601,
         "fraction": fraction
       }
       depend_0_counts[depend_0_name]['counts'].append(count_dict)
       logger.info(f"  {count_dict}")
 
-    ms = depend_0_counts[depend_0_name]['counts'][0]['duration_ms']
+    if 0 == len(depend_0_counts[depend_0_name]['counts']):
+      emsg = f"Error: Could not determie cadence for {metadatum['id']}/{depend_0_name}"
+      logger.error("  " + emsg)
+      depend_0_counts[depend_0_name]['counts'] = None
+      depend_0_counts[depend_0_name]['error'] = emsg
+      continue
+
+    duration = depend_0_counts[depend_0_name]['counts'][0]['duration']
+    duration_unit = depend_0_counts[depend_0_name]['counts'][0]['duration_unit']
     iso = depend_0_counts[depend_0_name]['counts'][0]['duration_iso8601']
     cnt = depend_0_counts[depend_0_name]['counts'][0]['count']
     pct = 100*depend_0_counts[depend_0_name]['counts'][0]['fraction']
 
     note = f"Cadence based on variable '{depend_0_name}' in {url}. "
-    note += f"This most common cadence occured for {pct:0.4f}% of the {cnt} timesteps."
-    note += f"  Cadence = {ms} [ms] = {iso}."
+    note += f"This most common cadence occured for {pct:0.4f}% of the {cnt} timesteps. "
+    note += f"Cadence = {duration} [{duration_unit}] = {iso}."
     depend_0_counts[depend_0_name]['note'] = note
     depend_0_counts[depend_0_name]['url'] = url
 

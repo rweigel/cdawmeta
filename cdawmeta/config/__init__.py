@@ -4,11 +4,12 @@ import tempfile
 import cdawmeta
 
 CONFIG = {}
-for config in ['table', 'logger', 'metadata', 'hapi']:
+for config in ['table', 'logger', 'metadata', 'hapi', 'urls']:
   try:
     file = os.path.join(os.path.dirname(__file__), f'{config}.json')
     CONFIG[config] = cdawmeta.util.read(file)
-    del CONFIG[config]['_comment']
+    if '_comment' in CONFIG[config]:
+      del CONFIG[config]['_comment']
   except Exception as e:
     print(f"Error reading config file: {file}")
     raise e

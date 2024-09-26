@@ -20,8 +20,13 @@ all:
 clean:
 	-rm -rf data/*
 
+test:
+	python metadata.py --id AC_OR_SSC --regen --update
+	python table.py --id '^AC_OR'
+	python report.py --id AC_OR_DEF --regen --update
+
 rsync-to-mag:
-	rsync -avz --delete data weigel@mag.gmu.edu:www/git-data/cdawmeta
+	rsync -avz --exclude data/hpde.io --delete data weigel@mag.gmu.edu:www/git-data/cdawmeta
 
 rsync-from-mag:
 	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ .

@@ -1,175 +1,128 @@
+import os
+import glob
+
 import cdawmeta
 
-dependencies = ['spase', 'master', 'cadence', 'hapi', 'AccessInformation']
+dependencies = ['master', 'hapi', 'AccessInformation']
+
+def _additions(logger):
+
+  if hasattr(_additions, 'additions'):
+    return _additions.additions
+
+  additions_path = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-additions')
+  pattern = f"{additions_path}/*.json"
+  files = glob.glob(pattern, recursive=True)
+  additions = {}
+  for file in files:
+    logger.info(f"Reading {file}")
+    key = os.path.basename(file).replace(".json", "")
+    additions[key] = cdawmeta.util.read(file)
+
+  _additions.additions = additions
+  return additions
 
 def spase_auto(metadatum, logger):
 
   include_parameters = True
-  include_access_information = True
+  include_access_information = False
+
+  additions = _additions(logger)
 
   allxml = metadatum['allxml']
   master = metadatum['master']['data']
-  spase = metadatum['spase']['data']
-  cadence = metadatum['cadence']['data']
   hapi = metadatum['hapi']['data']
   # TODO: Switch to using master instead of HAPI for Parameter now that HAPI
   # generation code was refactored.
 
-  _Version = "2.6.1"
+  Version = "2.6.1"
   spase_auto_ = {
     "Spase": {
       "xmlns": "http://www.spase-group.org/data/schema",
       "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
       "xsi:schemaLocation": "http://www.spase-group.org/data/schema http://www.spase-group.org/data/schema/spase-2_6_1.xsd",
-      "_Note": "Nodes prefixed with a _ were auto-generated. Values prefixed with an x_ are not valid SPASE, but are needed for completenes.",
-      "_Version": _Version,
-      "_VersionRelease": _VersionRelease()[_Version]
+      "_Note": "Nodes prefixed with a _ are not valid SPASE, but are inluded for debugging.",
+      "Version": Version,
+      "_VersionRelease": _VersionRelease()[Version]
       }
     }
 
-  if spase is not None:
-    p = ['Spase', 'Version']
-    Version = cdawmeta.util.get_path(spase, p)
-    spase_auto_['Spase']['Version'] = Version
-    spase_auto_['Spase']['VersionRelease'] = _VersionRelease()[Version]
-
   NumericalData = {
-    "_ResourceID": None,
     "ResourceID": None,
     "ResourceHeader": {}
   }
 
-  url_master = metadatum['master']['url']
-  spase_auto_['Spase']['_MasterURL'] = url_master
-  if spase is not None:
-    url_spase = metadatum['spase']['url']
-    spase_auto_['Spase']['_SPASEURL'] = url_spase
-
-  # TODO: Much of the following could be put in a loop that uses a dict config
-  # with SPASE path, master path, etc.
+  spase_auto_['Spase']['_MasterURL'] = cdawmeta.util.get_path(metadatum, ['master', 'url'])
 
   # TODO: Compute ResourceID based on CDAWeb ID and cadence.
-  NumericalData['_ResourceID'] = metadatum['id']
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'ResourceID']
-    NumericalData['ResourceID'] = cdawmeta.util.get_path(spase, p)
-
-  NumericalData['ResourceHeader']['_DOI'] = None
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'ResourceHeader', 'DOI']
-    NumericalData['ResourceHeader']['DOI'] = cdawmeta.util.get_path(spase, p)
+  NumericalData['ResourceID'] = additions.get('ResourceID', None)
+  DOIs = additions.get('DOI')
+  NumericalData['DOI'] = DOIs.get(metadatum['id'], None)
 
   p = ['CDFglobalAttributes', 'Logical_source_description']
-  via = f' (from {"/".join(p)})'
-  _ResourceName = cdawmeta.util.get_path(master, p)
-  if _ResourceName is not None:
-    NumericalData['ResourceHeader']['_ResourceName'] = _ResourceName + via
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'ResourceHeader', 'ResourceName']
-    ResourceName = cdawmeta.util.get_path(spase, p)
+  ResourceName = cdawmeta.util.get_path(master, p)
+  if ResourceName is not None:
     NumericalData['ResourceHeader']['ResourceName'] = ResourceName
+    source = f'Source: {"/".join(p)}'
+    NumericalData['ResourceHeader']['_ResourceName'] = source
 
   p = ['CDFglobalAttributes', 'TEXT']
-  _Description = cdawmeta.util.get_path(master, p)
-  if _Description is not None:
-    via = "(from CDFglobalAttributes/TEXT) "
-    NumericalData['ResourceHeader']['_Description'] = via + _Description
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'ResourceHeader', 'Description']
-    Description = cdawmeta.util.get_path(spase, p)
+  Description = cdawmeta.util.get_path(master, p)
+  if Description is not None:
     NumericalData['ResourceHeader']['Description'] = Description
+    source = f"Source: {'/'.join(p)}"
+    NumericalData['ResourceHeader']['_Description'] = source
 
   p = ['CDFglobalAttributes', 'Acknowledgement']
-  ack = cdawmeta.util.get_path(master, p)
-  NumericalData['ResourceHeader']['_Acknowledgement'] = ack
-  if ack is not None:
-    via = "(from CDFglobalAttributes/Acknowledgement) "
-    NumericalData['ResourceHeader']['_Acknowledgement'] = via + ack
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'ResourceHeader', 'Acknowledgement']
-    Acknowledgement = cdawmeta.util.get_path(spase, p)
+  Acknowledgement = cdawmeta.util.get_path(master, p)
+  if Acknowledgement is not None:
     NumericalData['ResourceHeader']['Acknowledgement'] = Acknowledgement
+    source = f"Source: {'/'.join(p)}"
+    NumericalData['ResourceHeader']['_Acknowledgement'] = source
 
-  NumericalData['ResourceHeader']['_PublicationInfo'] = None
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'ResourceHeader', 'PublicationInfo']
-    PublicationInfo = cdawmeta.util.get_path(spase, p)
-    NumericalData['ResourceHeader']['PublicationInfo'] = PublicationInfo
-
-  NumericalData['ResourceHeader']['_InformationURL'] = _InformationURL(allxml)
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'ResourceHeader', 'InformationURL']
-    InformationURL = cdawmeta.util.get_path(spase, p)
+  InformationURL = _InformationURL(allxml)
+  # TODO: Add content in cdawmeta-additions/InformationURL.json if unique
+  if InformationURL is not None:
     NumericalData['ResourceHeader']['InformationURL'] = InformationURL
 
   if include_access_information:
-    NumericalData['_AccessInformationNote'] = "Generated from AccessInformation.json template"
-    NumericalData['_AccessInformation'] = metadatum['AccessInformation']['data']
-    if spase is not None:
-      p = ['Spase', 'NumericalData', 'AccessInformation']
-      AccessInformation = cdawmeta.util.get_path(spase, p)
-      NumericalData['AccessInformation'] = AccessInformation
+    NumericalData['AccessInformation'] = metadatum['AccessInformation']['data']
+    NumericalData['_AccessInformation'] = "Generated from AccessInformation.json template"
 
-  NumericalData['_TemporalDescription'] = _TemporalDescription(cadence, allxml)
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'TemporalDescription']
-    TemporalDescription = cdawmeta.util.get_path(spase, p)
-    NumericalData['TemporalDescription'] = TemporalDescription
+  NumericalData['TemporalDescription'] = _TemporalDescription(allxml)
+  if isinstance(hapi, dict):
+    Cadence = _Cadence(hapi['info'])
+    if Cadence is not None:
+      NumericalData['TemporalDescription'].update(Cadence)
 
-  NumericalData['_Keyword'] = _Keyword(allxml, master)
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'Keyword']
-    NumericalData['Keyword'] = cdawmeta.util.get_path(spase, p)
+  NumericalData['Keyword'] = _Keyword(allxml, master)
 
-  NumericalData['_ObservedRegion'] = None
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'ObservedRegion']
-    NumericalData['ObservedRegion'] = cdawmeta.util.get_path(spase, p)
+  ObservedRegions = additions.get('ObservedRegion')
+  sc = metadatum['id'].split('_')[0]
+  NumericalData['ObservedRegion'] = ObservedRegions.get(sc, None)
 
-  NumericalData['_ProcessingLevel'] = None
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'ProcessingLevel']
-    NumericalData['ProcessingLevel'] = cdawmeta.util.get_path(spase, p)
+  NumericalData['ProcessingLevel'] = None
 
   p = ['CDFglobalAttributes', 'TITLE']
-  _ProviderResourceName = cdawmeta.util.get_path(master, p)
-  if _ProviderResourceName is not None:
-    via = " (from master/CDFglobalAttributes/TITLE)"
-    NumericalData['_ProviderResourceName'] = _ProviderResourceName + via
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'ProviderResourceName']
-    NumericalData['ProviderResourceName'] = cdawmeta.util.get_path(spase, p)
+  ProviderResourceName = cdawmeta.util.get_path(master, p)
+  if ProviderResourceName is not None:
+    source = f"Source: {'/'.join(p)}"
+    NumericalData['ProviderResourceName'] = ProviderResourceName
 
-  _InstrumentID = cdawmeta.util.get_path(allxml, ['instrument', '@ID'])
-  if _InstrumentID is not None:
-    via = ' (from allxml/instrument/@ID)'
-    NumericalData['_InstrumentID'] = _InstrumentID + via
-  if spase:
-    p = ['Spase', 'NumericalData', 'InstrumentID']
-    NumericalData['InstrumentID'] = cdawmeta.util.get_path(spase, p)
+  InstrumentIDs = additions.get('InstrumentID')
+  NumericalData['InstrumentID'] = InstrumentIDs.get(metadatum['id'], None)
 
-  msg = "TODO: Map from table _InstrumentID => SPASE/MeasurementType"
-  NumericalData['_MeasurementType'] = msg
-  if spase:
-    p = ['Spase', 'NumericalData', 'MeasurementType']
-    MeasurementType = cdawmeta.util.get_path(spase, p)
-    NumericalData['MeasurementType'] = MeasurementType
+  InstrumentIDs = additions.get('MeasurementType')
+  NumericalData['MeasurementType'] = InstrumentIDs.get(metadatum['id'], None)
 
   p = ['CDFglobalAttributes', 'Rules_of_use']
-  _Caveats = cdawmeta.util.get_path(master, p)
-  if _Caveats is not None:
-    via = " (from Master/CDFglobalAttributes/Rules_of_use)"
-    NumericalData['_Caveats'] = _Caveats
-  if spase is not None:
-    p = ['Spase', 'NumericalData', 'Caveats']
-    Caveats = cdawmeta.util.get_path(spase, p)
+  Caveats = cdawmeta.util.get_path(master, p)
+  if Caveats is not None:
+    source = "Source: {'/'.join(p)}"
     NumericalData['Caveats'] = Caveats
 
   if include_parameters:
-    NumericalData['_Parameter'] = _Parameter(hapi)
-    if spase is not None:
-      p = ['Spase', 'NumericalData', 'Parameter']
-      NumericalData['Parameter'] = cdawmeta.util.get_path(spase, p)
+    NumericalData['Parameter'] = _Parameter(hapi)
 
   spase_auto_['Spase']['NumericalData'] = NumericalData
 
@@ -206,12 +159,12 @@ def _InformationURL(allxml):
 
   return _InformationURL
 
-def _TemporalDescription(cadence, allxml):
+def _TemporalDescription(allxml):
 
   _TemporalDescriptionNote = "Generated from all.xml/@timerange_start and all.xml/@timerange_stop"
   _TemporalDescription = {
-        'TimeSpan': {},
-        '_TemporalDescriptionNote': _TemporalDescriptionNote
+    'TimeSpan': {},
+    '_TemporalDescription': _TemporalDescriptionNote
   }
 
   StartDate = allxml['@timerange_start'].replace(' ', 'T') + "Z"
@@ -219,21 +172,19 @@ def _TemporalDescription(cadence, allxml):
   StopDate = allxml['@timerange_stop'].replace(' ', 'T') + "Z"
   _TemporalDescription['TimeSpan']['StopDate'] = StopDate
 
-  if cadence is not None:
+  return _TemporalDescription
 
-    depend_0_name = list(cadence.keys())[0]
-    counts = cdawmeta.util.get_path(cadence, [depend_0_name, 'counts'])
-    CadenceCaveat = cdawmeta.util.get_path(cadence, [depend_0_name, 'note'])
-    if len(list(cadence.keys())) > 1:
-      CadenceCaveat = "This dataset contains parameters that depend on "
-      CadenceCaveat += "different time variables with different cadences."
+def _Cadence(hapi_info):
 
-    Cadence = counts[0]['duration_iso8601']
-    _TemporalDescription['_CadenceNote'] = "Generated by inspection of first CDF file."
-    _TemporalDescription['_CadenceCaveat'] = CadenceCaveat
-    _TemporalDescription['_Cadence'] = Cadence
+  if hapi_info['cadence'] is None:
+    return None
 
-    return _TemporalDescription
+  Cadence = {
+    'Cadence': hapi_info['cadence'],
+    '_Cadence': hapi_info['x_cadence_note']
+  }
+
+  return Cadence
 
 def _Keyword(allxml, master):
 
@@ -260,11 +211,37 @@ def _Keyword(allxml, master):
 
 def _Parameter(hapi):
 
-  from cdawmeta._generate.hapi import flatten_parameters
-  parameters = flatten_parameters(hapi)
+  if isinstance(hapi, list):
+    Parameter = []
+    for dataset in hapi:
+      Parameter.append(_Parameter(dataset))
 
-  _Parameter = []
+    # https://stackoverflow.com/a/45323085
+    return sum(Parameter, [])
+
+  Parameters = []
+  parameters = hapi['info']['parameters']
+  Cadence = _Cadence(hapi['info'])
   for parameter in parameters:
+
+    if parameter['type'] == 'isotime':
+      Unit = "ms"
+      DataType = parameter['x_cdf_DataType']
+      if DataType == 'CDF_TIME_TT2000':
+        Unit = "ns"
+      if DataType == 'CDF_EPOCH16':
+        Unit = "ps"
+      Parameter = {
+        "Name": parameter['name'],
+        "ParameterKey": parameter['x_cdf_NAME'],
+        "Units": Unit,
+        "_Note": "This is in the source CDF file. Not all web services will provide access to this variable in this form (e.g., an ISO 8601 string may be used)."
+      }
+      if 'x_description' in parameter:
+        Parameter['Description'] = parameter['x_description']
+      Parameters.append(Parameter)
+      continue
+
     Parameter = {
       "Name": parameter['name'],
       "ParameterKey": parameter['name']
@@ -272,19 +249,20 @@ def _Parameter(hapi):
 
     if 'x_cdf_FIELDNAM' in parameter:
       Parameter['Name'] = parameter['x_cdf_FIELDNAM']
-
     if 'description' in parameter:
       Parameter['Description'] = parameter['description']
     if 'units' in parameter:
       Parameter['Units'] = parameter['units']
-    if 'fill' in parameter:
+    if Cadence is not None:
+      Parameter.update(Cadence)
+    if 'fill' in parameter and parameter['fill'] is not None:
       Parameter['FillValue'] = parameter['fill']
     if 'size' in parameter:
       Parameter['Structure'] = {'Size': parameter['size']}
 
-    _Parameter.append(Parameter)
+    Parameters.append(Parameter)
 
-  return _Parameter
+  return Parameters
 
 def _VersionRelease():
 

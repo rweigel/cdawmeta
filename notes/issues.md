@@ -1,30 +1,3 @@
-1\. Should there be better consistency in attribute names?
-
-To create the SQL table of CDAWeb [dataset](https://hapi-server.org/meta/cdaweb/dataset) and [variable](https://hapi-server.org/meta/cdaweb/variable) level metadata, we had to treat certain attributes that differed only by case as equivalent because (a.) SQL column names are case insensitive, and we did not want additional columns. In doing this, we noticed many attributes with multiple representations in different cases. However, the ISTP documentation indicates that ISTP attributes should be all caps, but this is not always the case, and no documentation indicates the case should be ignored.
-
-There are also attribute names that are similar but not case-insensitive equivalent. In [README.md](https://github.com/rweigel/cdawmeta/?tab=readme-ov-file#cdaweb), we give examples of source code where the authors catch some, but not all, variations on attributes.
-
-The reaming mapping we use is ([cdaweb.table.variable_attributes.fixes.json](https://github.com/rweigel/cdawmeta/blob/main/table/cdaweb.table.variable_attributes.fixes.json)).
-
-
-2\.BAR_2L_L2_HKPG missing DEPEND_0s
-
-Not all data variables have a `DEPEND_0` in [`BAR_2L_L2_HKPG`](https://hapi-server.org/meta/cdaweb/variable/#datasetID=BAR_2L_L2_HKPG)
-
-
-2\. These `FILLVALs` are suspect:
-
-* [-9.999999796611898e-32](https://hapi-server.org/meta/cdaweb/#FILLVAL=-9.999999796611898e-32) (given [`-1e+31` returns ~50k hits](https://hapi-server.org/meta/cdaweb/#FILLVAL=-1e%2b31))
-
-* [-9.999999680285692e+37](https://hapi-server.org/meta/cdaweb/#FILLVAL=-9.999999680285692e%2b37)
-
-* [1.0000000331813535e+32](https://hapi-server.org/meta/cdaweb/#FILLVAL=1.0000000331813535e%2b32)
-
-https://github.com/rweigel/CDAWlib/blob/952a28b08658413081e75714bd3b9bd3ba9167b9/virtual_funcs.pro#L3345
-
-Nand often has `FILL=-2.14748006E9` for `integer` type variables. To see the occurrences, [search the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `-2.14748006E9`. I suspect the reason is similar to that in item 3. below. I also see Nand having a fill of `99999.9` when the master has `100000.0` and also NaN when the master has `-1e+31`. ([Search on the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `99999.9` and `NaN`).
-
-
 3\. There are many instances where Nand's server has a type of `double`, but I get `integer` based on CDF master metadata. The reason may be that Nand is using different non-CDF master metadata. My understanding is that CDAWeb does not correct errors in non-master CDFs, but I could see it causing problems with people who read CDFs posted at CDAWeb directly without using the master (many do). To see the occurrences, search [the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `double`.
 
 
@@ -56,19 +29,3 @@ and
 
 8\. [The logfile](http://mag.gmu.edu/git-data/cdawmeta/data/cdaweb.errors.log) has many errors associated with the fact that `spase_DatasetResourceID` does not start with `spase://`. I think an empty space is placed there because a SPASE record does not exist, which may be there to make validation pass when using a validator that only checks for a non-empty string. There are also many `404` errors for URLs to `hpde.io` based on `spase_DatasetResourceID`.
 
-9\.
-
-
-11\.
-
-How are you able to show a menu for He energy center with options for telescope 1 and telescope 2 in the checkboxes
-
-Given that He_energy_center does not have a DEPEND_2 or LABL_PTR_2?
-
-https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0SKELTABLES/wi_epact_step-differential-ion-flux-1hr_00000000_v01.skt
-
-It seems that He_energy_center should have a DEPEND_2 of TELESCOPE_index like H_energy_center.
-
-Email thread:
-
-https://mail.google.com/mail/u/0/#search/wi_epact_step-differential-ion-flux-1hr%2FHe_energy_center/QgrcJHsHsHbmrRRBtQKgQwxzsQHFxSjntRL
