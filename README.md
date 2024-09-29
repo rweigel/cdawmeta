@@ -1,3 +1,5 @@
+# `cdawmeta` version `0.0.1`
+
 # About
 
 This package uses [CDAWeb's](https://cdaweb.gsfc.nasa.gov) metadata to create HAPI `catalog` and `info`, SPASE `NumericalData`, and SOSO `dataset` metadata.
@@ -40,6 +42,8 @@ and
 4. proof-of-concept SPASE records that do not have most of the major issues described in [SPASE](#SPASE) section below (see [spase_auto/info](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto)).
 
 # Installing and Running
+
+Tested on Python 3.10.9
 
 ```
 git clone https://github.com/rweigel/cdawmeta.git
@@ -177,7 +181,7 @@ We concluded that if we wanted to represent CDAWeb variables in HAPI with units 
 
 1. Determine the VOUnit representation of all unique units (~1000), if possible. See [CDFUNITS_to_VOUNITS.csv](https://github.com/rweigel/cdawmeta-additions/blob/main/CDFUNITS_to_VOUNITS.csv).
 
-2. Determine the VOUnit for all variables that do not have a `UNITS` attribute or a `UNITS` value that is all whitespace (~20,000), which we label as "missing"; see [the log file](https://github.com/rweigel/cdawmeta-additions/blob/main/reports/units-CDFvariables-with-missing.json). Although the ISTP conventions require units for variables with `VAR_TYPE = data`, ~20% of variables have "missing" `UNITS`.
+2. Determine the VOUnit for all variables that do not have a `UNITS` attribute or a `UNITS` value that is all whitespace (~20,000), which we label as "missing"; see [the log file](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/hapi.errors.ISTP.UNITS.log). Although the ISTP conventions require units for variables with `VAR_TYPE = data`, ~20% of variables have "missing" `UNITS`.
 
 3. Validating determinations made for 1. and 2. are correct. This could done in two ways: (a) Have two people independently make determinations and (b) for case 1., use AstroPy to compute the SI conversion and compare with the `SI_{conversion,conv,CONVERSION}` (all three versions are found in [CDF Masters](http://mag.gmu.edu/git-data/cdawmeta/data/table/cdaweb.variable.attribute_counts.csv) and the [ISTP convention documentation](https://github.com/rweigel/cdawmeta/issues/14). I emphasize that results must be checked and verified. Putting incorrect units in metadata is unacceptable.
 

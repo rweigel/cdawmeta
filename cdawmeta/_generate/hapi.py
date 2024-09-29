@@ -169,7 +169,11 @@ def _info_head(metadatum, depend_0_name):
         info['x_cadence_fraction'] = fraction
         info['x_cadence_note'] = note
       else:
-        no_cadence_msg = f"  Error: {id}: No cadence information available due to no counts object."
+        emsg = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'error'])
+        if emsg is not None:
+          no_cadence_msg = f"  {id}: No cadence information available due to {emsg.strip()}."
+        else:
+          no_cadence_msg = f"  {id}: No cadence information available due to unspecified error."
 
   if no_cadence_msg is not None:
     cdawmeta.error('hapi', id, None, "HAPI.NoCadence", no_cadence_msg, logger)

@@ -53,6 +53,7 @@ def cadence(metadatum, logger):
       emsg = f"{id}: cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) raised: \n{e}"
       logger.error("  " + emsg)
       depend_0_counts[depend_0_name]['error'] = emsg
+      del depend_0_counts[depend_0_name]['counts']
       del depend_0_counts[depend_0_name]['note']
       continue
 
@@ -60,6 +61,7 @@ def cadence(metadatum, logger):
       emsg = f"{id}: cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) returned None."
       logger.error("  " + emsg)
       depend_0_counts[depend_0_name]['error'] = emsg
+      del depend_0_counts[depend_0_name]['counts']
       del depend_0_counts[depend_0_name]['note']
       continue
 
@@ -71,6 +73,8 @@ def cadence(metadatum, logger):
       emsg = f"{id}/{depend_0_name}['VarAttributes'] = None in {url}{meta}"
       logger.error("  " + emsg)
       depend_0_counts[depend_0_name]['error'] = emsg
+      del depend_0_counts[depend_0_name]['counts']
+      del depend_0_counts[depend_0_name]['note']
       continue
 
     # THA_L2_ESA
@@ -78,12 +82,16 @@ def cadence(metadatum, logger):
       emsg = f"{id}/{depend_0_name}: Not Implemented: VIRTUAL DEPEND_0 in {url}"
       logger.error("  " + emsg)
       depend_0_counts[depend_0_name]['error'] = emsg
+      del depend_0_counts[depend_0_name]['counts']
+      del depend_0_counts[depend_0_name]['note']
       continue
 
     if 'VarData' not in data[depend_0_name]:
       emsg = f"{id}/{depend_0_name}: No 'VarData'"
       logger.error("  " + emsg)
       depend_0_counts[depend_0_name]['error'] = emsg
+      del depend_0_counts[depend_0_name]['counts']
+      del depend_0_counts[depend_0_name]['note']
       continue
 
     # PSP_FLD_L3_RFS_HFR
@@ -91,9 +99,18 @@ def cadence(metadatum, logger):
       emsg = f"{id}/{depend_0_name}['VarData'] = None"
       logger.error("  " + emsg)
       depend_0_counts[depend_0_name]['error'] = emsg
+      del depend_0_counts[depend_0_name]['counts']
+      del depend_0_counts[depend_0_name]['note']
       continue
 
     DataType = cdawmeta.util.get_path(data[depend_0_name],['VarDescription', 'DataType'])
+    if DataType is None:
+      emsg = f"  {id}/{depend_0_name}['VarDescription']['DataType'] = None in {url}{meta}"
+      logger.error("  " + emsg)
+      depend_0_counts[depend_0_name]['error'] = emsg
+      del depend_0_counts[depend_0_name]['counts']
+      del depend_0_counts[depend_0_name]['note']
+      continue
 
     try:
       epoch = data[depend_0_name]['VarData']
@@ -109,7 +126,13 @@ def cadence(metadatum, logger):
 
       if DataType == 'CDF_EPOCH16':
         # C1_CP_EFW_L3_E3D_INERT
-        diff = _diff_cdf_epoch16(epoch)
+        #diff = _diff_cdf_epoch16(epoch)
+        emsg = f"{id}/{depend_0_name}: Skipping CDF_EPOCH16 diff because cdflib.cdfepoch.to_datetime() is slow. Use alternative method."
+        logger.error("  " + emsg)
+        depend_0_counts[depend_0_name]['error'] = emsg
+        del depend_0_counts[depend_0_name]['counts']
+        del depend_0_counts[depend_0_name]['note']
+        continue
       else:
         diff = numpy.diff(epoch)
         diff = diff.astype(int)
@@ -117,12 +140,6 @@ def cadence(metadatum, logger):
     except Exception as e:
       emsg = f"{url}: numpy.diff({depend_0_name}['VarData']) error: {e}"
       raise Exception(emsg)
-
-    if DataType is None:
-      emsg = f"  {id}/{depend_0_name}['VarDescription']['DataType'] = None in {url}{meta}"
-      logger.error("  " + emsg)
-      depend_0_counts[depend_0_name]['error'] = emsg
-      continue
 
     sf = 1e3 # CDF_EPOCH is in milliseconds
     duration_unit = "ms"
@@ -168,6 +185,8 @@ def cadence(metadatum, logger):
       emsg = f"{id}/{depend_0_name}: Could not determine cadence in {url}"
       logger.error("  " + emsg)
       depend_0_counts[depend_0_name]['error'] = emsg
+      del depend_0_counts[depend_0_name]['counts']
+      del depend_0_counts[depend_0_name]['note']
       continue
 
     duration = depend_0_counts[depend_0_name]['counts'][0]['duration']
