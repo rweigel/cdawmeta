@@ -375,6 +375,9 @@ if report_name is not None:
   report_names = [report_name]
 
 for report_name in report_names:
+  if report_name == 'cadence':
+    logger.error("Skipping 'cadence' report because of issue.")
+    continue
   logger = cdawmeta.logger(name=f'{report_name}', dir_name=dir_name)
   report_function = locals()[report_name]
   report_function(report_name, os.path.join(cdawmeta.DATA_DIR, dir_name), clargs)

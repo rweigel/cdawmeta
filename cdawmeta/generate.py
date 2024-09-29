@@ -19,6 +19,8 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
         msg = "Using cache because update = regen = False and found cached file."
         logger.info(msg)
         data = cdawmeta.util.read(file_name_pkl, logger=logger)
+        if len(data) == 1:
+          data = data[0]
         return {'id': id, 'log': msg, 'data-file': file_name_json, 'data': data}
 
       if os.path.exists(file_name_error):
