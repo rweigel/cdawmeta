@@ -57,10 +57,11 @@ See `python metadata.py --help` for more options, including the generation of me
 
 **Examples**
 
-Create and display all metadata types for dataset `AC_OR_SSC`
+Create and display proof-of-concept auto-generated SPASE; the output of this command can be viewed at
+[spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json). See the [`cdawmeta` repository](https://github.com/rweigel/cdawmeta-additions) for metadata used that is not available in Master CDFs and/or `all.xml`.
 ```
-python metadata.py --id AC_OR_SSC
-```
+mkdir -p ./data;
+python metadata.py --id AC_OR_SSC --meta-type spase_auto
 
 Create and display HAPI metadata; the output of this command can be viewed at
 [hapi/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info/AC_OR_SSC.json)
@@ -72,30 +73,6 @@ Create and display proof-of-concept SOSO; the output of this command can be view
 [soso/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/soso/info/AC_OR_SSC.json)
 ```
 python metadata.py --id AC_OR_SSC --meta-type soso
-```
-
-Create and display proof-of-concept auto-generated SPASE; the output of this command can be viewed at
-[spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json). See the [`cdawmeta` repository](https://github.com/rweigel/cdawmeta-additions) for metadata used that is not available in Master CDFs and/or `all.xml`.
-```
-mkdir -p ./data;
-python metadata.py --id AC_OR_SSC --meta-type spase_auto
-```
-
-Insert SPASE documents for CDAWeb dataset names that match `^A` into a MongoDB and execute a query (requires [installation of MongoDB](https://www.mongodb.com/docs/manual/installation/)):
-
-```
-python query.py --id '^A' \
- --filter '{"NumericalData.Parameter": { "$exists": true }}' \
- --mongod-binary ~/mongodb/bin/mongod --port 27018
-# 45 documents found
-# 40 documents match query
-```
-
-Create report based on content of the [hpde.io repository](https://github.com/hpde/hpde.io).
-```
-mkdir -p ./data
-git clone --depth 1 https://github.com/hpde/hpde.io ./data
-python report.py --report-name hpde_io
 ```
 
 <a id="CDAWeb"></a>
