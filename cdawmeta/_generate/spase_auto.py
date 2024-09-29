@@ -1,14 +1,8 @@
-import os
-import glob
-
 import cdawmeta
 
 dependencies = ['master', 'hapi', 'AccessInformation']
 
 def spase_auto(metadatum, logger):
-
-  include_parameters = True
-  include_access_information = False
 
   additions = cdawmeta.additions(logger)
 
@@ -16,15 +10,19 @@ def spase_auto(metadatum, logger):
   master = cdawmeta.restructure.master(metadatum['master']['data'], logger=logger)
   hapi = metadatum['hapi']['data']
 
-  Version = "2.6.1"
+  config = cdawmeta.CONFIG['spase_auto']
+  logger.debug(f"Using config: {config}")
+
+  xmlns = additions["config"]["xmlns"]
+  Version = additions["config"]["version"]
+  Version_ = Version.replace('.', '_')
   spase_auto_ = {
     "Spase": {
-      "xmlns": "http://www.spase-group.org/data/schema",
-      "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-      "xsi:schemaLocation": "http://www.spase-group.org/data/schema http://www.spase-group.org/data/schema/spase-2_6_1.xsd",
+      "xmlns": xmlns,
+      "xmlns:xsi": additions["config"]["xmlns:xsi"],
+      "xsi:schemaLocation": f"{xmlns} {xmlns}/spase-{Version_}.xsd",
       "_Note": "Nodes prefixed with a _ are not valid SPASE, but are inluded for debugging.",
-      "Version": Version,
-      "_VersionRelease": _VersionRelease()[Version]
+      "Version": Version
       }
     }
 
@@ -67,7 +65,8 @@ def spase_auto(metadatum, logger):
   if InformationURL is not None:
     NumericalData['ResourceHeader']['InformationURL'] = InformationURL
 
-  if include_access_information:
+  import pdb; pdb.set_trace()
+  if config['include_access_information']:
     NumericalData['AccessInformation'] = metadatum['AccessInformation']['data']
     NumericalData['_AccessInformation'] = "Source: AccessInformation.json template"
 
@@ -103,7 +102,7 @@ def spase_auto(metadatum, logger):
     source = "Source: {'/'.join(p)}"
     NumericalData['Caveats'] = Caveats
 
-  if include_parameters:
+  if config['include_parameters']:
     NumericalData['Parameter'] = _Parameter(hapi, additions)
 
   spase_auto_['Spase']['NumericalData'] = NumericalData

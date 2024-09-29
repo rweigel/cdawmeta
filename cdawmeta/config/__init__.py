@@ -1,12 +1,19 @@
 import os
+import glob
 import tempfile
 
 import cdawmeta
 
 CONFIG = {}
-for config in ['table', 'logger', 'metadata', 'hapi', 'urls']:
+
+parts = cdawmeta.util.file_parts(__file__)
+
+pattern = os.path.join(f"{parts['dir']}/*.json")
+files = glob.glob(pattern)
+for file in files:
   try:
-    file = os.path.join(os.path.dirname(__file__), f'{config}.json')
+    parts = cdawmeta.util.file_parts(file)
+    config = parts['root']
     CONFIG[config] = cdawmeta.util.read(file)
     if '_comment' in CONFIG[config]:
       del CONFIG[config]['_comment']
