@@ -26,7 +26,8 @@ test:
 	python report.py --id AC_OR_DEF --regen --update
 
 rsync-to-mag:
-	rsync -avz --exclude data/hpde.io --delete data weigel@mag.gmu.edu:www/git-data/cdawmeta
+	rsync -avz --exclude data/hpde.io --exclude data/cdaweb.gsfc.nasa.gov \
+		--delete data weigel@mag.gmu.edu:www/git-data/cdawmeta
 
 rsync-from-mag:
 	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ .

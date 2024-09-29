@@ -9,18 +9,21 @@ def UNITS(dsid, name, all_variables, x=None):
   msg = ""
   msgx = ""
   if x is not None:
-    msgx = f"DEPEND_{x} "
-  msgo = f"Error: ISTP[UNITS]: {msgx}variable '{name}' has "
+    msgx = f"DEPEND_{x} for "
+  msgo = f"{msgx}variable '{name}' has"
 
-  VAR_TYPE, _ = cdawmeta.attrib.VAR_TYPE(dsid, name, variable, x=x)
+  VAR_TYPE, emsg, etype = cdawmeta.attrib.VAR_TYPE(dsid, name, variable, x=x)
+
+  units = None
+  etype = None
+  msg = None
 
   if 'UNITS' in variable['VarAttributes']:
     units = variable['VarAttributes']["UNITS"]
 
     if not units.isprintable():
       msg = f"{msgo} UNITS with non-printable characters. Setting UNITS=''"
-      units = ""
-      return units, msg
+      return None, msg, "CDF.UNITS"
 
     if units.strip() == "":
       msg = f"{msgo} UNITS.strip() = ''"
@@ -28,22 +31,23 @@ def UNITS(dsid, name, all_variables, x=None):
         # Catch case where empty string or whitespace string used for UNITS,
         # presumably to "satisfy" ISTP requirements that UNITS be present.
         msg = f"{msgo} VAR_TYPE = '{VAR_TYPE}' and UNITS.strip() = ''"
-        return units, msg
+        return None, msg, "ISTP.UNITS"
 
     if ptrs['UNIT_PTR'] is not None:
-      msg = f"Error: ISTP[UNIT_PTR]: For {msgx}variable '{name}', UNIT_PTR = {ptrs['UNIT_PTR']} and UNITS = "
+      etype = "ISTP.UNITS"
+      msg = f"For {msgx}variable '{name}', UNIT_PTR = {ptrs['UNIT_PTR']} and UNITS = "
       msg += f"{variable['VarAttributes']['UNITS']}. Using UNITS."
 
-    return units, None
+    return units, msg, etype
 
   if ptrs['UNIT_PTR'] is None:
     if VAR_TYPE is not None and VAR_TYPE in ['data', 'support_data']:
       if "UNIT_PTR" not in variable['VarAttributes']:
         msg = f"{msgo} VAR_TYPE = '{VAR_TYPE}' and no UNITS or UNIT_PTR."
-        return units, msg
+        return units, msg, "ISTP.UNITS"
   else:
     units = ptrs['UNIT_PTR_VALUES']
     if len(units) == 1:
       units = units[0]
 
-  return units, None
+  return units, None, None

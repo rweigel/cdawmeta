@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 install_requires = [
     "cdasws",
     "cdflib",
+    "hapiclient",
     "pymongo",
     "timedelta_isoformat"
 ]

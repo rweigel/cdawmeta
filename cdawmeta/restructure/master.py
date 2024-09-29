@@ -5,7 +5,7 @@ import cdawmeta
 def master(master, logger=None):
 
   """
-  Convert dict with arrays of objects to objects with objects. For example
+  Convert dict with arrays of objects to objects with objects. For example,
     { "Epoch": [ 
         {"VarDescription": [{"DataType": "CDF_TIME_TT2000"}, ...] },
         {"VarAttributes": [{"CATDESC": "Default time"}, ...] }

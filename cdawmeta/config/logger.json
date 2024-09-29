@@ -11,7 +11,7 @@
   "metadata": {
     "name": "metadata",
     "file_log": "{name}.log",
-    "file_error": "{name}.error.log",
+    "file_error": false,
     "color": true
   },
   "hapi": {

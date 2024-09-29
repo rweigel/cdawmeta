@@ -35,10 +35,11 @@ def soso(metadatum, logger):
   keywords.append(cdawmeta.util.get_path(allxml, ['observatory', 'description', '@short']))
   keywords.append(cdawmeta.util.get_path(allxml, ['instrument', 'description', '@short']))
 
-  master = metadatum['master']
-  jsonld['name'] = cdawmeta.util.get_path(master, ['data', 'CDFglobalAttributes', 'TITLE'])
+  master = cdawmeta.restructure.master(metadatum['master']['data'], logger=logger)
+
+  jsonld['name'] = cdawmeta.util.get_path(master, ['CDFglobalAttributes', 'TITLE'])
   jsonld['description'] = cdawmeta.util.get_path(allxml, ['description', '@short'])
-  discipline = cdawmeta.util.get_path(master, ['data', 'CDFglobalAttributes', 'Discipline'])
+  discipline = cdawmeta.util.get_path(master, ['CDFglobalAttributes', 'Discipline'])
   if discipline is None:
     discipline = []
   else:

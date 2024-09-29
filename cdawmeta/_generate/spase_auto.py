@@ -5,35 +5,16 @@ import cdawmeta
 
 dependencies = ['master', 'hapi', 'AccessInformation']
 
-def _additions(logger):
-
-  if hasattr(_additions, 'additions'):
-    return _additions.additions
-
-  additions_path = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-additions')
-  pattern = f"{additions_path}/*.json"
-  files = glob.glob(pattern, recursive=True)
-  additions = {}
-  for file in files:
-    logger.info(f"Reading {file}")
-    key = os.path.basename(file).replace(".json", "")
-    additions[key] = cdawmeta.util.read(file)
-
-  _additions.additions = additions
-  return additions
-
 def spase_auto(metadatum, logger):
 
   include_parameters = True
   include_access_information = False
 
-  additions = _additions(logger)
+  additions = cdawmeta.additions(logger)
 
   allxml = metadatum['allxml']
-  master = metadatum['master']['data']
+  master = cdawmeta.restructure.master(metadatum['master']['data'], logger=logger)
   hapi = metadatum['hapi']['data']
-  # TODO: Switch to using master instead of HAPI for Parameter now that HAPI
-  # generation code was refactored.
 
   Version = "2.6.1"
   spase_auto_ = {
@@ -55,7 +36,8 @@ def spase_auto(metadatum, logger):
   spase_auto_['Spase']['_MasterURL'] = cdawmeta.util.get_path(metadatum, ['master', 'url'])
 
   # TODO: Compute ResourceID based on CDAWeb ID and cadence.
-  NumericalData['ResourceID'] = additions.get('ResourceID', None)
+  ResourceIDs = additions.get('ResourceID', None)
+  NumericalData['ResourceID'] = ResourceIDs.get(metadatum['id'], None)
   DOIs = additions.get('DOI')
   NumericalData['DOI'] = DOIs.get(metadatum['id'], None)
 
@@ -87,7 +69,7 @@ def spase_auto(metadatum, logger):
 
   if include_access_information:
     NumericalData['AccessInformation'] = metadatum['AccessInformation']['data']
-    NumericalData['_AccessInformation'] = "Generated from AccessInformation.json template"
+    NumericalData['_AccessInformation'] = "Source: AccessInformation.json template"
 
   NumericalData['TemporalDescription'] = _TemporalDescription(allxml)
   if isinstance(hapi, dict):
@@ -122,7 +104,7 @@ def spase_auto(metadatum, logger):
     NumericalData['Caveats'] = Caveats
 
   if include_parameters:
-    NumericalData['Parameter'] = _Parameter(hapi)
+    NumericalData['Parameter'] = _Parameter(hapi, additions)
 
   spase_auto_['Spase']['NumericalData'] = NumericalData
 
@@ -150,7 +132,7 @@ def _InformationURL(allxml):
       if '#text' in link:
         InformationURL['Description'] = link['#text']
 
-      InformationURL['_Note'] = "Generated from all.xml/other_info/link"
+      InformationURL['_Note'] = "Source: from all.xml/other_info/link"
 
       InformationURLs.append(InformationURL)
 
@@ -176,7 +158,7 @@ def _TemporalDescription(allxml):
 
 def _Cadence(hapi_info):
 
-  if hapi_info['cadence'] is None:
+  if hapi_info.get('cadence', None) is None:
     return None
 
   Cadence = {
@@ -209,12 +191,12 @@ def _Keyword(allxml, master):
 
   return _Keyword
 
-def _Parameter(hapi):
+def _Parameter(hapi, additions):
 
   if isinstance(hapi, list):
     Parameter = []
     for dataset in hapi:
-      Parameter.append(_Parameter(dataset))
+      Parameter.append(_Parameter(dataset, additions))
 
     # https://stackoverflow.com/a/45323085
     return sum(Parameter, [])
@@ -226,19 +208,21 @@ def _Parameter(hapi):
 
     if parameter['type'] == 'isotime':
       Unit = "ms"
+      if 'x_description' in parameter:
+        Description = parameter['x_description']
+      if 'description' in parameter:
+        Description = parameter['description']
+      Description = Description.strip().replace(r'.$', '') + "; "
       DataType = parameter['x_cdf_DataType']
-      if DataType == 'CDF_TIME_TT2000':
-        Unit = "ns"
-      if DataType == 'CDF_EPOCH16':
-        Unit = "ps"
+      Unit = additions["Epoch"][DataType]["Unit"]
+      Description += additions["Epoch"][DataType]["Description"]
       Parameter = {
         "Name": parameter['name'],
         "ParameterKey": parameter['x_cdf_NAME'],
+        "Description": Description,
         "Units": Unit,
-        "_Note": "This is in the source CDF file. Not all web services will provide access to this variable in this form (e.g., an ISO 8601 string may be used)."
+        "_Note": additions["Epoch"]["Note"]
       }
-      if 'x_description' in parameter:
-        Parameter['Description'] = parameter['x_description']
       Parameters.append(Parameter)
       continue
 
@@ -253,6 +237,9 @@ def _Parameter(hapi):
       Parameter['Description'] = parameter['description']
     if 'units' in parameter:
       Parameter['Units'] = parameter['units']
+    if 'x_units_original' in parameter:
+      Parameter['_UnitsSchema'] = parameter['x_unitsSchema']
+      Parameter['_UnitsOriginal'] = parameter['x_units_original']
     if Cadence is not None:
       Parameter.update(Cadence)
     if 'fill' in parameter and parameter['fill'] is not None:

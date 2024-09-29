@@ -2,16 +2,15 @@ def DISPLAY_TYPE(dsid, name, variable):
 
   if 'DISPLAY_TYPE' not in variable['VarAttributes']:
     if variable['VarAttributes'].get('VAR_TYPE') == 'data':
-      msg = f"Error: ISTP[DISPLAY_TYPE]: No attribute for variable '{name}' with VAR_TYPE = data'"
-      return None, msg
+      msg = f"No DISPLAY_TYPE for variable '{name}' with VAR_TYPE = data'"
+      return None, msg, "ISTP.DISPLAY_TYPE"
 
-  msg = ""
   display_type = variable['VarAttributes']['DISPLAY_TYPE']
   display_type = display_type.split(">")[0]
 
   if display_type.strip() == '':
-    msg = "Error: ISTP[DISPLAY_TYPE]: DISPLAY_TYPE.strip() = ''"
-    return None, msg
+    msg = "DISPLAY_TYPE.strip() = ''"
+    return None, msg, "ISTP.DISPLAY_TYPE"
 
   display_types_known = [
     'time_series',
@@ -24,8 +23,12 @@ def DISPLAY_TYPE(dsid, name, variable):
     'skymap'
   ]
 
+  msg = None
+  etype = None
+
   if display_type not in display_types_known:
-    msg = f"Error: ISTP[DISPLAY_TYPE]: DISPLAY_TYPE = '{DISPLAY_TYPE}' is not in "
+    etype = "ISTP.DISPLAY_TYPE"
+    msg = f"DISPLAY_TYPE = '{DISPLAY_TYPE}' is not in "
     msg += f"{display_types_known}. Will attempt to infer."
 
   found = False
@@ -33,9 +36,11 @@ def DISPLAY_TYPE(dsid, name, variable):
     if display_type.lower().startswith(display_type):
       found = True
       break
+
   if not found:
     display_type = None
-    msg += "Error: ISTP[DISPLAY_TYPE]: DISPLAY_TYPE.lower() = "
+    etype = "ISTP.DISPLAY_TYPE"
+    msg += "DISPLAY_TYPE.lower() = "
     msg += "'{DISPLAY_TYPE}' does not start with one of {display_types_known}"
 
-  return display_type, msg
+  return display_type, msg, etype

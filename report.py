@@ -16,7 +16,9 @@ def f2c_specifier(report_name, dir_name, clargs):
   for id in meta.keys():
     if "master" not in meta[id]:
       continue
+
     master = meta[id]["master"]['data']
+    master = cdawmeta.restructure.master(master, logger=logger)
     if master is None or "CDFVariables" not in master:
       continue
     variables = master['CDFVariables']
@@ -25,16 +27,16 @@ def f2c_specifier(report_name, dir_name, clargs):
       if "VarAttributes" not in variable or "VarDescription" not in variable:
         continue
 
-      FORMAT_given, emsg = cdawmeta.attrib.FORMAT(id, variable_name, variables, c_specifier=False)
+      FORMAT_given, etype, emsg = cdawmeta.attrib.FORMAT(id, variable_name, variables, c_specifier=False)
       if FORMAT_given is None:
         continue
-      if emsg is not None:
+      if etype is not None:
         logger.error(f"{id}\n{emsg}")
 
-      FORMAT_computed, emsg = cdawmeta.attrib.FORMAT(id, variable_name, variables)
+      FORMAT_computed, etype, emsg = cdawmeta.attrib.FORMAT(id, variable_name, variables)
       if FORMAT_given is None:
         continue
-      if emsg is not None:
+      if etype is not None:
         logger.error(f"{id}\n{emsg}")
 
       if 'DataType' in variable['VarDescription']:
@@ -335,6 +337,29 @@ def hpde_io(report_name, dir_name, clargs):
   logger.info(f"Writing {ResourceIDs_file}")
   cdawmeta.util.write(ResourceIDs_file, ResourceIDs)
 
+def cadence(report_name, dir_name, clargs):
+  clargs = {**clargs, 'meta_type': 'cadence'}
+  meta = cdawmeta.metadata(**clargs)
+  for id in meta.keys():
+
+    logger.info(f"{id}:")
+    print(meta[id]['cadence'])
+    depend_0_obj = cdawmeta.util.get_path(meta[id],['cadence', 'data'])
+    if depend_0_obj is None:
+      cadence_error = cdawmeta.util.get_path(meta[id],['cadence', 'error'])
+      if cadence_error is not None:
+        logger.error(f"  {cadence_error}")
+      continue
+
+    for depend_0 in depend_0_obj:
+      depend_0_info = depend_0_obj[depend_0]
+      logger.info(f"  {depend_0}")
+      if 'error' in depend_0_info:
+        logger.error(f"    {depend_0_info['error']}")
+        continue
+      if 'counts' in depend_0_info:
+        for count in depend_0_info['counts']:
+          logger.info(f"    {count}")
 
 cldefs = cdawmeta.cli('report.py', defs=True)
 report_names = cldefs['report-name']['choices']

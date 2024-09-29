@@ -1,5 +1,6 @@
 import os
 import re
+import traceback
 
 import cdawmeta
 
@@ -62,7 +63,10 @@ def ids(id=None, skip=None, update=False):
   return _remove_skips(ids_reduced)
 
 def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
-             write_catalog=False, update=False, regen=False, regen_cadence=False, max_workers=3,
+             write_catalog=False,
+             update=False, update_skip='',
+             regen=False, regen_skip='',
+             max_workers=3,
              diffs=False, log_level='info'):
   '''
   Options are documented in cli.py.
@@ -134,15 +138,29 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
     # dataset id to SPASE record.
     _spase_hpde_io(update=True, diffs=diffs)
 
+  def step_needed(meta_type, step, update, update_skips):
+    if meta_type in update_skips:
+      if update:
+        logger.info(f"Skipping {meta_type} {step} because in {step}_skip.")
+      return False
+    return update
+
   def get_one(dataset, mloggers):
 
     if 'master' in meta_types or 'spase' in meta_types:
-      # 'spase' needs master to get spase_DatasetResourceID, so this must be before.
-      dataset['master'] = _master(dataset, update=update, diffs=diffs)
+      # 'spase' needs 'master' to get spase_DatasetResourceID, so this must be before.
+      update_ = step_needed('master', 'update', update, update_skip)
+      update_ = update_ or step_needed('spase', 'update', update, update_skip)
+      dataset['master'] = _master(dataset, update=update_, diffs=diffs)
+
     if 'orig_data' in meta_types:
-      dataset['orig_data'] = _orig_data(dataset, update=update, diffs=diffs)
+      update_ = step_needed('orig_data', 'update', update, update_skip)
+      dataset['orig_data'] = _orig_data(dataset, update=update_, diffs=diffs)
+
     if 'spase' in meta_types:
-      dataset['spase'] = _spase(dataset, update=update, diffs=diffs)
+      update_ = step_needed('spase', 'update', update, update_skip)
+      dataset['spase'] = _spase(dataset, update=update_, diffs=diffs)
+
     if 'spase_hpde_io' in meta_types:
       # Here we never update b/c update is done in earlier call to _spase_hpde_io
       dataset['spase_hpde_io'] = _spase_hpde_io(dataset['id'], update=False)
@@ -150,12 +168,13 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
     for meta_type in meta_types:
       if meta_type in not_generated:
         continue
+
       logger.info(f"Generating: {meta_type} for {dataset['id']}")
-      regen_ = regen
-      if meta_type == 'cadence':
-        # Cadence takes much longer to generate, so given as special option.
-        regen_ = regen_cadence
-      dataset[meta_type] = cdawmeta.generate(dataset, meta_type, mloggers[meta_type], update=update, regen=regen_)
+      update_ = step_needed(meta_type, 'update', update, update_skip)
+      regen_ = step_needed(meta_type, 'regen', regen, regen_skip)
+
+      dataset[meta_type] = cdawmeta.generate(dataset, meta_type, mloggers[meta_type],
+                                             update=update_, regen=regen_)
 
     logger.debug("Removing metadata that was used to generate requested metadata.")
     for meta_type in meta_types:
@@ -170,25 +189,29 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
 
   if max_workers == 1 or len(dsids) == 1:
     for dsid in dsids:
-      get_one(datasets_all[dsid], mloggers)
-  else:
-    def call(dsid):
       try:
         get_one(datasets_all[dsid], mloggers)
-      except Exception as e:
-        import traceback
-        logger.error(f"Error: {datasets_all[dsid]}: {traceback.print_exc()}")
+      except:
+        msg = f"{dsid}: {traceback.print_exc()}"
+        cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
+  else:
+    def call_get_one(dsid):
+      try:
+        get_one(datasets_all[dsid], mloggers)
+      except:
+        msg = f"{dsid}: {traceback.print_exc()}"
+        cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
 
       return dsid
 
     from concurrent.futures import ThreadPoolExecutor
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
-      pool.map(call, dsids)
+      pool.map(call_get_one, dsids)
 
   metadata_ = {key: datasets_all[key] for key in dsids}
 
   if regen or update:
-    _write_errors()
+    cdawmeta.write_errors(logger, update)
 
   if write_catalog:
     if meta_type_requested is None:
@@ -226,8 +249,8 @@ def _datasets(allxml):
     dataset = {'id': id, 'allxml': dataset_allxml}
 
     if 'mastercdf' not in dataset_allxml:
-      msg = f'Error[all.xml]: {id}: No mastercdf node in all.xml'
-      logger.error(msg)
+      msg = f'{id}: No mastercdf node in all.xml'
+      cdawmeta.error('metadata', id, None, 'allxml.NoMasterCDF', msg, logger)
       continue
 
     if isinstance(dataset_allxml['mastercdf'], list):
@@ -237,8 +260,8 @@ def _datasets(allxml):
       continue
 
     if '@ID' not in dataset_allxml['mastercdf']:
-      msg = f'Error[all.xml]: {id}: No ID attribute in all.xml mastercdf node'
-      logger.error(msg)
+      msg = f"{id}: No @ID attribute in all.xml 'mastercdf' node"
+      cdawmeta.error('metadata', id, None, 'allxml.No@IDAttribute', msg, logger)
       continue
 
     if restructure:
@@ -257,7 +280,7 @@ def _allxml(update=False, diffs=False):
     return _allxml.allxml
 
   allurl = cdawmeta.CONFIG['urls']['all.xml']
-  allxml = _fetch(allurl, 'all', 'all', timeout=timeout, update=update, diffs=diffs)
+  allxml = _fetch(allurl, 'all', 'all', referrer='config.json', timeout=timeout, update=update, diffs=diffs)
 
   # Curry result
   _allxml.allxml = allxml
@@ -266,43 +289,45 @@ def _allxml(update=False, diffs=False):
 
 def _master(dataset, update=False, diffs=False):
 
-  restructure = True
+  restructure = False
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['master']
 
   mastercdf = dataset['allxml']['mastercdf']['@ID']
   url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
 
-  master = _fetch(url, dataset['id'], 'master', timeout=timeout, update=update, diffs=diffs)
+  master = _fetch(url, dataset['id'], 'master', referrer=url, timeout=timeout, update=update, diffs=diffs)
   if restructure and 'data' in master:
     master['data'] = cdawmeta.restructure.master(master['data'], logger=logger)
   return master
 
 def _spase(dataset, update=True, diffs=False):
 
-  master = dataset['master']
-  timeout = cdawmeta.CONFIG['metadata']['timeouts']['spase']
-
-  id = master['id']
-  if 'data' not in master:
+  metadatum = dataset['master']
+  id = metadatum['id']
+  if 'data' not in metadatum:
     msg = 'No spase_DatasetResourceID because no master'
     return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
-  global_attributes = master['data']['CDFglobalAttributes']
+  master = cdawmeta.restructure.master(metadatum['data'], logger=logger)
+
+  timeout = cdawmeta.CONFIG['metadata']['timeouts']['spase']
+
+  global_attributes = master['CDFglobalAttributes']
   if 'spase_DatasetResourceID' not in global_attributes:
-    msg = f"Error[master]: {master['id']}: Missing or invalid spase_DatasetResourceID attribute in master"
-    logger.error(msg)
+    msg = f"{id}: No spase_DatasetResourceID attribute in {metadatum['url']}."
+    cdawmeta.error('metadata', id, None, 'master.NoSpaseDatasetResourceID', msg, logger)
     return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
   if 'spase_DatasetResourceID' in global_attributes:
     spase_id = global_attributes['spase_DatasetResourceID']
     if spase_id and not spase_id.startswith('spase://'):
-      msg = f"Error[master]: {master['id']}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://'"
-      logger.error(msg)
+      msg = f"{id}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://' in {metadatum['url']}"
+      cdawmeta.error('metadata', id, None, 'master.InvalidSpaseDatasetResourceID', msg, logger)
       return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
     url = spase_id.replace('spase://', 'https://hpde.io/') + '.json'
 
-  spase = _fetch(url, id, 'spase', timeout=timeout, diffs=diffs, update=update)
+  spase = _fetch(url, id, 'spase', referrer=metadatum['url'], timeout=timeout, diffs=diffs, update=update)
 
   return spase
 
@@ -341,7 +366,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
 
     ResourceID = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'ResourceID'])
     if ResourceID is None:
-      logger.error(f"  Error - No ResourceID in {file}")
+      cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.NoResourceID', f"No ResourceID in {file}", logger)
       continue
 
     hpde_url = f'{ResourceID.replace("spase://", "http://hpde.io/")}'
@@ -351,7 +376,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
     AccessInformation = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'AccessInformation'])
 
     if AccessInformation is None:
-      logger.error(f"  Error - No AccessInformation in {file}")
+      cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.AccessInformation', f"No AccessInformation in {file}", logger)
       continue
 
     s = "s" if len(AccessInformation) > 1 else ""
@@ -368,7 +393,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
 
         URL = AccessURL.get('URL', None)
         if URL is None:
-          logger.error(f"  Error - No URL in {AccessURL} for {hpde_url}")
+          cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.NoURLInAccessURL', f"No URL in {AccessURL}", logger)
           continue
 
         logger.debug(f"    {ridx+1}. {Name}: {URL}")
@@ -378,13 +403,15 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
 
         if Name == 'CDAWeb':
           if found:
-            logger.error(f"      Error - Duplicate AccessURL/Name = 'CDAWeb' in {hpde_url}")
+            msg = f"Duplicate AccessURL/Name = 'CDAWeb' in {hpde_url}"
+            cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.DuplicateAccessURLName', msg, logger)
           else:
             if 'ProductKey' in Repository['AccessURL']:
               found = True
               ProductKeyCDAWeb = Repository['AccessURL']['ProductKey']
               if ProductKeyCDAWeb.strip() == '':
-                logger.error("      Error - Empty ProductKey")
+                msg = "Empty ProductKey.strip() = ''"
+                cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.EmptyProductKey', msg, logger)
               else:
                 json_file = os.path.join(out_dir, f"{ProductKeyCDAWeb}.json")
                 pkl_file = os.path.join(out_dir, f"{ProductKeyCDAWeb}.pkl")
@@ -431,7 +458,8 @@ def _write_catalog(metadata_, id, meta_types):
 
       if meta_type not in metadata_[dsid]:
         # Should not happen. Was happening with threads.
-        logger.error("Error: {dsid}: No {meta_type}?. Skipping.")
+        msg = f"No metadatum/{meta_type} for '{id}'."
+        cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
         continue
 
       datum = metadata_[dsid][meta_type].get('data', None)
@@ -439,7 +467,9 @@ def _write_catalog(metadata_, id, meta_types):
       if datum is None:
         datum_file = metadata_[dsid][meta_type].get('data-file', None)
         if datum_file is None:
-          logger.error(f"Error: {dsid}: No data or data-file in metadata")
+          # Should not happen.
+          msg = f"No data and no data-file in metadatum/{meta_type} for '{id}'."
+          cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
           continue
 
         if not isinstance(datum_file, list):
@@ -480,39 +510,12 @@ def _write_catalog(metadata_, id, meta_types):
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}.json')
       cdawmeta.util.write(fname, data_copy, logger=logger)
 
-def _write_errors(name=None):
-  '''
-  Write all errors to a single file if all datasets were requested. Errors
-  were already written to log file, but here we need to do additional formatting
-  that is more difficult if errors were written as they occur.
-  '''
+def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=False, update=False):
 
-  if name is None:
-    for key in cdawmeta.error.errors.keys():
-      # If generator used calls to cdawmeta.error(), the generator will have
-      # a key.
-      _write_errors(name=key)
-    return
-
-  errors = ""
-  fname = os.path.join(cdawmeta.DATA_DIR, name, f'{name}.errors.log')
-  for dsid, vars in cdawmeta.error.errors.copy().items():
-    if isinstance(vars, str):
-      errors += f"{dsid}: {vars}\n"
-      continue
-    errors += f"{dsid}:\n"
-    for vid, msgs in vars.items():
-      errors += f"  {vid}:\n"
-      for msg in msgs:
-        errors += f"    {msg}\n"
-  cdawmeta.util.write(fname, errors, logger=logger)
-
-def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
-
-  cache_dir = os.path.join(cdawmeta.DATA_DIR, 'CachedSession', what)
-  subdir = '' if what == 'all' else 'info'
-  json_file = os.path.join(cdawmeta.DATA_DIR, what, subdir, f"{id}.json")
-  pkl_file = os.path.join(cdawmeta.DATA_DIR, what, subdir, f"{id}.pkl")
+  cache_dir = os.path.join(cdawmeta.DATA_DIR, 'CachedSession', meta_type)
+  subdir = '' if meta_type == 'all' else 'info'
+  json_file = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f"{id}.json")
+  pkl_file = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f"{id}.pkl")
 
   if not update and os.path.exists(pkl_file):
     msg = "update = False; bypassing CachedSession request and using last result."
@@ -528,8 +531,10 @@ def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
   get = cdawmeta.util.get_json(url, cache_dir=cache_dir, headers=headers, timeout=timeout, diffs=diffs)
 
   if get['emsg']:
-    emsg = f"Error[{what}]: {id}: {get['emsg']}"
-    logger.error(emsg)
+    emsg = f"{id}: {get['emsg']}"
+    if referrer is not None:
+      emsg += f"; Referring document: {referrer}"
+    cdawmeta.error('metadata', id, None, f'{meta_type}.FetchError', emsg, logger)
     result['error'] = emsg
     return result
 
@@ -553,13 +558,15 @@ def _fetch(url, id, what, headers=None, timeout=20, diffs=False, update=False):
     try:
       cdawmeta.util.write(json_file, result, logger=logger)
     except Exception as e:
-      logger.error(f"Error writing {json_file}: {e}")
+      msg = f"Error writing {json_file}: {e}"
+      cdawmeta.error('metadata', id, None, 'WriteError', msg, logger)
 
   if not os.path.exists(pkl_file):
     try:
       cdawmeta.util.write(pkl_file, result, logger=logger)
     except Exception as e:
-      logger.error(f"Error writing {pkl_file}: {e}")
+      msg = f"Error writing {pkl_file}: {e}"
+      cdawmeta.error('metadata', id, None, 'WriteError', msg, logger)
 
   return result
 

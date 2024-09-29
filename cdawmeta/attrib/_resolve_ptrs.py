@@ -19,7 +19,7 @@ def _resolve_ptrs(dsid, name, all_variables, ptr_names=None):
     ptrs['UNIT_PTR_VALID'] = False
     ptrs['UNIT_PTR_VALUES'] = None
     ptrs['UNIT_PTR_ERROR'] = None
-    msgo = f"Error: ISTP[UNIT_PTR]: variable '{name}' has UNIT_PTR = '{ptr_name}' "
+    msgo = f"Variable '{name}' has UNIT_PTR = '{ptr_name}' "
     if ptr_name in all_variables:
       hapi_type = CDFDataType2HAPItype(all_variables[ptr_name]['VarDescription']['DataType'])
       if 'string' == hapi_type:
@@ -61,9 +61,9 @@ def _resolve_ptrs(dsid, name, all_variables, ptr_names=None):
           else:
             ptrs[prefix+"_VALID"][x-1] = False
             if prefix == 'LABL_PTR':
-              msg = f"Error: ISTP[Pointer]: {x_NAME} has no VarData"
+              msg = f"ISTP.LABL_PTR: {x_NAME} has no VarData"
             else:
-              msg = f"Error: ISTP[Pointer]: {x_NAME} is a string type but has no VarData"
+              msg = f"ISTP.LABL_PTR: {x_NAME} is a string type but has no VarData"
             ptrs[prefix+"_ERROR"][x-1] = msg
         else:
           ptrs[prefix+"_VALID"][x-1] = True

@@ -13,12 +13,6 @@
   "_comment": "Set label instead of x_label (Nand does not provide label attribute)",
   "keep_label": false,
 
-  "log_display_type_issues": false,
-
-  "log_var_notes_issues": false,
-
-  "log_delta_issues": false,
-
   "_comment": "https://github.com/rweigel/cdawmeta/issues/10",
   "default_float_format": ".7g",
   "default_double_format": ".17g",

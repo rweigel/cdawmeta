@@ -7,6 +7,6 @@ def FIELDNAM(dsid, name, variable):
     if isinstance(fieldnam, list):
       fieldnam = '\n'.join(fieldnam)
   else:
-    msg = f"     Warning: ISTP[FIELDNAM]: No FIELDNAM attribute for variable '{name}'"
+    msg = f"Warning: No FIELDNAM attribute for variable '{name}'"
 
-  return fieldnam, msg
+  return fieldnam, msg, None

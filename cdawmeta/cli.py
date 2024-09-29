@@ -43,8 +43,13 @@ def cli(script, defs=False):
     },
     "update": {
       "action": "store_true",
-      "help": "Update existing cached HTTP responses and regenerate computed metadata.",
+      "help": "Update existing cached HTTP responses and regenerate computed metadata except cadence.",
       "default": False,
+      "_used_by_all": True
+    },
+    "update-skip": {
+      "help": "Comma separated list of meta-types to not update.",
+      "default": '',
       "_used_by_all": True
     },
     "regen": {
@@ -53,11 +58,10 @@ def cli(script, defs=False):
       "default": False,
       "_used_by_all": True
     },
-    "regen-cadence": {
-      "action": "store_true",
-      "help": "Regenerate computed cadence.",
-      "default": False,
-      "_used_by_all": ['metadata.py']
+    "regen-skip": {
+      "help": "Comma separated list of meta-types to not regenerate.",
+      "default": '',
+      "_used_by_all": True
     },
     "log-level": {
       "help": "Log level",
@@ -86,7 +90,7 @@ def cli(script, defs=False):
     "report-name": {
       "help": "Name of report to execute (default: all reports)",
       "default": None,
-      "choices": ['f2c_specifier', 'hpde_io', 'units'],
+      "choices": ['f2c_specifier', 'hpde_io', 'units', 'cadence'],
       "_used_by": ['report.py']
     },
     "table-name": {

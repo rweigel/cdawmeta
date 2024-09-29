@@ -6,7 +6,7 @@ import cdawmeta
 
 def _cache_dir(dir):
   if dir is None:
-    dir = os.path.join(cdawmeta.DATA_DIR, 'ws')
+    dir = os.path.join(cdawmeta.DATA_DIR, 'cdaweb.gsfc.nasa.gov')
   return os.path.abspath(dir)
 
 def url2file(url):
@@ -15,14 +15,9 @@ def url2file(url):
 def _test_config():
 
   kwargs = {
-    "data_dir": _cache_dir(None),
-    "embed_data": True,
     "update": False,
     "max_workers": 1,
-    "diffs": False,
-    "restructure_master": True,
-    "no_spase": True,
-    "no_orig_data": False
+    "diffs": False
   }
 
   tests = {
@@ -51,6 +46,7 @@ def _test_config():
       'variable': 'magStatus'
     }
   }
+
   for id in tests.keys():
     tests[id]['metadata'] = cdawmeta.metadata(id=id, **kwargs)[id]
 
@@ -104,8 +100,8 @@ def read_cdf_depend_0s_test(logger=None, cache_dir=None, use_cache=True):
   test_config = _test_config()
   for id in test_config.keys():
     print(f"Testing {id}")
-    metadata = test_config[id]['metadata']
-    depend_0s = read_cdf_depend_0s(metadata['samples']['file'], logger=logger, cache_dir=cache_dir, use_cache=use_cache)
+    metadatum = test_config[id]['metadata']
+    depend_0s = read_cdf_depend_0s(metadatum['sample_links']['data']['file'], logger=logger, cache_dir=cache_dir, use_cache=use_cache)
     ok = len(depend_0s) == len(test_config[id]['depend_0s'])
     if ok:
       print(f"PASS: Number of DEPEND_0s expected = {len(test_config[id]['depend_0s'])} = number found = {len(depend_0s)}")
@@ -307,10 +303,12 @@ def read_cdf_test1(id=None, depend_0=None, variable=None):
       read_cdf_test1(id=id, depend_0=depend_0, variable=test_config[id]['variable'])
     return
 
-  metadata = test_config[id]['metadata']
+  metadatum = test_config[id]['metadata']
   #cdawmeta.util.print_dict(metadata)
-  depend_0_ = metadata['master']['data']['CDFVariables'][depend_0]
-  variable_ = metadata['master']['data']['CDFVariables'][variable]
+  master = cdawmeta.restructure.master(metadatum['master']['data'])
+
+  depend_0_ = master['CDFVariables'][depend_0]
+  variable_ = master['CDFVariables'][variable]
 
   print('')
 
@@ -324,7 +322,7 @@ def read_cdf_test1(id=None, depend_0=None, variable=None):
 
   print('')
 
-  file = metadata['samples']['file']
+  file = metadatum['sample_links']['data']['file']
   print(f"Reading data for {id}/{depend_0} (DEPEND_0 for {variable}) in sample file = {file}")
   data = read_cdf(file, variables=depend_0, iso8601=False)
 
@@ -361,9 +359,9 @@ def read_cdf_test2(id=None, depend_0=None, variable=None):
       read_cdf_test2(id=id, depend_0=depend_0, variable=test_config[id]['variable'])
     return
 
-  metadata = test_config[id]['metadata']
+  metadatum = test_config[id]['metadata']
 
-  file = metadata['samples']['file']
+  file = metadatum['sample_links']['data']['file']
   print(f"Reading data for {id}/{depend_0} (DEPEND_0 for {variable}) in sample file = {file}")
   data = read_cdf(file, variables=variable, depend_0=depend_0, iso8601=False)
   cdawmeta.util.print_dict(data, sort_dicts=True)
@@ -434,7 +432,6 @@ if __name__ == '__main__':
 
   files_ = files(id='AC_OR_SSC', start='2020-01-01T00:00:00Z', stop='2020-01-01T01:00:00Z')
   print(files_)
-  exit()
   read_cdf_test1()
   read_cdf_test2()
   read_cdf_depend_0s_test()

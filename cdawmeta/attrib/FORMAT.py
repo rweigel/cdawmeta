@@ -9,9 +9,10 @@ def FORMAT(dsid, name, all_variables, c_specifier=True):
     if 'DataType' in variable['VarDescription']:
       DataType = variable['VarDescription']['DataType']
     else:
-      return None
+      return None, "ISTP.DataType", f"Variable '{name}' does not have DataType."
 
   msg = None
+  etype = None
   format = None
   if 'FORMAT' in variable['VarAttributes']:
     format = variable['VarAttributes']['FORMAT']
@@ -19,47 +20,54 @@ def FORMAT(dsid, name, all_variables, c_specifier=True):
       format = _f2c_specifier(format, DataType)
   else:
     if 'FORM_PTR' not in variable['VarAttributes']:
-      msg = f"Error: ISTP[FORMAT]: Variable '{name}' does not have a FORMAT or FORM_PTR attribute."
+      etype = "ISTP.FORMAT"
+      msg = f"Variable '{name}' does not have a FORMAT or FORM_PTR attribute."
 
   if 'FORMAT' in variable['VarAttributes'] and 'FORM_PTR' in variable['VarAttributes']:
-    msg = f"Error: ISTP[FORMAT]: Variable '{name}' has both FORMAT and FORM_PTR attributes. Using FORMAT."
+    msg = f"Variable '{name}' has both FORMAT and FORM_PTR attributes. Using FORMAT."
     if format is not None:
-      return format, msg
+      return format, msg, "ISTP.FORMAT"
 
   if 'FORM_PTR' in variable['VarAttributes']:
     form_ptr = variable['VarAttributes']['FORM_PTR']
     if form_ptr not in all_variables:
-      msg = f"Error: ISTP[FORM_PTR]: Variable '{name}' has FORM_PTR = '{form_ptr}' but no such variable exists."
+      etype = "ISTP.FORM_PTR"
+      msg = f"Variable '{name}' has FORM_PTR = '{form_ptr}' but no such variable exists."
     else:
       variable_ptr = all_variables[form_ptr]
       if 'VarData' in variable_ptr:
 
         var_DimSizes = cdawmeta.util.get_path(variable, ['VarDescription', 'DimSizes'])
         if var_DimSizes is None:
-          msg = f"Error: ISTP[FORM_PTR]: Variable '{name}' does not have DimSizes."
-          return None, msg
+          etype = "ISTP.FORM_PTR"
+          msg = f"Variable '{name}' does not have DimSizes."
+          return None, msg, etype
 
         ptr_DimSizes = cdawmeta.util.get_path(variable_ptr, ['VarDescription', 'DimSizes'])
         if ptr_DimSizes is None:
-          msg = f"Error: ISTP[FORM_PTR]: Variable '{name}' pointed to by FORM_PTR = '{form_ptr}' does not have DimSizes."
-          return None, msg
+          etype = "ISTP.FORM_PTR"
+          msg = f"Variable '{name}' pointed to by FORM_PTR = '{form_ptr}' does not have DimSizes."
+          return None, msg, etype
 
         if var_DimSizes != ptr_DimSizes:
-          msg = f"Error: ISTP[FORM_PTR]: Variable '{name}' has FORM_PTR = '{form_ptr}' with DimSizes = {ptr_DimSizes} that does not match the variable's DimSizes = {var_DimSizes}."
-          return None, msg
+          etype = "ISTP.FORM_PTR"
+          msg = f"Variable '{name}' has FORM_PTR = '{form_ptr}' with DimSizes = {ptr_DimSizes} that does not match the variable's DimSizes = {var_DimSizes}."
+          return None, msg, etype
 
         format = variable_ptr['VarData']
         if c_specifier:
           format = _f2c_specifier(format, DataType)
         if format is not None and format[0][0:2] == '10':
-          format = None
           # https://github.com/rweigel/cdawmeta/issues/11
-          msg = f"Error: ISTP[FORM_PTR]: Variable '{name}' has FORM_PTR = '{form_ptr}' with VarData = {format} that does not appear to be valid."
+          format = None
+          etype = "ISTP.FORM_PTR"
+          msg = f"Variable '{name}' has FORM_PTR = '{form_ptr}' with VarData = {format} that does not appear to be valid."
 
   if isinstance(format, list) and len(set(format)) == 1:
     # If all elements are the same, return a single string instead of list.
     format = format[0]
-  return format, msg
+
+  return format, msg, etype
 
 def _f2c_specifier(f_template, DataType):
   """Extract precision part of a Fortran format string found as a FORMAT value.
