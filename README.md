@@ -43,12 +43,23 @@ and
 
 # Installing and Running
 
-Tested on Python 3.10.9
+(Formal unit tests using `pytest` are in development.)
+
+```
+# Create environment used for testing README examples
+#conda deactivate; conda remove --name python3.10.9-cdawmeta-test --all -y
+conda create --name python3.10.9-cdawmeta-test -y
+conda activate python3.10.9-cdawmeta-test
+conda install pip -y
+```
 
 ```
 git clone https://github.com/rweigel/cdawmeta.git
 cd cdawmeta;
 pip install -e .
+# Test commands in README. Should run without a stack trace (errors shown in
+# red are encountered metadata errors).
+make test-README
 ```
 
 In the following, use `--update` to update the input metadata (source data changes on the order of days, typically in the mornings Eastern time on weekdays).
@@ -299,6 +310,8 @@ CDAWeb SPASE `NumericalData` records have been under development since 2009 and 
 
 After encountering the issues described in parts 1.-3. of this section, we realized that solving all of the problems could be achieved with some additions to the existing CDAWeb to HAPI metadata code and the the creation of a table that contains metadata that does not exist, and is not desired to be in, CDAWeb metadata.
 
-We suggest that CDAWeb SPASE metadata should be created by this automated process, which requires primarily existing CDAWeb metadata information and some additional metadata that can be stored in a few version controlled. Thus information is described in the [cdawmeta-additions](https://github.com/rweigel/cdawmeta-addtions) repository. This approach would have prevented the errors and inconsistencies described above and further detailed in the [cdawmeta-additions README](https://github.com/rweigel/cdawmeta-addtions)
+We suggest that CDAWeb SPASE metadata should be created by this automated process, which requires primarily existing CDAWeb metadata information and some additional metadata that can be stored in a few version controlled. Thus information is described in the [cdawmeta-additions](https://github.com/rweigel/cdawmeta-addtions) repository. This approach would have prevented the errors and inconsistencies described above and further detailed in the [cdawmeta-additions README](https://github.com/rweigel/cdawmeta-addtions).
+
+Another motivation for the urgency of having correct and complete SPASE `NumericalData` records is that there are several applications under development that will use SPASE records to provide search functionality. The quality of such applications is limited by the quality of the database it uses, and it is important that the database content is correct and consistent.
 
 Note that not all existing content in `hpde.io` is yet used by the automated process. For example, some SPASE records have additional details about CDAWeb variables that the automated process does not use. For example, `Qualifier`, `RenderingHints`, `CoordinateSystem`, `SupportQuantity`, and `Particle`, `Field`, etc. This could also be addressed by a table that has this information. However, there should be a discussion of this; there are over ~100,000 CDAWeb variables, and the search use case for much of this information is not clear; not having this information should not prevent the 15-year effort to create correct and up-to-date SPASE `NumericalData` records. That is, if only 10% of SPASE records have a given attribute, a search on it will not be useful. Also, some of the not-yet used metadata is not useful for search, such as `Valid{Min,Max}`, `FillValue`, and `RenderingHints`. This information would be useful if the SPASE record was being used for automated extraction and plotting. However, much more information is needed to enable automated extraction and even then (as we found with attempts to use SPASE for HAPI), given the issues described above, this may not be possible or too time-consuming. If it were possible, an application that uses it and could test the results should be identified first. As noted above, metadata that is not used by an application is likely to have problems.

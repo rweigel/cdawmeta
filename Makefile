@@ -9,7 +9,6 @@
 #
 # If an update is needed due only to a source code change, use
 #   make all
-
 PYTHON=~/anaconda3/bin/python
 
 all-regen: cdawmeta.egg-info
@@ -25,8 +24,15 @@ test-README:
 	python metadata.py --id AC_OR_SSC --meta-type hapi
 	python metadata.py --id AC_OR_SSC --meta-type spase_auto
 	python metadata.py --id AC_OR_SSC --meta-type soso
-	python metadata.py --id AC_OR_SSC --update
-	python metadata.py --id AC_OR_SSC --regen
+	python metadata.py --id AC_OR_SSC --update hapi
+	python metadata.py --id AC_OR_SSC --regen hapi
+
+CENV=python3.10.9-cdawmeta-test
+conda-env:
+	# Not finished
+	- echo "$$CONDA_DEFAULT_ENV" | grep -q "^$(CENV)" && conda deactivate 2> /dev/null || true
+	- conda env list | grep -q "^$(CENV)" && conda remove --name $(CENV) --all -y 2> /dev/null || true
+	conda create --name $(CENV) -y
 
 test-table:
 	python table.py --id '^AC_OR'
