@@ -56,6 +56,7 @@ diff = list(set(generators) - set(set_order))
 
 generators = [*set_order, *diff]
 
+all_dependencies['allxml'] = None
 all_dependencies['master'] = None
 all_dependencies['orig_data'] = None
 all_dependencies['spase'] = None

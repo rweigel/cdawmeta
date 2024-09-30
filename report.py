@@ -194,12 +194,13 @@ def units(report_name, dir_name, clargs):
     if len(uniques) == 0:
       # No SPASE unit found associated with this CDF unit
       del master_units_dict[key]
+      continue
+    master_units_dict[key] = uniques
     for ukey in uniques:
       if key == ukey:
         n_same += uniques[ukey]
       else:
         n_diff += uniques[ukey]
-    master_units_dict[key] = uniques
   cdawmeta.util.write(fname_report, master_units_dict, logger=logger)
 
   # Read and update fname_vounits
@@ -381,7 +382,7 @@ if report_name is not None:
   report_names = [report_name]
 
 for report_name in report_names:
-  if report_name == 'cadence':
+  if False and report_name == 'cadence':
     logger.error("Skipping 'cadence' report because of issue.")
     continue
   logger = cdawmeta.logger(name=f'{report_name}', dir_name=dir_name)

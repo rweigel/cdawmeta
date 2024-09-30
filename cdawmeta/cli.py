@@ -11,9 +11,11 @@ def cli(script, defs=False):
       "_used_by_all": True,
     },
     "meta-type": {
+      #"help": "Type of metadata to generate. Default is to generate all types. May be repeated.",
       "help": "Type of metadata to generate. Default is to generate all types.",
       "default": None,
       "choices": meta_types,
+      #"action": 'append',
       "_used_by": ['metadata.py']
     },
     "skip": {
@@ -48,8 +50,9 @@ def cli(script, defs=False):
       "_used_by_all": True
     },
     "update-skip": {
-      "help": "Comma separated list of meta-types to not update.",
+      "help": "Comma separated list of meta-types to not regenerate.",
       "default": '',
+      "choices": meta_types,
       "_used_by_all": True
     },
     "regen": {
@@ -61,6 +64,7 @@ def cli(script, defs=False):
     "regen-skip": {
       "help": "Comma separated list of meta-types to not regenerate.",
       "default": '',
+      "choices": meta_types,
       "_used_by_all": True
     },
     "log-level": {

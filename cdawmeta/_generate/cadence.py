@@ -17,7 +17,6 @@ def cadence(metadatum, logger):
   orig_data = metadatum['orig_data']['data']
 
   url = orig_data['FileDescription'][0]['Name']
-  cache_dir = cdawmeta.DATA_DIR
 
   use_cache = True
   # N.B. use_cache=True is set. This assumes that content for a given file
@@ -33,7 +32,7 @@ def cadence(metadatum, logger):
     return [{"error": emsg}]
 
   logger.info(f"{id}: Computing cadence for {url}")
-  depend_0_names = cdawmeta.io.read_cdf_depend_0s(url, logger=logger, use_cache=use_cache, cache_dir=cache_dir)
+  depend_0_names = cdawmeta.io.read_cdf_depend_0s(url, logger=logger, use_cache=use_cache)
 
   if depend_0_names is None:
     emsg = f"{id}: cdawmeta.io.read_cdf_depend_0s('{url}') failed."

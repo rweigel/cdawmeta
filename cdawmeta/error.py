@@ -25,6 +25,7 @@ def write_errors(logger, update, name=None):
   that is more difficult if errors were written as they occur.
   '''
   import os
+  import glob
   import cdawmeta
 
   if name is None:
@@ -33,6 +34,19 @@ def write_errors(logger, update, name=None):
       # a key.
       write_errors(logger, update, name=key)
     return
+
+  subdir = name
+  if name == "metadata":
+    subdir = ''
+  if (name == "metadata" and not update):
+    logger.info("Not removing errors for 'metadata' because update = False")
+  else:
+    dir_name = os.path.join(cdawmeta.DATA_DIR, subdir)
+    pattern = f"{dir_name}/*.errors.*log"
+    files = glob.glob(pattern)
+    for file in files:
+      logger.info(f"Removing {file}")
+      #os.remove(file)
 
   errors = cdawmeta.error.errors[name]
   output = {"all": []}
@@ -63,6 +77,7 @@ def write_errors(logger, update, name=None):
     if name == "metadata":
       subdir = ''
       if not update:
+        logger.info("Not writing errors for 'metadata' because update = False")
         # If not updating, there will not be name = "metadata" errors because
         # cache will have been used. We don't want to over-write errors that
         # occurred during the last update.

@@ -13,10 +13,10 @@
 PYTHON=~/anaconda3/bin/python
 
 all-regen: cdawmeta.egg-info
-	python metadata.py --meta-type hapi --regen --regen-skip cadence
+	python metadata.py --meta-type hapi --regen --regen-skip cadence --write-catalog
 
 all-update: cdawmeta.egg-info
-	python metadata.py --meta-type hapi --update --update-skip cadence
+	python metadata.py --meta-type hapi --update --update-skip cadence --write-catalog
 
 clean:
 	-rm -rf data/*
@@ -37,8 +37,11 @@ test-report:
 #test-query:
 
 rsync-to-mag:
-	rsync -avz --exclude data/hpde.io --exclude data/cdaweb.gsfc.nasa.gov \
-		--delete data weigel@mag.gmu.edu:www/git-data/cdawmeta
+	rsync -avz \
+		--exclude data/hpde.io --exclude data/cdaweb.gsfc.nasa.gov \
+		--no-links \
+		--delete \
+		data weigel@mag.gmu.edu:www/git-data/cdawmeta
 
 rsync-from-mag:
 	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ .

@@ -227,7 +227,8 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     logger.info("    " + msg)
     return None
 
-  x_description = _description(dsid, depend_0_name, all_variables[depend_0_name], x=None, print_info=print_info)
+  x_description = _description(dsid, depend_0_name, all_variables[depend_0_name],
+                               x=None, print_info=print_info)
   parameters = [
                   {
                     'name': 'Time',
@@ -310,16 +311,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     if fill is not None:
       parameter['fill'] = fill
 
-    UNITS, emsg, etype = cdawmeta.attrib.UNITS(dsid, name, all_variables, x=None)
-    if etype is not None and print_info:
-      cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
-    parameter['units'] = UNITS
-    additions = cdawmeta.additions(logger)
-    if UNITS in additions['Units']:
-      if additions['Units'][UNITS] is not None:
-        parameter['units'] = additions['Units'][UNITS]
-        parameter['x_unitsSchema'] = 'VOUnits'
-        parameter['x_units_original'] = UNITS
+    _set_units(dsid, name, all_variables, parameter, print_info=False, x=None)
 
     LABLAXIS, emsg, etype = cdawmeta.attrib.LABLAXIS(dsid, name, all_variables, x=None)
     if etype is not None and print_info:
@@ -490,10 +482,6 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
       cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
     return None
 
-  UNITS, emsg, etype = cdawmeta.attrib.UNITS(dsid, DEPEND_x_NAME, all_variables, x=x)
-  if etype is not None and print_info:
-    cdawmeta.error('hapi', dsid, DEPEND_x_NAME, etype, "      " + emsg, logger)
-
   LABLAXIS, emsg, etype = cdawmeta.attrib.LABLAXIS(dsid, DEPEND_x_NAME, all_variables, x=x)
   if etype is not None and print_info:
     cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
@@ -502,15 +490,30 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
     bins_object = {
                     "name": DEPEND_x_NAME,
                     "description": _description(dsid, name, DEPEND_x, x=x, print_info=print_info),
-                    "units": UNITS,
                     "centers": DEPEND_x["VarData"],
                     "x_label": LABLAXIS
                   }
+    _set_units(dsid, name, all_variables, bins_object, print_info=False, x=None)
     return bins_object
   else:
     if print_info:
-      logger.info(f"      Warning: HAPI: Not including bin centers for {DEPEND_x_NAME} b/c no VarData (is probably VIRTUAL)")
+      msg = f"Warning: HAPI: Not including bin centers for {DEPEND_x_NAME}"
+      msg += " b/c no VarData (is probably VIRTUAL)"
+      logger.info(f"      {msg}")
     return None
+
+def _set_units(dsid, name, all_variables, parameter, print_info=False, x=None):
+  UNITS, etype, emsg  = cdawmeta.attrib.UNITS(dsid, name, all_variables, x=x)
+  if etype is not None and print_info:
+    cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
+  parameter['units'] = UNITS
+  if cdawmeta.CONFIG['hapi']['use_vounits']:
+    additions = cdawmeta.additions(logger)
+    if UNITS in additions['Units']:
+      if additions['Units'][UNITS] is not None:
+        parameter['units'] = additions['Units'][UNITS]
+        parameter['x_unitsSchema'] = 'VOUnits'
+        parameter['x_units_original'] = UNITS
 
 def _order_depend0s(id, depend0_names):
 

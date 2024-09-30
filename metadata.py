@@ -9,8 +9,4 @@ if args['id'] is not None and not args['id'].startswith('^'):
 metadata = cdawmeta.metadata(**args)
 
 if args['id'] is not None and not args['id'].startswith('^'):
-  if args['meta_type'] is None:
-    cdawmeta.util.print_dict(metadata[args['id']], style='json')
-  else:
-    for meta_type in args['meta_type'].split(','):
-      cdawmeta.util.print_dict(metadata[args['id']][meta_type], style='json')
+  cdawmeta.util.print_dict(metadata[args['id']], style='json')

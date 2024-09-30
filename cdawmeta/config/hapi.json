@@ -16,7 +16,7 @@
   "_comment": "https://github.com/rweigel/cdawmeta/issues/10",
   "default_float_format": ".7g",
   "default_double_format": ".17g",
-
+  "use_vounits": false,
   "fixes": {
       "depend0Order": {
         "DE2_DUCT16MS_RPA": ["Epoch_den","Epoch_wb1", "Epoch_wb2", "Epoch_wb3", "Epoch_wb4", "Epoch_wb5", "Epoch_wb6", "Epoch"],

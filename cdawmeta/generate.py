@@ -19,7 +19,7 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
         msg = "Using cache because update = regen = False and found cached file."
         logger.info(msg)
         data = cdawmeta.util.read(file_name_pkl, logger=logger)
-        if len(data) == 1:
+        if isinstance(data, list) and len(data) == 1:
           data = data[0]
         return {'id': id, 'log': msg, 'data-file': file_name_json, 'data': data}
 
@@ -43,17 +43,18 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
     cdawmeta.util.write(file_name_error, trace, logger=logger)
     return {'id': id, 'log': None, 'error': emsg, 'data-file': None, 'data': None}
 
-  # Write pkl file with all datasets associated with a CDAWeb dataset.
-  cdawmeta.util.write(file_name_pkl, datasets, logger=logger)
-  # JSON file not used internally, but useful for visual debugging
-  cdawmeta.util.write(file_name_json, datasets, logger=logger)
-
   if os.path.exists(file_name_error):
     logger.info(f"Removing {file_name_error}")
     os.remove(file_name_error)
 
   if len(datasets) == 1:
-    return {"id": id, "data-file": file_name_json, "data": datasets[0]}
+    datasets = datasets[0]
+    # Write pkl file with all datasets associated with a CDAWeb dataset.
+    cdawmeta.util.write(file_name_pkl, datasets, logger=logger)
+    # JSON file not used internally, but useful for visual debugging
+    cdawmeta.util.write(file_name_json, datasets, logger=logger)
+
+    return {"id": id, "data-file": file_name_json, "data": datasets}
 
   data = []
   data_files = []

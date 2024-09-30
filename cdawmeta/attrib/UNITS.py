@@ -43,7 +43,7 @@ def UNITS(dsid, name, all_variables, x=None):
   if ptrs['UNIT_PTR'] is None:
     if VAR_TYPE is not None and VAR_TYPE in ['data', 'support_data']:
       if "UNIT_PTR" not in variable['VarAttributes']:
-        msg = f"{msgo} VAR_TYPE = '{VAR_TYPE}' and no UNITS or UNIT_PTR."
+        msg = f"{msgo} VAR_TYPE = '{VAR_TYPE}' and no UNITS or UNIT_PTR"
         return units, "ISTP.UNITS", msg
   else:
     units = ptrs['UNIT_PTR_VALUES']

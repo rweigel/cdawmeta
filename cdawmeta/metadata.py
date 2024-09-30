@@ -8,7 +8,7 @@ import cdawmeta
 # Can't call logger = cdawmeta.logger(...) here because it calls cdawmeta.DATA_DIR
 # which is set to a default. If user modifies using cdawmeta.DATA_DIR = ...,
 # logger does not know about the change.
-# TODO: Find a better way to handle this. 
+# TODO: Find a better way to handle this.
 logger = None
 
 def _logger(log_level='info'):
@@ -107,6 +107,9 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
           meta_types = [*cdawmeta.dependencies[meta_type], meta_type]
       meta_type_requested = [meta_type_requested]
 
+    if 'allxml' not in meta_types:
+      meta_types = ['allxml', *meta_types]
+
   logger.info(f"Given requested meta_type = {meta_type_requested}, need to create: {meta_types}")
 
   if not update and not regen:
@@ -114,7 +117,10 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
     pass
 
   if update:
+    if regen:
+      logger.warning("update=True => regen=True. No need to set regen=True.")
     regen = True
+    regen_skip = update_skip
 
   if diffs and not update:
     logger.warning("diffs=True but update=False. No diffs can be computed.")
@@ -125,8 +131,7 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
   allxml = _allxml(update=update)
   datasets_all = _datasets(allxml)
 
-  not_generated = ['master', 'orig_data', 'spase', 'spase_hpde_io']
-
+  not_generated = ['allxml', 'master', 'orig_data', 'spase', 'spase_hpde_io']
   mloggers = {}
   for meta_type in meta_types:
     if meta_type in not_generated:
@@ -192,6 +197,7 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
                                              update=update_, regen=regen_)
 
     logger.debug("Removing metadata that was used to generate requested metadata.")
+
     for meta_type in meta_types:
       if meta_type_requested is not None and meta_type not in meta_type_requested:
         if meta_type in dataset:
@@ -225,14 +231,17 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
 
   metadata_ = {key: datasets_all[key] for key in dsids}
 
-  if regen or update:
-    cdawmeta.write_errors(logger, update)
+  if id is None:
+    if regen or update:
+      cdawmeta.write_errors(logger, update)
+  else:
+    logger.info("Not writing errors because id is not None (not full run).")
 
   if write_catalog:
     if meta_type_requested is None:
       _write_catalog(metadata_, id, meta_types)
     else:
-      _write_catalog(metadata_, id, [meta_type_requested])
+      _write_catalog(metadata_, id, meta_type_requested)
 
   return metadata_
 
@@ -376,7 +385,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
 
     ResourceID = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'ResourceID'])
     if ResourceID is None:
-      cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.NoResourceID', f"No ResourceID in {file}", logger)
+      cdawmeta.error('metadata', id, None, 'spase.hpde_io.NoResourceID', f"No ResourceID in {file}", logger)
       continue
 
     hpde_url = f'{ResourceID.replace("spase://", "http://hpde.io/")}'
@@ -386,7 +395,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
     AccessInformation = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'AccessInformation'])
 
     if AccessInformation is None:
-      cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.AccessInformation', f"No AccessInformation in {file}", logger)
+      cdawmeta.error('metadata', id, None, 'spase.hpde_io.AccessInformation', f"No AccessInformation in {file}", logger)
       continue
 
     s = "s" if len(AccessInformation) > 1 else ""
@@ -404,7 +413,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
         URL = AccessURL.get('URL', None)
         if URL is None:
           msg = f"  No URL in {AccessURL} with Name '{Name}' in {hpde_url}"
-          cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.NoURLInAccessURL', msg, logger)
+          cdawmeta.error('metadata', id, None, 'spase.hpde_io.NoURLInAccessURL', msg, logger)
           continue
 
         logger.debug(f"    {ridx+1}. {Name}: {URL}")
@@ -415,7 +424,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
         if Name == 'CDAWeb':
           if found:
             msg = f"      Duplicate AccessURL/Name = 'CDAWeb' in {hpde_url}"
-            cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.DuplicateAccessURLName', msg, logger)
+            cdawmeta.error('metadata', id, None, 'spase.hpde_io.DuplicateAccessURLName', msg, logger)
           else:
             n_found += 1
             if 'ProductKey' in Repository['AccessURL']:
@@ -423,7 +432,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
               ProductKeyCDAWeb = Repository['AccessURL']['ProductKey']
               if ProductKeyCDAWeb.strip() == '':
                 msg = f"      ProductKey.strip() = '' in AccessURL with Name '{Name}' in {hpde_url}"
-                cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.EmptyProductKey', msg, logger)
+                cdawmeta.error('metadata', id, None, 'spase.hpde_io.EmptyProductKey', msg, logger)
               else:
                 json_file = os.path.join(out_dir, f"{ProductKeyCDAWeb}.json")
                 pkl_file = os.path.join(out_dir, f"{ProductKeyCDAWeb}.pkl")
@@ -493,7 +502,7 @@ def _write_catalog(metadata_, id, meta_types):
 
         datum = []
         for dataum_file in dataum_files:
-          d = cdawmeta.util.read(dataum_file.replace('.json', '.pkl'), logger=logger)
+          d = cdawmeta.util.read(dataum_file.replace('.json', '.pkl'))
           datum.append(d)
 
       if isinstance(datum, list):
@@ -510,16 +519,16 @@ def _write_catalog(metadata_, id, meta_types):
       qualifier = f'-{id}'
 
     fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog-all{qualifier}')
-    cdawmeta.util.write(fname + ".json", data, logger=logger)
-    cdawmeta.util.write(fname + ".pkl", data, logger=logger)
+    cdawmeta.util.write(fname + ".json", data)
+    cdawmeta.util.write(fname + ".pkl", data)
 
     if meta_type == 'hapi':
       from copy import deepcopy
       data_copy = deepcopy(data)
       for datum in data_copy:
-        if datum is not None and 'data' in datum:
+        if datum is not None:
           # The non-"all" HAPI catalog does not have "info" nodes.
-          del datum['data']['info']
+          del datum['info']
 
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}.json')
       cdawmeta.util.write(fname, data_copy, logger=logger)

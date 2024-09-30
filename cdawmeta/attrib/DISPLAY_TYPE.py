@@ -28,7 +28,7 @@ def DISPLAY_TYPE(dsid, name, variable):
 
   if display_type not in display_types_known:
     etype = "ISTP.DISPLAY_TYPE"
-    msg = f"DISPLAY_TYPE = '{DISPLAY_TYPE}' is not in "
+    msg = f"DISPLAY_TYPE = '{display_type}' is not in "
     msg += f"{display_types_known}. Will attempt to infer."
 
   found = False
