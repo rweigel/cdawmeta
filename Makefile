@@ -12,18 +12,29 @@
 
 PYTHON=~/anaconda3/bin/python
 
-all:
-	make hapi
-	make hapi-nl
-	make compare
+all-regen: cdawmeta.egg-info
+	python metadata.py --meta-type hapi --regen --regen-skip cadence
+
+all-update: cdawmeta.egg-info
+	python metadata.py --meta-type hapi --update --update-skip cadence
 
 clean:
 	-rm -rf data/*
 
-test:
-	python metadata.py --id AC_OR_SSC --regen --update
+test-README:
+	python metadata.py --id AC_OR_SSC --meta-type hapi
+	python metadata.py --id AC_OR_SSC --meta-type spase_auto
+	python metadata.py --id AC_OR_SSC --meta-type soso
+	python metadata.py --id AC_OR_SSC --update
+	python metadata.py --id AC_OR_SSC --regen
+
+test-table:
 	python table.py --id '^AC_OR'
-	python report.py --id AC_OR_DEF --regen --update
+
+test-report:
+	python report.py --id AC_OR_DEF --update
+
+#test-query:
 
 rsync-to-mag:
 	rsync -avz --exclude data/hpde.io --exclude data/cdaweb.gsfc.nasa.gov \
@@ -32,13 +43,9 @@ rsync-to-mag:
 rsync-from-mag:
 	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ .
 
-compare:
-	make hapi
-	make hapi-nl
-	python hapi/compare.py | tee data/hapi/compare.log
-
 cdawmeta.egg-info:
 	pip install -e .
+################################################################################
 
 ################################################################################
 table/table-ui:
@@ -71,36 +78,4 @@ table-serve: data/table/cdaweb.variable.sql data/table/cdaweb.dataset.sql data/t
 	$(PYTHON) table/table-ui/serve.py --port 8052 --sqldb data/table/cdaweb.dataset.sql &
 	$(PYTHON) table/table-ui/serve.py --port 8053 --sqldb data/table/spase.parameter.sql &
 	$(PYTHON) table/table-ui/serve.py --port 8054 --sqldb data/table/spase.dataset.sql
-################################################################################
-
-################################################################################
-cdaweb: cdaweb.py
-	make data/all.json
-
-data/all.json: cdaweb.py
-	python cdaweb.py --data_dir data
-################################################################################
-
-################################################################################
-hapi:
-	make data/hapi/catalog-all.json
-
-data/hapi/catalog-all.json: cdawmeta.egg-info hapi.py cdawmeta/hapi-nl-issues.json
-	python hapi.py --data_dir data
-################################################################################
-
-################################################################################
-hapi-nl:
-	make data/hapi/catalog-all.nl.json
-
-data/hapi/catalog-all.nl.json: cdawmeta.egg-info hapi/hapi-nl.py
-	python hapi/hapi-nl.py | tee data/hapi/catalog-all.nl.log
-################################################################################
-
-################################################################################
-spase: data/spase/spase.log
-	make data/spase-units.txt
-
-data/spase/spase.log: data/cdaweb.json spase/spase.py
-	python spase/spase.py | tee data/spase/spase.log
 ################################################################################

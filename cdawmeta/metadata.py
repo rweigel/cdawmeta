@@ -1,5 +1,6 @@
 import os
 import re
+import glob
 import traceback
 
 import cdawmeta
@@ -132,11 +133,25 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
       continue
     mloggers[meta_type] = cdawmeta.logger(meta_type, log_level=log_level)
 
-  if update and 'spase_hpde_io' in meta_types:
-    logger.info("Finding CDAWeb SPASE/Numerical data records in hpde.io repository.")
-    # This case is special because we need to determine the mapping from CDAWeb
-    # dataset id to SPASE record.
-    _spase_hpde_io(update=True, diffs=diffs)
+  if 'spase_hpde_io' in meta_types:
+    import git
+    repo_path = os.path.join(cdawmeta.DATA_DIR, 'hpde.io')
+    up_to_date = False
+    repo_url = cdawmeta.CONFIG['urls']['hpde.io']
+    if not os.path.exists(repo_path):
+      logger.info(f"Cloning {repo_url} into {repo_path}")
+      logger.info("Initial clone takes ~30s")
+      git.Repo.clone_from(repo_url, repo_path, depth=1)
+      _spase_hpde_io(update=True, diffs=diffs)
+      up_to_date = True
+
+    if update and not up_to_date:
+      repo = git.Repo(repo_path)
+      origin = repo.remotes.origin
+      origin.fetch()
+      logger.info(f"Pulling from {repo_url}")
+      repo.git.merge('origin/master')
+      _spase_hpde_io(update=True, diffs=diffs)
 
   def step_needed(meta_type, step, update, update_skips):
     if meta_type in update_skips:
@@ -163,7 +178,7 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
 
     if 'spase_hpde_io' in meta_types:
       # Here we never update b/c update is done in earlier call to _spase_hpde_io
-      dataset['spase_hpde_io'] = _spase_hpde_io(dataset['id'], update=False)
+      dataset['spase_hpde_io'] = _spase_hpde_io(id=dataset['id'], update=False)
 
     for meta_type in meta_types:
       if meta_type in not_generated:
@@ -334,21 +349,14 @@ def _spase(dataset, update=True, diffs=False):
 def _spase_hpde_io(id=None, update=True, diffs=False):
 
   out_dir = os.path.join(cdawmeta.DATA_DIR, 'spase_hpde_io', 'info')
-  if id is not None:
+
+  if id is not None and not update:
     pkl_file = os.path.join(out_dir, f"{id}.pkl")
-    if not update and os.path.exists(pkl_file):
+    if os.path.exists(pkl_file):
       return cdawmeta.util.read(pkl_file, logger=logger)
     else:
-      logger.warn(f"{id}: No SPASE record in hpde.io repository.")
-      return
-
-  import glob
-  if not os.path.exists('data/hpde.io'):
-    import subprocess
-    cmd = ['git', 'clone', '--depth 1', 'https://github.com/hpde/hpde.io']
-    logger.info(f'Executing: {" ".join(cmd)}')
-    result = subprocess.run(cmd, stdout=subprocess.PIPE)
-    logger.info(result.stdout)
+      logger.info(f"No SPASE record for {id} in ")
+      return None
 
   pattern = "data/hpde.io/**/NumericalData/**/*.json"
   logger.info(f"Getting list of files that match '{pattern}'")
@@ -359,9 +367,11 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
       del files[files.index(file)]
   logger.info(f"{len(files)} NumericalData SPASE records after removing Deprecated")
 
+  logger.info(f"Reading {len(files)} NumericalData SPASE records.")
+  n_found = 0
   for file in files:
 
-    logger.info(f'  Reading {file}')
+    logger.debug(f'  Reading {file}')
     data = cdawmeta.util.read(file)
 
     ResourceID = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'ResourceID'])
@@ -389,11 +399,12 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
       if AccessURL is not None:
         Name = AccessURL.get('Name', None)
         if Name is None:
-          logger.warning(f"  Warning - No Name in {AccessURL}")
+          logger.warning(f"  Warning - No {AccessURL}/Name in {hpde_url}")
 
         URL = AccessURL.get('URL', None)
         if URL is None:
-          cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.NoURLInAccessURL', f"No URL in {AccessURL}", logger)
+          msg = f"  No URL in {AccessURL} with Name '{Name}' in {hpde_url}"
+          cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.NoURLInAccessURL', msg, logger)
           continue
 
         logger.debug(f"    {ridx+1}. {Name}: {URL}")
@@ -403,14 +414,15 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
 
         if Name == 'CDAWeb':
           if found:
-            msg = f"Duplicate AccessURL/Name = 'CDAWeb' in {hpde_url}"
+            msg = f"      Duplicate AccessURL/Name = 'CDAWeb' in {hpde_url}"
             cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.DuplicateAccessURLName', msg, logger)
           else:
+            n_found += 1
             if 'ProductKey' in Repository['AccessURL']:
               found = True
               ProductKeyCDAWeb = Repository['AccessURL']['ProductKey']
               if ProductKeyCDAWeb.strip() == '':
-                msg = "Empty ProductKey.strip() = ''"
+                msg = f"      ProductKey.strip() = '' in AccessURL with Name '{Name}' in {hpde_url}"
                 cdawmeta.error('metadata', id, None, 'SPASE.hpde_io.EmptyProductKey', msg, logger)
               else:
                 json_file = os.path.join(out_dir, f"{ProductKeyCDAWeb}.json")
@@ -429,6 +441,8 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
       logger.debug("  x Did not find CDAWeb ProductKey in any Repository")
     else:
       logger.debug(f"  + Found CDAWeb ProductKey: {ProductKeyCDAWeb}")
+
+  logger.info(f"Found {n_found} NumericalData SPASE for CDAWeb.")
 
 def _orig_data(dataset, update=True, diffs=False):
 

@@ -84,6 +84,7 @@ def units(report_name, dir_name, clargs):
     if master is None:
       logger.info("  Master: x No Master data")
       continue
+    master = cdawmeta.restructure.master(master, logger=logger)
 
     if "CDFVariables" not in master:
       logger.info("  Master: x No CDFVariables in Master")
@@ -111,39 +112,33 @@ def units(report_name, dir_name, clargs):
       if 'VAR_TYPE' in variable['VarAttributes']:
         VAR_TYPE = variable['VarAttributes']['VAR_TYPE']
 
-      #if VAR_TYPE not in ['data', 'support_data']:
-      if VAR_TYPE != 'data':
+      if VAR_TYPE not in ['data', 'support_data']:
         continue
 
       logger.info(variable_name)
 
-      UNITS, emsg = cdawmeta.attrib.UNITS(dsid, variable_name, variables)
-      if emsg is not None:
-        logger.error("    " + emsg)
-
-      if not isinstance(UNITS, list):
-        UNITS = [UNITS]
-
-      missing_units[dsid][variable_name] = []
-      for UNIT in UNITS:
-        if UNIT is None:
-          missing_units[dsid][variable_name].append("cdawmeta.attrib.UNITS() returned None")
-        elif UNIT.strip() == "":
-          missing_units[dsid][variable_name].append("UNITS.strip() = ''")
-        elif UNIT not in master_units_dict:
-          master_units_dict[UNIT] = []
-
-      if len(missing_units[dsid][variable_name]) > 0:
-        UNITS = None
-        if len(missing_units[dsid][variable_name]) == 1:
-          missing_units[dsid][variable_name] = missing_units[dsid][variable_name][0]
-        logger.error(f"    CDF:   x {missing_units[dsid][variable_name]}")
-      else:
-        del missing_units[dsid][variable_name]
-        if len(UNITS) == 1:
-          logger.info(f"    CDF:   '{UNITS[0]}'")
+      UNITS, etype, emsg = cdawmeta.attrib.UNITS(dsid, variable_name, variables)
+      if UNITS is None:
+        if emsg:
+          msg = emsg
+          missing_units[dsid][variable_name] = msg
+          logger.error(f"    CDF:   x {missing_units[dsid][variable_name]}")
         else:
-          logger.info(f"    CDF:    {UNITS}")
+          msg = "cdawmeta.attrib.UNITS() returned None but no error"
+          logger.info(f"    CDF:   x {missing_units[dsid][variable_name]}")
+      else:
+        if not isinstance(UNITS, list):
+          # e.g., AC_H2_CRIS
+          UNITS = [UNITS]
+
+        for UNIT in UNITS:
+          if UNIT not in master_units_dict:
+            master_units_dict[UNIT] = []
+
+        if len(UNITS) == 1:
+          logger.info(f"    CDF:     {UNITS[0]}")
+        else:
+          logger.info(f"    CDF:     {UNITS}")
 
       if not have_spase:
         continue
@@ -158,15 +153,18 @@ def units(report_name, dir_name, clargs):
           Units = Parameters[variable_name]['Units']
           if isinstance(Units, list):
             logger.error('    SPASE: NOT IMPLEMENTED - Units is a list')
+            import pdb; pdb.set_trace()
 
           if UNITS is not None:
+            if len(UNITS) > 1 and not isinstance(Units, list):
+              logger.error(f'    SPASE has one unit string, CDF has {len(UNITS)} unit strings')
             if list(set(UNITS)) != UNITS:
               for UNIT in UNITS:
                 master_units_dict[UNIT].append(Units)
             else:
               master_units_dict[UNITS[0]].append(Units)
 
-          logger.info(f"    SPASE: '{Units}'")
+          logger.info(f"    SPASE:   {Units}")
         else:
           logger.info("    SPASE: x No Units attribute")
       else:
@@ -185,9 +183,22 @@ def units(report_name, dir_name, clargs):
   cdawmeta.util.write(fname_missing, missing_units, logger=logger)
 
   # Write fname_report
+  n_same = 0
+  n_diff = 0
   from collections import Counter
-  for key in master_units_dict:
+  for key in master_units_dict.copy():
+    # Each key is a CDF unit; its value is a list of Units associated with
+    # it found in SPASE records. Count the number of times each unit is found
+    # and put in dict.
     uniques = dict(Counter(master_units_dict[key]))
+    if len(uniques) == 0:
+      # No SPASE unit found associated with this CDF unit
+      del master_units_dict[key]
+    for ukey in uniques:
+      if key == ukey:
+        n_same += uniques[ukey]
+      else:
+        n_diff += uniques[ukey]
     master_units_dict[key] = uniques
   cdawmeta.util.write(fname_report, master_units_dict, logger=logger)
 
@@ -220,15 +231,10 @@ def units(report_name, dir_name, clargs):
   logger.info(f"{len(unique_dict)} unique units{coda}")
   msg = "with missing a UNITS attribute or an all-whitespace UNITS value"
   logger.info(f"{n_missing} variables of VAR_TYPE = 'data' {msg}")
+  logger.info(f"{n_same} CDF UNITS are the same as the SPASE Unit")
+  logger.info(f"{n_diff} CDF UNITS differ from the SPASE Unit (only differences in value, not semantics, checked)")
 
 def hpde_io(report_name, dir_name, clargs):
-
-  repo_path = os.path.join(cdawmeta.DATA_DIR, 'hpde.io')
-  if not os.path.exists(repo_path):
-    import git
-    repo_url = cdawmeta.CONFIG['urls']['hpde.io']
-    logger.info(f"Cloning {repo_url} into {repo_path}")
-    git.Repo.clone_from(repo_url, repo_path, depth=1)
 
   dir_name = os.path.join(dir_name, "..")
 

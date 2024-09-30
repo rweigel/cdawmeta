@@ -65,13 +65,13 @@ def spase_auto(metadatum, logger):
   if InformationURL is not None:
     NumericalData['ResourceHeader']['InformationURL'] = InformationURL
 
-  import pdb; pdb.set_trace()
   if config['include_access_information']:
     NumericalData['AccessInformation'] = metadatum['AccessInformation']['data']
     NumericalData['_AccessInformation'] = "Source: AccessInformation.json template"
 
   NumericalData['TemporalDescription'] = _TemporalDescription(allxml)
   if isinstance(hapi, dict):
+    # Only one DEPEND_0
     Cadence = _Cadence(hapi['info'])
     if Cadence is not None:
       NumericalData['TemporalDescription'].update(Cadence)
@@ -190,19 +190,24 @@ def _Keyword(allxml, master):
 
   return _Keyword
 
-def _Parameter(hapi, additions):
+def _Parameter(hapi, additions, include_cadence=False):
 
   if isinstance(hapi, list):
+    # More than one DEPEND_0
     Parameter = []
     for dataset in hapi:
-      Parameter.append(_Parameter(dataset, additions))
+      Parameter.append(_Parameter(dataset, additions, include_cadence=True))
 
     # https://stackoverflow.com/a/45323085
+    # sum() is used to flatten a list of lists
     return sum(Parameter, [])
 
   Parameters = []
   parameters = hapi['info']['parameters']
-  Cadence = _Cadence(hapi['info'])
+  Cadence = None
+  if include_cadence:
+    Cadence = _Cadence(hapi['info'])
+
   for parameter in parameters:
 
     if parameter['type'] == 'isotime':
@@ -211,14 +216,13 @@ def _Parameter(hapi, additions):
         Description = parameter['x_description']
       if 'description' in parameter:
         Description = parameter['description']
-      Description = Description.strip().replace(r'.$', '') + "; "
       DataType = parameter['x_cdf_DataType']
       Unit = additions["Epoch"][DataType]["Unit"]
-      Description += additions["Epoch"][DataType]["Description"]
       Parameter = {
         "Name": parameter['name'],
         "ParameterKey": parameter['x_cdf_NAME'],
         "Description": Description,
+        "_Description": additions["Epoch"][DataType]["Description"],
         "Units": Unit,
         "_Note": additions["Epoch"]["Note"]
       }

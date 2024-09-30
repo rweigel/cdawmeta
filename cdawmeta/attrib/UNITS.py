@@ -23,7 +23,7 @@ def UNITS(dsid, name, all_variables, x=None):
 
     if not units.isprintable():
       msg = f"{msgo} UNITS with non-printable characters. Setting UNITS=''"
-      return None, msg, "CDF.UNITS"
+      return None, "CDF.UNITS", msg
 
     if units.strip() == "":
       msg = f"{msgo} UNITS.strip() = ''"
@@ -31,20 +31,20 @@ def UNITS(dsid, name, all_variables, x=None):
         # Catch case where empty string or whitespace string used for UNITS,
         # presumably to "satisfy" ISTP requirements that UNITS be present.
         msg = f"{msgo} VAR_TYPE = '{VAR_TYPE}' and UNITS.strip() = ''"
-        return None, msg, "ISTP.UNITS"
+        return None, "ISTP.UNITS", msg
 
     if ptrs['UNIT_PTR'] is not None:
       etype = "ISTP.UNITS"
       msg = f"For {msgx}variable '{name}', UNIT_PTR = {ptrs['UNIT_PTR']} and UNITS = "
       msg += f"{variable['VarAttributes']['UNITS']}. Using UNITS."
 
-    return units, msg, etype
+    return units, etype, msg
 
   if ptrs['UNIT_PTR'] is None:
     if VAR_TYPE is not None and VAR_TYPE in ['data', 'support_data']:
       if "UNIT_PTR" not in variable['VarAttributes']:
         msg = f"{msgo} VAR_TYPE = '{VAR_TYPE}' and no UNITS or UNIT_PTR."
-        return units, msg, "ISTP.UNITS"
+        return units, "ISTP.UNITS", msg
   else:
     units = ptrs['UNIT_PTR_VALUES']
     if len(units) == 1:

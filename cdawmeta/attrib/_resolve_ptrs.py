@@ -74,16 +74,11 @@ def _resolve_ptrs(dsid, name, all_variables, ptr_names=None):
     n_found = len([x for x in ptrs[prefix+"_VALID"] if x is not None])
     if n_invalid > 0:
       ptrs[prefix] = None
-      if False:
-        s = ""
-        if n_valid > 1:
-          s = "s"
-        msg = f"Error: ISTP: '{name}' has {n_invalid} invalid element{s}."
     elif prefix != 'COMPONENT':
       if n_valid != len(DimSizes):
         ptrs[prefix] = None
         if False:
-          # Not necessarily an error for DEPEND. Depends on DISPLAY_TYPE.
+          # Not necessarily an error for DEPEND. Depends on DISPLAY_TYPE, which is often missing.
           # https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html
           msg = f"Error: ISTP: '{name}' has {n_valid} valid elements {prefix}_{{1,2,3}}, but need "
           msg += f"len(DimSizes) = {len(DimSizes)}."

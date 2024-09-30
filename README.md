@@ -75,6 +75,22 @@ Create and display proof-of-concept SOSO; the output of this command can be view
 python metadata.py --id AC_OR_SSC --meta-type soso
 ```
 
+**Advanced Examples**
+
+Insert SPASE documents for CDAWeb dataset names that match `^A` into a MongoDB and execute a query (requires [installation of MongoDB](https://www.mongodb.com/docs/manual/installation/)) to `~/mongodb`:
+```
+python query.py --port 27018 --id '^A' \
+ --filter '{"NumericalData.Parameter": { "$exists": true }}' \
+ --mongod-binary ~/mongodb/bin/mongod # Change path as needed
+# 45 documents found
+# 40 documents match query
+```
+
+Create a report based on content of the [hpde.io repository](https://github.com/hpde/hpde.io). (Sample output in [`cdawmeta-additions/reports`](https://github.com/rweigel/cdawmeta-additions/tree/main/reports)). This file also builds the input files used for the automatic generation of SPASE records, which is described in the [`cdawmeta-additions` README](https://github.com/rweigel/cdawmeta-additions/).
+```
+python report.py --report-name hpde_io
+```
+
 <a id="CDAWeb"></a>
 
 # CDAWeb
