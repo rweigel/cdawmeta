@@ -59,6 +59,12 @@ def cadence(metadatum, logger):
 
   for depend_0_name in depend_0_names:
 
+    if depend_0_name not in master['CDFVariables']:
+      emsg = f"{id}: '{depend_0_name}' in CDF is not in master['CDFVariables']"
+      cdawmeta.error("cadence", id, None, "CDFDEPEND_0NotInCDFMaster", emsg, logger)
+      depend_0_counts[depend_0_name] = {"url": url, "error": emsg}
+      continue
+
     DataTypeMaster = master['CDFVariables'][depend_0_name]['VarDescription']['DataType']
 
     msg = f"  Computing cadence for {id}/DEPEND_0 = '{depend_0_name}' with DataType in Master CDF = '{DataTypeMaster}'"

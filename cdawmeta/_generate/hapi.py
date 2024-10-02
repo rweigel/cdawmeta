@@ -8,6 +8,7 @@ import cdawmeta
 logger = None
 
 dependencies = ['master', 'cadence', 'sample_start_stop']
+#dependencies = ['master', 'sample_start_stop']
 
 def hapi(metadatum, _logger):
   global logger
@@ -236,6 +237,9 @@ def _max_request_duration(depend_0_name, metadatum, info):
 
 def _cadence(id, depend_0_name, metadatum):
 
+  if 'cadence' not in metadatum:
+    return None, f"{id}/{depend_0_name}: No cadence information available."
+
   if 'cadence' in metadatum:
     if 'error' in metadatum['cadence'] or 'data' not in metadatum['cadence']:
       return None, f"{id}/{depend_0_name}: No cadence information available."
@@ -455,7 +459,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
           if ptrs['LABL_PTR_VALUES'][x] != ptrs['DEPEND_VALUES'][x]:
             differ = True
             if differ and print_info:
-              msg = f'      Warning: NotImplemented[RedundantDependValues]: DEPEND_{x} has is string type and LABL_PTR_{x} given. They differ; using LABL_PTR_{x} for HAPI label attribute.'
+              msg = f'      Warning: NotImplemented[RedundantDependValues]: DEPEND_{x} is string type and LABL_PTR_{x} given. They differ; using LABL_PTR_{x} for HAPI label attribute.'
               logger.warning(msg)
               break
 

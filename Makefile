@@ -4,7 +4,7 @@ hapi-update: cdawmeta.egg-info
 	python metadata.py --meta-type hapi --write-catalog --update --update-skip cadence
 
 hapi-regen: cdawmeta.egg-info
-	python metadata.py --meta-type hapi --write-catalog --regen --regen-skip cadence --max-workers 1
+	python metadata.py --meta-type hapi --id-skip '^PSP|AIM_CIPS_SCI_3A' --write-catalog --regen --regen-skip cadence --max-workers 1
 
 regen-all: cdawmeta.egg-info
 	python metadata.py --meta-type hapi --regen --regen-skip cadence --write-catalog

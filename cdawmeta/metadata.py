@@ -174,7 +174,7 @@ def metadata(meta_type=None, id=None, id_skip=None, embed_data=True,
   def step_needed(meta_type, step, update, update_skips):
     if meta_type in update_skips:
       if update:
-        logger.info(f"Skipping {meta_type} {step} because in {step}_skip.")
+        logger.info(f"Setting regen=False for {meta_type} {step} because in {step}_skip.")
       return False
     return update
 
@@ -554,8 +554,9 @@ def _write_catalog(metadata_, id, meta_types):
             del datum['info']
 
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}')
-      logger.info(f'Writing {fname}.{{json,pkl}}')
+      logger.info(f'Writing {fname}.json')
       cdawmeta.util.write(fname + ".json", data_copy)
+      logger.info(f'Writing {fname}.pkl')
       cdawmeta.util.write(fname + ".pkl", data_copy)
 
 def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=False, update=False):
