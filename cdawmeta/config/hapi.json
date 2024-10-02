@@ -7,6 +7,8 @@
   "_comment": "Set to false to reduce number of warnings due to mismatch with Nand's metadata",
   "strip_description": false,
 
+  "id_skip": "AIM_CIPS_SCI_3A",
+
   "_comment": "Remove ---> in description",
   "remove_arrows": false,
 
@@ -17,6 +19,7 @@
   "default_float_format": ".7g",
   "default_double_format": ".17g",
   "use_vounits": false,
+  "maxRequestDurationDefault": "P10D",
   "fixes": {
       "depend0Order": {
         "DE2_DUCT16MS_RPA": ["Epoch_den","Epoch_wb1", "Epoch_wb2", "Epoch_wb3", "Epoch_wb4", "Epoch_wb5", "Epoch_wb6", "Epoch"],

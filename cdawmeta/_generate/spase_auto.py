@@ -60,6 +60,8 @@ def spase_auto(metadatum, logger):
     source = f"Source: {'/'.join(p)}"
     NumericalData['ResourceHeader']['_Acknowledgement'] = source
 
+  NumericalData['ResourceHeader']['_Rights'] = additions.get('Rights')
+
   InformationURL = _InformationURL(allxml)
   # TODO: Add content in cdawmeta-additions/InformationURL.json if unique
   if InformationURL is not None:

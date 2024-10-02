@@ -18,7 +18,7 @@ def hapi(metadatum, _logger):
   if 'data' not in metadatum['master']:
     msg = f"{id}: Not creating dataset for {id} b/c it has no 'data' key"
     cdawmeta.error('hapi', id, None, "ISTP.NoMaster", msg, logger)
-    return None
+    return {"error": msg}
 
   master = cdawmeta.restructure.master(metadatum['master']['data'], logger=logger)
 
@@ -85,9 +85,11 @@ def hapi(metadatum, _logger):
   catalog = []
   for depend_0_name in depend_0_names:
 
-    logger.info(f"  Creating HAPI dataset for DEPEND_0 = '{depend_0_name}'")
+    logger.info(f"  Computing header for HAPI dataset for DEPEND_0 = '{depend_0_name}'")
 
     info_head = _info_head(metadatum, depend_0_name)
+
+    logger.info("  Computing parameters")
 
     dataset_new = {
       'id': None,
@@ -141,73 +143,123 @@ def _info_head(metadatum, depend_0_name):
       'cadence': None,
       'x_cadence_fraction': None,
       'x_cadence_note': None,
-      'maxRequestDuration': 'P10D',
+      'maxRequestDuration': None,
       'resourceURL': f'https://cdaweb.gsfc.nasa.gov/misc/Notes{id[0]}.html#{id}',
       'contact': contact
   }
+
+  cadence_info, emsg = _cadence(id, depend_0_name, metadatum)
+  if emsg is not None:
+    cdawmeta.error('hapi', id, None, "HAPI.NoCadence", "    " + emsg, logger)
+    del info['cadence']
+    del info['x_cadence_fraction']
+    del info['x_cadence_note']
+  else:
+    info.update(cadence_info)
 
   if 'sample_start_stop' in metadatum:
     sample_start_stop = metadatum['sample_start_stop']['data']
     info['sampleStartDate'] = sample_start_stop['sampleStartDate']
     info['sampleStopDate'] = sample_start_stop['sampleStopDate']
   else:
-    logger.warn(f"  Warning: No sample_start_stop for {id}")
-    info['sampleStartDate']
-    info['sampleStopDate']
+    logger.warn(f"    Warning: No sample_start_stop for {id}")
+    del info['sampleStartDate']
+    del info['sampleStopDate']
 
-  no_cadence_msg = None
-  if 'cadence' in metadatum:
-    if 'error' in metadatum['cadence']:
-      no_cadence_msg = "  No cadence information available"
-    else:
-      counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
-      note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'note'])
-      if counts is not None:
-        cadence = counts[0]['duration_iso8601']
-        fraction = counts[0]['fraction']
-        info['cadence'] = cadence
-        info['x_cadence_fraction'] = fraction
-        info['x_cadence_note'] = note
-      else:
-        emsg = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'error'])
-        if emsg is not None:
-          no_cadence_msg = f"  {id}: No cadence information available due to {emsg.strip()}."
-        else:
-          no_cadence_msg = f"  {id}: No cadence information available due to unspecified error."
+  maxRequestDuration, emsg = _max_request_duration(depend_0_name, metadatum, info)
+  if emsg is not None:
+    cdawmeta.info(f"    Using default maxRequestDuration = {info['maxRequestDuration']}")
+    info["maxRequestDuration"] = cdawmeta.CONFIG['hapi']['maxRequestDurationDefault']
+  if maxRequestDuration is not None:
+    info["maxRequestDuration"] = maxRequestDuration
 
-  if no_cadence_msg is not None:
-    cdawmeta.error('hapi', id, None, "HAPI.NoCadence", no_cadence_msg, logger)
-    del info['cadence']
-    del info['x_cadence_fraction']
-    del info['x_cadence_note']
+  return info
+
+def _max_request_duration(depend_0_name, metadatum, info):
 
   # sample{Start,Stop}Date is based on time range of 1 file
   # If sample{Start,Stop}Date available max duration is span of n_files files
   n_files = 50
   # If sample{Start,Stop}Date not available max duration is 1000*cadence
   n_cadence = 1000
+
   if 'sampleStartDate' in info and 'sampleStopDate' in info:
+    logger.info("    Calculating maxRequestDuration from sample{Start,Stop}Date")
     try:
-      stop = datetime.datetime.fromisoformat(info['sampleStopDate'][0:-1])
-      start = datetime.datetime.fromisoformat(info['sampleStartDate'][0:-1])
-      delta = stop - start
-      td = timedelta_isoformat.timedelta(milliseconds=n_files*1000*delta.total_seconds())
-      info['maxRequestDuration'] = td.isoformat()
-      logger.info(f"  maxRequestDuration = {td.isoformat()} (based on sample{{Start,Stop}}Date)")
+      start = datetime.datetime.fromisoformat(info['startDate'][0:-1])
+      stop = datetime.datetime.fromisoformat(info['stopDate'][0:-1])
+      sampleStart = datetime.datetime.fromisoformat(info['sampleStartDate'][0:-1])
+      sampleStop = datetime.datetime.fromisoformat(info['sampleStopDate'][0:-1])
+
+      logger.info(f"    startDate       = {info['startDate']}")
+      logger.info(f"    stopDate        = {info['stopDate']}")
+      logger.info(f"    sampleStartDate = {info['sampleStartDate']}")
+      logger.info(f"    sampleStopDate  = {info['sampleStopDate']}")
+
+      delta_sample = sampleStop - sampleStart
+      delta_datset = stop - start
+
+      total_seconds_sample = delta_sample.total_seconds()
+      total_seconds_datset = delta_datset.total_seconds()
+      logger.info(f"    sample length  = {total_seconds_sample} [s]")
+      logger.info(f"    dataset length = {total_seconds_datset} [s]")
+
+      total_seconds = min(total_seconds_datset, n_files*total_seconds_sample)
+      logger.info(f"    min(dataset, {n_files}*sample) = {total_seconds} [s]")
+
+      td = timedelta_isoformat.timedelta(milliseconds=1000*total_seconds)
+      logger.info(f"    maxRequestDuration = {td.isoformat()}")
+      maxRequestDuration = td.isoformat()
+      logger.info(f"    maxRequestDuration = {td.isoformat()} (based on sample{{Start,Stop}}Date)")
+
+      return maxRequestDuration, None
+
     except Exception as e:
-      cdawmeta.error('hapi', id, None, "HAPI.maxRequestDuration", "  Calculation of maxRequestDuration from sample{{Start,Stop}}Date failed.", logger)
-  elif 'cadence' in info:
+      msg = f"Calculation of maxRequestDuration from sample{{Start,Stop}}Date failed: {e}"
+      cdawmeta.error('hapi', id, None, "HAPI.UnHandledException", "  " + msg, logger)
+
+  if 'cadence' in info:
     counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
     if counts is not None:
+      logger.info("    No sample{Start,Stop}Date. Calculating maxRequestDuration from cadence")
       try:
         td = timedelta_isoformat.timedelta(milliseconds=n_cadence*counts[0]['duration_ms'])
-        info['maxRequestDuration'] = td.isoformat()
-        logger.info(f"  maxRequestDuration = {td.isoformat()} (based on cadence)")
+        maxRequestDuration = td.isoformat()
+        logger.info(f"    maxRequestDuration = {td.isoformat()} (based on cadence)")
+        return maxRequestDuration, None
       except Exception as e:
-        msg = "Calculation of maxRequestDuration from cadence failed."
-        cdawmeta.error('hapi', id, None, "HAPI.maxRequestDuration", "  " + msg, logger)
+        msg = f"    Calculation of maxRequestDuration from cadence failed: {e}"
+        cdawmeta.error('hapi', id, None, "HAPI.UnHandledException", "  " + msg, logger)
+        return None, msg
 
-  return info
+  return None, None
+
+def _cadence(id, depend_0_name, metadatum):
+
+  if 'cadence' in metadatum:
+    if 'error' in metadatum['cadence'] or 'data' not in metadatum['cadence']:
+      return None, f"{id}/{depend_0_name}: No cadence information available."
+    else:
+      cadence_dict = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence'])
+      if 'error' in cadence_dict:
+        return None, f"{id}/{depend_0_name}: No cadence information available due to {cadence_dict['error']}."
+
+      depend_0_cadence_dict = cdawmeta.util.get_path(cadence_dict, [depend_0_name])
+      if depend_0_cadence_dict is None:
+        return None, f"{id}/{depend_0_name}: No cadence information available."
+
+      if 'error' in depend_0_cadence_dict:
+        return None, f"{id}/{depend_0_name}: No cadence information available due to {depend_0_cadence_dict['error']}."
+
+      counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence', depend_0_name, 'counts'])
+      if counts is not None and len(counts) > 0:
+        note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence', depend_0_name, 'note'])
+        cadence = counts[0]['duration_iso8601']
+        fraction = counts[0]['fraction']
+        cadence_info = {'cadence': cadence, 'x_cadence_fraction': fraction, 'x_cadence_note': note}
+        return cadence_info, None
+      else:
+        return None, f"{id}/{depend_0_name}: No cadence information available due to unspecified error."
 
 def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid, print_info=False):
 
@@ -227,8 +279,16 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     logger.info("    " + msg)
     return None
 
+  if print_info:
+    logger.info(f"    {depend_0_name} (variable associated with HAPI Time parameter)")
+
   x_description = _description(dsid, depend_0_name, all_variables[depend_0_name],
                                x=None, print_info=print_info)
+
+  if print_info:
+    logger.info(f"      x_description: {x_description}")
+    logger.info(f"      x_cdf_DataType: {DEPEND_0_DataType}")
+
   parameters = [
                   {
                     'name': 'Time',

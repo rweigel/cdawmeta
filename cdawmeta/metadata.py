@@ -17,7 +17,7 @@ def _logger(log_level='info'):
     logger = cdawmeta.logger(name='metadata', log_level=log_level)
   return logger
 
-def ids(id=None, skip=None, update=False):
+def ids(id=None, id_skip=None, update=False):
   '''Generate list of CDAWeb dataset IDs.
 
   IDs are generated from all.xml.
@@ -25,7 +25,7 @@ def ids(id=None, skip=None, update=False):
   If `id` is `None`, all IDs are returned. `id` is treated a regular expression
   if it starts with `^`.
 
-  `skip` is a regular expression string; IDs that match `skip` are not returned.
+  `id_skip` is a regular expression string; IDs that match `id_skip` are not returned.
 
   `update` is a boolean. If `True`, all.xml is updated before generating IDs.
   '''
@@ -34,18 +34,29 @@ def ids(id=None, skip=None, update=False):
   # TODO: Find a better way to handle this.
   logger = _logger()
 
-  def _remove_skips(ids_reduced):
-    if skip is None:
-      return ids_reduced
-    regex = re.compile(skip)
-    return [id for id in ids_reduced if not regex.match(id)]
+  def _remove_skips(id_skip, ids):
+    id_skip_default = cdawmeta.util.get_path(cdawmeta.CONFIG, ['hapi', 'id_skip'])
+    if id_skip is None and id_skip_default is None:
+      return ids
+
+    if id_skip is None:
+      id_skip = id_skip_default
+    else:
+      logger.warning("Given id_skip will override id_skip_default in config.json.")
+
+    logger.info(f"Removing ids that match {id_skip}")
+    regex = re.compile(id_skip)
+    ids_reduced = [id for id in ids if not regex.match(id)]
+    logger.info(f"# of ids removed: {len(ids) - len(ids_reduced)}")
+
+    return ids_reduced
 
   allxml = _allxml(update=update)
   datasets_all = _datasets(allxml)
   ids_all = datasets_all.keys()
 
   if id is None:
-    return _remove_skips(list(ids_all))
+    return _remove_skips(id_skip, list(ids_all))
 
   if isinstance(id, str):
     if id.startswith('^'):
@@ -53,17 +64,19 @@ def ids(id=None, skip=None, update=False):
       ids_reduced = [id for id in ids_all if regex.match(id)]
       if len(ids_reduced) == 0:
         raise ValueError(f"Error: id = {id}: No matches.")
+      else:
+        logger.info(f"# of id regex matches to {id}: {len(ids_reduced)}")
     elif id not in ids_all:
       raise ValueError(f"Error: id = {id}: Not found.")
     else:
       ids_reduced = [id]
 
-  if skip is None:
+  if id_skip is None:
     return ids_reduced
 
-  return _remove_skips(ids_reduced)
+  return _remove_skips(id_skip, ids_reduced)
 
-def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
+def metadata(meta_type=None, id=None, id_skip=None, embed_data=True,
              write_catalog=False,
              update=False, update_skip='',
              regen=False, regen_skip='',
@@ -125,7 +138,7 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
   if diffs and not update:
     logger.warning("diffs=True but update=False. No diffs can be computed.")
 
-  dsids = ids(id=id, skip=skip, update=update)
+  dsids = ids(id=id, id_skip=id_skip, update=update)
 
   # Create base datasets using info in all.xml
   allxml = _allxml(update=update)
@@ -232,7 +245,10 @@ def metadata(meta_type=None, id=None, skip="AIM_CIPS_SCI_3A", embed_data=True,
   metadata_ = {key: datasets_all[key] for key in dsids}
 
   if id is None:
+    # Don't write error logs if id = None because not full run.
     if regen or update:
+      # Only write error logs if regenerating or updating. If not, cache is
+      # used and errors are not encountered because no metadata is generated.
       cdawmeta.write_errors(logger, update)
   else:
     logger.info("Not writing errors because id is not None (not full run).")
@@ -468,7 +484,7 @@ def _orig_data(dataset, update=True, diffs=False):
 def _write_catalog(metadata_, id, meta_types):
 
   logger.info("----")
-  logger.info(f"Writing catalog files for: {meta_types}")
+  logger.info(f"Writing catalog files for meta types: {meta_types}")
 
   for meta_type in meta_types:
     if meta_type == 'orig_data':
@@ -480,8 +496,8 @@ def _write_catalog(metadata_, id, meta_types):
       logger.debug(f"Preparing catalog file for: {dsid}/{meta_type}")
 
       if meta_type not in metadata_[dsid]:
-        # Should not happen. Was happening with threads.
-        msg = f"No metadatum/{meta_type} for '{id}'."
+        # Should not happen.
+        msg = f"No metadatum/{meta_type} for '{dsid}'."
         cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
         continue
 
@@ -490,9 +506,8 @@ def _write_catalog(metadata_, id, meta_types):
       if datum is None:
         datum_file = metadata_[dsid][meta_type].get('data-file', None)
         if datum_file is None:
-          # Should not happen.
-          msg = f"No data and no data-file in metadatum/{meta_type} for '{id}'."
-          cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
+          msg = f"No data and no data-file in metadatum/{meta_type} for '{dsid}'."
+          logger.warning(msg)
           continue
 
         if not isinstance(datum_file, list):
@@ -502,7 +517,9 @@ def _write_catalog(metadata_, id, meta_types):
 
         datum = []
         for dataum_file in dataum_files:
-          d = cdawmeta.util.read(dataum_file.replace('.json', '.pkl'))
+          datum_file = dataum_file.replace('.json', '.pkl')
+          logger.debug(f"  Reading {dataum_file}")
+          d = cdawmeta.util.read(datum_file)
           datum.append(d)
 
       if isinstance(datum, list):
@@ -519,7 +536,9 @@ def _write_catalog(metadata_, id, meta_types):
       qualifier = f'-{id}'
 
     fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog-all{qualifier}')
+    logger.info(f'Writing {fname}.json')
     cdawmeta.util.write(fname + ".json", data)
+    logger.info(f'Writing {fname}.pkl')
     cdawmeta.util.write(fname + ".pkl", data)
 
     if meta_type == 'hapi':
@@ -528,10 +547,16 @@ def _write_catalog(metadata_, id, meta_types):
       for datum in data_copy:
         if datum is not None:
           # The non-"all" HAPI catalog does not have "info" nodes.
-          del datum['info']
+          if 'info' not in datum:
+            msg = f"No 'info' node in HAPI metadata: {datum}"
+            cdawmeta.error('metadata', datum['id'], None, 'HAPI.NoInfo', msg, logger)
+          else:
+            del datum['info']
 
-      fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}.json')
-      cdawmeta.util.write(fname, data_copy, logger=logger)
+      fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}')
+      logger.info(f'Writing {fname}.{{json,pkl}}')
+      cdawmeta.util.write(fname + ".json", data_copy)
+      cdawmeta.util.write(fname + ".pkl", data_copy)
 
 def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=False, update=False):
 

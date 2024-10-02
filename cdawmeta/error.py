@@ -38,7 +38,7 @@ def write_errors(logger, update, name=None):
   subdir = name
   if name == "metadata":
     subdir = ''
-  if (name == "metadata" and not update):
+  if name == "metadata" and not update:
     logger.info("Not removing errors for 'metadata' because update = False")
   else:
     dir_name = os.path.join(cdawmeta.DATA_DIR, subdir)

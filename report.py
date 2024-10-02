@@ -345,28 +345,43 @@ def hpde_io(report_name, dir_name, clargs):
   cdawmeta.util.write(ResourceIDs_file, ResourceIDs)
 
 def cadence(report_name, dir_name, clargs):
+
+
   clargs = {**clargs, 'meta_type': 'cadence'}
   meta = cdawmeta.metadata(**clargs)
-  for id in meta.keys():
+  cadences = {}
+  lines = [['id', 'depend_0', 'cadence', 'cadence_unit', 'cadence_iso8601', 'fraction']]
 
+  for id in meta.keys():
     logger.info(f"{id}:")
-    print(meta[id]['cadence'])
-    depend_0_obj = cdawmeta.util.get_path(meta[id],['cadence', 'data'])
-    if depend_0_obj is None:
-      cadence_error = cdawmeta.util.get_path(meta[id],['cadence', 'error'])
-      if cadence_error is not None:
-        logger.error(f"  {cadence_error}")
+    cadence = cdawmeta.util.get_path(meta[id],['cadence'])
+
+    cadences[id] = {}
+
+    if 'error' in cadence:
+      logger.error(f"  {cadence['error']}")
+      cadences[id] = cadence['error']
+      lines.append([id, '', -1, '', '', -1])
       continue
+
+    depend_0_obj = cdawmeta.util.get_path(meta[id],['cadence', 'data'])
 
     for depend_0 in depend_0_obj:
       depend_0_info = depend_0_obj[depend_0]
-      logger.info(f"  {depend_0}")
       if 'error' in depend_0_info:
-        logger.error(f"    {depend_0_info['error']}")
+        logger.error(f" {depend_0}: {depend_0_info['error']}")
+        cadences[id][depend_0] = depend_0_info['error']
+        lines.append([id, depend_0, -1, '', '', -1])
         continue
       if 'counts' in depend_0_info:
-        for count in depend_0_info['counts']:
-          logger.info(f"    {count}")
+        cadences[id][depend_0] = depend_0_info
+        count = depend_0_info['counts'][0]
+        logger.info(f"  {depend_0}: {count}")
+        line = [id, depend_0, count['duration'], count['duration_unit'], count['duration_iso8601'], count['fraction']]
+        lines.append(line)
+
+  cdawmeta.util.write(os.path.join(dir_name, f'{report_name}.csv'), lines, logger=logger)
+  cdawmeta.util.write(os.path.join(dir_name, f'{report_name}.json'), cadences, logger=logger)
 
 cldefs = cdawmeta.cli('report.py', defs=True)
 report_names = cldefs['report-name']['choices']
@@ -382,9 +397,6 @@ if report_name is not None:
   report_names = [report_name]
 
 for report_name in report_names:
-  if False and report_name == 'cadence':
-    logger.error("Skipping 'cadence' report because of issue.")
-    continue
   logger = cdawmeta.logger(name=f'{report_name}', dir_name=dir_name)
   report_function = locals()[report_name]
   report_function(report_name, os.path.join(cdawmeta.DATA_DIR, dir_name), clargs)

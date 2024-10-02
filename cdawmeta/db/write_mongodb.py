@@ -1,5 +1,5 @@
-def write_mongodb(id=None, mongod_binary=None, collection_name=None, port=27017,
-                  skip=None, update=False, regen=False, max_workers=1, log_level='info'):
+def write_mongodb(id=None, id_skip=None, mongod_binary=None, collection_name=None, port=27017,
+                  update=False, regen=False, max_workers=1, log_level='info'):
 
   import os
   import cdawmeta
@@ -11,7 +11,7 @@ def write_mongodb(id=None, mongod_binary=None, collection_name=None, port=27017,
   logger = cdawmeta.logger(name=f'{collection_name}', dir_name=db_path)
   logger.setLevel(log_level.upper())
 
-  meta = cdawmeta.metadata(id=id, meta_type=collection_name, skip=skip,
+  meta = cdawmeta.metadata(id=id, meta_type=collection_name, id_skip=id_skip,
                               update=update, regen=regen, embed_data=True,
                               diffs=False, max_workers=max_workers)
 

@@ -5,7 +5,7 @@ import cdawmeta
 
 logger = None
 
-def table(id=None, table_name=None, embed_data=False, skip=None,
+def table(id=None, table_name=None, embed_data=False, id_skip=None,
           update=False, regen=False, regen_cadence=False, max_workers=3, log_level='info'):
 
   global logger
@@ -26,7 +26,7 @@ def table(id=None, table_name=None, embed_data=False, skip=None,
       raise ValueError(f"table_name='{table_name}' not in {table_names} in config.json")
     table_names = [table_name]
 
-  datasets = cdawmeta.metadata(id=id, meta_type=meta_type, skip=skip,
+  datasets = cdawmeta.metadata(id=id, meta_type=meta_type, id_skip=id_skip,
                               update=update, regen=regen, embed_data=True,
                               diffs=False, max_workers=max_workers)
 

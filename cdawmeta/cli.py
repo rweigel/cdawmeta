@@ -10,6 +10,12 @@ def cli(script, defs=False):
       "help": "ID or pattern for dataset IDs to include (prefix with ^ to use pattern match, e.g., '^A|^B') (default: ^.*)",
       "_used_by_all": True,
     },
+    "id-skip": {
+      "metavar": "ID",
+      "help": "ID or pattern for dataset IDs to exclude (prefix with ^ to use pattern match, e.g., '^A|^B') (default: None)",
+      "default": cdawmeta.CONFIG['hapi']['id_skip'],
+      "_used_by_all": True,
+    },
     "meta-type": {
       #"help": "Type of metadata to generate. Default is to generate all types. May be repeated.",
       "help": "Type of metadata to generate. Default is to generate all types.",
@@ -17,12 +23,6 @@ def cli(script, defs=False):
       "choices": meta_types,
       #"action": 'append',
       "_used_by": ['metadata.py']
-    },
-    "skip": {
-      "metavar": "ID",
-      "help": "ID or pattern for dataset IDs to exclude (prefix with ^ to use pattern match, e.g., '^A|^B') (default: None)",
-      "default": "AIM_CIPS_SCI_3A",
-      "_used_by_all": True,
     },
     "write-catalog": {
       "action": "store_true",
