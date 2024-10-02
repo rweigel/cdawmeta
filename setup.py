@@ -6,7 +6,9 @@ install_requires = [
     "GitPython",
     "hapiclient",
     "pymongo",
-    "timedelta_isoformat"
+    "timedelta_isoformat",
+    "fastapi",
+    "uvicorn"
 ]
 
 try:

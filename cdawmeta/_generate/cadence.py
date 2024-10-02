@@ -32,7 +32,7 @@ def cadence(metadatum, logger):
   if url.endswith('.nc'):
     # Use HAPI client instead (CDAWeb service could be used, but can be up to ~5x slower).
     emsg = f"{id}: Computing cadence for file type '.nc' is not implemented"
-    cdawmeta.error("cadence", id, None, "NoImplementedNetCDF", emsg, logger)
+    cdawmeta.error("cadence", id, None, "HAPI.NotImplementedNetCDF", emsg, logger)
     return {"error": emsg}
 
   logger.info(f"{id}: Computing cadence for {url}")
@@ -42,12 +42,12 @@ def cadence(metadatum, logger):
     depend_0_names = cdawmeta.io.read_cdf_depend_0s(url, logger=logger, use_cache=use_cache)
   except Exception as e:
     emsg = f"{id}: cdawmeta.io.read_cdf_depend_0s('{url}') failed with error: {e}"
-    cdawmeta.error("cadence", id, None, "FailedCDFRead", emsg, logger)
+    cdawmeta.error("cadence", id, None, "CDF.FailedCDFRead", emsg, logger)
     return {"error": emsg}
 
   if depend_0_names is None:
     emsg = f"{id}: cdawmeta.io.read_cdf_depend_0s('{url}') failed."
-    cdawmeta.error("cadence", id, None, "NoDEPEND_0s", emsg, logger)
+    cdawmeta.error("cadence", id, None, "CDF.NoDEPEND_0s", emsg, logger)
     return {"error": emsg}
 
   if len(depend_0_names) > 1:
@@ -57,17 +57,14 @@ def cadence(metadatum, logger):
 
   depend_0_counts = {}
 
+  # TODO: Check that all DEPEND_0 data variable names in Master CDF match those
+  # found in data CDF. Mismatches have been found for DEPEND_0 names, so
+  # expect this to happen for other variables. Should also check that DataTypes
+  # match.
+
   for depend_0_name in depend_0_names:
 
-    if depend_0_name not in master['CDFVariables']:
-      emsg = f"{id}: '{depend_0_name}' in CDF is not in master['CDFVariables']"
-      cdawmeta.error("cadence", id, None, "CDFDEPEND_0NotInCDFMaster", emsg, logger)
-      depend_0_counts[depend_0_name] = {"url": url, "error": emsg}
-      continue
-
-    DataTypeMaster = master['CDFVariables'][depend_0_name]['VarDescription']['DataType']
-
-    msg = f"  Computing cadence for {id}/DEPEND_0 = '{depend_0_name}' with DataType in Master CDF = '{DataTypeMaster}'"
+    msg = f"  Computing cadence for {id}/DEPEND_0 = '{depend_0_name}'"
     logger.info(msg)
 
     depend_0_counts[depend_0_name] = {"url": url, "note": "", "counts": []}
@@ -99,10 +96,6 @@ def cadence(metadatum, logger):
       del depend_0_counts[depend_0_name]['note']
       del depend_0_counts[depend_0_name]['counts']
       continue
-
-    if DataType != DataTypeMaster:
-      emsg = f"  {id}/{depend_0_name}: DataType in Master CDF = '{DataTypeMaster}' != '{DataType}' in {url}"
-      cdawmeta.error("cadence", id, None, "DataTypeMissMatch", emsg, logger)
 
     try:
       epoch = data[depend_0_name]['VarData']
@@ -215,30 +208,30 @@ def _diff_cdf_epoch16(epoch):
 def _extract_and_check_metadata(id, metadatum, logger):
   orig_data = cdawmeta.util.get_path(metadatum, ['orig_data', 'data'])
   if orig_data is None:
-    emsg = f"{id}: No orig_data"
-    cdawmeta.error("cadence", id, None, "NoOrigData", emsg, logger)
+    emsg = f"{id}: No orig_data result"
+    cdawmeta.error("cadence", id, None, "CDF.NoOrigData", emsg, logger)
     return None, None, {"error": emsg}
 
   master = cdawmeta.util.get_path(metadatum, ['master', 'data'])
   if master is None:
     emsg = f"{id}: No master"
-    cdawmeta.error("cadence", id, None, "NoMaster", emsg, logger)
+    cdawmeta.error("cadence", id, None, "CDAWeb.NoMaster", emsg, logger)
     return None, None, {"error": emsg}
   master = cdawmeta.restructure.master(master, logger=logger)
 
   if 'FileDescription' not in orig_data:
     emsg = f"{id}: No FileDescription in orig_data"
-    cdawmeta.error("cadence", id, None, "FileDescriptionInOrigData", emsg, logger)
+    cdawmeta.error("cadence", id, None, "CDASR.NoFileDescriptionInOrigData", emsg, logger)
     return None, None, {"error": emsg}
 
   if len(orig_data['FileDescription']) == 0:
     emsg = f"{id}: Empty FileDescription in orig_data"
-    cdawmeta.error("cadence", id, None, "FileDescriptionInOrigDataEmpty", emsg, logger)
+    cdawmeta.error("cadence", id, None, "CDASR.FileDescriptionInOrigDataEmpty", emsg, logger)
     return None, None, {"error": emsg}
 
   if 'Name' not in orig_data['FileDescription'][0]:
     emsg = f"{id}: No 'Name' attribute in orig_data['FileDescription'][0]"
-    cdawmeta.error("cadence", id, None, "NoNameInFileDescriptionInOrigData", emsg, logger)
+    cdawmeta.error("cadence", id, None, "CDASR.NoNameInFileDescriptionInOrigData", emsg, logger)
     return None, None, {"error": emsg}
 
   return orig_data, master, None
@@ -247,19 +240,19 @@ def _check_data_types(id, master, depend_0_name, logger):
 
   if depend_0_name not in master['CDFVariables']:
     emsg = f"{id}: '{depend_0_name}' in CDF is not in master['CDFVariables']"
-    cdawmeta.error("cadence", id, None, "NoDEPEND_0", emsg, logger)
+    cdawmeta.error("cadence", id, None, "CDF.DataCDFDEPEND_0NotInCDFMaster", emsg, logger)
     return emsg
 
   if 'VarDescription' not in master['CDFVariables'][depend_0_name]:
     emsg = f"{id}: '{depend_0_name}['VarDescription']' is not in master['CDFVariables']['{depend_0_name}']"
-    cdawmeta.error("cadence", id, None, "NoVarDescription", emsg, logger)
+    cdawmeta.error("cadence", id, None, "CDF.NoVarDescription", emsg, logger)
     return emsg
 
   if 'DataType' not in master['CDFVariables'][depend_0_name]['VarDescription']:
     # Catch this error before attempting to read depend_0_name b/c cdflib
     # takes a long time to return no data.
     emsg = f"{id}: '{depend_0_name}['VarAttributes']['DataType']' is not in master['CDFVariables']['{depend_0_name}']. Not attempting a read."
-    cdawmeta.error("cadence", id, None, "NoDataTypeInMaster", emsg, logger)
+    cdawmeta.error("cadence", id, None, "CDF.NoDataTypeInMaster", emsg, logger)
     return emsg
 
   DataType = master['CDFVariables'][depend_0_name]['VarDescription']['DataType']
@@ -269,20 +262,20 @@ def _check_data_types(id, master, depend_0_name, logger):
     # https://hapi-server.org/meta/cdaweb/variable/#DataType=CDF_EPOCH16
     # Put constraint on number of records returned to speed up?
     emsg = f"{id}/{depend_0_name}: Skipping CDF_EPOCH16 needed call to cdflib.cdfepoch.to_datetime() is slow. Use alternative method."
-    cdawmeta.error("cadence", id, None, "NoImplementedCDF_EPOCH16", emsg, logger)
+    cdawmeta.error("cadence", id, None, "HAPI.NotImplementedCDF_EPOCH16", emsg, logger)
     logger.error("  " + emsg)
     return emsg
 
   if 'VarAttributes' not in master['CDFVariables'][depend_0_name]:
     emsg = f"{id}: '{depend_0_name}['VarAttributes']' is not in master['CDFVariables']"
-    cdawmeta.error("cadence", id, None, "NoVarAttributesInMaster", emsg, logger)
+    cdawmeta.error("cadence", id, None, "CDAWeb.NoVarAttributesInMaster", emsg, logger)
     return emsg
 
   # e.g, THA_L2_ESA
   VarAttributes = master['CDFVariables'][depend_0_name]['VarAttributes']
   if 'VIRTUAL' in VarAttributes and VarAttributes['VIRTUAL'].lower().strip() == 'true':
     emsg = f"{id}/{depend_0_name}: Not Implemented: VIRTUAL DEPEND_0"
-    cdawmeta.error("cadence", id, None, "NotImplementedVirtualDEPEND_0", emsg, logger)
+    cdawmeta.error("cadence", id, None, "HAPI.NotImplementedVirtualDEPEND_0", emsg, logger)
     return emsg
 
   return None

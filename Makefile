@@ -4,7 +4,7 @@ hapi-update: cdawmeta.egg-info
 	python metadata.py --meta-type hapi --write-catalog --update --update-skip cadence
 
 hapi-regen: cdawmeta.egg-info
-	python metadata.py --meta-type hapi --id-skip '^PSP|AIM_CIPS_SCI_3A' --write-catalog --regen --regen-skip cadence --max-workers 1
+	python metadata.py --meta-type hapi --id-skip '^PSP' --write-catalog --regen --regen-skip cadence --max-workers 1
 
 regen-all: cdawmeta.egg-info
 	python metadata.py --meta-type hapi --regen --regen-skip cadence --write-catalog
@@ -70,7 +70,7 @@ data/table/spase.dataset.sql: cdawmeta.egg-info
 data/table/spase.parameter.sql: cdawmeta.egg-info
 	python table.py --table-name spase.parameter
 
-table-serve: cdawmeta.egg-info data/table/cdaweb.variable.sql data/table/cdaweb.dataset.sql data/table/spase.parameter.sql data/table/spase.dataset.sql
+table-serve: #cdawmeta.egg-info data/table/cdaweb.variable.sql data/table/cdaweb.dataset.sql data/table/spase.parameter.sql data/table/spase.dataset.sql
 	-pkill -f "python table/table-ui/serve.py"
 	$(PYTHON) table/table-ui/serve.py --port 8051 --sqldb data/table/cdaweb.variable.sql &
 	$(PYTHON) table/table-ui/serve.py --port 8052 --sqldb data/table/cdaweb.dataset.sql &

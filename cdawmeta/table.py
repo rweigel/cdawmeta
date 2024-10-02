@@ -5,8 +5,10 @@ import cdawmeta
 
 logger = None
 
-def table(id=None, table_name=None, embed_data=False, id_skip=None,
-          update=False, regen=False, regen_cadence=False, max_workers=3, log_level='info'):
+def table(id=None, id_skip=None, table_name=None, embed_data=False,
+          update=False, update_skip='',
+          regen=False, regen_skip='',
+          max_workers=3, log_level='info'):
 
   global logger
   if logger is None:
@@ -18,7 +20,7 @@ def table(id=None, table_name=None, embed_data=False, id_skip=None,
   elif table_name.startswith('spase'):
     meta_type = ['spase']
   elif table_name.startswith('cdaweb'):
-    meta_type = ['master']
+    meta_type = ['allxml', 'master']
 
   table_names = list(cdawmeta.CONFIG['table']['tables'].keys())
   if table_name is not None:
@@ -26,9 +28,7 @@ def table(id=None, table_name=None, embed_data=False, id_skip=None,
       raise ValueError(f"table_name='{table_name}' not in {table_names} in config.json")
     table_names = [table_name]
 
-  datasets = cdawmeta.metadata(id=id, meta_type=meta_type, id_skip=id_skip,
-                              update=update, regen=regen, embed_data=True,
-                              diffs=False, max_workers=max_workers)
+  datasets = cdawmeta.metadata(id=id, meta_type=meta_type)
 
   info = {}
 
@@ -36,9 +36,15 @@ def table(id=None, table_name=None, embed_data=False, id_skip=None,
 
     if table_name.startswith('spase'):
       for dsid in datasets.keys():
-        logger.debug(f"{dsid}: Reading and restructuring SPASE Parameter")
+        logger.debug(f"{dsid}: Reading and restructuring SPASE Parameter node")
         datasets[dsid]['spase']['data'] = cdawmeta.restructure.spase(datasets[dsid]['spase']['data'])
-      break
+      break # Only need to do once
+
+    if table_name.startswith('cdaweb'):
+      for dsid in datasets.keys():
+        logger.debug(f"{dsid}: Reading and restructuring CDAWeb Variable node")
+        datasets[dsid]['master']['data'] = cdawmeta.restructure.master(datasets[dsid]['master']['data'])
+      break # Only need to do once
 
   for table_name in table_names:
 
@@ -150,6 +156,7 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
         data = cdawmeta.util.get_path(dataset, path.split('/'))
 
         if table_name == 'cdaweb.dataset' and path == 'allxml':
+          # {"a": {"b": "c"}, ...} -> {"a/b": "c"}
           data = cdawmeta.util.flatten_dicts(data)
 
         if data is None:

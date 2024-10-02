@@ -364,7 +364,7 @@ def cadence(report_name, dir_name, clargs):
       lines.append([id, '', -1, '', '', -1])
       continue
 
-    depend_0_obj = cdawmeta.util.get_path(meta[id],['cadence', 'data'])
+    depend_0_obj = cdawmeta.util.get_path(meta[id],['cadence', 'data', 'cadence'])
 
     for depend_0 in depend_0_obj:
       depend_0_info = depend_0_obj[depend_0]

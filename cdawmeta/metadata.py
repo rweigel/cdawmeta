@@ -39,17 +39,22 @@ def ids(id=None, id_skip=None, update=False):
     if id_skip is None and id_skip_default is None:
       return ids
 
-    if id_skip is None:
-      id_skip = id_skip_default
-    else:
-      logger.warning("Given id_skip will override id_skip_default in config.json.")
+    # TODO: Repeated code.
+    ids_original = ids
+    if id_skip is not None:
+      logger.info(f"Removing ids that match id_skip {id_skip}")
+      regex = re.compile(id_skip)
+      ids = [id for id in ids if not regex.match(id)]
+      logger.info(f"# of ids removed: {len(ids_original) - len(ids)}")
 
-    logger.info(f"Removing ids that match {id_skip}")
-    regex = re.compile(id_skip)
-    ids_reduced = [id for id in ids if not regex.match(id)]
-    logger.info(f"# of ids removed: {len(ids) - len(ids_reduced)}")
+    ids_original = ids
+    if id_skip_default is not None:
+      logger.info(f"Removing ids that match id_skip in hapi.conf: {id_skip_default}")
+      regex = re.compile(id_skip_default)
+      ids = [id for id in ids if not regex.match(id)]
+      logger.info(f"# of ids removed: {len(ids_original) - len(ids)}")
 
-    return ids_reduced
+    return ids
 
   allxml = _allxml(update=update)
   datasets_all = _datasets(allxml)
@@ -76,7 +81,7 @@ def ids(id=None, id_skip=None, update=False):
 
   return _remove_skips(id_skip, ids_reduced)
 
-def metadata(meta_type=None, id=None, id_skip=None, embed_data=True,
+def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
              write_catalog=False,
              update=False, update_skip='',
              regen=False, regen_skip='',

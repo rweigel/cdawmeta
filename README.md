@@ -46,14 +46,6 @@ and
 (Formal unit tests using `pytest` are in development.)
 
 ```
-# Create environment used for testing README examples
-#conda deactivate; conda remove --name python3.10.9-cdawmeta-test --all -y
-conda create --name python3.10.9-cdawmeta-test -y
-conda activate python3.10.9-cdawmeta-test
-conda install pip -y
-```
-
-```
 git clone https://github.com/rweigel/cdawmeta.git
 cd cdawmeta;
 pip install -e .
@@ -73,6 +65,7 @@ Create and display proof-of-concept auto-generated SPASE; the output of this com
 ```
 mkdir -p ./data;
 python metadata.py --id AC_OR_SSC --meta-type spase_auto
+```
 
 Create and display HAPI metadata; the output of this command can be viewed at
 [hapi/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info/AC_OR_SSC.json)
