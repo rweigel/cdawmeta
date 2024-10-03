@@ -280,7 +280,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
   if DEPEND_0_length is None:
     msg = f"Error: DEPEND_0 variable '{dsid}'/{depend_0_name} has unhandled type: '{DEPEND_0_DataType}'. "
     msg += "Dropping variables associated with it"
-    logger.info("    " + msg)
+    cdawmeta.error('hapi', dsid, depend_0_name, "HAPI.NotImplementedDataType.", "    " + msg, logger)
     return None
 
   if print_info:
@@ -443,7 +443,6 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     n_depend_values = 0
     if ptrs['DEPEND_VALUES'] is not None:
-      #parameter['x_cdf_depend_values'] = ptrs['DEPEND_VALUES']
       n_depend_values = len([x for x in ptrs["DEPEND_VALUES"] if x is not None])
 
     n_label_values = 0
@@ -649,7 +648,7 @@ def _split_variables(id, variables):
       continue
 
     if 'VAR_TYPE' not in variable_meta['VarAttributes']:
-      msg = f"Dropping variable '{name}' b/c it has no has no VAR_TYPE"
+      msg = f"Dropping variable {id}/{name} b/c it has no has no VAR_TYPE"
       cdawmeta.error('hapi', id, name, "ISTP.VAR_TYPE", "  " + msg, logger)
       continue
 
@@ -660,7 +659,7 @@ def _split_variables(id, variables):
       depend_0_name = variable_meta['VarAttributes']['DEPEND_0']
 
       if depend_0_name not in variables:
-        msg = f"Dropping '{name}' b/c it has a DEPEND_0 ('{depend_0_name}') that is not in dataset"
+        msg = f"Dropping {id}/{name} b/c it has a DEPEND_0 ('{depend_0_name}') that is not in dataset"
         cdawmeta.error('hapi', id, name, "CDF.MissingDEPEND_0", "  " + msg, logger)
         continue
 
@@ -687,29 +686,30 @@ def _omit_dataset(id, depend_0=None):
   fixes = cdawmeta.CONFIG['hapi']['fixes']
   omit_datasets = cdawmeta.CONFIG['hapi']['omit_datasets']
   if depend_0 is None:
-    if id in fixes['omitAll'].keys():
+    if id in fixes['omitDataset'].keys():
       if omit_datasets:
         logger.info(id)
-        logger.info(f"  Warning: Dropping dataset {id} b/c it is not in Nand's list")
+        logger.warning(f"  Dropping dataset {id} b/c it is not in Nand's list")
         return True
       else:
         logger.info(id)
-        logger.info(f"  Warning: Keeping dataset {id} even though it is not in Nand's list")
+        logger.info(f"  Keeping dataset {id} even though it is not in Nand's list")
         return False
-    for pattern in fixes['omitAllPattern']:
+    for pattern in fixes['omitDatasetPattern']:
       if re.search(pattern, id):
         if omit_datasets:
           logger.info(id)
-          logger.info(f"  Warning: Dropping dataset {id} b/c it is not in Nand's list")
+          logger.warning(f"  Dropping dataset {id} b/c it is not in Nand's list")
           return True
         else:
           logger.info(id)
-          logger.info(f"  Warning: Keeping dataset {id} even though it is not in Nand's list")
+          logger.warning(f"  Keeping dataset {id} even though it is not in Nand's list")
           return False
   else:
-    if id in fixes['omitSubset'].keys() and depend_0 in fixes['omitSubset'][id]:
-      logger.info(f"  Warning: Dropping variables associated with DEPEND_0 = \"{depend_0}\" b/c this DEPEND_0 is not in Nand's list")
+    if id in fixes['omitDatasetSubset'].keys() and depend_0 in fixes['omitDatasetSubset'][id]:
+      logger.warning(f"  Dropping {id} variables associated with DEPEND_0 = \"{depend_0}\" b/c this DEPEND_0 is not in Nand's list")
       return True
+
   return False
 
 def _omit_variable(id, variable_name):

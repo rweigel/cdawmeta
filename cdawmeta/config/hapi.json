@@ -151,7 +151,7 @@
         "WI_EM_3DP": ["VALID", "GAP"],
         "WI_PM_3DP": ["VALID", "E_RANGE", "GAP"]
       },
-      "omitSubset": {
+      "omitDatasetSubset": {
         "AEROCUBE-6-A_DOSIMETER_L2": ["Epoch_10Hz"],
         "AEROCUBE-6-B_DOSIMETER_L2": ["Epoch_10Hz"],
         "ELA_L1_STATE_PRED": ["ela_att_time"],
@@ -172,7 +172,7 @@
         "VOYAGER1_2S_MAG": ["Epoch"],
         "VOYAGER2_2S_MAG": ["Epoch"]
       },
-      "omitAll": {
+      "omitDataset": {
         "C2_PP_EFW": null,
         "C3_PP_EFW": null,
         "C4_PP_EFW": null,
@@ -240,7 +240,7 @@
         "TIMED_WINDVECTORSNCAR_TIDI": null,
         "TWINS2_AT_DEF": null
       },
-      "omitAll_needed_at_one_time": {
+      "omitDataset_needed_at_one_time": {
         "ALOUETTE2_AV_QUI": null,
         "APOLLO12_SWS_1HR": null,
         "APOLLO12_SWS_28S": null,
@@ -261,11 +261,11 @@
         "MMS4_FPI_BRST_L2_DES-PARTMOMS": null,
         "MVN_STA_L2_DA-1R64E": null
       },
-      "omitAllPattern": {
+      "omitDatasetPattern": {
         "REACH-.*": null,
         "SOLO_L2_SWA-EAS1-NM3D-.*": null
       },
-      "omitAllPattern_needed_at_one_time": {
+      "omitDatasetPattern_needed_at_one_time": {
         "C[1-4]_CP_CIS.*": null,
         "C[1-4]_CP_EDI.*": null,
         "C[1-4]_CP_EFW.*": null,
