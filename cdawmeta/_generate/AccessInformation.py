@@ -1,3 +1,4 @@
+import copy
 import cdawmeta
 
 dependencies = ['orig_data', 'hapi']
@@ -5,7 +6,7 @@ dependencies = ['orig_data', 'hapi']
 def AccessInformation(metadatum, logger):
 
   additions = cdawmeta.additions(logger)
-  AccessInformation = additions['AccessInformation']
+  AccessInformation = copy.deepcopy(additions['AccessInformation'])
 
   allxml = metadatum['allxml']
 
@@ -25,26 +26,24 @@ def AccessInformation(metadatum, logger):
       DataExtent += file['Length']
     AccessURL['DataExtent'] = DataExtent
 
-
   dsid = metadatum['id']
   for key in AccessInformation:
     AccessInformation[key]['AccessURL']['ProductKey'] = dsid
     ack = AccessInformation[key]['Acknowledgement']
     name = allxml['data_producer']['@name']
     affiliation = allxml['data_producer']['@affiliation'].strip()
-    AccessInformation[key]['Acknowledgement'] = f'{ack}. Please also acknowledge the data producer: {name} at {affiliation}'
+    ack = f'{ack}. Please also acknowledge the data producer: {name} at {affiliation}'
+    AccessInformation[key]['Acknowledgement'] = ack
 
     url = AccessInformation[key]['AccessURL']['URL']
     if "{dsid}" in url and "HAPI" not in key:
       AccessInformation[key]['AccessURL']['URL'] = url.format(dsid=dsid)
 
-  # TODO: Add note that additional Ephemeris variables are available and
-  #       the values may not match those in the CDF file.
   ssc = allxml['instrument']['@ID'] == 'SSC'
   if not ssc:
-    del AccessInformation['SSCWeb/SSCWS']
-    del AccessInformation['SSCWeb/HAPI']
-    del AccessInformation['SSCWeb/HAPI/Program']
+    for key in ['SSCWeb/SSCWS', 'SSCWeb/HAPI', 'SSCWeb/HAPI/Program']:
+      if key in AccessInformation:
+        del AccessInformation[key]
 
   if ssc:
     sscid = allxml['observatory']['@ID'].lower()
@@ -82,7 +81,7 @@ def AccessInformation(metadatum, logger):
     x_Description = " " + x_Description.strip().format(n_keys=n_keys, time_variable_names=", ".join(time_variable_names))
 
     Description = AccessInformation['CDAWeb/HAPI']['AccessURL']['Description']
-    Description += x_Description
+    Description = Description.format(n_keys=n_keys, time_variable_names=", ".join(time_variable_names))
     AccessInformation['CDAWeb/HAPI']['AccessURL']['Description'] = Description
 
     Description = AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description']
@@ -90,6 +89,7 @@ def AccessInformation(metadatum, logger):
     AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description'] = Description
   else:
     hapi_keys = hapi['id']
+
   del AccessInformation['CDAWeb/HAPI']['AccessURL']['x_Description']
 
   AccessInformation['CDAWeb/HAPI']['AccessURL']['ProductKey'] = hapi_keys

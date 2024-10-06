@@ -76,10 +76,10 @@ def hapi(metadatum, _logger):
 
     depend_0_names.append(depend_0_name)
 
-  #if len(depend_0_names) == 0:
-  #  msg = f"  No datasets could be created for {id}"
-  #  cdawmeta.error('hapi', id, None, msg, logger)
-  #  return None
+  if len(depend_0_names) == 0:
+    msg = f"{id}: No datasets could be created due errors in source metadata."
+    cdawmeta.error('hapi', id, None, "CDF.NoDatasets", "  " + msg, logger)
+    return {"error": msg}
 
   depend_0_names = _order_depend0s(id, depend_0_names)
 
@@ -410,7 +410,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     DISPLAY_TYPE, emsg, etype = cdawmeta.attrib.DISPLAY_TYPE(dsid, name, variable)
     if etype is not None and print_info:
-      cdawmeta.error('hapi', dsid, name, etype, "    " + emsg, logger)
+      cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
     if DISPLAY_TYPE is not None:
       parameter['x_cdf_DISPLAY_TYPE'] = DISPLAY_TYPE
 

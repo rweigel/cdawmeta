@@ -1,19 +1,28 @@
 PYTHON=~/anaconda3/bin/python
 
+ID_SKIP=^PSP
+UPDATE=--id-skip '$(ID_SKIP)' --write-catalog --update --update-skip cadence
+REGEN=--id-skip '$(ID_SKIP)' --write-catalog --regen --regen-skip cadence --max-workers 1
+spase_auto-update: cdawmeta.egg-info
+	python metadata.py --meta-type spase_auto $(UPDATE)
+
+spase_auto-regen: cdawmeta.egg-info
+	python metadata.py --meta-type hapi $(REGEN)
+
 hapi-update: cdawmeta.egg-info
-	python metadata.py --meta-type hapi --write-catalog --update --update-skip cadence
+	python metadata.py --meta-type hapi $(UPDATE)
 
 hapi-regen: cdawmeta.egg-info
-	python metadata.py --meta-type hapi --id-skip '^PSP' --write-catalog --regen --regen-skip cadence --max-workers 1
+	python metadata.py --meta-type hapi $(REGEN)
 
-regen-all: cdawmeta.egg-info
-	python metadata.py --meta-type hapi --regen --regen-skip cadence --write-catalog
+all-regen: cdawmeta.egg-info
+	python metadata.py $(REGEN)
 
-update-all: cdawmeta.egg-info
-	python metadata.py --meta-type hapi --update --update-skip cadence --write-catalog
+all-update: cdawmeta.egg-info
+	python metadata.py $(UPDATE)
 
 cadence-regen: cdawmeta.egg-info
-	python metadata.py --id-skip '^PSP' --meta-type cadence --regen --write-catalog
+	python metadata.py --id-skip '$(ID_SKIP)' --meta-type cadence --regen --write-catalog
 
 clean:
 	-rm -rf data/*
