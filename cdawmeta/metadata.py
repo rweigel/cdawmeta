@@ -334,32 +334,31 @@ def _allxml(update=False, diffs=False):
 
 def _master(dataset, update=False, diffs=False):
 
-  restructure = False
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['master']
 
   mastercdf = dataset['allxml']['mastercdf']['@ID']
   url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
 
   master = _fetch(url, dataset['id'], 'master', referrer=url, timeout=timeout, update=update, diffs=diffs)
-  if restructure and 'data' in master:
-    master['data'] = cdawmeta.restructure.master(master['data'], logger=logger)
+
+  master['data'] = cdawmeta.restructure.master(master['data'], url, logger=logger)
+
   return master
 
 def _spase(dataset, update=True, diffs=False):
 
-  metadatum = dataset['master']
-  id = metadatum['id']
-  if 'data' not in metadatum:
+  id = dataset['id']
+
+  master = dataset['master']
+  if 'data' not in master:
     msg = 'No spase_DatasetResourceID because no master'
     return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
-  master = cdawmeta.restructure.master(metadatum['data'], logger=logger)
-
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['spase']
 
-  global_attributes = master['CDFglobalAttributes']
+  global_attributes = master['data']['CDFglobalAttributes']
   if 'spase_DatasetResourceID' not in global_attributes:
-    msg = f"{id}: No spase_DatasetResourceID attribute in {metadatum['url']}."
+    msg = f"{id}: No spase_DatasetResourceID attribute in {master['url']}."
     cdawmeta.error('metadata', id, None, 'master.NoSpaseDatasetResourceID', msg, logger)
     return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
@@ -372,7 +371,7 @@ def _spase(dataset, update=True, diffs=False):
 
     url = spase_id.replace('spase://', 'https://hpde.io/') + '.json'
 
-  spase = _fetch(url, id, 'spase', referrer=metadatum['url'], timeout=timeout, diffs=diffs, update=update)
+  spase = _fetch(url, id, 'spase', referrer=master['url'], timeout=timeout, diffs=diffs, update=update)
 
   return spase
 
@@ -429,11 +428,11 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
       if AccessURL is not None:
         Name = AccessURL.get('Name', None)
         if Name is None:
-          logger.warning(f"  Warning - No {AccessURL}/Name in {hpde_url}")
+          logger.warning(f"  No AccessURL/Name in {hpde_url}")
 
         URL = AccessURL.get('URL', None)
         if URL is None:
-          msg = f"  No URL in {AccessURL} with Name '{Name}' in {hpde_url}"
+          msg = f"  No URL in AccessURL with Name '{Name}' in {hpde_url}"
           cdawmeta.error('metadata', id, None, 'spase.hpde_io.NoURLInAccessURL', msg, logger)
           continue
 

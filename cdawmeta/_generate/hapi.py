@@ -21,7 +21,7 @@ def hapi(metadatum, _logger):
     cdawmeta.error('hapi', id, None, "ISTP.NoMaster", msg, logger)
     return {"error": msg}
 
-  master = cdawmeta.restructure.master(metadatum['master']['data'], logger=logger)
+  master = metadatum['master']['data']
 
   variables = master['CDFVariables']
   # Split variables to be under their DEPEND_0 (Keys are DEPEND_0 names), e.g.,

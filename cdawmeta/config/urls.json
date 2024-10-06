@@ -2,5 +2,5 @@
   "cdasr": "https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/",
   "hpde.io": "https://github.com/hpde/hpde.io",
   "all.xml": "https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml",
-  "cdawmeta-additions": "https://github.com/rweigel/cdawmeta-additions"
+  "cdawmeta-spase": "https://github.com/rweigel/cdawmeta-spase"
 }

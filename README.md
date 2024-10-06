@@ -58,7 +58,7 @@ See `python metadata.py --help` for more options, including the generation of me
 **Examples**
 
 Create and display proof-of-concept auto-generated SPASE; the output of this command can be viewed at
-[spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json) and [spase_auto/info/VOYAGER1_10S_MAG.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/VOYAGER1_10S_MAG.json). See the [`cdawmeta-additions` repository](https://github.com/rweigel/cdawmeta-additions) for metadata used that is not available in Master CDFs and/or `all.xml`.
+[spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json) and [spase_auto/info/VOYAGER1_10S_MAG.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/VOYAGER1_10S_MAG.json). See the [`cdawmeta-spase` repository](https://github.com/rweigel/cdawmeta-spase) for metadata used that is not available in Master CDFs and/or `all.xml`.
 ```
 mkdir -p ./data;
 python metadata.py --id AC_OR_SSC --meta-type spase_auto
@@ -88,7 +88,7 @@ python query.py --port 27018 --id '^A' \
 # 40 documents match query
 ```
 
-Create a report based on content of the [hpde.io repository](https://github.com/hpde/hpde.io). (Sample output in [`cdawmeta-additions/reports`](https://github.com/rweigel/cdawmeta-additions/tree/main/reports)). This file also builds the input files used for the automatic generation of SPASE records, which is described in the [`cdawmeta-additions` README](https://github.com/rweigel/cdawmeta-additions/).
+Create a report based on content of the [hpde.io repository](https://github.com/hpde/hpde.io). (Sample output in [`cdawmeta-spase/reports`](https://github.com/rweigel/cdawmeta-spase/tree/main/reports)). This file also builds the input files used for the automatic generation of SPASE records, which is described in the [`cdawmeta-spase` README](https://github.com/rweigel/cdawmeta-spase/).
 ```
 python report.py --report-name hpde_io
 ```
@@ -161,13 +161,13 @@ The implication is that a scientist who executes a search backed by SPASE record
 
 We considered using SPASE `Units` when they were available because although CDAWeb Master metadata has a `UNITS` attribute, no consistent convention is followed for the syntax, and in some cases, `UNITS` are not a scientific unit but a label (e.g. `0=good` and `<|V|>`). This effort stopped when we noticed instances where the SPASE `Units` were wrong.
 
-For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/ac_h2_ule_00000000_v01.json) and `Units = '(cm^2 s sr MeV)^-1)'` [in SPASE](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json). See also [a dump of the unique Master `UNITS` to SPASE `Units` pairs](https://github.com/rweigel/cdawmeta-additions/blob/main/reports/units-CDFUNITS_to_SPASEUnit-map), which is explained in [units.md](https://github.com/rweigel/cdawmeta-additions/blob/main/reports/units.md). (Note that CDAWeb [includes a link to this SPASE record](https://cdaweb.gsfc.nasa.gov/misc/NotesA.html#AC_H2_ULE) and [elsewhere](https://cdaweb.gsfc.nasa.gov/cgi-bin/eval1.cgi?index=sp_phys&group=ACE) to [a SKT file](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0SKELTABLES/ac_h2_ule_00000000_v01.skt) with different units.)
+For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/ac_h2_ule_00000000_v01.json) and `Units = '(cm^2 s sr MeV)^-1)'` [in SPASE](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json). See also [a dump of the unique Master `UNITS` to SPASE `Units` pairs](https://github.com/rweigel/cdawmeta-spase/blob/main/reports/units-CDFUNITS_to_SPASEUnit-map), which is explained in [units.md](https://github.com/rweigel/cdawmeta-spase/blob/main/reports/units.md). (Note that CDAWeb [includes a link to this SPASE record](https://cdaweb.gsfc.nasa.gov/misc/NotesA.html#AC_H2_ULE) and [elsewhere](https://cdaweb.gsfc.nasa.gov/cgi-bin/eval1.cgi?index=sp_phys&group=ACE) to [a SKT file](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0SKELTABLES/ac_h2_ule_00000000_v01.skt) with different units.)
 
 There was a second complicating factor. Some SPASE records do not have `Parameters` for all variables with `VAR_TYPE=data`. So we would need to use SPASE `Units` when available and otherwise use CDF Master units otherwise.
 
 Although there is more consistency in the strings used for SPASE `Units`, SPASE does not require the use of a standard for the syntax (such as [VOUnits](https://www.ivoa.net/documents/VOUnits/20231215/REC-VOUnits-1.1.html), [udunits2](https://docs.unidata.ucar.edu/udunits/current/#Database), or [QUDT](http://qudt.org/vocab/unit/)). HAPI has the option to state the standard used for `unit` strings so that a validator can check them and units-aware software (e.g., the [AstroPy Units](https://eteq.github.io/astropy/units/index.html) module) can use them to make automatic unit conversions when mathematical operations on are performed.
 
-We concluded that if we wanted to represent CDAWeb variables in HAPI with units that adhered to a syntax so the string could be validated, we would need to take the steps described in the [`cdawmeta-additions` repository]([`cdawmeta` repository README](https://github.com/rweigel/cdawmeta).)
+We concluded that if we wanted to represent CDAWeb variables in HAPI with units that adhered to a syntax so the string could be validated, we would need to take the steps described in the [`cdawmeta-spase` repository]([`cdawmeta` repository README](https://github.com/rweigel/cdawmeta).)
 
 ## 4 `AccessInformation`
 
@@ -184,7 +184,7 @@ The `AccessInformation` nodes are structured in a way that is misleading and cla
 
 2. There are CDAWeb SPASE `NumericalData` records with the ACE Science Center listed as an `AccessURL` (e.g., [ACE/MAG/L2/PT16S](https://hpde.io/NASA/NumericalData/ACE/MAG/L2/PT16S.json)). The variable names used in the ACE Science Center files and metadata differ from those listed in the `Parameter` node. This is confusing.
 
-In the [`cdawmeta-additions` repository](https://github.com/rweigel/cdawmeta), we have a template that addresses some of these issues. This template is used to generate the `spase_auto` metadata described above.
+In the [`cdawmeta-spase` repository](https://github.com/rweigel/cdawmeta), we have a template that addresses some of these issues. This template is used to generate the `spase_auto` metadata described above.
 
 It is often found that SPASE records contain information that is only available from one of the `AccessURLs`. For example,
 
@@ -252,7 +252,7 @@ The `spase_auto` metadata described above addresses this issue and updates `Stop
 
 ## 9 Inconsistent `ObservedRegion`s
 
-Most CDAWeb datasets with ids in the form `a_b_c` should have the same `Region` as a dataset that starts with `a_y_z` (unless an instrument was not active while the spacecraft was in certain regions). This is frequently not the case; see the error messages in [hpde_io.log](https://github.com/rweigel/cdawmeta-additions/blob/main/reports/hpde_io.log).
+Most CDAWeb datasets with ids in the form `a_b_c` should have the same `Region` as a dataset that starts with `a_y_z` (unless an instrument was not active while the spacecraft was in certain regions). This is frequently not the case; see the error messages in [hpde_io.log](https://github.com/rweigel/cdawmeta-spase/blob/main/reports/hpde_io.log).
 
 For example
 ```
@@ -260,11 +260,11 @@ VOYAGER1_48S_MAG-VIM: ['Heliosphere.Outer', 'Heliosphere.Heliosheath']
 VOYAGER2_PLS_COMPOSITION: ['Jupiter.Magnetosphere']
 ```
 
-This issue is corrected in the `spase_auto` code and described in the [`cdawmeta-additions`](https://github.com/rweigel/cdawmeta-additions/) repository.
+This issue is corrected in the `spase_auto` code and described in the [`cdawmeta-spase`](https://github.com/rweigel/cdawmeta-spase/) repository.
 
 ## 9 Inconsistent `InformationURL`s
 
-[InformationURL.json](https://github.com/rweigel/cdawmeta-additions/blob/main/InformationURL.json) contains keys of a `URL` in an `InformationURL` node and an array with all CDAWeb datasets it is associated with. There are many instances where a URL should apply to additional datasets. For example, all dataset IDs that end in `_SSC`, `_DEF`, and `_POSITION` should be associated with https://sscweb.gsfc.nasa.gov. Also, the Master CDFs contain information URLs that do not appear in the associated SPASE `NumericalData` records. This represents an unnecessary loss of information.
+[InformationURL.json](https://github.com/rweigel/cdawmeta-spase/blob/main/InformationURL.json) contains keys of a `URL` in an `InformationURL` node and an array with all CDAWeb datasets it is associated with. There are many instances where a URL should apply to additional datasets. For example, all dataset IDs that end in `_SSC`, `_DEF`, and `_POSITION` should be associated with https://sscweb.gsfc.nasa.gov. Also, the Master CDFs contain information URLs that do not appear in the associated SPASE `NumericalData` records. This represents an unnecessary loss of information.
 
 ## 10 Conclusion
 
@@ -280,6 +280,6 @@ The primary problems with existing CDAWeb `NumericalData` SPASE records is
 
 CDAWeb SPASE `NumericalData` records have been under development since 2009 and yet these problems persist. At the current rate of generation, they will not be complete until 2030. I suggest a different approach is needed.
 
-We suggest that CDAWeb SPASE metadata should be created by this automated process (similar to how HAPI metadata is generated), which requires primarily existing CDAWeb metadata information and some additional metadata that can be stored in a few version controlled files. Thus information is described in the [cdawmeta-additions](https://github.com/rweigel/cdawmeta-addtions) repository. This approach would have prevented many of the errors and inconsistencies described above and further detailed in the [cdawmeta-additions README](https://github.com/rweigel/cdawmeta-addtions).
+We suggest that CDAWeb SPASE metadata should be created by this automated process (similar to how HAPI metadata is generated), which requires primarily existing CDAWeb metadata information and some additional metadata that can be stored in a few version controlled files. Thus information is described in the [cdawmeta-spase](https://github.com/rweigel/cdawmeta-addtions) repository. This approach would have prevented many of the errors and inconsistencies described above and further detailed in the [cdawmeta-spase README](https://github.com/rweigel/cdawmeta-addtions).
 
 Another motivation for the urgency of having correct and complete SPASE `NumericalData` records is that there are several applications under development that will use SPASE records to provide search functionality. The quality of such applications is limited by the quality of the database it uses, and it is important that the database content is correct and consistent.

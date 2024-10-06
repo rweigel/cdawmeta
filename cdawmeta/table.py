@@ -16,7 +16,7 @@ def table(id=None, id_skip=None, table_name=None, embed_data=False,
     logger.setLevel(log_level.upper())
 
   if table_name is None:
-    meta_type = ['master', 'spase']
+    meta_type = ['allxml', 'master', 'spase']
   elif table_name.startswith('spase'):
     meta_type = ['spase']
   elif table_name.startswith('cdaweb'):
@@ -36,14 +36,8 @@ def table(id=None, id_skip=None, table_name=None, embed_data=False,
 
     if table_name.startswith('spase'):
       for dsid in datasets.keys():
-        logger.debug(f"{dsid}: Reading and restructuring SPASE Parameter node")
+        logger.debug(f"{dsid}: Restructuring SPASE")
         datasets[dsid]['spase']['data'] = cdawmeta.restructure.spase(datasets[dsid]['spase']['data'])
-      break # Only need to do once
-
-    if table_name.startswith('cdaweb'):
-      for dsid in datasets.keys():
-        logger.debug(f"{dsid}: Reading and restructuring CDAWeb Variable node")
-        datasets[dsid]['master']['data'] = cdawmeta.restructure.master(datasets[dsid]['master']['data'])
       break # Only need to do once
 
   for table_name in table_names:

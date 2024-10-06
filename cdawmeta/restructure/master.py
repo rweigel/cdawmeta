@@ -2,10 +2,18 @@ import copy
 
 import cdawmeta
 
-def master(master, logger=None):
+def master(master, master_url, logger=None):
 
   """
-  Convert dict with arrays of objects to objects with objects. For example,
+  Restructure JSON representation^* of Master CDF to match structure returned
+  by cdawmeta.io.read_cdf_meta().
+
+  ^* https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/
+
+  lists of the form [{"0", value0}, {"1", value1}, ...]
+  converted to lists of the form [value0, value1, ...].
+
+  dict with arrays of objects to objects with objects. For example,
     { "Epoch": [ 
         {"VarDescription": [{"DataType": "CDF_TIME_TT2000"}, ...] },
         {"VarAttributes": [{"CATDESC": "Default time"}, ...] }
@@ -32,7 +40,7 @@ def master(master, logger=None):
 
   master = copy.deepcopy(master)
 
-  # TODO: Check that only one key.
+  # TODO: Check for only one key.
   file = list(master.keys())[0]
 
   fileinfo_r = cdawmeta.util.array_to_dict(master[file]['CDFFileInfo'])
@@ -61,8 +69,8 @@ def master(master, logger=None):
 
     variables_r[variable_name] = variable_dict
 
-  # Why do they use lower-case G? Inconsistent with CDFFileInfo and CDFVariables.
-  globals = master[file]['CDFglobalAttributes'] 
+  # Why do they use lower-case G? Inconsistent with CDFVariables.
+  globals = master[file]['CDFglobalAttributes']
   globals_r = {}
 
   for _global in globals:
@@ -80,7 +88,7 @@ def master(master, logger=None):
     globals_r[gkey[0]] = "\n".join(text)
 
   master = {
-              'CDFFileInfo': {'FileName': file, **fileinfo_r},
+              'CDFFileInfo': {'File': file, 'FileURL': master_url, **fileinfo_r},
               'CDFglobalAttributes': globals_r,
               'CDFVariables': variables_r
             }

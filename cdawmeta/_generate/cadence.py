@@ -46,7 +46,7 @@ def cadence(metadatum, logger):
     return {"error": emsg}
 
   if depend_0_names is None:
-    emsg = f"{id}: cdawmeta.io.read_cdf_depend_0s('{url}') failed."
+    emsg = f"{id}: cdawmeta.io.read_cdf_depend_0s('{url}') returned no DEPEND_0s."
     cdawmeta.error("cadence", id, None, "CDF.NoDEPEND_0s", emsg, logger)
     return {"error": emsg}
 
@@ -217,7 +217,6 @@ def _extract_and_check_metadata(id, metadatum, logger):
     emsg = f"{id}: No master"
     cdawmeta.error("cadence", id, None, "CDAWeb.NoMaster", emsg, logger)
     return None, None, {"error": emsg}
-  master = cdawmeta.restructure.master(master, logger=logger)
 
   if 'FileDescription' not in orig_data:
     emsg = f"{id}: No FileDescription in orig_data"

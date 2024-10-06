@@ -74,7 +74,6 @@ def open_cdf(file, logger=None, cache_dir=None, use_cache=True):
   except Exception as e:
     if logger is not None:
       logger.error(f"Error opening {file_path}: {e}")
-    return None
 
 def read_cdf_depend_0s(file, logger=None, cache_dir=None, use_cache=True):
 
@@ -110,27 +109,7 @@ def read_cdf_depend_0s_test(logger=None, cache_dir=None, use_cache=True):
 
   return ok
 
-def read_cdf_meta(file, subset=False, logger=None, cache_dir=None, use_cache=True):
-
-  cache_dir = _cache_dir(cache_dir)
-
-  cdffile = open_cdf(file, logger=logger, cache_dir=cache_dir, use_cache=use_cache)
-  if cdffile is None:
-    return None
-
-  meta = {}
-  depend_0s = []
-  info = cdffile.cdf_info()
-  rVariables = info.rVariables
-  zVariables = info.zVariables
-  for variable in rVariables + zVariables:
-    meta[variable] = {'VarDescription': {}, 'VarAttributes': None}
-    meta[variable]['VarAttributes'] = cdffile.varattsget(variable=variable)
-    # Add information that is in Master CDF JSONs
-    vdata = cdffile.varinq(variable)
-    # Use convention used in Master CDF JSONs for names
-    methods = dir(vdata)
-    method_map = {
+method_map = {
       'Block_Factor': 'BlockingFactor',
       'Compress': 'Compress',
       'Data_Type': 'DataTypeValue',
@@ -146,7 +125,83 @@ def read_cdf_meta(file, subset=False, logger=None, cache_dir=None, use_cache=Tru
       'Sparse': 'SparseRecords',
       'Var_Type': 'VarType',
       'Variable': 'VariableName',
-    }
+      'Version': 'FileVersion'
+}
+
+def _cdf_file_info(info, file=None, logger=None):
+
+  if hasattr(info, 'CDF'):
+    file_path = str(info.CDF)
+  else:
+    raise ValueError(f"No CDF attribute in cdffile.cdf_info() result for {file}")
+
+  CDFFileInfo = {"File": file_path}
+  if file is not None:
+    if file.startswith('http'):
+      CDFFileInfo['FileSource'] = file
+    if file != file_path:
+      CDFFileInfo['FileSource'] = file
+
+  unused = ['Attributes', 'CDF', 'Copyright', 'Num_rdim', 'rDim_sizes', 'rVariables', 'zVariables']
+  used = ['Checksum', 'Compressed', 'Encoding', 'Format', 'LeapSecondUpdate', 'Version']
+
+  # TODO: For Encoding, translate integer to string, e.g. 'NETWORK' appears in
+  # master CDF JSONs. In what is returned by cdflib for data CDFs, it is an integer.
+
+  for attr in used:
+    if hasattr(info, attr):
+      value = getattr(info, attr)
+    if attr in method_map:
+      attr = method_map[attr]
+    CDFFileInfo[attr] = value
+
+  if hasattr(info, 'Majority'):
+    used.append('Majority')
+    Majority = info.Majority
+    if Majority == 'Row_major':
+      Majority = 'ROW'
+    else:
+      Majority = 'COLUMN'
+    CDFFileInfo['Majority'] = Majority
+
+  knowns = [*used, *unused]
+  for attr in dir(info):
+    if attr.startswith('__'):
+      continue
+    if attr not in knowns:
+      if logger is not None:
+        logger.error(f"Unhandled attribute '{attr}' found in {file}")
+
+  return CDFFileInfo
+
+def read_cdf_meta(file, subset=False, resolve=False, logger=None, cache_dir=None, use_cache=True):
+
+  cache_dir = _cache_dir(cache_dir)
+
+  cdffile = open_cdf(file, logger=logger, cache_dir=cache_dir, use_cache=use_cache)
+  if cdffile is None:
+    return None
+
+  depend_0s = []
+  info = cdffile.cdf_info()
+
+  CDFFileInfo = _cdf_file_info(info, file=file, logger=logger)
+
+  CDFglobalAttributes = cdffile.globalattsget()
+  for key, val in CDFglobalAttributes.items():
+    if isinstance(val, list):
+      CDFglobalAttributes[key] = "\n".join(val)
+
+  CDFVariables = {}
+  rVariables = info.rVariables
+  zVariables = info.zVariables
+  for variable in rVariables + zVariables:
+    CDFVariables[variable] = {'VarDescription': {}, 'VarAttributes': None}
+    CDFVariables[variable]['VarAttributes'] = cdffile.varattsget(variable)
+    # Add information that is in Master CDF JSONs
+    vdata = cdffile.varinq(variable)
+    # Use convention used in Master CDF JSONs for names
+    methods = dir(vdata)
     for method in methods:
       if not method.startswith('_'):
         if method in method_map:
@@ -154,12 +209,12 @@ def read_cdf_meta(file, subset=False, logger=None, cache_dir=None, use_cache=Tru
         else:
           print("??? Method not in map: ", method)
           method_renamed = method
-        meta[variable]['VarDescription'][method_renamed] = getattr(vdata, method)
+        CDFVariables[variable]['VarDescription'][method_renamed] = getattr(vdata, method)
 
-    if subset and 'DEPEND_0' in meta[variable]:
-      depend_0s.append(meta[variable]['DEPEND_0'])
+    if subset and 'DEPEND_0' in CDFVariables[variable]:
+      depend_0s.append(CDFVariables[variable]['DEPEND_0'])
 
-  if subset:
+  if False and subset:
     depend_0s = list(set(depend_0s))
     meta_subsetted = {}
     for depend_0 in depend_0s:
@@ -172,7 +227,20 @@ def read_cdf_meta(file, subset=False, logger=None, cache_dir=None, use_cache=Tru
               meta_subsetted[depend_0][variable][key] = cdffile.varget(variable=meta[variable][key])
     return meta_subsetted
 
-  return meta
+
+  if False:
+    CDFVariables = []
+    for variable in meta.keys():
+      CDVVariable = { variable: meta[variable] }
+      CDFVariables.append(CDVVariable)
+
+  metadatum = {
+        "CDFFileInfo": CDFFileInfo,
+        "CDFglobalAttributes": CDFglobalAttributes,
+        "CDFVariables": CDFVariables
+      }
+
+  return metadatum
 
 def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601=True, logger=None, cache_dir=None, use_cache=True):
 
@@ -290,7 +358,7 @@ def read_cdf_test1(id=None, depend_0=None, variable=None):
   for a DEPEND_0 variable (CDF_EPOCH, CDF_EPOCH16, and CDF_TIME_TT2000).
 
   Read all data for the DEPEND_0 variable, gets the start and stop times, and
-  then reads the data variable in the range [start, stop] and verifies that the
+  then reads the data variable in the range [start, stop] and verify that the
   number of returned records matches that for all data for the DEPEND_0 variable.
   """
 
@@ -305,7 +373,7 @@ def read_cdf_test1(id=None, depend_0=None, variable=None):
 
   metadatum = test_config[id]['metadata']
   #cdawmeta.util.print_dict(metadata)
-  master = cdawmeta.restructure.master(metadatum['master']['data'])
+  master = metadatum['master']['data']
 
   depend_0_ = master['CDFVariables'][depend_0]
   variable_ = master['CDFVariables'][variable]
@@ -405,7 +473,7 @@ def files(id=id, start=None, stop=None, logger=None, cache_dir=None, update=Fals
   if logger is not None:
     logger.info(f"Getting file URLs for {id} between {start} and {stop}")
 
-  metadata = cdawmeta.metadata(id=id, update=update, embed_data=True, write_catalog=False)
+  metadata = cdawmeta.metadata(id=id, meta_type='orig_data', update=update, embed_data=True, write_catalog=False)
   files_all = metadata[id]['orig_data']['data']['FileDescription']
   if logger is not None:
     logger.info(f"Total of {len(files_all)} URLs for {id}")
@@ -430,8 +498,18 @@ def files(id=id, start=None, stop=None, logger=None, cache_dir=None, update=Fals
 
 if __name__ == '__main__':
 
-  files_ = files(id='AC_OR_SSC', start='2020-01-01T00:00:00Z', stop='2020-01-01T01:00:00Z')
-  print(files_)
   read_cdf_test1()
   read_cdf_test2()
   read_cdf_depend_0s_test()
+
+  if False:
+    id = 'AC_OR_SSC'
+    metadatum = cdawmeta.metadata(id=id, meta_type=['master','orig_data'])
+    orig_data = metadatum[id]['orig_data']['data']
+    file = orig_data['FileDescription'][0]['Name']
+    meta_file = read_cdf_meta(file)
+
+    metadatum = cdawmeta.metadata(id='AC_OR_SSC', meta_type='master')
+    meta_master = metadatum['AC_OR_SSC']['master']['data']
+
+    cdawmeta.util.compare_dicts(meta_master, meta_file, restructure_str=True)

@@ -7,7 +7,7 @@ def spase_auto(metadatum, logger):
   additions = cdawmeta.additions(logger)
 
   allxml = metadatum['allxml']
-  master = cdawmeta.restructure.master(metadatum['master']['data'], logger=logger)
+  master = metadatum['master']['data']
   hapi = metadatum['hapi']['data']
 
   config = cdawmeta.CONFIG['spase_auto']
@@ -63,7 +63,7 @@ def spase_auto(metadatum, logger):
   NumericalData['ResourceHeader']['_Rights'] = additions.get('Rights')
 
   InformationURL = _InformationURL(allxml)
-  # TODO: Add content in cdawmeta-additions/InformationURL.json if unique
+  # TODO: Add content in cdawmeta-spase/InformationURL.json if unique
   if InformationURL is not None:
     NumericalData['ResourceHeader']['InformationURL'] = InformationURL
 

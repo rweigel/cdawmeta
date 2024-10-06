@@ -94,7 +94,7 @@ def cli(script, defs=False):
     "report-name": {
       "help": "Name of report to execute (default: all reports)",
       "default": None,
-      "choices": ['f2c_specifier', 'hpde_io', 'units', 'cadence'],
+      "choices": cdawmeta.reports.__all__,
       "_used_by": ['report.py']
     },
     "table-name": {

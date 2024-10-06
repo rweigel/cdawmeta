@@ -25,6 +25,7 @@ import utilrsw as util
 from cdawmeta import attrib
 from cdawmeta import db
 from cdawmeta import io
+from cdawmeta import reports
 from cdawmeta import restructure
 
 from cdawmeta.additions import additions

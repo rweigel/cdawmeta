@@ -10,10 +10,10 @@ def additions(logger):
   if hasattr(additions, 'additions'):
     return additions.additions
 
-  repo_path = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-additions')
+  repo_path = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-spase')
 
   if not os.path.exists(repo_path):
-    repo_url = cdawmeta.CONFIG['urls']['cdawmeta-additions']
+    repo_url = cdawmeta.CONFIG['urls']['cdawmeta-spase']
     logger.info(f"Cloning {repo_url} into {repo_path}")
     git.Repo.clone_from(repo_url, repo_path, depth=1)
 
