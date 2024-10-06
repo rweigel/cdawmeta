@@ -249,14 +249,11 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
 
   metadata_ = {key: datasets_all[key] for key in dsids}
 
-  if id is None:
-    # Don't write error logs if id = None because not full run.
-    if regen or update:
-      # Only write error logs if regenerating or updating. If not, cache is
-      # used and errors are not encountered because no metadata is generated.
-      cdawmeta.write_errors(logger, update)
-  else:
-    logger.info("Not writing errors because id is not None (not full run).")
+  # Don't write error logs if id = None because not full run.
+  if regen or update:
+    # Only write error logs if regenerating or updating. If not, cache is
+    # used and errors are not encountered because no metadata is generated.
+    cdawmeta.write_errors(logger, update, id=id)
 
   if write_catalog:
     if meta_type_requested is None:
@@ -536,7 +533,7 @@ def _write_catalog(metadata_, id, meta_types):
     subdir = ''
     qualifier = ''
     if id is not None:
-      subdir = 'catalog-partial'
+      subdir = 'partial'
       qualifier = f'-{id}'
 
     fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog-all{qualifier}')
