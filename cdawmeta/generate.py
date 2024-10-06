@@ -27,7 +27,7 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
       return {'id': id,'log': msg, 'error': emsg, 'data-file': None, 'data': None}
 
   try:
-    gen_func = getattr(cdawmeta._generate, gen_name)
+    gen_func = getattr(cdawmeta.generators, gen_name)
     datasets = gen_func(metadatum, logger)
     if isinstance(datasets, dict):
       logger.info(f"Writing {file_name_error}")

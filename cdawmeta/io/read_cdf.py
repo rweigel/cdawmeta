@@ -303,7 +303,7 @@ def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601
 
   meta = {}
   for variable in variables:
-    meta[variable] = meta_all[variable]
+    meta[variable] = meta_all['CDFVariables'][variable]
 
     rr = {} # record range
     depend_0 = None

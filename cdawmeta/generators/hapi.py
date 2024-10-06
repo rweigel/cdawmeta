@@ -8,7 +8,6 @@ import cdawmeta
 logger = None
 
 dependencies = ['master', 'cadence', 'sample_start_stop']
-#dependencies = ['master', 'sample_start_stop']
 
 def hapi(metadatum, _logger):
   global logger
@@ -81,6 +80,7 @@ def hapi(metadatum, _logger):
     cdawmeta.error('hapi', id, None, "CDF.NoDatasets", "  " + msg, logger)
     return {"error": msg}
 
+  # Second pass
   depend_0_names = _order_depend0s(id, depend_0_names)
 
   catalog = []
@@ -322,7 +322,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       virtual_txt = f' (virtual: {virtual})'
       logger.info(f"    {name}{virtual_txt}")
 
-    type = CDFDataType2HAPItype(variable['VarDescription']['DataType'])
+    type = _to_hapi_type(variable['VarDescription']['DataType'])
     if type is None and print_info:
       msg = f"Variable '{name}' has unhandled DataType: {variable['VarDescription']['DataType']}. Dropping variable."
       cdawmeta.error('hapi', dsid, name, "HAPI.NotImplemented", "      " + msg, logger)
@@ -344,7 +344,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
         NumElements = variable['VarDescription']['NumElements']
 
       if PadValue is None and FillValue is None and NumElements is None:
-        emsg = "Dropping '{name}' because CDFDataType2HAPItype(VAR_TYPE) returns string but no PadValue, FillValue, or NumElements given to allow length to be determined."
+        emsg = "Dropping '{name}' because _to_hapi_type(VAR_TYPE) returns string but no PadValue, FillValue, or NumElements given to allow length to be determined."
         cdawmeta.error('hapi', dsid, name, "CDF.MissingMetadata", "      " + emsg, logger)
         continue
 
@@ -512,7 +512,7 @@ def _bins(dsid, name, all_variables, depend_xs, print_info=False):
   for x in range(len(depend_xs)):
     DEPEND_x_NAME = depend_xs[x]
     if DEPEND_x_NAME is not None:
-      hapitype = CDFDataType2HAPItype(all_variables[DEPEND_x_NAME]['VarDescription']['DataType'])
+      hapitype = _to_hapi_type(all_variables[DEPEND_x_NAME]['VarDescription']['DataType'])
       if hapitype in ['integer', 'double']:
         # Other cases are handled in _variables2parameters
         bins_object = _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=print_info)
@@ -785,7 +785,7 @@ def _cdftimelen(cdf_type):
 
   return None
 
-def CDFDataType2HAPItype(cdf_type):
+def _to_hapi_type(cdf_type):
 
   if cdf_type in ['CDF_CHAR', 'CDF_UCHAR']:
     return 'string'
@@ -800,13 +800,3 @@ def CDFDataType2HAPItype(cdf_type):
     return 'double'
 
   return None
-
-# Used here and in soso.py
-def flatten_parameters(hapi):
-
-  if isinstance(hapi, list):
-    parameters = {}
-    for _, ds in enumerate(hapi):
-      return [*parameters, *ds['info']['parameters']]
-
-  return hapi['info']['parameters']

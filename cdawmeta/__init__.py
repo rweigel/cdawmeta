@@ -9,11 +9,13 @@ __all__ = [
             'error',
             'write_errors',
             'generate',
+            'generators',
             'ids',
             'io',
             'logger',
             'metadata',
             'restructure',
+            'reports',
             'table',
             'util'
           ]
@@ -27,6 +29,9 @@ from cdawmeta import db
 from cdawmeta import io
 from cdawmeta import reports
 from cdawmeta import restructure
+from cdawmeta import generators
+
+from cdawmeta.generators import dependencies
 
 from cdawmeta.additions import additions
 from cdawmeta.cli import cli
@@ -35,7 +40,6 @@ from cdawmeta.config import DATA_DIR
 from cdawmeta.error import error
 from cdawmeta.error import write_errors
 from cdawmeta.generate import generate
-from cdawmeta._generate import dependencies
 from cdawmeta.logger import logger
 from cdawmeta.metadata import ids
 from cdawmeta.metadata import metadata

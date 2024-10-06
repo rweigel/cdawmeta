@@ -87,7 +87,7 @@ def cadence(metadatum, logger):
       depend_0_counts[depend_0_name]['error'] = emsg
       del depend_0_counts[depend_0_name]['note']
       del depend_0_counts[depend_0_name]['counts']
-      continue
+      raise e
 
     DataType, emsg = _check_data(id, depend_0_name, data, url)
     if emsg is not None:
