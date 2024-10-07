@@ -15,7 +15,7 @@ The code reads and combines information from
 
 * [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml), which has dataset-level information for ~2,700 datasets;
 * The [Master CDF](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/) files (we use the JSON representation) referenced in [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml), which contain both  dataset-level metadata and variable metadata;
-* The list of URLs for CDF files associated each dataset using the CDASR [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) endpoint; and
+* The list of URLs for CDF files associated with each dataset using the CDASR [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) endpoint; and
 * A CDF file referenced in the [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) response (for computing cadence and determining if the variable names in the Master CDF match those in a data CDF).
 
 The code uses [requests-cache](https://github.com/requests-cache/requests-cache/), so files are only re-downloaded if the HTTP headers indicate they are needed. When metadata are downloaded, a diff is stored if they changed.
@@ -64,7 +64,7 @@ python metadata.py --id AC_OR_SSC --meta-type spase_auto
 python metadata.py --id VOYAGER1_10S_MAG.json --meta-type spase_auto
 ```
 
-Create and display HAPI metadata; the output of these command can be viewed at [hapi/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info/AC_OR_SSC.json) and [hapi/info/VOYAGER1_10S_MAG.json](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info/VOYAGER1_10S_MAG.json):
+Create and display HAPI metadata; the output of these commands can be viewed at [hapi/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info/AC_OR_SSC.json) and [hapi/info/VOYAGER1_10S_MAG.json](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info/VOYAGER1_10S_MAG.json):
 ```
 python metadata.py --id AC_OR_SSC --meta-type hapi
 python metadata.py --id VOYAGER1_10S_MAG.json --meta-type hapi
@@ -92,7 +92,7 @@ python report.py --report-name hpde_io
 
 CDAWeb provides access to metadata used for its data services in [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml) and [Master CDFs](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/). Their software engineers have provided essential guidance and insight into the development of HAPI metadata.
 
-Although CDF files uploaded to or pulled into CDAWeb from instrument teams typically are roughly compliant with their [ISTP metadata guidelines](https://spdf.gsfc.nasa.gov/istp_guide/istp_guide.html), there is a variability in the level of compliance. In many cases, "patches" to these CDF files are needed for the CDAWeb display and listing software to work. To address this, they create "Master CDFs". In addition, CDAWeb web service-specific metadata, such as plot rendering information used by their [IDL processing code](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/), is included. Also, "virtual" variables used by the CDAWeb plotting software are often added. For example, suppose a variable that depends on time, energy, and pitch angle is in the dataset CDFs. In that case, they may add one variable per pitch angle by defining a "virtual" variables. The code need to produce a virtual variable is defined in [IDL code](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro).
+Although CDF files uploaded to or pulled into CDAWeb from instrument teams typically are roughly compliant with their [ISTP metadata guidelines](https://spdf.gsfc.nasa.gov/istp_guide/istp_guide.html), there is variability in the level of compliance. In many cases, "patches" to these CDF files are needed for the CDAWeb display and listing software to work. To address this, they create "Master CDFs". In addition, CDAWeb web service-specific metadata, such as plot rendering information used by their [IDL processing code](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/), is included. Also, "virtual" variables used by the CDAWeb plotting software are often added. For example, suppose a variable that depends on time, energy, and pitch angle is in the dataset CDFs. In that case, they may add one variable per pitch angle by defining "virtual" variables. The code needed to produce a virtual variable is defined in [IDL code](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro).
 
 The Master CDFs are posted for external use, with caveats. From [0MASTERS/00readme.txt](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS/00readme.txt):
 
@@ -170,12 +170,12 @@ Some `AccessInformation` nodes are structured in a way that is misleading.
 
 For example, [ACE/Ephemeris/PT12M](https://hpde.io/NASA/NumericalData/ACE/Ephemeris/PT12M.json) indicates that the `Format` for the first four `AccessURL`s is `CDF`, which not correct. The `Name=CDAWeb` access URL has has many other format options. The `SSCWeb` access URL does not provide `CDF` and the names of the parameters at SSCWeb are not the same as those listed in `Parameters`; also, more parameters are available at SSCWeb. Finally, `CSV` is listed as the format for the `Style=HAPI` `AccessURL`, but `Binary` and `JSON` are available.
 
-Note that Bernie Harris has a web service that produces SPASE records with additional `AccessInformation` nodes, for example compare
+Note that Bernie Harris has a web service that produces SPASE records with additional `AccessInformation` nodes, for example, compare
 
 * [his ACE/Ephemeris/PT12M](https://heliophysicsdata.gsfc.nasa.gov/WS/hdp/1/Spase?ResourceID=spase://NASA/NumericalData/ACE/Ephemeris/PT12M) with
 * [hpde.io ACE/Ephemeris/PT12M](https://hpde.io/ASA/NumericalData/ACE/Ephemeris/PT12M.json)
 
-I don't know Bernie's web service it is being used - although it is under [heliophysicsdata.gsfc.nasa.gov](heliophysicsdata.gsfc.nasa.gov), it seems to not to be used there - for example, see the [`heliophysicsdata.gsfc.nasa.gov` search result for AC_OR_SSC](https://heliophysicsdata.gsfc.nasa.gov/websearch/dispatcher?action=TEXT_SEARCH_PANE_ACTION&inputString=AC_OR_SSC).
+I don't know if Bernie's web service it is being used - although it is under [heliophysicsdata.gsfc.nasa.gov](heliophysicsdata.gsfc.nasa.gov), it seems to not be used there - for example, see the [`heliophysicsdata.gsfc.nasa.gov` search result for AC_OR_SSC](https://heliophysicsdata.gsfc.nasa.gov/websearch/dispatcher?action=TEXT_SEARCH_PANE_ACTION&inputString=AC_OR_SSC).
 
 It is often found that SPASE records contain parameters that are only available from one of the `AccessURLs`. For example,
 
@@ -188,15 +188,15 @@ It is often found that SPASE records contain parameters that are only available 
   * What is the relationship between the Caltech data and CDAWeb data? Which should I use?
   * `Time PB5` is listed in SPASE record, it is not available from 4 of the 5 `AccessURL`s:
 
-     ✓ https://spdf.gsfc.nasa.gov/pub/data/ace/mag/level_2_cdaweb/mfi_h0/
+ ✓ https://spdf.gsfc.nasa.gov/pub/data/ace/mag/level_2_cdaweb/mfi_h0/
 
-     X https://cdaweb.gsfc.nasa.gov/cgi-bin/eval2.cgi?dataset=AC_H0_MFI&index=sp_phys
+ X https://cdaweb.gsfc.nasa.gov/cgi-bin/eval2.cgi?dataset=AC_H0_MFI&index=sp_phys
 
-     X https://cdaweb.gsfc.nasa.gov/hapi
+ X https://cdaweb.gsfc.nasa.gov/hapi
 
-     X ftp://mussel.srl.caltech.edu/pub/ace/level2/mag/
+ X ftp://mussel.srl.caltech.edu/pub/ace/level2/mag/
 
-     X https://izw1.caltech.edu/ACE/ASC/level2/lvl2DATA_MAG.html
+ X https://izw1.caltech.edu/ACE/ASC/level2/lvl2DATA_MAG.html
 
 * In [OMNI/PT1H](https://hpde.io/NASA/NumericalData/OMNI/PT1H),
 
@@ -204,7 +204,7 @@ It is often found that SPASE records contain parameters that are only available 
    * the table is not same as shown in [omni2.text](https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/omni2.text) (new annotations added), and
    * SPASE does not reference column 55, which is mentioned in [omni2.text](https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/omni2.text).
 
-This is a complicated problem. We are considering also serving CDF data of type `VAR_DATA=support_data`. In this case, the HAPI metadata will reference many more parameters available from the CDAWeb web service, which only provides access to `VAR_DATA=data` variables.
+This is a complicated problem. We are also considering serving CDF data of type `VAR_DATA=support_data`. In this case, the HAPI metadata will reference many more parameters available from the CDAWeb web service, which only provides access to `VAR_DATA=data` variables.
 
 In the [`cdawmeta-spase` repository](https://github.com/rweigel/cdawmeta-spase), we have a template that addresses some of these issues, including the addition of a note on the parameter names and the fact that all parameters may not be available from all `AccessURL`s. This template is used to generate the `spase_auto` metadata.
 
@@ -271,11 +271,11 @@ Also, the Master CDFs contain informational URLs that do not appear in the assoc
 
 Although HAPI has an `additionalMetadata` attribute, we are reluctant to reference existing SPASE records due to these issues (primarily 2., 3., and 5.). We conclude that it makes more sense to link to less extensive but correct metadata (for example, to CDF Master metadata or documentation on the CDAWeb website<sup>*</sup>) than to more extensive SPASE metadata that is confusing (see 4.) or incomplete and in some cases incorrect (see items 2., 3., and 5.).
 
-<sup>*</sup> This is not quite possible - CDAWeb includes links to SPASE with incorrect information, for example ones with incorrect units or a list of parameters that is not the same as what is shown in their data selection menu.
+<sup>*</sup> This is not quite possible - CDAWeb includes links to SPASE with incorrect information, for example, ones with incorrect units or a list of parameters that is not the same as what is shown in their data selection menu.
 
-The primary problems with existing CDAWeb `NumericalData` SPASE records is
+The primary problems with existing CDAWeb `NumericalData` SPASE records are
 
-1. that they appear to have been created ad-hoc by different authors who follow different conventions and include different levels of detail;
+1. they appear to have been created ad-hoc by different authors who follow different conventions and include different levels of detail;
 2. there is no automated mechanism for updating or syncing the SPASE records with CDAWeb metadata; and
 3. there do not appear to be mechanisms in place to ensure the content of SPASE records is correct, consistent, and not confusing.
 
@@ -283,4 +283,4 @@ We suggest that there is urgency of having correct and complete SPASE `Numerical
 
 CDAWeb SPASE `NumericalData` records have been under development since 2009 and yet these problems persist. At the current rate of generation, they may not be complete for another 5-10 years. We suggest a different approach is needed.
 
-We suggest that CDAWeb SPASE metadata should be created by an automated process similar to that used by `spase_auto` (which is also how HAPI metadata is generated). This code requires primarily existing CDAWeb metadata information and some additional metadata that is stored in a few version controlled files. This information is described in the [cdawmeta-spase](https://github.com/rweigel/cdawmeta-spase) repository and the SPASE generation code that is needed in addition to the code used for creating HAPI metadata is ~500 lines (see [`spase_auto.py`](https://github.com/rweigel/cdawmeta/blob/main/cdawmeta/generators/spase_auto.py)). This approach would have prevented many of the errors and inconsistencies described above and further detailed in the [`cdawmeta-spase` README](https://github.com/rweigel/cdawmeta-spase).
+We suggest that CDAWeb SPASE metadata should be created by an automated process similar to that used by `spase_auto` (which is also how HAPI metadata is generated). This code primarily requires existing CDAWeb metadata information and some additional metadata that is stored in a few version-controlled files. This information is described in the [cdawmeta-spase](https://github.com/rweigel/cdawmeta-spase) repository and the SPASE generation code that is needed in addition to the code used for creating HAPI metadata is ~500 lines (see [`spase_auto.py`](https://github.com/rweigel/cdawmeta/blob/main/cdawmeta/generators/spase_auto.py)). This approach would have prevented many of the errors and inconsistencies described above and further detailed in the [`cdawmeta-spase` README](https://github.com/rweigel/cdawmeta-spase).
