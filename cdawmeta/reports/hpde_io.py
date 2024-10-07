@@ -16,7 +16,7 @@ def hpde_io(clargs):
 
   meta_type = 'spase_hpde_io'
   meta = cdawmeta.metadata(id=clargs['id'], meta_type=meta_type, update=False)
-  dsids = meta.keys()
+  dsids = meta.keys() # CDAWeb dataset IDs
 
   attributes = {
     'ObservedRegion': {},
@@ -59,14 +59,34 @@ def hpde_io(clargs):
             ObservedRegion[sc_id] = value
             logger.info(f"  {dsid_spase}: Found first ObservedRegion for s/c ID = {sc_id}: {value}")
           elif sorted(ObservedRegion[sc_id]) != sorted(value):
+            if not _merge_observed_regions(dsid_spase):
+              logger.info(f"  {dsid_spase}: Not merging ObservedRegion for s/c ID = {dsid_spase}")
+            else:
               logger.error(f"  {dsid_spase}: ObservedRegion for this ID differs from first found value s/c ID = {sc_id}")
-              logger.error(f"  {dsid_spase}: First value = {sorted(ObservedRegion[sc_id])}")
-              logger.error(f"  {dsid_spase}: This value  = {sorted(value)}")
-              logger.error("  Combining values.")
+              logger.error(f"    First value = {sorted(ObservedRegion[sc_id])}")
+              logger.error(f"    This value  = {sorted(value)}")
+              logger.error("    Combining values.")
               ObservedRegion[sc_id] = list(set(ObservedRegion[sc_id]) | set(value))
         n_found[attribute] += 1
 
   attributes['ObservedRegion'] = ObservedRegion
+
+  ResourceIDs = {}
+  n_parameters = 0
+  n_found['ResourceID'] = 0
+  for dsid in dsids:
+    p = [meta_type, 'data', 'Spase', 'NumericalData', 'ResourceID']
+    ResourceID = cdawmeta.util.get_path(meta[dsid], p)
+    if ResourceID is not None:
+      n_found['ResourceID'] += 1
+
+    p = [meta_type, 'data', 'Spase', 'NumericalData', 'Parameter']
+    Parameters = cdawmeta.util.get_path(meta[dsid], p)
+    if Parameters is not None:
+      n_parameters += 1
+
+    ResourceIDs[dsid] = ResourceID
+  attributes['ResourceID'] = ResourceIDs
 
   URLs = {}
   for dsid in attributes['InformationURL'].keys():
@@ -84,37 +104,33 @@ def hpde_io(clargs):
       else:
         if not dsid.startswith("BAR_"):
           URLs[InformationURL['URL']]["ids"].append(dsid)
-
-
-  msg = f"Number of CDAWeb datasets:  {len(dsids)}"
-  logger.info(msg)
-  msg = f"Number found in hpde.io:    {n_spase}"
-  logger.info(msg)
-
-  msg = f"Number of unique URLs in InformationURL: {len(URLs)}"
-  fname = f'{dir_additions}/InformationURL.json'
-  logger.info(f"  Writing {fname}")
-  cdawmeta.util.write(fname, URLs)
-  del attributes['InformationURL']
+  attributes['InformationURL'] = URLs
 
   for key in attributes.keys():
-    logger.info(f"Found {key} in {n_found[key]} of {n_spase} SPASE records.")
     fname = f'{dir_additions}/{key}.json'
-    logger.info(f"  Writing {fname}")
+    logger.info(f"Writing {fname}")
     cdawmeta.util.write(fname, attributes[key])
 
-  dsids_spase = list(meta.keys())
-  ResourceIDs = {}
-  n_found = 0
-  for dsid in dsids:
-    ResourceIDs[dsid] = None
-    if dsid in dsids_spase:
-      p = [meta_type, 'data', 'Spase', 'NumericalData', 'ResourceID']
-      ResourceID = cdawmeta.util.get_path(meta[dsid], p)
-      ResourceIDs[dsid] = ResourceID
-    #logger.info(f"  {dsid}: {ResourceID}")
-    n_found += 1
+  msgs = []
+  msgs.append(f"Number of CDAWeb datasets:  {len(dsids)}")
+  logger.info(msgs[-1])
+  msgs.append(f"Number found in hpde.io:    {n_spase}")
+  logger.info(msgs[-1])
 
-  ResourceIDs_file = os.path.join(dir_additions, "ResourceID.json")
-  logger.info(f"Writing {ResourceIDs_file}")
-  cdawmeta.util.write(ResourceIDs_file, ResourceIDs)
+  msgs.append(f"Number of SPASE records with a Parameter node: {n_parameters}")
+  logger.info(msgs[-1])
+
+  for key in attributes.keys():
+    msgs.append(f"Found {key} in {n_found[key]} of {n_spase} SPASE records.")
+    logger.info(msgs[-1])
+
+  cdawmeta.util.write(f'{dir_additions}/statistics.txt', "\n".join(msgs))
+
+def _merge_observed_regions(dsid):
+  # TODO: Use start/stop to determine possibility that merge should not be
+  # done. This would have caught the VOYAGER{1,2}_PLS cases.
+  if dsid.startswith("VOYAGER1_PLS"):
+    return False
+  if dsid.startswith("VOYAGER2_PLS"):
+    return False
+  return True

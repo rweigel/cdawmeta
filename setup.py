@@ -19,7 +19,7 @@ except:
 
 setup(
   name='cdawmeta',
-  version='0.0.1',
+  version='0.0.2',
   author='Bob Weigel',
   license='LICENSE.txt',
   packages=find_packages(),

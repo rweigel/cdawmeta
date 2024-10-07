@@ -18,7 +18,7 @@ def LABLAXIS(dsid, name, all_variables, x=None):
         msgx = f"DEPEND_{x} "
       etype = "ISTP.LABLAXIS"
       msg = f"For {msgx}variable '{name}', LABL_PTR = {ptrs['LABL_PTR']} and LABLAXIS = "
-      msg += f"{lablaxis}. Using LABLAXIS."
+      msg += f"'{lablaxis}'. Using LABLAXIS."
 
   if ptrs['LABL_PTR'] is not None:
     label = ptrs['LABL_PTR_VALUES']
