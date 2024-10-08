@@ -29,10 +29,9 @@ clean:
 
 test-README: cdawmeta.egg-info
 	python metadata.py --id AC_OR_SSC --meta-type hapi
+	python metadata.py --id AC_OR_SSC --meta-type hapi --update
+	python metadata.py --id AC_OR_SSC --meta-type hapi --regen
 	python metadata.py --id AC_OR_SSC --meta-type spase_auto
-	python metadata.py --id AC_OR_SSC --meta-type soso
-	python metadata.py --id AC_OR_SSC --update hapi
-	python metadata.py --id AC_OR_SSC --regen hapi
 
 test-table: cdawmeta.egg-info
 	python table.py --id '^AC_OR'
