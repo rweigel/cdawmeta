@@ -95,35 +95,29 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
   '''
 
   logger = _logger(log_level=log_level)
-
   meta_type_requested = meta_type
+  if not isinstance(meta_type, list):
+    meta_type = [meta_type]
+
   logger.info(f"Requested meta_type: {meta_type}")
 
   if meta_type_requested is None:
     meta_types = cdawmeta.dependencies['all']
   else:
     choices = cdawmeta.cli('metadata.py', defs=True)['meta-type']['choices']
-    if isinstance(meta_type, list):
-      meta_types = []
-      for _type in meta_type:
-        if _type not in choices:
-          raise ValueError(f"Error: {meta_type}: Not in {choices}")
-        deps = cdawmeta.dependencies[_type]
-        if deps is None:
-          meta_types.append(_type)
-          continue
-        for dep in deps:
-          if dep not in meta_types:
-            meta_types.append(dep)
-    else:
-      if meta_type_requested not in choices:
+    meta_types = []
+    for _type in meta_type:
+      if _type not in choices:
         raise ValueError(f"Error: {meta_type}: Not in {choices}")
-      if meta_type in cdawmeta.dependencies:
-        if cdawmeta.dependencies[meta_type] is None:
-          meta_types = [meta_type]
-        else:
-          meta_types = [*cdawmeta.dependencies[meta_type], meta_type]
-      meta_type_requested = [meta_type_requested]
+      deps = cdawmeta.dependencies[_type]
+      if deps is None:
+        if _type not in meta_types:
+          meta_types.append(_type)
+        continue
+      for dep in deps:
+        meta_types.append(dep)
+      if _type not in meta_types:
+        meta_types.append(_type)
 
     if 'allxml' not in meta_types:
       meta_types = ['allxml', *meta_types]

@@ -2,6 +2,9 @@
 from . import allxml
 allxml = allxml.allxml
 
+from . import hapi
+hapi = hapi.hapi
+
 from . import master
 master = master.master
 

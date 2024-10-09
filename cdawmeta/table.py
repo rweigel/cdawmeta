@@ -10,60 +10,73 @@ def table(id=None, id_skip=None, table_name=None, embed_data=False,
           regen=False, regen_skip='',
           max_workers=3, log_level='info'):
 
+  kwargs = locals()
+
+  table_names = list(cdawmeta.CONFIG['table']['tables'].keys())
+
+  if table_name is None:
+    info = {}
+    for table_name in table_names:
+      kwargs['table_name'] = table_name
+      info[table_name] = table(**kwargs)
+    return info
+
+  if table_name is not None:
+    if table_name not in table_names:
+      raise ValueError(f"table_name='{table_name}' not in {table_names} in config.json")
+
   global logger
   if logger is None:
     logger = cdawmeta.logger('table')
     logger.setLevel(log_level.upper())
 
-  if table_name is None:
-    meta_type = ['allxml', 'master', 'spase']
-  elif table_name.startswith('spase'):
+  if table_name.startswith('spase'):
     meta_type = ['spase']
   elif table_name.startswith('cdaweb'):
     meta_type = ['allxml', 'master']
-
-  table_names = list(cdawmeta.CONFIG['table']['tables'].keys())
-  if table_name is not None:
-    if table_name not in table_names:
-      raise ValueError(f"table_name='{table_name}' not in {table_names} in config.json")
-    table_names = [table_name]
+  elif table_name.startswith('hapi'):
+    meta_type = ['hapi']
 
   datasets = cdawmeta.metadata(id=id, meta_type=meta_type)
 
-  info = {}
+  if table_name.startswith('spase'):
+    for dsid in datasets.keys():
+      logger.debug(f"{dsid}: Restructuring SPASE")
+      datasets[dsid]['spase']['data'] = cdawmeta.restructure.spase(datasets[dsid]['spase']['data'])
 
-  for table_name in table_names:
+  if table_name.startswith('hapi'):
+    datasets_expanded = {}
+    for dsid in datasets.keys():
+      sub_datasets = datasets[dsid]['hapi']['data']
+      if isinstance(sub_datasets, dict):
+        sub_datasets = [sub_datasets]
+      for sub_dataset in sub_datasets:
+        sdsid = sub_dataset['id']
+        sub_dataset = cdawmeta.restructure.hapi(sub_dataset, simplify_bins=True)
+        datasets_expanded[sdsid] = {'id': sdsid, 'hapi': {'data': sub_dataset}}
+    datasets = datasets_expanded
 
-    if table_name.startswith('spase'):
-      for dsid in datasets.keys():
-        logger.debug(f"{dsid}: Restructuring SPASE")
-        datasets[dsid]['spase']['data'] = cdawmeta.restructure.spase(datasets[dsid]['spase']['data'])
-      break # Only need to do once
 
-  for table_name in table_names:
+  logger.info(40*"-")
+  logger.info(f"Creating table '{table_name}'")
+  header, body, attribute_counts = _table(datasets, table_name=table_name)
 
-    logger.info(40*"-")
-    logger.info(f"Creating table '{table_name}'")
-    header, body, attribute_counts = _table(datasets, table_name=table_name)
+  if len(body) > 0 and len(header) != len(body[0]):
+    raise Exception(f"len(header) == {len(header)} != len(body[0]) = {len(body[0])}")
 
-    if len(body) > 0 and len(header) != len(body[0]):
-      raise Exception(f"len(header) == {len(header)} != len(body[0]) = {len(body[0])}")
+  if len(body) == 0:
+    raise Exception(f"No rows in {table_name} table for id='{id}'")
 
-    if len(body) == 0:
-      raise Exception(f"No rows in {table_name} table for id='{id}'")
+  info = _write_files(table_name, header, body, attribute_counts, id=id)
 
-    info[table_name] = _write_files(table_name, header, body, attribute_counts, id=id)
+  if embed_data:
+    info['header'] = header
+    info['body'] = body
+    if attribute_counts is not None:
+      info['counts'] = {}
+      for count in attribute_counts:
+        info['counts'][count[0]] = count[1]
 
-    if embed_data:
-      info[table_name]['header'] = header
-      info[table_name]['body'] = body
-      if attribute_counts is not None:
-        info[table_name]['counts'] = {}
-        for count in attribute_counts:
-          info[table_name]['counts'][count[0]] = count[1]
-
-  if len(table_names) == 1:
-    return info[table_names[0]]
   return info
 
 def _table(datasets, table_name='cdaweb.dataset'):
@@ -139,7 +152,8 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
   for id, dataset in datasets.items():
     logger.info(f"Computing {mode} for {table_name}/{id}")
 
-    if table_name == 'cdaweb.dataset' or table_name == 'spase.dataset':
+    if table_name.endswith('dataset'):
+
       if mode == 'rows':
         row = [dataset['id']]
 
@@ -162,15 +176,10 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
             row = [*row, *fill]
           continue
 
-        if omit_attributes is not None:
-          for key in list(data.keys()):
-            for omit in omit_attributes:
-              cdawmeta.util.rm_path(data, omit.split('/'))
-
         if mode == 'attributes':
-          _add_attributes(data, attributes[path], attribute_names, fixes, id + "/" + path)
+          _add_attributes(data, attributes[path], attribute_names, fixes, id + "/" + path, omit_attributes)
         else:
-          _append_columns(data, attributes[path], row, fixes)
+          _append_columns(data, attributes[path], row, fixes, omit_attributes)
 
       if mode == 'rows':
         logger.debug(f"  {len(row)} columns in row {len(table)}")
@@ -179,12 +188,13 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
         n_cols_last = len(row)
         table.append(row)
 
-    if table_name == 'cdaweb.variable' or table_name == 'spase.parameter':
+    else:
 
       for path in attributes.keys():
 
         data = cdawmeta.util.get_path(dataset, path.split('/'))
         if data is None:
+          logger.debug(f"  Path '{path}' not found in dataset '{id}'.")
           continue
 
         for variable_name, variable in data.items():
@@ -194,24 +204,23 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
             if table_name == 'cdaweb.variable':
               row = [dataset['id'], variable_name]
 
-          if table_name == 'spase.parameter':
+          if table_name == 'spase.parameter' or table_name == 'hapi.parameter':
             for key in variable.copy():
               # Drop attribute if value is list
-              if isinstance(variable[key], list):
+              if table_name == 'spase.parameter' and isinstance(variable[key], list):
                 del variable[key]
             if mode == 'attributes':
-              _add_attributes(variable, attributes[path], attribute_names, fixes, id + "/" + path)
+              _add_attributes(variable, attributes[path], attribute_names, fixes, id + "/" + path, omit_attributes)
             else:
-              _append_columns(variable, attributes[path], row, fixes)
-
+              _append_columns(variable, attributes[path], row, fixes, omit_attributes)
           else:
             for subpath in attributes[path]:
               if subpath in data[variable_name]:
                 variable_ = data[variable_name][subpath]
                 if mode == 'attributes':
-                  _add_attributes(variable_, attributes[path][subpath], attribute_names, fixes, f"{id}/{path}/{variable_name}/{subpath}")
+                  _add_attributes(variable_, attributes[path][subpath], attribute_names, fixes, f"{id}/{path}/{variable_name}/{subpath}", omit_attributes)
                 else:
-                  _append_columns(variable_, attributes[path][subpath], row, fixes)
+                  _append_columns(variable_, attributes[path][subpath], row, fixes, omit_attributes)
               else:
                 if mode == 'rows':
                   # Insert "?" for all attributes
@@ -237,20 +246,27 @@ def _table_header(attributes, table_name):
   header = ['datasetID']
   if table_name == 'cdaweb.variable':
     header = ['datasetID', 'VariableName']
+  if table_name == 'hapi.dataset':
+    header = ['id']
 
   for path in attributes.keys():
-    if table_name == 'cdaweb.dataset' or table_name.startswith('spase'):
-      for attribute in attributes[path]:
-        header.append(attribute)
-    else:
+    if table_name == 'cdaweb.variable':
       for subpath in attributes[path]:
         for subattribute in attributes[path][subpath]:
           header.append(subattribute)
+    else:
+      for attribute in attributes[path]:
+        header.append(attribute)
+
   return header
 
-def _append_columns(data, attributes, row, fixes):
+def _append_columns(data, attributes, row, fixes, omit_attributes):
 
   for attribute in attributes:
+
+    if omit_attributes is not None and attribute in omit_attributes:
+      logger.info(f"  Skipping {attribute}")
+      continue
 
     if fixes is not None:
       for fix in fixes:
@@ -266,9 +282,14 @@ def _append_columns(data, attributes, row, fixes):
     else:
       row.append("")
 
-def _add_attributes(data, attributes, attribute_names, fixes, path):
+def _add_attributes(data, attributes, attribute_names, fixes, path, omit_attributes):
 
   for attribute_name in data:
+
+    if omit_attributes is not None and attribute_name in omit_attributes:
+      logger.info(f"  Skipping {attribute_name}")
+      continue
+
     attribute_names.append(attribute_name)
     if fixes is None or attribute_name not in fixes:
       attributes[attribute_name] = None

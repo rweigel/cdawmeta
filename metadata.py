@@ -8,5 +8,5 @@ if args['id'] is not None and not args['id'].startswith('^'):
   args['embed_data'] = True
 metadata = cdawmeta.metadata(**args)
 
-#if args['id'] is not None and not args['id'].startswith('^'):
-#  cdawmeta.util.print_dict(metadata[args['id']], style='json')
+if False and args['id'] is not None and not args['id'].startswith('^'):
+  cdawmeta.util.print_dict(metadata[args['id']], style='json')

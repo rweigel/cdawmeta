@@ -13,5 +13,9 @@ info = cdawmeta.table(**args)
 cdawmeta.util.print_dict(info, style='json')
 
 if port:
-  import tableui
-  tableui.serve(port=port, sqldb=info['sql'])
+  print("To serve the table:")
+  print("cd table")
+  print("git clone https://github.com/rweigel/table-ui")
+  print("cd table-ui; pip install -e .")
+  print("cd ../../")
+  print(f"python table/table-ui/serve.py --port {port} --sql {info['sql']}")
