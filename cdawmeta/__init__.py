@@ -3,7 +3,6 @@ __all__ = [
             'attrib',
             'CONFIG',
             'cli',
-            'db',
             'dependencies',
             'DATA_DIR',
             'error',
@@ -15,19 +14,13 @@ __all__ = [
             'logger',
             'metadata',
             'restructure',
-            'reports',
-            'table',
             'util'
           ]
-
-# TODO: Put the following imports in a loop over __all__.
 
 import utilrsw as util
 
 from cdawmeta import attrib
-from cdawmeta import db
 from cdawmeta import io
-from cdawmeta import reports
 from cdawmeta import restructure
 from cdawmeta import generators
 
@@ -43,5 +36,4 @@ from cdawmeta.generate import generate
 from cdawmeta.logger import logger
 from cdawmeta.metadata import ids
 from cdawmeta.metadata import metadata
-from cdawmeta.table import table
 

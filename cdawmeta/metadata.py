@@ -72,7 +72,10 @@ def ids(id=None, id_skip=None, update=False):
       else:
         logger.info(f"# of id regex matches to {id}: {len(ids_reduced)}")
     elif id not in ids_all:
-      raise ValueError(f"Error: id = {id}: Not found.")
+      if id.endswith('.json'):
+        raise ValueError(f"\n\nError: id = '{id}': Not found. Did you mean '{id.replace('.json', '')}'?")
+      else:
+        raise ValueError(f"\n\nError: id = '{id}': Not found.")
     else:
       ids_reduced = [id]
 
@@ -98,6 +101,10 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
   meta_type_requested = meta_type
   if not isinstance(meta_type, list):
     meta_type = [meta_type]
+
+  if False:
+    if len(meta_type) > 1 or meta_type[0] is None:
+      max_workers = 1
 
   logger.info(f"Requested meta_type: {meta_type}")
   if meta_type_requested is None:
@@ -215,6 +222,7 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
           logger.debug(f"  Removing {meta_type} from {dataset['id']} metadata")
           del dataset[meta_type]
           continue
+
       if not embed_data and 'data' in dataset[meta_type]:
         logger.debug(f"  embed_data=False; removing 'data' node from {meta_type} for {dataset['id']}")
         del dataset[meta_type]['data']
@@ -250,9 +258,9 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
 
   if write_catalog:
     if meta_type_requested is None:
-      _write_catalog(metadata_, id, meta_types)
+      _write_combined(metadata_, id, meta_types)
     else:
-      _write_catalog(metadata_, id, meta_type_requested)
+      _write_combined(metadata_, id, meta_type_requested)
 
   return metadata_
 
@@ -315,7 +323,7 @@ def _allxml(update=False, diffs=False):
     return _allxml.allxml
 
   allurl = cdawmeta.CONFIG['urls']['all.xml']
-  allxml = _fetch(allurl, 'all', 'all', referrer='config.json', timeout=timeout, update=update, diffs=diffs)
+  allxml = _fetch(allurl, 'allxml', 'allxml', referrer='config.json', timeout=timeout, update=update, diffs=diffs)
 
   # Curry result
   _allxml.allxml = allxml
@@ -374,8 +382,9 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
     if os.path.exists(pkl_file):
       return cdawmeta.util.read(pkl_file, logger=logger)
     else:
-      logger.info(f"No SPASE record for {id} in ")
-      return None
+      msg = f"No hpde.io SPASE record for {id}."
+      logger.info(msg)
+      return {'id': id, 'url': None, 'data-file': None, 'data': None, 'error': msg}
 
   pattern = "data/hpde.io/**/NumericalData/**/*.json"
   logger.info(f"Getting list of files that match '{pattern}'")
@@ -475,19 +484,33 @@ def _orig_data(dataset, update=True, diffs=False):
   headers = {'Accept': 'application/json'}
   return _fetch(url, dataset['id'], 'orig_data', headers=headers, timeout=timeout, update=update, diffs=diffs)
 
-def _write_catalog(metadata_, id, meta_types):
+def _write_combined(metadata_, id, meta_types):
+
+  from copy import deepcopy
 
   logger.info("----")
-  logger.info(f"Writing catalog files for meta types: {meta_types}")
+
+  if isinstance(meta_types, str):
+    meta_types = [meta_types]
+
+  logger.info(f"Writing combined file for meta types: {meta_types}")
 
   for meta_type in meta_types:
+
     if meta_type == 'orig_data':
-      logger.info("Not creating orig_data catalog file.")
+      logger.info("Not creating orig_data combined file.")
+      continue
+    if meta_type == 'allxml':
+      logger.info("Not creating allxml combined file.")
       continue
 
     data = []
+    if meta_type == 'hapi':
+      data_hapi = [] # Datasets with multiple DEPEND_0s are expanded to multiple datasets
+      data_hapi_no_info = []
+
     for dsid in metadata_.keys():
-      logger.debug(f"Preparing catalog file for: {dsid}/{meta_type}")
+      logger.debug(f"Preparing combined file for: {dsid}/{meta_type}")
 
       if meta_type not in metadata_[dsid]:
         # Should not happen.
@@ -495,9 +518,16 @@ def _write_catalog(metadata_, id, meta_types):
         cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
         continue
 
+      if metadata_[dsid][meta_type] is None:
+        # Should not happen.
+        msg = f"No metadatum/{meta_type} is None for '{dsid}'."
+        cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
+        continue
+
       datum = metadata_[dsid][meta_type].get('data', None)
 
       if datum is None:
+        # embed_data was set to False
         datum_file = metadata_[dsid][meta_type].get('data-file', None)
         if datum_file is None:
           msg = f"No data and no data-file in metadatum/{meta_type} for '{dsid}'."
@@ -515,13 +545,23 @@ def _write_catalog(metadata_, id, meta_types):
           logger.debug(f"  Reading {dataum_file}")
           d = cdawmeta.util.read(datum_file)
           datum.append(d)
+        if len(datum) == 1:
+          datum = datum[0]
 
-      if isinstance(datum, list):
-        # This is for HAPI metadata, which can have multiple datasets
+      data.append(datum)
+
+      if meta_type == 'hapi':
+        if isinstance(datum, dict):
+          datum = [datum]
         for d in datum:
-          data.append(d)
-      else:
-        data.append(datum)
+          data_hapi.append(d)
+          d_copy = deepcopy(d)
+          if 'info' not in d_copy:
+            import pdb; pdb.set_trace()
+            logger.warning(f"No 'info' in {dsid}")
+
+          del d_copy['info']
+          data_hapi_no_info.append(d_copy)
 
     subdir = ''
     qualifier = ''
@@ -529,34 +569,31 @@ def _write_catalog(metadata_, id, meta_types):
       subdir = 'partial'
       qualifier = f'-{id}'
 
-    fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog-all{qualifier}')
+    fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'combined{qualifier}')
     logger.info(f'Writing {fname}.json')
     cdawmeta.util.write(fname + ".json", data)
     logger.info(f'Writing {fname}.pkl')
     cdawmeta.util.write(fname + ".pkl", data)
 
     if meta_type == 'hapi':
-      from copy import deepcopy
-      data_copy = deepcopy(data)
-      for datum in data_copy:
-        if datum is not None:
-          # The non-"all" HAPI catalog does not have "info" nodes.
-          if 'info' not in datum:
-            msg = f"No 'info' node in HAPI metadata: {datum}"
-            cdawmeta.error('metadata', datum['id'], None, 'HAPI.NoInfo', msg, logger)
-          else:
-            del datum['info']
 
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}')
       logger.info(f'Writing {fname}.json')
-      cdawmeta.util.write(fname + ".json", data_copy)
+      cdawmeta.util.write(fname + ".json", data_hapi_no_info)
       logger.info(f'Writing {fname}.pkl')
-      cdawmeta.util.write(fname + ".pkl", data_copy)
+      cdawmeta.util.write(fname + ".pkl", data_hapi_no_info)
+
+      fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog-all{qualifier}')
+      logger.info(f'Writing {fname}.json')
+      cdawmeta.util.write(fname + ".json", data_hapi)
+      logger.info(f'Writing {fname}.pkl')
+      cdawmeta.util.write(fname + ".pkl", data_hapi)
 
 def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=False, update=False):
 
   cache_dir = os.path.join(cdawmeta.DATA_DIR, 'CachedSession', meta_type)
-  subdir = '' if meta_type == 'all' else 'info'
+  subdir = '' if meta_type == 'allxml' else 'info'
+  print(meta_type)
   json_file = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f"{id}.json")
   pkl_file = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f"{id}.pkl")
 

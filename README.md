@@ -1,6 +1,33 @@
-# `cdawmeta` version `0.0.2`
+`cdawmeta version 0.0.2`
 
-# About
+<!-- TOC -->
+[1 About](#1-about)<br/>
+[2 Installing and Running](#2-installing-and-running)<br/>
+&nbsp;&nbsp;&nbsp;[2.1 Examples](#21-examples)<br/>
+&nbsp;&nbsp;&nbsp;[2.2 Generators](#22-generators)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2.1 sample_start_stop](#221-sample_start_stop)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2.2 cadence](#222-cadence)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2.3 sample_links](#223-sample_links)<br/>
+[3 CDAWeb](#3-cdaweb)<br/>
+&nbsp;&nbsp;&nbsp;[3.1 Overview](#31-overview)<br/>
+&nbsp;&nbsp;&nbsp;[3.2 Issues](#32-issues)<br/>
+&nbsp;&nbsp;&nbsp;[3.3 Conclusion and Recommendations](#33-conclusion-and-recommendations)<br/>
+[4 SPASE](#4-spase)<br/>
+&nbsp;&nbsp;&nbsp;[4.1 Overview](#41-overview)<br/>
+&nbsp;&nbsp;&nbsp;[4.2 Issues](#42-issues)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.1 Completion](#421-completion)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.2 Updates](#422-updates)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.3 Units](#423-units)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.4 AccessInformation](#424-accessinformation)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.5 5 Parameter content](#425-5-parameter-content)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.6 Out-of-sync Description and differences in text](#426-out-of-sync-description-and-differences-in-text)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.7 Use of relative StopDate](#427-use-of-relative-stopdate)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.8 Inconsistent ObservedRegions](#428-inconsistent-observedregions)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.9 Inconsistent InformationURLs](#429-inconsistent-informationurls)<br/>
+&nbsp;&nbsp;&nbsp;[4.3 Conclusion and Recommendations](#43-conclusion-and-recommendations)
+<!-- \TOC -->
+
+# 1 About
 
 This package uses [CDAWeb's](https://cdaweb.gsfc.nasa.gov) metadata to create HAPI `catalog` and `info` metadata and SPASE `NumericalData` metadata.
 
@@ -37,7 +64,7 @@ In addition, we have developed several tools for inspection and debugging. SQL d
 
 Also, demonstration code for placing SPASE records into a MongoDB and executing a search is available in `query.py`.
 
-# Installing and Running
+# 2 Installing and Running
 
 (Formal unit tests using `pytest` are in development.)
 
@@ -54,41 +81,133 @@ In the following, use `--update` to update the input metadata (source data chang
 
 See `python metadata.py --help` for more options, including the generation of metadata for only `id`s that match a regular expression and skipping `ids`.
 
-**Examples**
+## 2.1 Examples
 
 Create and display proof-of-concept auto-generated SPASE; the output of this command can be viewed at
-[spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json) and [spase_auto/info/VOYAGER1_10S_MAG.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/VOYAGER1_10S_MAG.json). See the [`cdawmeta-spase` repository](https://github.com/rweigel/cdawmeta-spase) for metadata used that is not available in Master CDFs and/or `all.xml`.
+[spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json) and [spase_auto/info/VOYAGER1_10S_MAG.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/VOYAGER1_10S_MAG.json). See the [`cdawmeta-spase` repository](https://github.com/rweigel/cdawmeta-spase) for metadata used that is not available in Master CDFs and/or `all.xml`. (Remove `--meta-type spase_auto` to see all generated metadata types.)
 ```
 mkdir -p ./data;
 python metadata.py --id AC_OR_SSC --meta-type spase_auto
-python metadata.py --id VOYAGER1_10S_MAG.json --meta-type spase_auto
+python metadata.py --id VOYAGER1_10S_MAG --meta-type spase_auto
 ```
 
 Create and display HAPI metadata; the output of these commands can be viewed at [hapi/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info/AC_OR_SSC.json) and [hapi/info/VOYAGER1_10S_MAG.json](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info/VOYAGER1_10S_MAG.json):
 ```
 python metadata.py --id AC_OR_SSC --meta-type hapi
-python metadata.py --id VOYAGER1_10S_MAG.json --meta-type hapi
+python metadata.py --id VOYAGER1_10S_MAG --meta-type hapi
 ```
 
-**Advanced Examples**
+## 2.2 Generators
 
-Insert SPASE documents for CDAWeb dataset names that match `^A` into a MongoDB and execute a query (requires [installation of MongoDB](https://www.mongodb.com/docs/manual/installation/) to `~/mongodb`):
+`cdawmeta` uses ["generator" functions](https://github.com/rweigel/cdawmeta/tree/main/cdawmeta/generators) to create parts used in high-level metadata such as HAPI and SPASE. Each generator takes inputs that include its dependencies a produce new metadata. For example `sample_start_stop.py` uses the output of `orig_data` to determine a `sample{StartStop}Date` to include in HAPI metadata.
+
+### 2.2.1 sample_start_stop
+
+Used in HAPI.
+
 ```
-python query.py --port 27018 --id '^A' \
- --filter '{"NumericalData.Parameter": { "$exists": true }}' \
- --mongod-binary ~/mongodb/bin/mongod # Change path as needed
-# 45 documents found
-# 40 documents match query
+python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_start_stop
 ```
 
-Create a report based on content of the [hpde.io repository](https://github.com/hpde/hpde.io). (Sample output in [`cdawmeta-spase/reports`](https://github.com/rweigel/cdawmeta-spase/tree/main/reports)). This file also builds the input files used for the automatic generation of SPASE records, which is described in the [`cdawmeta-spase` README](https://github.com/rweigel/cdawmeta-spase/).
+Produces the following output, which can be [downloaded directly](http://mag.gmu.edu/git-data/cdawmeta/data/sample_start_stop/info/VOYAGER1_10S_MAG.json).
+<details>
+<summary>Output</summary>
+<pre>
+{
+  "id": "VOYAGER1_10S_MAG",
+  "sample_start_stop": {
+    "id": "VOYAGER1_10S_MAG",
+    "data-file": "./data/sample_start_stop/info/VOYAGER1_10S_MAG.json",
+    "data": {
+      "sampleStartDate": "1991-10-28T04:59:54.000Z",
+      "sampleStopDate": "1991-11-26T19:09:30.000Z",
+      "note": "sample{Start,Stop}Date corresponds to the time range spanned by the penultimate file in the reponse from https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/VOYAGER1_10S_MAG/orig_data/19770905T141947Z,19911227T000042Z, where the start/end in this URL correponds to the start/end of the dataset."
+    }
+  }
+}
+</pre>
+</details>
+
+### 2.2.2 cadence
+
+Used in HAPI and SPASE.
+
 ```
-python report.py --report-name hpde_io
+python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_start_stop
 ```
+Produces the following output (full output can be [downloaded directly](http://mag.gmu.edu/git-data/cdawmeta/data/cadence/info/VOYAGER1_10S_MAG.json)).
+
+<details>
+<summary>Output</summary>
+<pre>
+{
+  "id": "VOYAGER1_10S_MAG",
+  "cadence": {
+    "id": "VOYAGER1_10S_MAG",
+    "data-file": "./data/cadence/info/VOYAGER1_10S_MAG.json",
+    "data": {
+      "id": "VOYAGER1_10S_MAG",
+      "cadence": {
+        "Epoch2": {
+          "url": "https://cdaweb.gsfc.nasa.gov/sp_phys/data/voyager/voyager1/magnetic_fields_cdaweb/mag_10s/1977/voyager1_10s_mag_19770905_v01.cdf",
+          "note": "Cadence based on variable 'Epoch2' in https://cdaweb.gsfc.nasa.gov/sp_phys/data/voyager/voyager1/magnetic_fields_cdaweb/mag_10s/1977/voyager1_10s_mag_19770905_v01.cdf. This most common cadence occured for 98.8448% of the 20964 timesteps. Cadence = 9600 [ms] = PT9.6S.",
+          "counts": [
+            {
+              "count": 20964,
+              "duration": 9600,
+              "duration_unit": "ms",
+              "duration_iso8601": "PT9.6S",
+              "fraction": 0.9884483002498939
+            },
+            {
+              "count": 194,
+              "duration": 9601,
+              "duration_unit": "ms",
+              "duration_iso8601": "PT9.601S",
+              "fraction": 0.009147060210288086
+            },
+         ...
+         "Epoch": {
+            "url": "https://cdaweb.gsfc.nasa.gov/sp_phys/data/voyager/voyager1/magnetic_fields_cdaweb/mag_10s/1977/voyager1_10s_mag_19770905_v01.cdf",
+            "note": "Cadence based on variable 'Epoch' in https://cdaweb.gsfc.nasa.gov/sp_phys/data/voyager/voyager1/magnetic_fields_cdaweb/mag_10s/1977/voyager1_10s_mag_19770905_v01.cdf. This most common cadence occured for 94.2231% of the 3996 timesteps. Cadence = 48000 [ms] = PT48S.",
+            "counts": [
+               {
+               "count": 3996,
+               "duration": 48000,
+               "duration_unit": "ms",
+               "duration_iso8601": "PT48S",
+               "fraction": 0.9422306059891535
+               },
+               {
+               "count": 194,
+               "duration": 48001,
+               "duration_unit": "ms",
+               "duration_iso8601": "PT48.001S",
+               "fraction": 0.04574392831879274
+               },
+               ...
+            ]
+         }
+      }
+   }
+}
+</pre>
+</details>
+
+### 2.2.3 sample_links
+
+Created to support link testing (several project have involved testing links, and the generation of appropriate links is not trivial).
+
+```
+python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_links
+```
+Produces a [JSON file](http://mag.gmu.edu/git-data/cdawmeta/data/sample_links/info/VOYAGER1_10S_MAG.json) with many test links.
 
 <a id="CDAWeb"></a>
 
-# CDAWeb
+# 3 CDAWeb
+
+## 3.1 Overview
 
 CDAWeb provides access to metadata used for its data services in [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml) and [Master CDFs](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/). Their software engineers have provided essential guidance and insight into the development of HAPI metadata.
 
@@ -104,9 +223,11 @@ The Master CDFs are posted for external use, with caveats. From [0MASTERS/00read
 >
 > Since the Master files are created using skeletontable/skeletoncdf tools from a data file and not necessarily reviewed and edited (especially for historical datasets), THEY SHOULD BE USED WITH CAUTION.
 
-In attempting to create HAPI metadata from CDF Master, several issues were encountered, which have been posted to this repository [issue tracker](https://github.com/rweigel/cdawmeta/issues); many others were handled over email.
+## 3.2 Issues
 
-# Recommendations
+In attempting to create HAPI metadata from CDF Master, several issues were encountered, which have been posted to this repository [issue tracker](https://github.com/rweigel/cdawmeta/issues); many others were handled over email. We are working with the CDAWeb developers to resolve issues relevant to HAPI, and we have also documented other issues that may affect other users of CDF Master or CDF data files.
+
+## 3.3 Conclusion and Recommendations
 
 We suggest that the community would benefit if Master CDF metadata was improved. This would
 
@@ -127,14 +248,17 @@ We also recommend
 
 * documentation of known issues and suggested workarounds - many developers who have re-discover issues, or missed issues, would benefit;
 * a publicly visible issue tracker, and encouragement by the community to use it, for CDAWeb metadata (the [cdawmeta issue tracker](https://github.com/rweigel/cdawmeta/issues) serves this purpose now). Although CDAWeb is responsive to many reports on errors in Master CDFs, we have found many developers in the community who have encountered the same issues and workarounds and have not reported them. With such a tracker, other developers would benefit from accumulated knowledge of issues, and for issues that will not be fixed, they will benefit from the discussion on how to fully work around an issue;
-* documentation of non-ISTP attributes so that users know if an attribute is important for interpretation; and
-* a clearer indication of, or documentation of, attributes that are CDAWeb-software specific.
+* documentation of non-ISTP attributes so that users know if an attribute is important for interpretation;
+* a clearer indication of, or documentation of, attributes that are CDAWeb-software specific; and
+* tests on Master CDFs and newly uploaded data CDFs that catch problems that will cause downstream software to fail, some of those listed in the [issue tracker](https://github.com/rweigel/cdawmeta/issues) fall in this category; a recent example involves recently updated [PSP data CDF files](https://github.com/rweigel/cdawmeta/issues/12).
 
 Early indications are that much of this is out-of-scope of the CDAWeb project. For example, CDAWeb does not control the content or quality of the files that they host and improving the metadata for use by non-CDAWeb software may not be supported. However, addressing these issues will greatly impact the quality of code and metadata downstream (e.g., HAPI, SPASE, SOSO derived from SPASE, etc.); if it is out-of-scope, leadership should find support for addressing these perennial issues.
 
 <a id="SPASE"></a>
 
-# SPASE
+# 4 SPASE
+
+## 4.1 Overview
 
 Our initial attempt was to generate HAPI metadata with SPASE records.
 
@@ -142,19 +266,21 @@ The primary issues that we encountered related to HAPI are the first three discu
 
 In addition, we doubt that new efforts that use CDAWeb SPASE records for search (either with or without `Parameter`-level information) will be useful given the issues described in this section.
 
-## 1 Completion
+## 4.2 Issues
 
-Only about 40% of CDAWeb datasets had parameter-level SPASE records when we first considered using them for HAPI metadata in 2019. ~5 years later, there is only [~66% coverage](https://github.com/rweigel/cdawmeta-spase/blob/main/statistics.txt) (however, as discussed below, the number that are up-to-date, correct, and without missing parameters is less).
+### 4.2.1 Completion
+
+Only about 40\% of CDAWeb datasets had parameter-level SPASE records when we first considered using them for HAPI metadata in 2019. Approximately five years later, there is only [~66\% coverage](https://github.com/rweigel/cdawmeta-spase/blob/main/statistics.txt) (however, as discussed below, the number that are up-to-date, correct, and without missing parameters is less).
 
 The implication is that CDAWeb `NumericalData` SPASE records cannot be used for one of the intended purposes, which is to provide a structured, correct, and complete representation of CDAWeb metadata; we needed to duplicate much of the effort that went into creating CDAWeb SPASE records in order to create a complete set of HAPI metadata.
 
-## 2 Updates
+### 4.2.2 Updates
 
 The CDAWeb SPASE metadata is not updated frequently. There are instances where variables have been added to CDAWeb datasets but the SPASE records do not have them. There are also cases where SPASE records are missing variables for datasets that have not changed since the SPASE records were created. Examples are given in the `Parameter` subsection.
 
 The implication is that a scientist who executes a search backed by SPASE records may erroneously conclude that variables or datasets are unavailable.
 
-## 3 Units
+### 4.2.3 Units
 
 We considered using SPASE `Units` when they were available because although CDAWeb Master metadata has a `UNITS` attribute, no consistent convention is followed for the syntax, and in some cases, `UNITS` are not a scientific unit but a label (e.g. `0=good` and `<|V|>`).
 
@@ -166,7 +292,7 @@ For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master
 
 We concluded that if we wanted to represent CDAWeb variables in HAPI with units that adhered to a syntax so the string could be validated, we would need to take the steps described in the [`cdawmeta-spase` repository README](https://github.com/rweigel/cdawmeta).
 
-## 4 `AccessInformation`
+### 4.2.4 AccessInformation
 
 Some `AccessInformation` nodes are structured in a way that is misleading.
 
@@ -212,7 +338,7 @@ In the [`cdawmeta-spase` repository](https://github.com/rweigel/cdawmeta-spase),
 
 Note that the parameter list generated by `spase_auto` may differ from what is generated by the [resolver](https://heliophysicsdata.gsfc.nasa.gov/queries/index_resolver.html). We start with the full list of parameters but drop certain ones if there are issues with the metadata or CDF files that will prevent the data from being served. The list of dropped parameters is available in a [log file](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/). (It is straightforward to modify this behavior, however).
 
-## 5 `Parameter` content
+### 4.2.5 5 Parameter content
 
 Many SPASE records do not contain the full list of variables available from the [CDAWeb web service](https://cdaweb.gsfc.nasa.gov/WebServices/). This issue was apparently noticed before - Bernie Harris has a [resolver](https://heliophysicsdata.gsfc.nasa.gov/queries/index_resolver.html) that will create a SPASE record with the variables available from the [CDAWeb web service](https://cdaweb.gsfc.nasa.gov/WebServices/) (but some variables available in the raw CDFs are excluded).
 
@@ -225,7 +351,7 @@ However, the [SPASE record](https://hpde.io/NASA/NumericalData/Voyager1/MAG/CDF/
 
 The [Resource ID convention](https://spase-group.org/docs/conventions/index.html) suggests putting cadence in the `ResourceID` string. However, no convention is suggested for how the cadence is rendered. For example, should one day be given as `PT86400S` or `P1D`? No convention is suggested for the amount of precision to use. Our SPASE generation code computes the cadence of a dataset by computing the histogram of the difference in time step and the most frequent time step is used. We have found that this automated process sometimes finds a cadence that does not match the cadence in the `ResourceID`.
 
-## 6 Out-of-sync `Description` and differences in text
+### 4.2.6 Out-of-sync Description and Differences in Text
 
 [NotesO.html#OMNI_HRO2_1MIN](https://cdaweb.gsfc.nasa.gov/misc/NotesO.html#OMNI_HRO2_1MIN) has a link to [OMNI/HighResolutionObservations/Version2/PT1M](https://hpde.io/NASA/NumericalData/OMNI/HighResolutionObservations/Version2/PT1M), which has [a broken link](https://omniweb..sci.gsfc.nasa.gov/html/HROdocum.html) (it is likely that the broken link was corrected in the CDF metadata and the SPASE record was not updated).
 
@@ -233,23 +359,23 @@ Although improvements were made in the presentation in the SPASE version, why no
 
 PI's writing seems to have been modified (assuming PI did not request the SPASE `Description` to be a modified version of what is in the CDF):
 
-[`TEXT` node in the CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/uy_proton-moments_swoops_00000000_v01.json)
+[`TEXT` node in the CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/uy_proton-moments_swoops_00000000_v01.json):
 
 > This file contains the moments obtained from the distribution function of protons after deconvolution using the same magnetic field values used to construct the matrices. The vector magnetic field and the particle velocity are given in inertial RTN coordinates. ...
 
-[`Description` node in the corresponding SPASE record](https://hpde.io/NASA/NumericalData/Ulysses/SWOOPS/Proton/Moments/PT4M)
+[`Description` node in the corresponding SPASE record](https://hpde.io/NASA/NumericalData/Ulysses/SWOOPS/Proton/Moments/PT4M):
 
 > This File contains the Moments obtained from the Distribution Function of Protons after Deconvolution using the same Magnetic Field Values used to construct the Matrices. The Vector Magnetic Field and the Particle Velocity are given in Inertial RTN Coordinates. ...
 
-Our opinion is that only in rare circumstances should descriptive information not in all.xml, the Master CDF, a journal article, instrument documentation, or the PI's web page, or written by someone on the instrument team be in SPASE. Also, when content is taken from papers and web pages an put in SPASE by non-instrument team members, it should be referenced.
+Our opinion is that only in rare circumstances should descriptive information not in all.xml, the Master CDF, a journal article, instrument documentation, or the PI's web page, or written by someone on the instrument team be in SPASE. Also, when content is taken from papers and web pages an put in SPASE by non-instrument team members, it should be referenced. When we were creating SPASE records as part of the Virtual Radiation Belt Observatory, I argued that the fact that I was awarded the grant did not give me the authority to write documentation for radiation belt--related instruments. Such authority requires experience with the intstrument and any non--trivial description or documentation that could not be quoted should be approved by an instrument team member.
 
-## 7 `StopDate`
+### 4.2.7 Use of Relative StopDate
 
 The `StopDate`s are relative even though the actual stop date is available in [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml). Given that many SPASE records have not been updated in years, it is likely that the relative `StopDate` is wrong in some cases (due to, for example, no more data being produced).
 
 The `spase_auto` metadata described above addresses this issue and updates `StopDates` daily.
 
-## 9 Inconsistent `ObservedRegion`s
+### 4.2.8 Inconsistent ObservedRegions
 
 Most CDAWeb datasets with ids in the form `a_b_c` should have the same `ObservedRegion` as a dataset that starts with `a_y_z` (unless an instrument was not active while the spacecraft was in certain regions). This is frequently not the case; see the error messages in [hpde_io.log](http://mag.gmu.edu/git-data/cdawmeta/data/reports).
 
@@ -263,13 +389,13 @@ The implication of this for search is that a user may make an incorrect conclusi
 
 The `spase_auto` code applies `ObservedRegion` corrections as described in the [`cdawmeta-spase`](https://github.com/rweigel/cdawmeta-spase/) repository. This code is incomplete - there are instances when datasets with ids in the form `a_b_c` do not have the same observed region as all datasets that start with `a_y_z`. For example, `VOYAGER1_PLS` and `VOYAGER2_PLS`; this case is handled, but there may be others.
 
-## 9 Inconsistent `InformationURL`s
+### 4.2.9 Inconsistent InformationURLs
 
 [InformationURL.json](https://github.com/rweigel/cdawmeta-spase/blob/main/InformationURL.json) contains keys of a `URL` in an `InformationURL` node and an array with all CDAWeb datasets it is associated with. There are many instances where a URL should apply to additional datasets. For example, all dataset IDs that end in `_SSC`, `_DEF`, and `_POSITION` should be associated with https://sscweb.gsfc.nasa.gov. This issue is corrected in the `spase_auto` code.
 
 Also, the Master CDFs contain informational URLs that do not appear in the associated SPASE `NumericalData` records. This represents an unnecessary loss of information. The merger of Master URLs with SPASE URLs in `spase_auto` is not complete.
 
-## 10 Conclusion and Recommendations
+## 4.3 Conclusion and Recommendations
 
 Although HAPI has an `additionalMetadata` attribute, we are reluctant to reference existing SPASE records due to these issues (primarily 2., 3., and 5.). We conclude that it makes more sense to link to less extensive but correct metadata (for example, to CDF Master metadata or documentation on the CDAWeb website<sup>*</sup>) than to more extensive SPASE metadata that is confusing (see 4.) or incomplete and in some cases incorrect (see items 2., 3., and 5.).
 

@@ -9,15 +9,22 @@ dependencies = ['hapi']
 
 def sample_links(metadatum, logger):
 
-
   def file_based_start_stop(orig_data):
-    def reformat_dt(dt):
-      dt = dt.replace(" ", "T").replace("-","").replace(":","")
-      return dt.split(".")[0] + "Z"
+    def reformat_dt(dt, style='cdasr'):
+      if style == 'cdasr':
+        dt = dt.replace(" ", "T").replace("-","").replace(":","")
+        return dt.split(".")[0] + "Z"
+      else:
+        return dt.replace("T", " ") + "Z"
+
     # The last file in the list is the most recent.
     last_file = orig_data['FileDescription'][-1]
-    start = reformat_dt(last_file['StartTime'])
-    stop = reformat_dt(last_file['EndTime'])
+    start = {}
+    stop = {}
+    start['cdasr'] = reformat_dt(last_file['StartTime'], style='cdasr')
+    stop['cdasr'] = reformat_dt(last_file['EndTime'], style='cdasr')
+    start['hapi'] = reformat_dt(last_file['StartTime'], style='hapi')
+    stop['hapi'] = reformat_dt(last_file['EndTime'], style='hapi')
     logger.info(f"start/stop based on last file from orig_data: {start}/{stop}")
     return start, stop, last_file
 
@@ -25,12 +32,19 @@ def sample_links(metadatum, logger):
     dt = timedelta.fromisoformat(cadence)
     stop = hapiclient.hapitime2datetime(dataset['info']['stopDate'])[0]
     start = stop - 10*dt
-    start = datetime.datetime.strftime(start, "%Y%m%dT%H%M%SZ")
-    stop = datetime.datetime.strftime(stop,   "%Y%m%dT%H%M%SZ")
+    startd = {}
+    stopd = {}
+    startd['cdasr'] = datetime.datetime.strftime(start, "%Y%m%dT%H%M%SZ")
+    stopd['cdasr'] = datetime.datetime.strftime(stop,   "%Y%m%dT%H%M%SZ")
+    # Could keep fractional seconds
+    startd['hapi'] = datetime.datetime.strftime(start, "%Y-%m-%dT%H:%M:%SZ")
+    stopd['hapi'] = datetime.datetime.strftime(stop,   "%Y-%m-%dT%H:%M:%SZ")
     logger.info(f"start/stop based on cadence: {start}/{stop}")
-    return start, stop
+    return startd, stopd
 
-  wsbase = cdawmeta.CONFIG['urls']['cdasr']
+  cdasr = cdawmeta.CONFIG['urls']['cdasr']
+  hapir = cdawmeta.CONFIG['urls']['hapi']
+  hapip = cdawmeta.CONFIG['urls']['hapiplot']
 
   id = metadatum['id']
 
@@ -45,14 +59,35 @@ def sample_links(metadatum, logger):
   # if the number of components in a variable is so large that the error is
   # triggered, however.
   hapi = metadatum['hapi']['data']
+
   if hapi is None:
     return [None]
 
   if isinstance(hapi, dict):
     hapi = [hapi]
 
-  txt_links = []
-  plot_links = []
+  samples = {
+    "file": last_file['Name'],
+    "cdaweb": {
+        "all": {
+          "cdf": None,
+        },
+        "single": {
+          "text": [],
+          "png": []
+        }
+      },
+      "hapi": {
+        "all": {
+          "csv": []
+        },
+        "single": {
+          "csv": [],
+          "svg": []
+        }
+      }
+    }
+
   for dataset in hapi:
 
     cadence = dataset['info'].get('cadence', None)
@@ -60,8 +95,21 @@ def sample_links(metadatum, logger):
       start, stop = cadence_based_start_stop(dataset)
       logger.info("Using cadence for time range in links.")
 
-    wsbase = f"{wsbase}{id}/data/{start},{stop}"
+    # HAPI
+    sid = dataset['id'] # subid
+    csv = f"{hapir}data?dataset={sid}&start={start['hapi']}&stop={stop['hapi']}"
+    samples['hapi']['all']['csv'].append(csv)
+    for parameter in dataset['info']['parameters']:
+      name = parameter['name']
+      plot = f"{hapip}?server={hapir}&dataset={sid}&parameters={name}&start={start['hapi']}&stop={stop['hapi']}&usecache=False"
+      csv = f"{hapir}data?dataset={sid}&start={start['hapi']}&stop={stop['hapi']}"
+      samples['hapi']['single']['csv'].append(csv)
+      samples['hapi']['single']['svg'].append(plot)
 
+
+    # CDAWeb
+    cdasr_ = f"{cdasr}{id}/data/{start['cdasr']},{stop['cdasr']}"
+    samples['cdaweb']['all']['cdf'] = f"{cdasr_}/ALL-VARIABLES?format=cdf"
     if start is None or stop is None:
       logger.error("Information needed for time range in links is not avaialable.")
       continue
@@ -79,18 +127,7 @@ def sample_links(metadatum, logger):
     # as the following will allow, especially for the case when there are
     # more than one DEPEND_0s.
     for variable in variables:
-      txt_links.append(f"{wsbase}/{variable}?format=text")
-      plot_links.append(f"{wsbase}/{variable}?format=png")
+      samples['cdaweb']['single']['text'].append(f"{cdasr_}/{variable}?format=text")
+      samples['cdaweb']['single']['png'].append(f"{cdasr_}/{variable}?format=png")
 
-  samples = {
-    "file": last_file['Name'],
-    "cdaweb":
-      {
-        "cdf": f"{wsbase}/ALL-VARIABLES?format=cdf",
-        "txt": txt_links,
-        "plot": plot_links
-      },
-    "hapi": {
-    }
-  }
   return [samples]

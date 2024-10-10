@@ -1,6 +1,5 @@
 def cli(script, defs=False):
 
-  import os
   import cdawmeta
 
   meta_types = cdawmeta.dependencies['all']
@@ -90,41 +89,6 @@ def cli(script, defs=False):
       "help": "Directory to save files",
       "default": './data',
       "_used_by_all": True
-    },
-    "report-name": {
-      "help": "Name of report to execute (default: all reports)",
-      "default": None,
-      "choices": cdawmeta.reports.__all__,
-      "_used_by": ['report.py']
-    },
-    "table-name": {
-      "help": "Name of table to create (default: all tables)",
-      "default": None,
-      "choices": list(cdawmeta.CONFIG['table']['tables'].keys()),
-      "_used_by": ['table.py']
-    },
-    "collection-name": {
-      "help": "Name of MongoDB collection to create (default: all collections)",
-      "default": None,
-      "choices": list(cdawmeta.CONFIG['table']['mongo']['dbs'].keys()),
-      "_used_by": ['query.py']
-    },
-    "mongod-binary": {
-      "help": "Path to mongod binary",
-      "default": os.path.expanduser("~/mongodb/bin/mongod"),
-      "_used_by": ['query.py']
-    },
-    "filter": {
-      "help": "Filter to apply to MongoDB collection (default: {})",
-      "default": "{}",
-      "_used_by": ['query.py']
-    },
-    "port": {
-      "metavar": "PORT",
-      "type": int,
-      "help": "Serve table as a web page at http://localhost:port. Must specify --table_name",
-      "default": None,
-      "_used_by": ['table.py', 'query.py']
     }
   }
 
