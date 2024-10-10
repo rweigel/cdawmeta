@@ -91,4 +91,6 @@ CENV=python3.10.9-cdawmeta-test
 conda-env:
 	- echo "$$CONDA_DEFAULT_ENV" | grep -q "^$(CENV)" && conda deactivate 2> /dev/null || true
 	- conda env list | grep -q "^$(CENV)" && conda remove --name $(CENV) --all -y 2> /dev/null || true
-	conda create --name $(CENV) -y
+	conda create --name $(CENV) pip -y
+	conda activate $(CENV)
+	conda install pip

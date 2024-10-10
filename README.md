@@ -106,6 +106,8 @@ The Master CDFs are posted for external use, with caveats. From [0MASTERS/00read
 
 In attempting to create HAPI metadata from CDF Master, several issues were encountered, which have been posted to this repository [issue tracker](https://github.com/rweigel/cdawmeta/issues); many others were handled over email.
 
+# Recommendations
+
 We suggest that the community would benefit if Master CDF metadata was improved. This would
 
 1\. improve the quality of HAPI and SPASE metadata generated based on Master CDF metadata
@@ -267,7 +269,7 @@ The `spase_auto` code applies `ObservedRegion` corrections as described in the [
 
 Also, the Master CDFs contain informational URLs that do not appear in the associated SPASE `NumericalData` records. This represents an unnecessary loss of information. The merger of Master URLs with SPASE URLs in `spase_auto` is not complete.
 
-## 10 Conclusion
+## 10 Conclusion and Recommendations
 
 Although HAPI has an `additionalMetadata` attribute, we are reluctant to reference existing SPASE records due to these issues (primarily 2., 3., and 5.). We conclude that it makes more sense to link to less extensive but correct metadata (for example, to CDF Master metadata or documentation on the CDAWeb website<sup>*</sup>) than to more extensive SPASE metadata that is confusing (see 4.) or incomplete and in some cases incorrect (see items 2., 3., and 5.).
 

@@ -100,7 +100,6 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
     meta_type = [meta_type]
 
   logger.info(f"Requested meta_type: {meta_type}")
-
   if meta_type_requested is None:
     meta_types = cdawmeta.dependencies['all']
   else:
@@ -356,7 +355,7 @@ def _spase(dataset, update=True, diffs=False):
   if 'spase_DatasetResourceID' in global_attributes:
     spase_id = global_attributes['spase_DatasetResourceID']
     if spase_id and not spase_id.startswith('spase://'):
-      msg = f"{id}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://' in {metadatum['url']}"
+      msg = f"{id}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://' in {master['url']}"
       cdawmeta.error('metadata', id, None, 'master.InvalidSpaseDatasetResourceID', msg, logger)
       return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
