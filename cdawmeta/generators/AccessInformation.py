@@ -40,32 +40,23 @@ def AccessInformation(metadatum, logger):
       AccessInformation[key]['AccessURL']['URL'] = url.format(dsid=dsid)
 
   ssc = allxml['instrument']['@ID'] == 'SSC'
-  if not ssc:
-    for key in ['SSCWeb/SSCWS', 'SSCWeb/HAPI', 'SSCWeb/HAPI/Program']:
-      if key in AccessInformation:
-        del AccessInformation[key]
-
   if ssc:
     sscid = allxml['observatory']['@ID'].lower()
-    AccessInformation['SSCWeb/SSCWS']['AccessURL']['ProductKey'] = sscid
-    AccessInformation['SSCWeb/HAPI']['AccessURL']['ProductKey'] = sscid
-    url = AccessInformation['SSCWeb/HAPI']['AccessURL']['URL']
-    AccessInformation['SSCWeb/HAPI']['AccessURL']['URL'] = url.format(dsid=sscid)
+    for key in ['SSCWeb/SSCWS', 'SSCWeb/HAPI', 'SSCWeb/HAPI/Program', 'SSCWeb/HAPI/Plot']:
+      AccessInformation[key]['AccessURL']['ProductKey'] = sscid
+  else:
+    for key in ['SSCWeb/SSCWS', 'SSCWeb/HAPI', 'SSCWeb/HAPI/Program', 'SSCWeb/HAPI/Plot']:
+      del AccessInformation[key]
 
-
-  # TODO: Get languages from https://hapi-server.org/servers/?return=script-options
-  hapi_languages = ['IDL', 'Javascript', 'MATLAB', 'Python', 'Autoplot', 'curl', 'wget']
-  hapi_languages = ', '.join(hapi_languages)
-
+  hapi_languages, hapi_language_formats = _hapi_languages()
   Description = AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description']
-  AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description'] = Description.format(hapi_languages=hapi_languages)
-  hapi_language_formats = []
-  for language in hapi_languages.split(', '):
-    hapi_language_formats.append(f"_Script.{language.strip()}")
+  Description = Description.format(hapi_languages=hapi_languages)
+  AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description'] = Description
   AccessInformation['CDAWeb/HAPI/Program']['Format'] = hapi_language_formats
 
   if ssc:
     AccessInformation['SSCWeb/HAPI/Program']['AccessURL']['Description'] = Description.format(hapi_languages=hapi_languages)
+    AccessInformation['SSCWeb/HAPI/Plot']['AccessURL']['Description'] = Description.format(hapi_languages=hapi_languages)
     AccessInformation['SSCWeb/HAPI/Program']['Format'] = hapi_language_formats
 
   hapi = metadatum['hapi']['data']
@@ -82,6 +73,7 @@ def AccessInformation(metadatum, logger):
 
     Description = AccessInformation['CDAWeb/HAPI']['AccessURL']['Description']
     Description = Description.format(n_keys=n_keys, time_variable_names=", ".join(time_variable_names))
+    Description += x_Description
     AccessInformation['CDAWeb/HAPI']['AccessURL']['Description'] = Description
 
     Description = AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description']
@@ -92,18 +84,15 @@ def AccessInformation(metadatum, logger):
 
   del AccessInformation['CDAWeb/HAPI']['AccessURL']['x_Description']
 
-  AccessInformation['CDAWeb/HAPI']['AccessURL']['ProductKey'] = hapi_keys
-  AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['ProductKey'] = hapi_keys
-
   hapi_keys_0 = hapi_keys
   if isinstance(hapi_keys, list):
     hapi_keys_0 = hapi_keys[0]
 
-  url = AccessInformation['CDAWeb/HAPI']['AccessURL']['URL']
-  AccessInformation['CDAWeb/HAPI']['AccessURL']['URL'] = url.format(dsid=hapi_keys_0)
-
-  url = AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['URL']
-  AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['URL'] = url.format(dsid=hapi_keys_0)
+  for key in ['CDAWeb/HAPI', 'CDAWeb/HAPI/Program', 'CDAWeb/HAPI/Plot']:
+    AccessInformation[key]['AccessURL']['ProductKey'] = hapi_keys
+    AccessInformation[key]['AccessURL']['ProductKey'] = hapi_keys
+    url = AccessInformation[key]['AccessURL']['URL']
+    AccessInformation[key]['AccessURL']['URL'] = url.format(dsid=hapi_keys_0)
 
   # Strip leading key under AccessInformation and keep only their values.
   AccessInformation = [information for information in AccessInformation.values()]
@@ -111,3 +100,13 @@ def AccessInformation(metadatum, logger):
   # TODO: Check URLs. Also add to AccessInformation _URLRegEx and report error
   #       if non-200 or RegEx does not match.
   return [AccessInformation]
+
+def _hapi_languages():
+
+  # TODO: Get languages from https://hapi-server.org/servers/?return=script-options
+  languages = ['IDL', 'Javascript', 'MATLAB', 'Python', 'Autoplot', 'curl', 'wget']
+  languages = ', '.join(languages)
+  language_formats = []
+  for language in languages.split(', '):
+    language_formats.append(f"x_Script.{language.strip()}")
+  return languages, language_formats

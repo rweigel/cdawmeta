@@ -1,3 +1,37 @@
+There are a few other issues.
+
+* The P1D file says the format is `CDF` for `AccessURL/Name=CDAWeb`, but the `PT1H` says Text. The `URL` provides both (and more).
+* Descriptions for H3 has `hourly` in several places (and is inconsistent with what is in `all.xml`)
+* One has a note that data are presently 2-3 weeks delayed but has a relative stop of two months.
+* The format for the Caltech link is `Text`, but I could only find HDF linked to [that page](https://izw1.caltech.edu/ACE/ASC/level2/lvl2DATA_CRIS.html)
+* One has a `Time_PB5` parameter and the other does not. `Time_PB5` is not a parameter in many of the files or web service outputs found by following AccessURL links.
+
+https://github.com/hpde/NASA/blob/master/NumericalData/ACE/CRIS/L2/P1D.xml#L67
+
+```
+         <AccessURL>
+            <Name>CDAWeb</Name>
+            <URL>https://cdaweb.gsfc.nasa.gov/cgi-bin/eval2.cgi?dataset=AC_H3_CRIS&amp;index=sp_phys</URL>
+            <ProductKey>AC_H3_CRIS</ProductKey>
+            <Description>ACE/CRIS L2 hourly data with subset, plot, list functionalities from CDAWeb</Description>
+         </AccessURL>
+         <Format>CDF</Format>
+```
+
+https://github.com/hpde/NASA/blob/master/NumericalData/ACE/CRIS/L2/PT1H.xml#L69
+
+```
+         <AccessURL>
+            <Name>CDAWeb</Name>
+            <URL>https://cdaweb.gsfc.nasa.gov/cgi-bin/eval2.cgi?dataset=AC_H2_CRIS&amp;index=sp_phys</URL>
+            <ProductKey>AC_H2_CRIS</ProductKey>
+            <Description>ACE/CRIS L2 hourly data with subset, plot, list functionalities from CDAWeb</Description>
+         </AccessURL>
+         <Format>Text</Format>
+```
+
+
+
 There are many instances where Nand's server has a type of `double`, but I get `integer` based on CDF master metadata. The reason may be that Nand is using different non-CDF master metadata. My understanding is that CDAWeb does not correct errors in non-master CDFs, but I could see it causing problems with people who read CDFs posted at CDAWeb directly without using the master (many do). To see the occurrences, search [the logfile](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/compare.log) for `double`.
 
 When attempting to compute sampleStart/Stops from data returned from the CDAS REST server, I noticed that a dataset has a time variable that is not monotonic. Nand's server has this too:

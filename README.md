@@ -19,9 +19,9 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.2 Updates](#422-updates)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.3 Units](#423-units)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.4 AccessInformation](#424-accessinformation)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.5 5 Parameter content](#425-5-parameter-content)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.6 Out-of-sync Description and differences in text](#426-out-of-sync-description-and-differences-in-text)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.7 Use of relative StopDate](#427-use-of-relative-stopdate)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.5 Parameter content](#425-parameter-content)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.6 Out-of-sync Description and Differences in Text](#426-out-of-sync-description-and-differences-in-text)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.7 Use of Relative StopDate](#427-use-of-relative-stopdate)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.8 Inconsistent ObservedRegions](#428-inconsistent-observedregions)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.9 Inconsistent InformationURLs](#429-inconsistent-informationurls)<br/>
 &nbsp;&nbsp;&nbsp;[4.3 Conclusion and Recommendations](#43-conclusion-and-recommendations)
@@ -34,9 +34,6 @@ This package uses [CDAWeb's](https://cdaweb.gsfc.nasa.gov) metadata to create HA
 It was originally developed to upgrade the metadata from CDAWeb's HAPI server (the existing server only includes the minimum required metadata).
 
 As discussed in the [SPASE](#SPASE) section, the code was extended to remedy major issues with existing SPASE `NumericalData` metadata for CDAWeb datasets. (As discussed in the [SPASE](#SPASE) section, we abandoned our attempt to use existing SPASE records to create HAPI metadata.)
-
-
-Comments on open issues with CDAWeb metadata are in the [CDAWeb](#CDAWeb) section.
 
 The code reads and combines information from
 
@@ -72,19 +69,19 @@ Also, demonstration code for placing SPASE records into a MongoDB and executing 
 git clone https://github.com/rweigel/cdawmeta.git
 cd cdawmeta;
 pip install -e .
-# Test commands in README. (errors shown in
-# red are encountered metadata errors).
+
+# Test commands in README. (errors shown in red are encountered metadata errors).
 make test-README
 ```
 
-In the following, use `--update` to update the input metadata (source data changes on the order of days, typically in the mornings Eastern time on weekdays).
+In the examples, use `--update` to update the input metadata (source data changes on the order of days, typically in the mornings Eastern time on weekdays).
 
-See `python metadata.py --help` for more options, including the generation of metadata for only `id`s that match a regular expression and skipping `ids`.
+See `python metadata.py -h` for more options, including the generation of metadata for only `id`s that match a regular expression and skipping `ids`.
 
 ## 2.1 Examples
 
 Create and display proof-of-concept auto-generated SPASE; the output of this command can be viewed at
-[spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json) and [spase_auto/info/VOYAGER1_10S_MAG.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/VOYAGER1_10S_MAG.json). See the [`cdawmeta-spase` repository](https://github.com/rweigel/cdawmeta-spase) for metadata used that is not available in Master CDFs and/or `all.xml`. (Remove `--meta-type spase_auto` to see all generated metadata types.)
+[spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json) and [spase_auto/info/VOYAGER1_10S_MAG.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/VOYAGER1_10S_MAG.json). See the [`cdawmeta-spase` repository](https://github.com/rweigel/cdawmeta-spase) for metadata used that is not available in Master CDFs and/or `all.xml`. (Remove `--meta-type spase_auto` to see all generated metadata types described in the next subsection.)
 ```
 mkdir -p ./data;
 python metadata.py --id AC_OR_SSC --meta-type spase_auto
@@ -196,7 +193,7 @@ Produces the following output (full output can be [downloaded directly](http://m
 
 ### 2.2.3 sample_links
 
-Created to support link testing (several project have involved testing links, and the generation of appropriate links is not trivial).
+Created to support link testing (several projects have involved testing links, and the generation of appropriate links is not trivial).
 
 ```
 python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_links
@@ -235,14 +232,14 @@ We suggest that the community would benefit if Master CDF metadata was improved.
 
 2\. reduce duplication of effort by scientists and developers in handling non-compliance. For example,
 
-* [pytplot](https://github.com/MAVENSDC/PyTplot/blob/master/pytplot/importers/cdf_to_tplot.py#L213) accounts for the fact that both `SI_CONVERSION` and `SI_CONV` are used as attributes in Master CDFs, but they missed `SI_conv`, which is [also found](https://github.com/rweigel/cdawmeta/issues/14).
-* [pytplot](https://github.com/MAVENSDC/PyTplot/blob/master/pytplot/importers/cdf_to_tplot.py#L140) checks for only `DISPLAY_TYPE` but misses the fact that `Display_Type` and `DISPLAYTYPE` are also found in CDF Masters. The [CDAWeb IDL library](https://github.com/rweigel/cdawlib) [does not look for `DISPLAYTYPE`](https://github.com/search?q=repo%3Arweigel%2FCDAWlib%20DISPLAYTYPE&type=code) and neither does [ADAPT](https://github.com/search?q=repo%3Aspase-group%2Fadapt%20DISPLAY_TYPE&type=code). (Note that these links go to a personal repo with a copy of the CDAWeb IDL library, which is not available in a public repository that can be searched have files linked to by line.)
-* [pytplot](https://github.com/MAVENSDC/PyTplot/blob/master/pytplot/importers/cdf_to_tplot.py#L158) accounts for `DEPEND_TIME` meaning the same thing as `DEPEND_0`. We missed this fact when developing HAPI metadata but could not find documentation to confirm it.
-* [Autoplot/CdfUtil.java](https://github.com/autoplot/app/blob/master/CdfJavaDataSource/src/org/autoplot/cdf/CdfUtil.java) has worked around many CDF and Master CDF metadata issues. (See also [CdfVirtualVars.java](https://github.com/autoplot/app/blob/master/CdfJavaDataSource/src/org/autoplot/cdf/CdfVirtualVars.java)).
-* The [CDAWeb HAPI server](https://git.smce.nasa.gov/spdf/hapi-nand/-/blob/main/src/java/org/hapistream/hapi/server/cdaweb/CdawebUtil.java?ref_type=heads) also contains workarounds.
+* [`pytplot`](https://github.com/MAVENSDC/PyTplot/blob/master/pytplot/importers/cdf_to_tplot.py#L213) accounts for the fact that both `SI_CONVERSION` and `SI_CONV` are used as attributes in Master CDFs, but they missed `SI_conv`, which is [also found](https://github.com/rweigel/cdawmeta/issues/14).
+* [`pytplot`](https://github.com/MAVENSDC/PyTplot/blob/master/pytplot/importers/cdf_to_tplot.py#L140) checks for only `DISPLAY_TYPE` but misses the fact that `Display_Type` and `DISPLAYTYPE` are also found in CDF Masters. The [CDAWeb IDL library](https://github.com/rweigel/cdawlib) [does not look for `DISPLAYTYPE`](https://github.com/search?q=repo%3Arweigel%2FCDAWlib%20DISPLAYTYPE&type=code) and neither does [ADAPT](https://github.com/search?q=repo%3Aspase-group%2Fadapt%20DISPLAY_TYPE&type=code). (Note that these links go to a personal repo with a copy of the CDAWeb IDL library, which is not available in a public repository that can be searched have files linked to by line.)
+* [`pytplot`](https://github.com/MAVENSDC/PyTplot/blob/master/pytplot/importers/cdf_to_tplot.py#L158) accounts for `DEPEND_TIME` meaning the same thing as `DEPEND_0`. We missed this fact when developing HAPI metadata but could not find documentation to confirm it.
+* [`Autoplot/CdfUtil.java`](https://github.com/autoplot/app/blob/master/CdfJavaDataSource/src/org/autoplot/cdf/CdfUtil.java) has worked around many CDF and Master CDF metadata issues. (See also [CdfVirtualVars.java](https://github.com/autoplot/app/blob/master/CdfJavaDataSource/src/org/autoplot/cdf/CdfVirtualVars.java)).
+* The [`CdawebUtil.java` for the CDAWeb HAPI server](https://git.smce.nasa.gov/spdf/hapi-nand/-/blob/main/src/java/org/hapistream/hapi/server/cdaweb/CdawebUtil.java?ref_type=heads) also contains workarounds.
 * [The SPDF CDF Java library](https://github.com/autoplot/cdfj) (posted in this personal repo because it is not available in a public SPDF repo) catches some, but not all CDF metadata issues. For example, it catches `DEPEND_TIME`, but misses the fact that `Display_Type` and `DISPLAYTYPE` (it seems awkward for a CDF file format library to handle special metadata cases).
 * In the early days of SPASE, Jan Merka was creating SPASE records using CDAWeb metadata, and he encountered many of the same issues we did (which we learned recently).
-* The HAPI metadata generation code addresses many anomalies. See the files in the [attrib directory](https://github.com/rweigel/cdawmeta/tree/main/cdawmeta/attrib) and [hapi.py](https://github.com/rweigel/cdawmeta/blob/main/cdawmeta/generators/hapi.py). [Logs](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/) of issues encountered that affected HAPI metadata generation encountered is generated by this code. These issues are tracked in the [cdawmeta issue tracker](https://github.com/rweigel/cdawmeta/issues), and we add information conveyed to us via email or on telecons.
+* The HAPI metadata generation code addresses many anomalies. See the files in the [attrib directory](https://github.com/rweigel/cdawmeta/tree/main/cdawmeta/attrib) and [hapi.py](https://github.com/rweigel/cdawmeta/blob/main/cdawmeta/generators/hapi.py). [Logs](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/) of issues encountered that affected HAPI metadata generation encountered is generated by this code. These issues are tracked in the [cdawmeta issue tracker](https://github.com/rweigel/cdawmeta/issues), and we add information conveyed to us via email or on telecons to the issues threads.
 
 We also recommend
 
@@ -250,9 +247,9 @@ We also recommend
 * a publicly visible issue tracker, and encouragement by the community to use it, for CDAWeb metadata (the [cdawmeta issue tracker](https://github.com/rweigel/cdawmeta/issues) serves this purpose now). Although CDAWeb is responsive to many reports on errors in Master CDFs, we have found many developers in the community who have encountered the same issues and workarounds and have not reported them. With such a tracker, other developers would benefit from accumulated knowledge of issues, and for issues that will not be fixed, they will benefit from the discussion on how to fully work around an issue;
 * documentation of non-ISTP attributes so that users know if an attribute is important for interpretation;
 * a clearer indication of, or documentation of, attributes that are CDAWeb-software specific; and
-* tests on Master CDFs and newly uploaded data CDFs that catch problems that will cause downstream software to fail, some of those listed in the [issue tracker](https://github.com/rweigel/cdawmeta/issues) fall in this category; a recent example involves recently updated [PSP data CDF files](https://github.com/rweigel/cdawmeta/issues/12).
+* tests on Master CDFs and newly uploaded data CDFs that catch problems that will cause downstream software to fail, some of those listed in the [issue tracker](https://github.com/rweigel/cdawmeta/issues) fall in this category; a examples include issues with recently updated [PSP data CDF files](https://github.com/rweigel/cdawmeta/issues/12) and [incorrect `SI_CONVERSION` factors](https://github.com/rweigel/cdawmeta/issues/29).
 
-Early indications are that much of this is out-of-scope of the CDAWeb project. For example, CDAWeb does not control the content or quality of the files that they host and improving the metadata for use by non-CDAWeb software may not be supported. However, addressing these issues will greatly impact the quality of code and metadata downstream (e.g., HAPI, SPASE, SOSO derived from SPASE, etc.); if it is out-of-scope, leadership should find support for addressing these perennial issues.
+Early indications are that much of this is out-of-scope of the CDAWeb project. For example, CDAWeb does not control the content or quality of the files that they host and improving the metadata for use by non-CDAWeb software may not be supported. However, addressing these issues will greatly impact the quality of code and metadata downstream (e.g., HAPI, SPASE, SOSO, etc.); if it is out-of-scope, leadership should find support for addressing these perennial issues.
 
 <a id="SPASE"></a>
 
@@ -288,7 +285,7 @@ Using SPASE `Units` was complicated by the fact that many CDAWeb datasets do not
 
 We abandoned the use of SPASE `Units` when we noticed instances where the SPASE `Units` were wrong.
 
-For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/ac_h2_ule_00000000_v01.json) and `Units = '(cm^2 s sr MeV)^-1)'` [in SPASE](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json). See also [a dump of the unique Master `UNITS` to SPASE `Units` pairs](https://github.com/rweigel/cdawmeta-spase/blob/main/reports/units-CDFUNITS_to_SPASEUnit-map), which is explained in [units.md](https://github.com/rweigel/cdawmeta-spase/blob/main/reports/units.md). (Note that CDAWeb [includes a link to this SPASE record](https://cdaweb.gsfc.nasa.gov/misc/NotesA.html#AC_H2_ULE) and [elsewhere](https://cdaweb.gsfc.nasa.gov/cgi-bin/eval1.cgi?index=sp_phys&group=ACE) to [a SKT file](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0SKELTABLES/ac_h2_ule_00000000_v01.skt) with different units.)
+For example, `AC_H2_ULE/unc_H_S1`, has `UNITS = '[fraction]'` in the [CDF Master](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/ac_h2_ule_00000000_v01.json) and `Units = '(cm^2 s sr MeV)^-1)'` [in SPASE](https://hpde.io/NASA/NumericalData/ACE/ULEIS/Ion/Fluxes/L2/PT1H.json). See also [a dump of the unique Master `UNITS` to SPASE `Units` pairs](http://mag.gmu.edu/git-data/cdawmeta/data/reports/units-CDFUNITS_to_SPASEUnit-map.json), which is explained in [units.md](http://mag.gmu.edu/git-data/cdawmeta/data/reports/units-CDFUNITS_to_SPASEUnit-map.json). (Note that CDAWeb [includes a link to this SPASE record](https://cdaweb.gsfc.nasa.gov/misc/NotesA.html#AC_H2_ULE) and [elsewhere](https://cdaweb.gsfc.nasa.gov/cgi-bin/eval1.cgi?index=sp_phys&group=ACE) to [a SKT file](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0SKELTABLES/ac_h2_ule_00000000_v01.skt) with different units.)
 
 We concluded that if we wanted to represent CDAWeb variables in HAPI with units that adhered to a syntax so the string could be validated, we would need to take the steps described in the [`cdawmeta-spase` repository README](https://github.com/rweigel/cdawmeta).
 
@@ -334,11 +331,15 @@ It is often found that SPASE records contain parameters that are only available 
 
 This is a complicated problem. We are also considering serving CDF data of type `VAR_DATA=support_data`. In this case, the HAPI metadata will reference many more parameters available from the CDAWeb web service, which only provides access to `VAR_DATA=data` variables.
 
-In the [`cdawmeta-spase` repository](https://github.com/rweigel/cdawmeta-spase), we have a template that addresses some of these issues, including the addition of a note on the parameter names and the fact that all parameters may not be available from all `AccessURL`s. This template is used to generate the `spase_auto` metadata.
+In the [`cdawmeta-spase` repository](https://github.com/rweigel/cdawmeta-spase), we have a template that addresses some of these issues, including the addition of a note on the parameter names and the fact that all parameters may not be available from all `AccessURL`s. This template is used to generate the `spase_auto` metadata. Examples: 
+
+* [spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json)
+* [spase_auto/info/VOYAGER1_10S_MAG.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/VOYAGER1_10S_MAG.json)
+
 
 Note that the parameter list generated by `spase_auto` may differ from what is generated by the [resolver](https://heliophysicsdata.gsfc.nasa.gov/queries/index_resolver.html). We start with the full list of parameters but drop certain ones if there are issues with the metadata or CDF files that will prevent the data from being served. The list of dropped parameters is available in a [log file](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/). (It is straightforward to modify this behavior, however).
 
-### 4.2.5 5 Parameter content
+### 4.2.5 Parameter content
 
 Many SPASE records do not contain the full list of variables available from the [CDAWeb web service](https://cdaweb.gsfc.nasa.gov/WebServices/). This issue was apparently noticed before - Bernie Harris has a [resolver](https://heliophysicsdata.gsfc.nasa.gov/queries/index_resolver.html) that will create a SPASE record with the variables available from the [CDAWeb web service](https://cdaweb.gsfc.nasa.gov/WebServices/) (but some variables available in the raw CDFs are excluded).
 

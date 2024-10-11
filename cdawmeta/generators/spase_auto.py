@@ -21,7 +21,7 @@ def spase_auto(metadatum, logger):
       "xmlns": xmlns,
       "xmlns:xsi": additions["config"]["xmlns:xsi"],
       "xsi:schemaLocation": f"{xmlns} {xmlns}/spase-{Version_}.xsd",
-      "_Note": "Nodes prefixed with a _ are not valid SPASE, but are inluded for debugging.",
+      "_Note": "Nodes prefixed with a _ are not valid SPASE, but are inluded for debugging. Values prefixed with a x_ are not valid SPASE but may considered for addition for completeness.",
       "Version": Version
       }
     }
@@ -180,15 +180,17 @@ def _Keyword(allxml, master):
   for key in ['Discipline', 'Source_name', 'Data_type']:
     val = cdawmeta.util.get_path(master, ['CDFglobalAttributes', key])
     if val is not None:
-      keyword_split = val.replace(">", "?").split('?')
+      keyword_split = val.split('>')
       for keyword in keyword_split:
-        val = keyword.strip() + " (from Master/CDFglobalAttributes/" + key + ")"
-        _Keyword = [*_Keyword, val]
+        keyword_split2 = keyword.split('\n')
+        for keyword2 in keyword_split2:
+          val = keyword2.strip() + " (from Master/CDFglobalAttributes/" + key + ")"
+          _Keyword = [*_Keyword, val]
       _Keyword = list(dict.fromkeys(_Keyword))
 
   InstrumentID = cdawmeta.util.get_path(allxml, ['instrument', '@ID'])
   if InstrumentID is not None:
-    _Keyword.append(InstrumentID)
+    _Keyword.append(InstrumentID + " (from all.xml/instrument/@ID)")
 
   return _Keyword
 
