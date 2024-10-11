@@ -1,0 +1,29 @@
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>Label</key>
+		<string>cdawmeta</string>
+		<key>EnvironmentVariables</key>
+		<dict>
+			<key>PATH</key>
+			<string>/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+		</dict>
+		<key>WorkingDirectory</key>
+		<string>/Users/weigel/git/hapi/cdawmeta/table/etc</string>
+		<key>UserName</key>
+		<string>weigel</string>
+		<key>ProgramArguments</key>
+		<array>
+			<string>/bin/bash</string>
+			<string>/Users/weigel/git/hapi/cdawmeta/table/etc/cdawmeta-dynu.sh</string>
+		</array>
+		<key>RunAtLoad</key>
+		<true/>
+		<key>KeepAlive</key>
+		<true/>
+		<key>StandardErrorPath</key>
+		<string>/Users/weigel/git/hapi/cdawmeta/table/etc/cdawmeta-dynu.stderr</string>
+		<key>StandardOutPath</key>
+		<string>/Users/weigel/git/hapi/cdawmeta/table/etc/cdawmeta-dynu.stdout</string>
+	</dict>
+</plist>
