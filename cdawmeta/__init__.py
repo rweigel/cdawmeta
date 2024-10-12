@@ -13,7 +13,9 @@ __all__ = [
             'io',
             'logger',
             'metadata',
+            'reports',
             'restructure',
+            'table',
             'util'
           ]
 
@@ -21,6 +23,7 @@ import utilrsw as util
 
 from cdawmeta import attrib
 from cdawmeta import io
+from cdawmeta import reports
 from cdawmeta import restructure
 from cdawmeta import generators
 
@@ -37,3 +40,4 @@ from cdawmeta.logger import logger
 from cdawmeta.metadata import ids
 from cdawmeta.metadata import metadata
 
+from cdawmeta.table import table
