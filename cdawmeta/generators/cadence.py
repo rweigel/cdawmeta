@@ -10,7 +10,11 @@ import cdawmeta
 
 dependencies = ['orig_data', 'master']
 
-# Special cases: C1_CP_EFW_L3_E3D_INERT, THA_L2_ESA, PSP_FLD_L3_RFS_HFR
+# Special cases:
+#   C1_CP_EFW_L3_E3D_INERT (CDF_EPOCH16)
+#   THA_L2_ESA (VIRTUAL DEPEND_0)
+#   PSP_FLD_L3_RFS_HFR (issue with file)
+#   FORMOSAT5_AIP_IDN (NetCDF file)
 
 def cadence(metadatum, logger):
 
@@ -112,9 +116,7 @@ def cadence(metadatum, logger):
         continue
 
       if DataType == 'CDF_EPOCH16':
-        # C1_CP_EFW_L3_E3D_INERT
-        # Blocked from executing by _check_data_types() and not well tested.
-        # See reason in note in _check_data_types().
+        # e.g., C1_CP_EFW_L3_E3D_INERT
         diff = _diff_cdf_epoch16(epoch)
       else:
         diff = numpy.diff(epoch)
@@ -138,7 +140,8 @@ def cadence(metadatum, logger):
     for value, count in sorted(counts.items(), key=lambda item: item[1], reverse=True):
       fraction = count / total
       if value != round(value):
-        logger.warning(f"  Cadence {metadatum['id']}/{depend_0_name} {value} [ms] != {value/sf} [ms] in {url}{meta}")
+        wmsg = f"  Cadence {metadatum['id']}/{depend_0_name} {value} [ms] != {value/sf} [ms] in {url}"
+        logger.warning(wmsg)
       value_s = value/sf
       if value_s >= 1e-3:
         t = timedelta(seconds=value_s)
@@ -187,22 +190,15 @@ def cadence(metadatum, logger):
 
 def _diff_cdf_epoch16(epoch):
 
-  # diffs only to ns precision because cdflib returns datetime64.
-  epoch = cdflib.cdfepoch.to_datetime(epoch)
-  diff_ns = numpy.diff(epoch)
+  # Real is seconds, imaginary is picoseconds. See
+  #   https://github.com/MAVENSDC/cdflib/blob/main/cdflib/epochs.py#L1119
+  # TODO: They check for negative values. Why?
+  # TODO: Test for fill values. See how epochs.py (but they assume a fill value
+  # instead of checking that it is the ISTP recommended fill value).
 
-  ps_diffs = False
-  if ps_diffs:
-    # Not tested. Compute diffs to picosecond precision.
-    epoch_parts = cdflib.cdfepoch.breakdown(epoch)
-    ps = epoch_parts[:,9]
-    diff_ps = numpy.diff(ps)
-    diff_ps = 1e3*diff_ns + diff_ps
-  else:
-    diff_ps = 1e3*diff_ns
-
-  diff_ps = diff_ps.astype(int)
-
+  diff_s = numpy.diff(numpy.real(epoch))
+  diff_ps = numpy.diff(numpy.imag(epoch))
+  diff_ps = 1e12*diff_s + diff_ps
   return diff_ps
 
 def _extract_and_check_metadata(id, metadatum, logger):
@@ -255,15 +251,17 @@ def _check_data_types(id, master, depend_0_name, logger):
     return emsg
 
   DataType = master['CDFVariables'][depend_0_name]['VarDescription']['DataType']
-  if DataType == 'CDF_EPOCH16':
-    # e.g., C1_CP_EFW_L3_E3D_INERT
-    # 99 DEPEND_0s have this according to
-    # https://hapi-server.org/meta/cdaweb/variable/#DataType=CDF_EPOCH16
-    # Put constraint on number of records returned to speed up?
-    emsg = f"{id}/{depend_0_name}: Skipping CDF_EPOCH16 needed call to cdflib.cdfepoch.to_datetime() is slow. Use alternative method."
-    cdawmeta.error("cadence", id, None, "HAPI.NotImplementedCDF_EPOCH16", emsg, logger)
-    logger.error("  " + emsg)
-    return emsg
+  if False:
+    if DataType == 'CDF_EPOCH16':
+      # e.g., C1_CP_EFW_L3_E3D_INERT
+      # 99 DEPEND_0s have this according to
+      # https://hapi-server.org/meta/cdaweb/variable/#DataType=CDF_EPOCH16
+      # Put constraint on number of records returned to speed up?
+      emsg = "Skipping CDF_EPOCH16 needed call to cdflib.cdfepoch.to_datetime() is too slow."
+      emsg = f"{id}/{depend_0_name}: {emsg}"
+      cdawmeta.error("cadence", id, None, "HAPI.NotImplementedCDF_EPOCH16", emsg, logger)
+      logger.error("  " + emsg)
+      return emsg
 
   if 'VarAttributes' not in master['CDFVariables'][depend_0_name]:
     emsg = f"{id}: '{depend_0_name}['VarAttributes']' is not in master['CDFVariables']"
