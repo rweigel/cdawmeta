@@ -29,15 +29,15 @@
 
 # 1 About
 
-This package uses [CDAWeb's](https://cdaweb.gsfc.nasa.gov) metadata to create HAPI `catalog` and `info` metadata and SPASE `NumericalData` metadata.
+This Python package uses [CDAWeb's](https://cdaweb.gsfc.nasa.gov) metadata to create HAPI `catalog` and `info` metadata and SPASE `NumericalData` metadata.
 
 It was originally developed to upgrade the metadata from CDAWeb's HAPI server (the existing server only includes the minimum required metadata).
 
-As discussed in the [SPASE](#SPASE) section, the code was extended to remedy major issues with existing SPASE `NumericalData` metadata for CDAWeb datasets. (As discussed in the [SPASE](#SPASE) section, we abandoned our attempt to use existing SPASE records to create HAPI metadata.)
+As discussed in the [SPASE](#SPASE) section, the code was extended to remedy major issues with existing SPASE `NumericalData` metadata for CDAWeb datasets. (We abandoned our attempt to use existing SPASE records to create HAPI metadata due to these issues.)
 
 The code reads and combines information from
 
-* [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml), which has dataset-level information for ~2,700 datasets;
+* [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml), which has dataset-level information for approximately 2,700 datasets;
 * The [Master CDF](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/) files (we use the JSON representation) referenced in [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml), which contain both  dataset-level metadata and variable metadata;
 * The list of URLs for CDF files associated with each dataset using the CDASR [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) endpoint; and
 * A CDF file referenced in the [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) response (for computing cadence and determining if the variable names in the Master CDF match those in a data CDF).
@@ -304,11 +304,9 @@ I don't know if Bernie's web service it is being used - although it is under [he
 
 It is often found that SPASE records contain parameters that are only available from one of the `AccessURLs`. For example,
 
-* [ACE/MAG/KeyParameter/PT1H](https://hpde.io/NASA/NumericalData/ACE/MAG/KeyParameter/PT1H) references `Time PB5`. This is only available in the raw CDF files. No other `AccessURL`s provide access to it.
-
 * [ACE/MAG/L2/PT16S](https://hpde.io//NASA/NumericalData/ACE/MAG/L2/PT16S)
 
-  * references a [CDAWeb page](https://cdaweb.gsfc.nasa.gov/cgi-bin/eval2.cgi?dataset=AC_H0_MFI&index=sp_phys) that has different names `B-field magnitude` vs. `Bmagnitude` and `Magnitude` in SPASE. Why?
+  * references a [CDAWeb page](https://cdaweb.gsfc.nasa.gov/cgi-bin/eval2.cgi?dataset=AC_H0_MFI&index=sp_phys) that has different names, e.g., `B-field magnitude` vs. `Bmagnitude` and `Magnitude` in SPASE. Why?
   * `sigmaB` is mentioned at Caltech pages, not in SPASE.
   * What is the relationship between the Caltech data and CDAWeb data? Which should I use?
   * `Time PB5` is listed in SPASE record, it is not available from 4 of the 5 `AccessURL`s:
