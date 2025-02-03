@@ -498,11 +498,12 @@ def files(id=id, start=None, stop=None, logger=None, cache_dir=None, update=Fals
 
 if __name__ == '__main__':
 
-  read_cdf_test1()
-  read_cdf_test2()
-  read_cdf_depend_0s_test()
-
   if False:
+    read_cdf_test1()
+    read_cdf_test2()
+    read_cdf_depend_0s_test()
+
+  if True:
     id = 'AC_OR_SSC'
     metadatum = cdawmeta.metadata(id=id, meta_type=['master','orig_data'])
     orig_data = metadatum[id]['orig_data']['data']

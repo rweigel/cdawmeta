@@ -111,6 +111,15 @@ def spase_auto(metadatum, logger):
 
   return [spase_auto_]
 
+if __name__ == '__main__':
+  #logger = cdawmeta.logger('a')
+  #import pdb; pdb.set_trace()
+  from cdawmeta.io import read_cdf_meta
+  file = 'https://cdaweb.gsfc.nasa.gov/sp_phys/data/ace/orbit/level_2_cdaweb/or_ssc/ac_or_ssc_19970101_v01.cdf'
+  meta_file = read_cdf_meta(file)
+  print(meta_file)
+  #spase_auto({}, None)
+
 def _InformationURL(allxml):
 
   links = cdawmeta.util.get_path(allxml, ['other_info', 'link'])

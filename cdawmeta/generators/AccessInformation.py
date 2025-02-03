@@ -46,7 +46,8 @@ def AccessInformation(metadatum, logger):
       AccessInformation[key]['AccessURL']['ProductKey'] = sscid
   else:
     for key in ['SSCWeb/SSCWS', 'SSCWeb/HAPI', 'SSCWeb/HAPI/Program', 'SSCWeb/HAPI/Plot']:
-      del AccessInformation[key]
+      if key in AccessInformation:
+        del AccessInformation[key]
 
   hapi_languages, hapi_language_formats = _hapi_languages()
   Description = AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description']
