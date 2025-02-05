@@ -155,7 +155,8 @@ def _Contact(dsid, fromRepo):
   return contacts
 
 def _InformationURL2(dsid, fromMaster, fromRepo):
-  # Add content in cdawmeta-spase/InformationURL.json if unique
+  # Add content in cdawmeta-spase/InformationURL.json
+  # If URL in fromMaster and fromRepo, use fromRepo
 
   fromMasterDict = {}
   for element in fromMaster:
