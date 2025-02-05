@@ -252,7 +252,8 @@ def _Keyword(allxml, master):
   for key in ['observatory', 'instrument']:
     p = [key, 'description', '@short']
     keyword = cdawmeta.util.get_path(allxml, p)
-    _Keyword.append(f'{keyword} (from all.xml/{"/".join(p)})')
+    if keyword.strip() != '':
+      _Keyword.append(f'{keyword} (from all.xml/{"/".join(p)})')
 
   for key in ['Discipline', 'Source_name', 'Data_type']:
     val = cdawmeta.util.get_path(master, ['CDFglobalAttributes', key])
@@ -261,6 +262,8 @@ def _Keyword(allxml, master):
       for keyword in keyword_split:
         keyword_split2 = keyword.split('\n')
         for keyword2 in keyword_split2:
+          if keyword2.strip() == '':
+            continue
           val = keyword2.strip() + " (from Master/CDFglobalAttributes/" + key + ")"
           _Keyword = [*_Keyword, val]
       _Keyword = list(dict.fromkeys(_Keyword))
