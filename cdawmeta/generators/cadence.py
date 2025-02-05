@@ -182,7 +182,7 @@ def cadence(metadatum, logger):
     pct = 100*depend_0_counts[depend_0_name]['counts'][0]['fraction']
 
     note = f"Cadence based on variable '{depend_0_name}' in {url}. "
-    note += f"This most common cadence occured for {pct:0.4f}% of the {cnt} timesteps. "
+    note += f"This most common cadence occurred for {pct:0.4f}% of the {cnt} timesteps. "
     note += f"Cadence = {duration} [{duration_unit}] = {iso}."
     depend_0_counts[depend_0_name]['note'] = note
 

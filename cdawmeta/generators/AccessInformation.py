@@ -1,3 +1,4 @@
+import re
 import copy
 import cdawmeta
 
@@ -9,6 +10,24 @@ def AccessInformation(metadatum, logger):
   AccessInformation = copy.deepcopy(additions['AccessInformation'])
 
   allxml = metadatum['allxml']
+  dsid = metadatum['id']
+
+  keys_to_delete = []
+  for key in AccessInformation:
+    _cdaweb_ids = AccessInformation[key].get('_cdaweb_ids', None)
+    if _cdaweb_ids is not None:
+      for _cdaweb_id in _cdaweb_ids:
+        if _cdaweb_id.startswith('^'):
+          regex = re.compile(_cdaweb_id)
+          if not regex.match(dsid):
+            keys_to_delete.append(key)
+        else:
+          if _cdaweb_id != dsid:
+            keys_to_delete.append(key)
+      del AccessInformation[key]['_cdaweb_ids']
+
+  for key in keys_to_delete:
+    del AccessInformation[key]
 
   for protocol in ["HTTPS", "FTPS"]:
     repo = f'CDAWeb/{protocol}/CDF'
@@ -26,7 +45,6 @@ def AccessInformation(metadatum, logger):
       DataExtent += file['Length']
     AccessURL['DataExtent'] = DataExtent
 
-  dsid = metadatum['id']
   for key in AccessInformation:
     AccessInformation[key]['AccessURL']['ProductKey'] = dsid
     ack = AccessInformation[key]['Acknowledgement']
@@ -37,6 +55,8 @@ def AccessInformation(metadatum, logger):
 
     url = AccessInformation[key]['AccessURL']['URL']
     if "{dsid}" in url and "HAPI" not in key:
+      # Replace "{dsid}" with the actual dataset ID unless HAPI is in the key.
+      # (HAPI URLs are hanlded differently.)
       AccessInformation[key]['AccessURL']['URL'] = url.format(dsid=dsid)
 
   ssc = allxml['instrument']['@ID'] == 'SSC'

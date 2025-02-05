@@ -9,4 +9,4 @@ So, for example
   }
 ```
 
-means that the CDF `UNIT` string `[fraction]` was converted to a SPASE `Unit` string of `Ratio` 88 times and `(cm^2 s sr MeV)^-1)` 60 times. To see the actual CDF variables where `[fraction]` occurs, see [a search](https://hapi-server.org/meta/cdaweb/variable/#UNITS='[fraction]'), which shows that it occured 240 times. (The difference between 88+60=148 and 240 is due to the fact that not all CDF variables are represented in SPASE.)
+means that the CDF `UNIT` string `[fraction]` was converted to a SPASE `Unit` string of `Ratio` 88 times and `(cm^2 s sr MeV)^-1)` 60 times. To see the actual CDF variables where `[fraction]` occurs, see [a search](https://hapi-server.org/meta/cdaweb/variable/#UNITS='[fraction]'), which shows that it occurred 240 times. (The difference between 88+60=148 and 240 is due to the fact that not all CDF variables are represented in SPASE.)
