@@ -578,6 +578,9 @@ def _set_units(dsid, name, all_variables, parameter, print_info=False, x=None):
         parameter['x_unitsSchema'] = 'VOUnits'
         parameter['x_units_original'] = UNITS
 
+  if cdawmeta.CONFIG['hapi']['strip_units']:
+    parameter['units'] = cdawmeta.util.trim(parameter['units'])
+
 def _order_depend0s(id, depend0_names):
 
   fixes = cdawmeta.CONFIG['hapi']['fixes']
