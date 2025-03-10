@@ -48,62 +48,107 @@ def master_resolved(metadatum, logger):
     if UNITS_VO is not None:
       variable['UNITS_VO'] = UNITS_VO
 
+    variable['LABLAXIS'] = _LABLAXIS(id, variable_name, variables, VAR_TYPE, logger)
+
+    variable['DEPEND'] = _DEPEND(id, variable_name, variables, VAR_TYPE, logger)
+
   return [master]
 
-def _resolve_ptr(id, variable_name, all_variables, logger, ptr_type=None):
+def _resolve_ptr(id, variable_name, variables, logger, ptr_name=None):
 
-  # This will replace the _resolve_ptrs.py
+  # This will replace _resolve_ptrs.py
   indent = "    "
 
-  pointer_name = all_variables[variable_name]['VarAttributes'].get('UNIT_PTR', None)
-
-  if pointer_name is None:
+  ptr_var = variables[variable_name]['VarAttributes'].get(ptr_name, None)
+  if ptr_var is None:
+    # No pointer to resolve
     return None
 
-  if pointer_name not in all_variables:
-    emsg = f"{indent}{id}/{variable_name} has UNIT_PTR = '{pointer_name}' which is not a variable in dataset."
+  if ptr_var not in variables:
+    emsg = f"{indent}{id}/{variable_name} has {ptr_name} = '{ptr_var}' which is not a variable in dataset."
     cdawmeta.error('master_resolved', id, variable_name, "CDF.InvalidPtrReference", emsg, logger)
     return None
 
-  msgo = f"{indent}{id}/{variable_name} has UNIT_PTR = '{pointer_name}' "
+  msgo = f"{indent}{id}/{variable_name} has {ptr_name} = '{ptr_var}' "
 
-  if 'VarDescription' not in all_variables[pointer_name]:
+  if 'VarDescription' not in variables[ptr_var]:
     emsg = f"{msgo} with no VarDescription."
-    cdawmeta.error('master_resolved', id, pointer_name, "CDF.NoVarAttributes", emsg, logger)
+    cdawmeta.error('master_resolved', id, ptr_var, "CDF.NoVarAttributes", emsg, logger)
     return None
 
-  if 'DataType' not in all_variables[pointer_name]['VarDescription']:
+  if 'DataType' not in variables[ptr_var]['VarDescription']:
     emsg = f"{msgo} with no DataType."
-    cdawmeta.error('master_resolved', id, pointer_name, "CDF.NoDataType", emsg, logger)
+    cdawmeta.error('master_resolved', id, ptr_var, "CDF.NoDataType", emsg, logger)
     return None
+
+  if 'VarData' not in variables[ptr_var]:
+    if ptr_name == 'UNIT_PTR' or ptr_name.startswith('LABL_PTR'):
+      emsg = f"{msgo} with no VarData."
+      cdawmeta.error('master_resolved', id, ptr_var, "CDF.NoVarData", emsg, logger)
+      return None
+    if ptr_name.startswith('DEPEND'):
+      # TODO: Check that dims match variable that references
+      logger.info(f"{indent}{ptr_name} Does not have VarData, so not resolving values.")
+      return {'variable_name': ptr_var, 'values': None, 'values_trimmed': None}
 
   cdf_string_types = ['CDF_CHAR', 'CDF_UCHAR']
-
-  DataType = all_variables[pointer_name]['VarDescription']['DataType']
+  DataType = variables[ptr_var]['VarDescription']['DataType']
   if DataType not in cdf_string_types:
-    emsg = f"{msgo} with DataType = '{DataType}' which is not of type {cdf_string_types}."
-    cdawmeta.error('master_resolved', id, pointer_name, "CDF.InvalidUnitPtrDataType", emsg, logger)
-    return None
+    if ptr_name.startswith('DEPEND'):
+      # TODO: Check that dims match variable that references
+      logger.info(f"{indent}{ptr_name} has VarData, but values are not strings, so not resolving.")
+      return {'variable_name': ptr_var, 'values': None, 'values_trimmed': None}
+    else:
+      emsg = f"{msgo}with DataType = '{DataType}' which is not of type {cdf_string_types}."
+      cdawmeta.error('master_resolved', id, ptr_var, "CDF.InvalidUnitPtrDataType", emsg, logger)
+      return None
 
-  if 'VarData' not in all_variables[pointer_name]:
-    emsg = f"{msgo} with no VarData."
-    cdawmeta.error('master_resolved', id, pointer_name, "CDF.NoVarData", emsg, logger)
-    return None
+  values = variables[ptr_var]['VarData']
+  values_trimmed = cdawmeta.util.trim(values)
 
-  pointer_values_o = all_variables[pointer_name]['VarData']
-  pointer_values = cdawmeta.util.trim(pointer_values_o)
+  DimSizes = variables[ptr_var]['VarDescription'].get('DimSizes', [])
+  # TODO: Check that dims match variable that references
 
-  DimSizes = all_variables[pointer_name]['VarDescription'].get('DimSizes', [])
-
-  if len(pointer_values) > 1 and len(pointer_values) != DimSizes[0]:
-    msg = f"{msgo}with {len(pointer_values)} values, but "
+  if len(values_trimmed) > 1 and len(values_trimmed) != DimSizes[0]:
+    msg = f"{msgo}with {len(values_trimmed)} values, but "
     msg += f"'{variable_name}' has DimSizes[0] = {DimSizes[0]}."
-    cdawmeta.error('master_resolved', id, pointer_name, "CDF.PtrSizeMismatch", emsg, logger)
+    cdawmeta.error('master_resolved', id, ptr_var, "CDF.PtrSizeMismatch", emsg, logger)
     return None
 
-  return {'UNIT_PTR': pointer_name, 'values': pointer_values, 'values_given': pointer_values_o}
+  logger.info(f"{indent}{ptr_name} variable name: '{ptr_var}'")
+  logger.info(f"{indent}{ptr_name} values:         {values}")
+  if "".join(values) != "".join(values_trimmed):
+    logger.info(f"{indent}{ptr_name} values_trimmed: {values_trimmed}")
+
+  return {'variable_name': ptr_var, 'values': values, 'values_trimmed': values_trimmed}
+
+def _summary(original, resolved, attribute_name, logger):
+  indent = "    "
+
+  msg = f"{indent}{attribute_name} given:    "
+  if original is None:
+    logger.info(f"{msg}{original}")
+  else:
+    logger.info(f"{msg}'{original}'")
+
+  if type(original) is type(resolved):
+    if isinstance(original, list):
+      if "".join(original) == "".join(resolved):
+        return
+    if original == resolved:
+      return
+
+  msg = f"{indent}{attribute_name} resolved: "
+  if isinstance(resolved, list):
+    logger.info(f"{msg}{resolved}")
+  else:
+    if resolved is None:
+      logger.info(f"{msg}{resolved}")
+    else:
+      logger.info(f"{msg}'{resolved}'")
 
 def _VAR_TYPE(variable):
+
   indent = "    "
 
   var_types = ['data', 'support_data', 'metadata', 'ignore_data']
@@ -117,21 +162,57 @@ def _VAR_TYPE(variable):
   else:
     return None, "CDF.NoVarType", f"{indent}No VAR_TYPE."
 
-def _UNITS(id, variable_name, all_variables, VAR_TYPE, logger):
+def _DEPEND(id, variable_name, variables, VAR_TYPE, logger):
+  indent = "    "
+  depend = []
+
+  variable = variables[variable_name]
+
+  for i in [1, 2, 3]:
+    depend_resolved = _resolve_ptr(id, variable_name, variables, logger, ptr_name=f'DEPEND_{i}')
+    if depend_resolved is not None:
+      if depend_resolved['values_trimmed'] is not None:
+        depend.append(depend_resolved['values_trimmed'])
+      else:
+        depend.append(depend_resolved['variable_name'])
+
+  #_summary(lablaxis_o, lablaxis, 'LABLAXIS', logger)
+
+  return depend
+
+def _LABLAXIS(id, variable_name, variables, VAR_TYPE, logger):
+  indent = "    "
+  lablaxis = []
+
+  variable = variables[variable_name]
+  lablaxis_o = variable['VarAttributes'].get("LABLAXIS", None)
+
+  found_ptr = False
+  for i in [1, 2, 3]:
+    lablaxis_resolved = _resolve_ptr(id, variable_name, variables, logger, ptr_name=f'LABL_PTR_{i}')
+    if lablaxis_resolved is not None:
+      found_ptr = True
+      lablaxis.append(lablaxis_resolved['values_trimmed'])
+
+  if lablaxis_o is not None and found_ptr:
+    msg = f"{indent}LABLAXIS and LABL_PTRs found. Using LABL_PTRs"
+    cdawmeta.error('master_resolved', id, variable_name, "CDF.LABLAXIS", msg, logger)
+  else:
+    lablaxis = lablaxis_o
+
+  _summary(lablaxis_o, lablaxis, 'LABLAXIS', logger)
+
+  return lablaxis
+
+def _UNITS(id, variable_name, variables, VAR_TYPE, logger):
 
   indent = "    "
   units = None
 
-  variable = all_variables[variable_name]
+  units_ptr_resolved = _resolve_ptr(id, variable_name, variables, logger, ptr_name='UNIT_PTR')
 
-  unit_ptr = _resolve_ptr(id, variable_name, all_variables, logger, ptr_type='UNIT_PTR')
-  if unit_ptr is not None:
-    logger.info(f"{indent}UNIT_PTR:       '{unit_ptr['UNIT_PTR']}'")
-    logger.info(f"{indent}UNIT_PTR vals_o: {unit_ptr['values_given']}")
-    logger.info(f"{indent}UNIT_PTR vals:   {unit_ptr['values']}")
-
+  variable = variables[variable_name]
   units_o = variable['VarAttributes'].get("UNITS", None)
-  units = None
 
   if units_o is not None:
 
@@ -152,12 +233,12 @@ def _UNITS(id, variable_name, all_variables, VAR_TYPE, logger):
     else:
       units = units_o.strip()
 
-    if unit_ptr is not None:
-      msg = f"{indent}UNIT_PTR = '{unit_ptr['UNIT_PTR']}' and UNITS. Using UNITS."
+    if units_ptr_resolved is not None:
+      msg = f"{indent}Both UNIT_PTR and UNITS attributes found. Using UNITS."
       cdawmeta.error('master_resolved', id, variable_name, "ISTP.UNITS", msg, logger)
 
-  if units_o is None and unit_ptr is not None:
-    units = unit_ptr['values']
+  if units_o is None and units_ptr_resolved is not None:
+    units = units_ptr_resolved['values_trimmed']
     if len(units) == 1:
       units = units[0]
 
@@ -167,18 +248,7 @@ def _UNITS(id, variable_name, all_variables, VAR_TYPE, logger):
       msg = f"{indent}VAR_TYPE = '{VAR_TYPE}' and no UNITS or UNIT_PTR."
       cdawmeta.error('master_resolved', id, variable_name, "ISTP.UNITS", msg, logger)
 
-  if units_o is None:
-    logger.info(f"{indent}UNITS given:     {units_o}")
-  else:
-    logger.info(f"{indent}UNITS given:    '{units_o}'")
-
-  if isinstance(units, list):
-    logger.info(f"{indent}UNITS resolved:  {units}")
-  else:
-    if units is None:
-      logger.info(f"{indent}UNITS resolved:  {units}")
-    else:
-      logger.info(f"{indent}UNITS resolved: '{units}'")
+  _summary(units_o, units, 'UNITS', logger)
 
   return units
 

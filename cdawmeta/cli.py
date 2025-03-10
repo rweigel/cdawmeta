@@ -34,7 +34,7 @@ def cli(script, defs=False):
     "max-workers": {
       "metavar": "N",
       "type": int,
-      "help": "Number of threads to use for downloading",
+      "help": "Number of threads to use for downloading (default: %(default)s).",
       "default": 3,
       "_used_by_all": True,
     },
