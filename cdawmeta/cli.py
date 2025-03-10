@@ -46,7 +46,7 @@ def cli(script, defs=False):
     },
     "update": {
       "action": "store_true",
-      "help": "Update existing cached HTTP responses and regenerate computed metadata except cadence.",
+      "help": "Update existing cached HTTP responses and regenerate computed metadata.",
       "default": False,
       "_used_by_all": True
     },
@@ -58,7 +58,7 @@ def cli(script, defs=False):
     },
     "regen": {
       "action": "store_true",
-      "help": "Regenerate computed metadata except cadence. Use for testing computed metadata code changes.",
+      "help": "Regenerate computed metadata. Use for testing computed metadata code changes.",
       "default": False,
       "_used_by_all": True
     },
