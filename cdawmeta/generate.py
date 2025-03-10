@@ -145,7 +145,7 @@ def _to_spase_xml(data):
 
     return dom
 
-  Spase = f'<Spase xmlns="{data['Spase']["xmlns"]}" xmlns:xsi="{data['Spase']['xmlns:xsi']}" xsi:schemaLocation="{data['Spase']['xsi:schemaLocation']}">'
+  Spase = f'<Spase xmlns="{data["Spase"]["xmlns"]}" xmlns:xsi="{data["Spase"]["xmlns:xsi"]}" xsi:schemaLocation="{data["Spase"]["xsi:schemaLocation"]}">'
   del data['Spase']["xmlns"]
   del data['Spase']["xmlns:xsi"]
   del data['Spase']["xsi:schemaLocation"]
