@@ -46,6 +46,7 @@ def cadence(metadatum, logger):
     depend_0_names = cdawmeta.io.read_cdf_depend_0s(url, logger=logger, use_cache=use_cache)
   except Exception as e:
     emsg = f"{id}: cdawmeta.io.read_cdf_depend_0s('{url}') failed with error: {e}"
+    emsg  = emsg + "\n" + _trace()
     cdawmeta.error("cadence", id, None, "CDF.FailedCDFRead", emsg, logger)
     return {"error": emsg}
 
@@ -87,6 +88,7 @@ def cadence(metadatum, logger):
       logger.info(f"  Read '{depend_0_name}'")
     except Exception as e:
       emsg = f"{id}: cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) raised: \n{e}"
+      emsg  = emsg + "\n" + _trace()
       depend_0_counts[depend_0_name]['error'] = emsg
       del depend_0_counts[depend_0_name]['note']
       del depend_0_counts[depend_0_name]['counts']
@@ -186,6 +188,13 @@ def cadence(metadatum, logger):
     depend_0_counts[depend_0_name]['note'] = note
 
   return [{"id": id, "cadence": depend_0_counts}]
+
+def _trace():
+  import traceback
+  trace = traceback.format_exc()
+  home_dir = os.path.expanduser("~")
+  trace = trace.replace(home_dir, "~")
+  return f"\n{trace}"
 
 def _diff_cdf_epoch16(epoch):
 
