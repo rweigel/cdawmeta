@@ -1,8 +1,11 @@
 PYTHON=~/anaconda3/bin/python
 
 ID_SKIP=^PSP
-UPDATE=--id-skip '$(ID_SKIP)' --write-catalog --update --update-skip cadence
-REGEN=--id-skip '$(ID_SKIP)' --write-catalog --regen --regen-skip cadence --max-workers 1
+NO_UPDATE=cadence,sample_start_stop,orig_data
+NO_REGEN=$(NO_UPDATE)
+UPDATE=--id-skip '$(ID_SKIP)' --write-catalog --update --update-skip $(NO_UPDATE)
+REGEN=--id-skip '$(ID_SKIP)' --write-catalog --regen --regen-skip $(NO_REGEN) --max-workers 1
+
 spase_auto-update: cdawmeta.egg-info
 	python metadata.py --meta-type spase_auto $(UPDATE)
 

@@ -6,6 +6,17 @@ def cli(script, defs=False):
 
   meta_types = cdawmeta.dependencies['all']
 
+  # Define the custom type function
+  def meta_types_list(value):
+    if value == '':
+      return ''
+
+    items = value.split(',')
+    for item in items:
+      if item not in meta_types:
+        raise argparse.ArgumentTypeError(f"Invalid meta-type: '{item}'")
+    return items
+
   clkws = {
     "id": {
       "help": "ID or pattern for dataset IDs to include (prefix with ^ to use pattern match, e.g., '^A|^B') (default: ^.*)",
@@ -53,7 +64,7 @@ def cli(script, defs=False):
     "update-skip": {
       "help": "Comma separated list of meta-types to not regenerate.",
       "default": '',
-      "choices": meta_types,
+      "type": meta_types_list,
       "_used_by_all": True
     },
     "regen": {
@@ -65,7 +76,7 @@ def cli(script, defs=False):
     "regen-skip": {
       "help": "Comma separated list of meta-types to not regenerate.",
       "default": '',
-      "choices": meta_types,
+      "type": meta_types_list,
       "_used_by_all": True
     },
     "log-level": {

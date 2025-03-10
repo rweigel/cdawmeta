@@ -179,7 +179,7 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
   def step_needed(meta_type, step, update, update_skips):
     if meta_type in update_skips:
       if update:
-        logger.info(f"Setting regen=False for {meta_type} {step} because in {step}_skip.")
+        logger.info(f"Setting {step}=False for '{meta_type}' because it is in {step}_skip.")
       return False
     return update
 

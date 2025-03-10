@@ -87,15 +87,14 @@ def cadence(metadatum, logger):
       logger.info(f"  Read '{depend_0_name}'")
     except Exception as e:
       emsg = f"{id}: cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) raised: \n{e}"
-      logger.error("  " + emsg)
       depend_0_counts[depend_0_name]['error'] = emsg
       del depend_0_counts[depend_0_name]['note']
       del depend_0_counts[depend_0_name]['counts']
-      raise e
+      cdawmeta.error("cadence", id, None, "CDF.FailedCDFRead", emsg, logger)
+      continue
 
-    DataType, emsg = _check_data(id, depend_0_name, data, url)
+    DataType, emsg = _check_data(id, depend_0_name, data, url, logger)
     if emsg is not None:
-      logger.error("  " + emsg)
       depend_0_counts[depend_0_name]['error'] = emsg
       del depend_0_counts[depend_0_name]['note']
       del depend_0_counts[depend_0_name]['counts']
@@ -277,10 +276,11 @@ def _check_data_types(id, master, depend_0_name, logger):
 
   return None
 
-def _check_data(id, depend_0_name, data, url):
+def _check_data(id, depend_0_name, data, url, logger):
 
   if data is None:
     emsg = f"{id}: cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) returned None."
+    cdawmeta.error("cadence", id, None, "CDF.FailedCDFRead", emsg, logger)
     return None, emsg
 
   emsg_coda = f"in {url}; CDF metadata = {data}"
@@ -288,20 +288,24 @@ def _check_data(id, depend_0_name, data, url):
   VarAttributes = data[depend_0_name].get('VarAttributes', None)
   if VarAttributes is None:
     emsg = f"{id}/{depend_0_name}['VarAttributes'] = None {emsg_coda}"
+    cdawmeta.error("cadence", id, None, "CDF.NoVarAttributes", emsg, logger)
     return None, emsg
 
   if 'VarData' not in data[depend_0_name]:
     emsg = f"{id}/{depend_0_name}: No 'VarData' in {emsg_coda}"
+    cdawmeta.error("cadence", id, None, "CDF.NoVarDataAttribute", emsg, logger)
     return None, emsg
 
   # e.g., PSP_FLD_L3_RFS_HFR
   if data[depend_0_name]['VarData'] is None:
     emsg = f"{id}/{depend_0_name}['VarData'] = None in {emsg_coda}"
+    cdawmeta.error("cadence", id, None, "CDF.NoVarData", emsg, logger)
     return None, emsg
 
   DataType = cdawmeta.util.get_path(data[depend_0_name],['VarDescription', 'DataType'])
   if DataType is None:
     emsg = f"  {id}/{depend_0_name}['VarDescription']['DataType'] = None in {emsg_coda}"
+    cdawmeta.error("cadence", id, None, "CDF.NoDataType", emsg, logger)
     return None, emsg
 
   return DataType, None

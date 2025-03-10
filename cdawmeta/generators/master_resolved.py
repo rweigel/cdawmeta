@@ -125,7 +125,7 @@ def _resolve_ptr(id, variable_name, variables, logger, ptr_name=None):
 def _summary(original, resolved, attribute_name, logger):
   indent = "    "
 
-  msg = f"{indent}{attribute_name} given:    "
+  msg = f"{indent}{attribute_name:10s} given:    "
   if original is None:
     logger.info(f"{msg}{original}")
   else:
@@ -138,7 +138,7 @@ def _summary(original, resolved, attribute_name, logger):
     if original == resolved:
       return
 
-  msg = f"{indent}{attribute_name} resolved: "
+  msg = f"{indent}{attribute_name:10s} resolved: "
   if isinstance(resolved, list):
     logger.info(f"{msg}{resolved}")
   else:
