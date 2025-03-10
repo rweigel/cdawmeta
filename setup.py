@@ -8,7 +8,8 @@ install_requires = [
     "pymongo",
     "timedelta_isoformat",
     "fastapi",
-    "uvicorn"
+    "uvicorn",
+    "dicttoxml"
 ]
 
 try:

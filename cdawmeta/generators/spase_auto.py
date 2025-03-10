@@ -21,55 +21,64 @@ def spase_auto(metadatum, logger):
       "xmlns": xmlns,
       "xmlns:xsi": additions["config"]["xmlns:xsi"],
       "xsi:schemaLocation": f"{xmlns} {xmlns}/spase-{Version_}.xsd",
-      "_Note": "Nodes prefixed with a _ are not valid SPASE, but are inluded for debugging. Values prefixed with a x_ are not valid SPASE but may considered for addition for completeness.",
+      "_Note": "Nodes prefixed with a _ are not valid SPASE, but are included for debugging. Values prefixed with a x_ are not valid SPASE but may considered for addition for completeness.",
       "Version": Version
       }
     }
 
   NumericalData = {
     "ResourceID": None,
+    "_ResourceID": None,
     "ResourceHeader": {}
   }
 
-  spase_auto_['Spase']['_MasterURL'] = cdawmeta.util.get_path(metadatum, ['master', 'url'])
+  spase_auto_['Spase']['_MasterURL'] = cdawmeta.util.get_path(metadatum, ['master', 'url']) + " (from all.xml)"
 
-  # TODO: Compute ResourceID based on CDAWeb ID and cadence.
   ResourceIDs = additions.get('ResourceID', None)
   NumericalData['ResourceID'] = ResourceIDs.get(metadatum['id'], None)
+  NumericalData['_ResourceID'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/ResourceID.json"
+
   DOIs = additions.get('DOI')
   NumericalData['DOI'] = DOIs.get(metadatum['id'], None)
+  NumericalData['_DOI'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/DOI.json"
 
   p = ['CDFglobalAttributes', 'Logical_source_description']
   ResourceName = cdawmeta.util.get_path(master, p)
   if ResourceName is not None:
     NumericalData['ResourceHeader']['ResourceName'] = ResourceName
-    source = f'Source: {"/".join(p)}'
+    source = f'Source: Master/{"/".join(p)}'
     NumericalData['ResourceHeader']['_ResourceName'] = source
 
   p = ['CDFglobalAttributes', 'TEXT']
   Description = cdawmeta.util.get_path(master, p)
   if Description is not None:
     NumericalData['ResourceHeader']['Description'] = Description
-    source = f"Source: {'/'.join(p)}"
+    source = f"Source: Master/{'/'.join(p)}"
     NumericalData['ResourceHeader']['_Description'] = source
 
   p = ['CDFglobalAttributes', 'Acknowledgement']
   Acknowledgement = cdawmeta.util.get_path(master, p)
   if Acknowledgement is not None:
     NumericalData['ResourceHeader']['Acknowledgement'] = Acknowledgement
-    source = f"Source: {'/'.join(p)}"
+    source = f"Source: Master/{'/'.join(p)}"
     NumericalData['ResourceHeader']['_Acknowledgement'] = source
 
   NumericalData['ResourceHeader']['_Rights'] = additions.get('Rights')
 
   InformationURL = _InformationURL(allxml)
-  # TODO: Add content in cdawmeta-spase/InformationURL.json if unique
+  InformationURL = _InformationURL2(metadatum['id'], InformationURL, additions.get('InformationURL'))
   if InformationURL is not None:
     NumericalData['ResourceHeader']['InformationURL'] = InformationURL
+    NumericalData['ResourceHeader']['_InformationURL'] = "Source: from all.xml/other_info/link and https://github.com/rweigel/cdawmeta-spase/blob/main/InformationURL.json"
 
   if config['include_access_information']:
     NumericalData['AccessInformation'] = metadatum['AccessInformation']['data']
-    NumericalData['_AccessInformation'] = "Source: AccessInformation.json template"
+    NumericalData['_AccessInformation'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/AccessInformation.json"
+
+  Contacts = _Contact(metadatum['id'], additions.get('Contact'))
+  if len(Contacts) > 0:
+    NumericalData['ResourceHeader']['Contact'] = Contacts
+    NumericalData['ResourceHeader']['_Contact'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/Contact.json"
 
   NumericalData['TemporalDescription'] = _TemporalDescription(allxml)
   if isinstance(hapi, dict):
@@ -83,8 +92,10 @@ def spase_auto(metadatum, logger):
   ObservedRegions = additions.get('ObservedRegion')
   sc = metadatum['id'].split('_')[0]
   NumericalData['ObservedRegion'] = ObservedRegions.get(sc, None)
+  NumericalData['_ObservedRegion'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/ObservedRegion.json"
 
   NumericalData['ProcessingLevel'] = None
+  NumericalData['_ProcessingLevel'] = "Processing level is not available in the master file; it should be there instead of, say, https://github.com/rweigel/cdawmeta-spase/blob/main/ProcessingLevel.json"
 
   p = ['CDFglobalAttributes', 'TITLE']
   ProviderResourceName = cdawmeta.util.get_path(master, p)
@@ -95,30 +106,87 @@ def spase_auto(metadatum, logger):
   InstrumentIDs = additions.get('InstrumentID')
   NumericalData['InstrumentID'] = InstrumentIDs.get(metadatum['id'], None)
 
-  InstrumentIDs = additions.get('MeasurementType')
-  NumericalData['MeasurementType'] = InstrumentIDs.get(metadatum['id'], None)
+  MeasurementType = additions.get('MeasurementType')
+  NumericalData['MeasurementType'] = MeasurementType.get(metadatum['id'], None)
 
   p = ['CDFglobalAttributes', 'Rules_of_use']
   Caveats = cdawmeta.util.get_path(master, p)
   if Caveats is not None:
-    source = "Source: {'/'.join(p)}"
+    source = "Source: Master/{'/'.join(p)}"
     NumericalData['Caveats'] = Caveats
 
   if config['include_parameters']:
     NumericalData['Parameter'] = _Parameter(hapi, additions)
+
 
   spase_auto_['Spase']['NumericalData'] = NumericalData
 
   return [spase_auto_]
 
 if __name__ == '__main__':
-  #logger = cdawmeta.logger('a')
-  #import pdb; pdb.set_trace()
-  from cdawmeta.io import read_cdf_meta
-  file = 'https://cdaweb.gsfc.nasa.gov/sp_phys/data/ace/orbit/level_2_cdaweb/or_ssc/ac_or_ssc_19970101_v01.cdf'
-  meta_file = read_cdf_meta(file)
-  print(meta_file)
-  #spase_auto({}, None)
+  if False:
+    logger = cdawmeta.logger('a')
+    import pdb; pdb.set_trace()
+    #from cdawmeta.io import read_cdf_meta
+    #file = 'https://cdaweb.gsfc.nasa.gov/sp_phys/data/ace/orbit/level_2_cdaweb/or_ssc/ac_or_ssc_19970101_v01.cdf'
+    #meta_file = read_cdf_meta(file)
+    #print(meta_file)
+    #spase_auto({}, None)
+
+def _Contact(dsid, fromRepo):
+
+  import re
+  contacts = []
+
+  for idx, element in enumerate(fromRepo):
+    _cdaweb_ids = element.get('_cdaweb_ids', None)
+    keep = False
+    if _cdaweb_ids is not None:
+      for _cdaweb_id in _cdaweb_ids:
+        if _cdaweb_id.startswith('^'):
+          regex = re.compile(_cdaweb_id)
+          if regex.match(dsid):
+            keep = True
+        if _cdaweb_id == dsid:
+          keep = True
+      if keep:
+        contacts.extend(element['Contacts'])
+
+  return contacts
+
+def _InformationURL2(dsid, fromMaster, fromRepo):
+  # Add content in cdawmeta-spase/InformationURL.json
+  # If URL in fromMaster and fromRepo, use fromRepo
+
+  fromMasterDict = {}
+  for element in fromMaster:
+    if 'URL' in element:
+      fromMasterDict[element['URL']] = element
+
+  import re
+  for key in fromRepo:
+    _cdaweb_ids = fromRepo[key].get('_cdaweb_ids', None)
+    keep = False
+    if _cdaweb_ids is not None:
+      for _cdaweb_id in _cdaweb_ids:
+        if _cdaweb_id.startswith('^'):
+          regex = re.compile(_cdaweb_id)
+          if regex.match(dsid):
+            keep = True
+        if _cdaweb_id == dsid:
+          keep = True
+      if keep:
+        url = fromRepo[key]['InformationURL']['URL']
+        if url in fromMasterDict:
+          fromRepo[key]['InformationURL']['_Note'] = "Found same URL in master and https://github.com/rweigel/cdawmeta-spase/blob/main/cdawmeta-spase/InformationURL.json; not using master for Name and Description."
+        fromMasterDict[key] = fromRepo[key]['InformationURL']
+        fromMasterDict[key]['_source'] = "https://github.com/rweigel/cdawmeta-spase/blob/main/cdawmeta-spase/InformationURL.json"
+
+  InformationURLs = []
+  for key in fromMasterDict:
+    InformationURLs.append(fromMasterDict[key])
+
+  return InformationURLs
 
 def _InformationURL(allxml):
 
@@ -184,7 +252,8 @@ def _Keyword(allxml, master):
   for key in ['observatory', 'instrument']:
     p = [key, 'description', '@short']
     keyword = cdawmeta.util.get_path(allxml, p)
-    _Keyword.append(f'{keyword} (from all.xml/{"/".join(p)})')
+    if keyword.strip() != '':
+      _Keyword.append(f'{keyword} (from all.xml/{"/".join(p)})')
 
   for key in ['Discipline', 'Source_name', 'Data_type']:
     val = cdawmeta.util.get_path(master, ['CDFglobalAttributes', key])
@@ -193,6 +262,8 @@ def _Keyword(allxml, master):
       for keyword in keyword_split:
         keyword_split2 = keyword.split('\n')
         for keyword2 in keyword_split2:
+          if keyword2.strip() == '':
+            continue
           val = keyword2.strip() + " (from Master/CDFglobalAttributes/" + key + ")"
           _Keyword = [*_Keyword, val]
       _Keyword = list(dict.fromkeys(_Keyword))

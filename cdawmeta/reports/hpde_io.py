@@ -102,12 +102,12 @@ def hpde_io(clargs):
     for InformationURL in InformationURLs:
       if InformationURL['URL'] not in URLs:
         if dsid.startswith("BAR_"):
-          URLs[InformationURL['URL']] = {"InformationURL": InformationURL, "ids": ["^BAR"]}
+          URLs[InformationURL['URL']] = {"InformationURL": InformationURL, "_cdaweb_ids": ["^BAR"]}
         else:
-          URLs[InformationURL['URL']] = {"InformationURL": InformationURL, "ids": [dsid]}
+          URLs[InformationURL['URL']] = {"InformationURL": InformationURL, "_cdaweb_ids": [dsid]}
       else:
         if not dsid.startswith("BAR_"):
-          URLs[InformationURL['URL']]["ids"].append(dsid)
+          URLs[InformationURL['URL']]["_cdaweb_ids"].append(dsid)
   attributes['InformationURL'] = URLs
 
   for key in attributes.keys():
