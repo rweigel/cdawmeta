@@ -79,6 +79,12 @@ def cli(script, defs=False):
       "type": meta_types_list,
       "_used_by_all": True
     },
+    "exit-on-exception": {
+      "action": "store_true",
+      "help": "Exit on unhandled exception",
+      "default": False,
+      "_used_by_all": True
+    },
     "log-level": {
       "help": "Log level",
       "default": 'info',

@@ -89,7 +89,9 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
              update=False, update_skip='',
              regen=False, regen_skip='',
              max_workers=3,
-             diffs=False, log_level='info'):
+             diffs=False,
+             exit_on_exception=False,
+             log_level='info'):
   '''
   Options are documented in cli.py.
 
@@ -212,7 +214,8 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
       regen_ = step_needed(meta_type, 'regen', regen, regen_skip)
 
       dataset[meta_type] = cdawmeta.generate(dataset, meta_type, mloggers[meta_type],
-                                             update=update_, regen=regen_)
+                                             update=update_, regen=regen_,
+                                             exit_on_exception=exit_on_exception)
 
     logger.debug("Removing metadata that was used to generate requested metadata.")
 
@@ -234,6 +237,9 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
       except:
         msg = f"{dsid}: {traceback.print_exc()}"
         cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
+        if exit_on_exception:
+          logger.error("\nExiting due to exit_on_exception'] command line argument.")
+          exit(1)
   else:
     def call_get_one(dsid):
       try:

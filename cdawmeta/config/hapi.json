@@ -10,6 +10,9 @@
   "_comment": "Set to false to reduce number of warnings due to mismatch with Nand's metadata",
   "strip_units": false,
 
+  "_comment": "Applies to LABLAXIS and LABL_AXIS_PTRs. Set to false to reduce number of warnings due to mismatch with Nand's metadata",
+  "strip_labelaxis": false,
+
   "id_skip": "AIM_CIPS_SCI_3A",
 
   "_comment": "Remove ---> in description",

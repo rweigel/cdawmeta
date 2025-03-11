@@ -1,7 +1,9 @@
 import os
 import cdawmeta
 
-def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False):
+def generate(metadatum, gen_name, logger,
+             update=True, regen=False, diffs=False,
+             exit_on_exception=False):
 
   sub_dir = 'info'
 
@@ -42,6 +44,9 @@ def generate(metadatum, gen_name, logger, update=True, regen=False, diffs=False)
     cdawmeta.error("metadata", id, None, "UnHandledException", emsg, logger)
     logger.info(f"Writing {file_name_error}")
     cdawmeta.util.write(file_name_error, datasets['error'])
+    if exit_on_exception:
+      logger.error("\nExiting due to exit_on_exception'] command line argument.")
+      exit(1)
     return {'id': id, 'log': None, 'error': emsg, 'data-file': None, 'data': None}
 
   if os.path.exists(file_name_error):
