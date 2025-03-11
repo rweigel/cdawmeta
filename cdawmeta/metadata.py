@@ -230,24 +230,25 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
         logger.debug(f"  embed_data=False; removing 'data' node from {meta_type} for {dataset['id']}")
         del dataset[meta_type]['data']
 
+  def _exception(dsid, _traceback):
+    msg = f"{dsid}: {_traceback}"
+    cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
+    if exit_on_exception:
+      logger.error("Exiting due to exit_on_exception command line argument.")
+      os._exit(1)
+
   if max_workers == 1 or len(dsids) == 1:
     for dsid in dsids:
       try:
         get_one(datasets_all[dsid], mloggers)
       except:
-        msg = f"{dsid}: {traceback.print_exc()}"
-        cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
-        if exit_on_exception:
-          logger.error("\nExiting due to exit_on_exception'] command line argument.")
-          exit(1)
+        _exception(dsid, traceback.format_exc().strip())
   else:
     def call_get_one(dsid):
       try:
         get_one(datasets_all[dsid], mloggers)
       except:
-        msg = f"{dsid}: {traceback.print_exc()}"
-        cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
-
+        _exception(dsid, traceback.format_exc().strip())
       return dsid
 
     from concurrent.futures import ThreadPoolExecutor
@@ -599,7 +600,6 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
 
   cache_dir = os.path.join(cdawmeta.DATA_DIR, 'CachedSession', meta_type)
   subdir = '' if meta_type == 'allxml' else 'info'
-  print(meta_type)
   json_file = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f"{id}.json")
   pkl_file = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f"{id}.pkl")
 

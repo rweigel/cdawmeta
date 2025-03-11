@@ -46,6 +46,8 @@ def master_resolved(metadatum, logger):
     VAR_TYPE = variable['VarAttributes'].get('VAR_TYPE', None)
     logger.info(f"{indent}VAR_TYPE: '{VAR_TYPE}'")
 
+    DataType = variables[variable_name]['VarDescription']['DataType']
+
     NumDims = variable['VarDescription'].get('NumDims', None)
     logger.info(f"{indent}NumDims = {NumDims}")
 
@@ -60,6 +62,10 @@ def master_resolved(metadatum, logger):
 
     RecVariance = variable['VarDescription'].get('RecVariance', None)
     logger.info(f"{indent}RecVariance = {RecVariance}")
+
+    if VAR_TYPE == 'metadata' and DataType not in ['CDF_CHAR', 'CDF_UCHAR']:
+      emsg = f"{indent}CDF VAR_TYPE = 'metadata' and DataType not one of ['CDF_CHAR', 'CDF_UCHAR']"
+      cdawmeta.error('master_resolved', id, variable_name, "CDF.DataTypeWrong", emsg, logger)
 
     variable['UNITS'] = _UNITS(id, variable_name, variables, variables_removed, logger)
 
@@ -348,7 +354,7 @@ def _UNITS_VO(id, variable_name, UNITS, additions, logger):
     if unit not in additions['Units']:
       if unit.strip() == "":
         return None
-      msg = f"{indent}  Could not mapping from CDAWeb unit = '{unit}' to VO_UNIT in additions['Units']"
+      msg = f"{indent}Did not find mapping from CDAWeb unit = '{unit}' to VO_UNIT in additions['Units']"
       cdawmeta.error('master_resolved', id, variable_name, "VOUnits.NotFound", msg, logger)
       return None
     units_vo = additions['Units'][unit]

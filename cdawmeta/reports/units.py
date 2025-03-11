@@ -6,6 +6,7 @@ import cdawmeta
 
 def units(clargs):
 
+  indent = "  "
   out_dir = 'reports'
   report_name = sys._getframe().f_code.co_name
   logger = cdawmeta.logger(name=f'{report_name}', dir_name=out_dir, log_level=clargs['log_level'])
@@ -57,20 +58,21 @@ def units(clargs):
       if 'VAR_TYPE' in variable['VarAttributes']:
         VAR_TYPE = variable['VarAttributes']['VAR_TYPE']
 
-      if VAR_TYPE not in ['data', 'support_data']:
-        continue
+      #if VAR_TYPE not in ['data', 'support_data']:
+      #  continue
 
-      logger.info(variable_name)
+      logger.info(f"{variable_name}")
+      logger.info(f"{indent}VAR_TYPE = '{VAR_TYPE}'")
 
       UNITS, etype, emsg = cdawmeta.attrib.UNITS(dsid, variable_name, variables)
       if UNITS is None:
         if emsg:
           msg = emsg
           missing_units[dsid][variable_name] = msg
-          logger.error(f"    CDF:   x {missing_units[dsid][variable_name]}")
+          logger.error(f"{indent}CDF:   x {missing_units[dsid][variable_name]}")
         else:
           msg = "cdawmeta.attrib.UNITS() returned None but no error"
-          logger.info(f"    CDF:   x {missing_units[dsid][variable_name]}")
+          logger.info(f"{indent}CDF:   x {missing_units[dsid][variable_name]}")
       else:
         if not isinstance(UNITS, list):
           # e.g., AC_H2_CRIS
@@ -81,9 +83,9 @@ def units(clargs):
             master_units_dict[UNIT] = []
 
         if len(UNITS) == 1:
-          logger.info(f"    CDF:     {UNITS[0]}")
+          logger.info(f"{indent}CDF:     {UNITS[0]}")
         else:
-          logger.info(f"    CDF:     {UNITS}")
+          logger.info(f"{indent}CDF:     {UNITS}")
 
       SI_CONVERSION, etype, emsg = cdawmeta.attrib.SI_CONVERSION(variable)
       if SI_CONVERSION is not None:
@@ -115,11 +117,11 @@ def units(clargs):
             else:
               master_units_dict[UNITS[0]].append(Units)
 
-          logger.info(f"    SPASE:   {Units}")
+          logger.info(f"{indent}SPASE:   {Units}")
         else:
-          logger.info("    SPASE:   x No Units attribute")
+          logger.info(f"{indent}SPASE:   x No Units attribute")
       else:
-        logger.info("    SPASE:   x Parameter not found")
+        logger.info(f"{indent}SPASE:   x Parameter not found")
 
   fname_missing = os.path.join(dir_name, f'{report_name}-CDFvariables-with-missing.json')
   fname_report = os.path.join(dir_name, f'{report_name}-CDFUNITS_to_SPASEUnit-map.json')
