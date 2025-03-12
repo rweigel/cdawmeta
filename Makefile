@@ -46,6 +46,26 @@ test-table: cdawmeta.egg-info
 test-report: cdawmeta.egg-info
 	python report.py --id AC_OR_DEF --update
 
+rsync-to-spot10:
+	rsync -avz -e 'ssh -p 890' \
+		--delete \
+		--exclude data \
+		--no-links \
+		--delete \
+		../cdawmeta weigel@cottagesystems.com:
+	rsync -avz -e 'ssh -p 890' \
+		--delete \
+		--exclude data \
+		--no-links \
+		--delete \
+		data/hapi weigel@cottagesystems.com:cdawmeta/data
+	rsync -avz -e 'ssh -p 890' \
+		--delete \
+		--exclude data \
+		--no-links \
+		--delete \
+		data/orig_data weigel@cottagesystems.com:cdawmeta/data
+
 rsync-to-mag:
 	rsync -avz \
 		--exclude data/hpde.io --exclude data/cdaweb.gsfc.nasa.gov \

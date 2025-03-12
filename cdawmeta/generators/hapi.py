@@ -94,14 +94,14 @@ def hapi(metadatum, _logger):
 
     dataset_new = {
       'id': None,
-      'description': None,
+      'title': None,
       'info': info_head
     }
 
     if metadatum['allxml'].get('description') and metadatum['allxml']['description'].get('@short'):
-      dataset_new['description'] = metadatum['allxml']['description'].get('@short')
+      dataset_new['title'] = metadatum['allxml']['description'].get('@short')
     else:
-      del dataset_new['description']
+      del dataset_new['title']
 
     depend_0_variables = vars_split[depend_0_name]
 
@@ -150,6 +150,7 @@ def _info_head(metadatum, depend_0_name):
   }
 
   cadence_info, emsg = _cadence(id, depend_0_name, metadatum)
+
   if emsg is not None:
     cdawmeta.error('hapi', id, None, "HAPI.NoCadence", "    " + emsg, logger)
     del info['cadence']
@@ -163,7 +164,7 @@ def _info_head(metadatum, depend_0_name):
     info['sampleStartDate'] = sample_start_stop['sampleStartDate']
     info['sampleStopDate'] = sample_start_stop['sampleStopDate']
   else:
-    logger.warn(f"    Warning: No sample_start_stop for {id}")
+    logger.warn(f"    No sample_start_stop for {id}")
     del info['sampleStartDate']
     del info['sampleStopDate']
 
@@ -322,14 +323,14 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       virtual_txt = f' (virtual: {virtual})'
       logger.info(f"    {name}{virtual_txt}")
 
-    type = _to_hapi_type(variable['VarDescription']['DataType'])
-    if type is None and print_info:
+    type_ = _to_hapi_type(variable['VarDescription']['DataType'])
+    if type_ is None and print_info:
       msg = f"Variable '{name}' has unhandled DataType: {variable['VarDescription']['DataType']}. Dropping variable."
       cdawmeta.error('hapi', dsid, name, "HAPI.NotImplemented", "      " + msg, logger)
       continue
 
     length = None
-    if VAR_TYPE == 'data' and type == 'string':
+    if VAR_TYPE == 'data' and type_ == 'string':
 
       PadValue = None
       if 'PadValue' in variable['VarDescription']:
@@ -363,7 +364,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     parameter = {
       "name": name,
-      "type": type,
+      "type": type_,
       "x_cdf_DataType": variable['VarDescription']['DataType']
     }
 
@@ -371,9 +372,22 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     fill = None
     if 'FILLVAL' in variable['VarAttributes']:
-      fill = str(variable['VarAttributes']['FILLVAL'])
+      fill = variable['VarAttributes']['FILLVAL']
+    else:
+      emsg = f"No FILLVAL for '{name}'"
+      cdawmeta.error('hapi', dsid, name, "CDF.MissingFillValue", "      " + emsg, logger)
+      # Could use _default_fill()
+
     if fill is not None:
-      parameter['fill'] = fill
+      if isinstance(fill, str) and fill.lower() != 'nan':
+        if not type_ == 'integer' or type_ == 'double':
+          emsg = f"FILLVAL = '{fill}' is string but data type is not integer or double. Setting fill to None."
+          cdawmeta.error('hapi', dsid, name, "CDF.WrongFillType", "      " + emsg, logger)
+          # TODO: Drop this variable?
+          fill = None
+    if fill is not None:
+      fill = str(fill)
+    parameter['fill'] = fill
 
     _set_units(dsid, name, all_variables, parameter, print_info=False, x=None)
 
@@ -458,8 +472,8 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
           if ptrs['LABL_PTR_VALUES'][x] != ptrs['DEPEND_VALUES'][x]:
             differ = True
             if differ and print_info:
-              msg = f'      Warning: NotImplemented[RedundantDependValues]: DEPEND_{x} is string type and LABL_PTR_{x} given. They differ; using LABL_PTR_{x} for HAPI label attribute.'
-              logger.warning(msg)
+              msg = f'      NotImplemented[RedundantDependValues]: DEPEND_{x} is string type and LABL_PTR_{x} given. They differ; using LABL_PTR_{x} for HAPI label attribute.'
+              logger.warn(msg)
               break
 
     bins_object = None
@@ -535,7 +549,7 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
 
   if RecVariance == "VARY":
     if print_info:
-      logger.info(f"      Warning: NotImplemented[TimeVaryingBins]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY'. Not creating bins b/c Nand does not for this case.")
+      logger.warn(f"      NotImplemented[TimeVaryingBins]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY'. Not creating bins b/c Nand does not for this case.")
     return None
 
   _, emsg, etype = cdawmeta.attrib.VAR_TYPE(dsid, name, DEPEND_x, x=x)
@@ -560,9 +574,9 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
     return bins_object
   else:
     if print_info:
-      msg = f"Warning: HAPI: Not including bin centers for {DEPEND_x_NAME}"
+      msg = f"HAPI: Not including bin centers for {DEPEND_x_NAME}"
       msg += " b/c no VarData (is probably VIRTUAL)"
-      logger.info(f"      {msg}")
+      logger.warn(f"      {msg}")
     return None
 
 def _set_units(dsid, name, all_variables, parameter, print_info=False, x=None):
@@ -692,7 +706,7 @@ def _omit_dataset(id, depend_0=None):
     if id in fixes['omitDataset'].keys():
       if omit_datasets:
         logger.info(id)
-        logger.warning(f"  Dropping dataset {id} b/c it is not in Nand's list")
+        logger.warn(f"  Dropping dataset {id} b/c it is not in Nand's list")
         return True
       else:
         logger.info(id)
@@ -702,15 +716,15 @@ def _omit_dataset(id, depend_0=None):
       if re.search(pattern, id):
         if omit_datasets:
           logger.info(id)
-          logger.warning(f"  Dropping dataset {id} b/c it is not in Nand's list")
+          logger.warn(f"  Dropping dataset {id} b/c it is not in Nand's list")
           return True
         else:
           logger.info(id)
-          logger.warning(f"  Keeping dataset {id} even though it is not in Nand's list")
+          logger.warn(f"  Keeping dataset {id} even though it is not in Nand's list")
           return False
   else:
     if id in fixes['omitDatasetSubset'].keys() and depend_0 in fixes['omitDatasetSubset'][id]:
-      logger.warning(f"  Dropping {id} variables associated with DEPEND_0 = \"{depend_0}\" b/c this DEPEND_0 is not in Nand's list")
+      logger.warn(f"  Dropping {id} variables associated with DEPEND_0 = \"{depend_0}\" b/c this DEPEND_0 is not in Nand's list")
       return True
 
   return False
@@ -785,6 +799,46 @@ def _cdftimelen(cdf_type):
     return len('0000-01-01:00:00:00.000000000Z')
   if cdf_type == 'CDF_EPOCH16':
     return len('0000-01-01:00:00:00.000000000000Z')
+
+  return None
+
+def _default_fill(cdf_type):
+
+  if cdf_type == 'CDF_EPOCH':
+    return '9999-12-31T23:59:59.999'
+
+  if cdf_type == 'CDF_EPOCH16':
+    return '9999-12-31T23:59:59.999999999999'
+
+  if cdf_type == 'CDF_TT2000':
+    return '9999-12-31T23:59:59.999999999'
+
+  if cdf_type in ['CDF_FLOAT', 'CDF_DOUBLE', 'CDF_REAL4', 'CDF_REAL8']:
+    return "-1.0e31"
+
+  if cdf_type == 'CDF_BYTE':
+    return -128
+
+  if cdf_type == 'CDF_INT1':
+    return -128
+
+  if cdf_type == 'CDF_UINT1':
+    return 255
+
+  if cdf_type == 'CDF_INT2':
+    return -32768
+
+  if cdf_type == 'CDF_UINT2':
+    return 65535
+
+  if cdf_type == 'CDF_INT4':
+    return -2147483648
+
+  if cdf_type == 'CDF_UINT4':
+    return 4294967295
+
+  if cdf_type == 'CDF_INT8':
+    return -9223372036854775808
 
   return None
 
