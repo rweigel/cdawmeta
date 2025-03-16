@@ -1,9 +1,7 @@
 import os
-from datetime import datetime
 from collections import Counter
 
 import numpy
-import cdflib
 from timedelta_isoformat import timedelta
 
 import cdawmeta

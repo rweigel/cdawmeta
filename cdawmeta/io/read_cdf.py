@@ -190,7 +190,8 @@ def read_cdf_meta(file, subset=False, resolve=False, logger=None, cache_dir=None
   CDFglobalAttributes = cdffile.globalattsget()
   for key, val in CDFglobalAttributes.items():
     if isinstance(val, list):
-      CDFglobalAttributes[key] = "\n".join(val)
+      if all(isinstance(item, str) for item in val):
+        CDFglobalAttributes[key] = "\n".join(val)
 
   CDFVariables = {}
   rVariables = info.rVariables
