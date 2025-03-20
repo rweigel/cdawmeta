@@ -32,8 +32,7 @@ def cli(script, defs=False):
       #"help": "Type of metadata to generate. Default is to generate all types. May be repeated.",
       "help": "Type of metadata to generate. Default is to generate all types.",
       "default": None,
-      "choices": meta_types,
-      #"action": 'append',
+      "type": meta_types_list,
       "_used_by": ['metadata.py']
     },
     "write-catalog": {

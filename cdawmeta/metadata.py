@@ -30,6 +30,7 @@ def ids(id=None, id_skip=None, update=False):
   `update` is a boolean. If `True`, all.xml is updated before generating IDs.
   '''
 
+
   # Needed to set logger for any called underscore functions.
   # TODO: Find a better way to handle this.
   logger = _logger()
@@ -56,8 +57,8 @@ def ids(id=None, id_skip=None, update=False):
 
     return ids
 
-  allxml = _allxml(update=update)
-  datasets_all = _datasets(allxml)
+  allxml_data = _allxml(update=update)
+  datasets_all = _datasets(allxml_data)
   ids_all = datasets_all.keys()
 
   if id is None:
@@ -112,7 +113,7 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
   if meta_type_requested is None:
     meta_types = cdawmeta.dependencies['all']
   else:
-    choices = cdawmeta.cli('metadata.py', defs=True)['meta-type']['choices']
+    choices = cdawmeta.dependencies['all']
     meta_types = []
     for _type in meta_type:
       if _type not in choices:
@@ -148,8 +149,8 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
   dsids = ids(id=id, id_skip=id_skip, update=update)
 
   # Create base datasets using info in all.xml
-  allxml = _allxml(update=update)
-  datasets_all = _datasets(allxml)
+  allxml_data = _allxml(update=update)
+  datasets_all = _datasets(allxml_data)
 
   not_generated = ['allxml', 'master', 'orig_data', 'spase', 'spase_hpde_io']
   mloggers = {}
@@ -271,7 +272,7 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
 
   return metadata_
 
-def _datasets(allxml):
+def _datasets(allxml_data):
   '''
   Returns dict of datasets. Keys are dataset IDs and values are dicts 
   with keys 'id' and 'allxml'. The value of 'allxml' is
@@ -280,7 +281,7 @@ def _datasets(allxml):
 
   restructure = True
 
-  datasites = cdawmeta.util.get_path(allxml, ['data', 'sites', 'datasite'])
+  datasites = cdawmeta.util.get_path(allxml_data, ['data', 'sites', 'datasite'])
   if datasites is None:
     raise Exception("Error[all.xml]: No 'sites/datasite' node in all.xml")
 
@@ -321,21 +322,28 @@ def _datasets(allxml):
 
   return datasets_
 
-def _allxml(update=False, diffs=False):
+def allxml(update=False, diffs=False, log_level='info'):
+  logger = _logger(log_level=log_level)
 
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['allxml']
+  allurl = cdawmeta.CONFIG['urls']['all.xml']
+  allxml_data = _fetch(allurl, 'allxml', 'allxml', referrer='config.json', timeout=timeout, update=update, diffs=diffs)
+
+  return allxml_data
+
+def _allxml(update=False, diffs=False):
 
   if hasattr(_allxml, 'allxml'):
     # Use curried result (So update only updates all.xml once per execution of main program)
+    logger.info("Using curried allxml")
     return _allxml.allxml
 
-  allurl = cdawmeta.CONFIG['urls']['all.xml']
-  allxml = _fetch(allurl, 'allxml', 'allxml', referrer='config.json', timeout=timeout, update=update, diffs=diffs)
+  allxml_data = allxml(update=update, diffs=diffs)
 
   # Curry result
-  _allxml.allxml = allxml
+  _allxml.allxml = allxml_data
 
-  return allxml
+  return allxml_data
 
 def _master(dataset, update=False, diffs=False):
 
@@ -564,7 +572,6 @@ def _write_combined(metadata_, id, meta_types):
           data_hapi.append(d)
           d_copy = deepcopy(d)
           if 'info' not in d_copy:
-            import pdb; pdb.set_trace()
             logger.warning(f"No 'info' in {dsid}")
 
           del d_copy['info']
@@ -614,7 +621,6 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
 
   result = {'id': id, 'url': url, 'data-file': None, 'data': None}
   get = cdawmeta.util.get_json(url, cache_dir=cache_dir, headers=headers, timeout=timeout, diffs=diffs)
-
   if get['emsg']:
     emsg = f"{id}: {get['emsg']}"
     if referrer is not None:
@@ -669,7 +675,6 @@ def _fetch_log(resp, diff):
       msg += f"  Last cache file:    {diff['file_last']}\n"
   msg += "  Request Cache-Related Headers:\n"
   for k, v in req_cache_headers.items():
-    print(k,v)
     msg += f"    {k}: {v}\n"
   msg += "  Response Cache-Related Headers:\n"
   for k, v in res_cache_headers.items():
@@ -681,4 +686,4 @@ def _fetch_log(resp, diff):
       msg += "  Cache diff:\n    "
       json_indented = "\n    ".join(diff['diff'].to_json(indent=2).split('\n'))
       msg += f"{json_indented}\n"
-  return msg
+  return msg.rstrip()
