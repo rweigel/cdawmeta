@@ -21,8 +21,8 @@ def LABLAXIS(dsid, name, all_variables, x=None):
       msg += f"'{lablaxis}'. Using LABLAXIS."
 
   if ptrs['LABL_PTR'] is not None:
-    label = ptrs['LABL_PTR_VALUES']
-    if len(label) == 1:
-      label = label[0]
+    lablaxis = ptrs['LABL_PTR_VALUES']
+    if len(lablaxis) == 1:
+      lablaxis = lablaxis[0]
 
   return lablaxis, msg, etype
