@@ -14,6 +14,7 @@ spase_auto-regen: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(REGEN)
 
 hapi-update: cdawmeta.egg-info
+	rm -rf data/CachedSession/allxml # See email about ETAG issue
 	python metadata.py --meta-type hapi $(UPDATE)
 
 hapi-regen: cdawmeta.egg-info
