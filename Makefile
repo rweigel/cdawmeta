@@ -1,8 +1,11 @@
 PYTHON=~/anaconda3/bin/python
 
 ID_SKIP=^PSP
-UPDATE=--id-skip '$(ID_SKIP)' --write-catalog --update --update-skip cadence
-REGEN=--id-skip '$(ID_SKIP)' --write-catalog --regen --regen-skip cadence --max-workers 1
+NO_UPDATE=cadence,sample_start_stop,orig_data
+NO_REGEN=$(NO_UPDATE)
+UPDATE=--id-skip '$(ID_SKIP)' --write-catalog --update --update-skip $(NO_UPDATE)
+REGEN=--id-skip '$(ID_SKIP)' --write-catalog --regen --regen-skip $(NO_REGEN) --max-workers 1
+
 spase_auto-update: cdawmeta.egg-info
 	python metadata.py --meta-type spase_auto $(UPDATE)
 
@@ -42,6 +45,26 @@ test-table: cdawmeta.egg-info
 
 test-report: cdawmeta.egg-info
 	python report.py --id AC_OR_DEF --update
+
+rsync-to-spot10:
+	rsync -avz -e 'ssh -p 890' \
+		--delete \
+		--exclude data \
+		--no-links \
+		--delete \
+		../cdawmeta weigel@cottagesystems.com:
+	rsync -avz -e 'ssh -p 890' \
+		--delete \
+		--exclude data \
+		--no-links \
+		--delete \
+		data/hapi weigel@cottagesystems.com:cdawmeta/data
+	rsync -avz -e 'ssh -p 890' \
+		--delete \
+		--exclude data \
+		--no-links \
+		--delete \
+		data/orig_data weigel@cottagesystems.com:cdawmeta/data
 
 rsync-to-mag:
 	rsync -avz \

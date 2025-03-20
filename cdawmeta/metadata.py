@@ -89,7 +89,9 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
              update=False, update_skip='',
              regen=False, regen_skip='',
              max_workers=3,
-             diffs=False, log_level='info'):
+             diffs=False,
+             exit_on_exception=False,
+             log_level='info'):
   '''
   Options are documented in cli.py.
 
@@ -179,7 +181,7 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
   def step_needed(meta_type, step, update, update_skips):
     if meta_type in update_skips:
       if update:
-        logger.info(f"Setting regen=False for {meta_type} {step} because in {step}_skip.")
+        logger.info(f"Setting {step}=False for '{meta_type}' because it is in {step}_skip.")
       return False
     return update
 
@@ -212,7 +214,8 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
       regen_ = step_needed(meta_type, 'regen', regen, regen_skip)
 
       dataset[meta_type] = cdawmeta.generate(dataset, meta_type, mloggers[meta_type],
-                                             update=update_, regen=regen_)
+                                             update=update_, regen=regen_,
+                                             exit_on_exception=exit_on_exception)
 
     logger.debug("Removing metadata that was used to generate requested metadata.")
 
@@ -227,21 +230,25 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
         logger.debug(f"  embed_data=False; removing 'data' node from {meta_type} for {dataset['id']}")
         del dataset[meta_type]['data']
 
+  def _exception(dsid, _traceback):
+    msg = f"{dsid}: {_traceback}"
+    cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
+    if exit_on_exception:
+      logger.error("Exiting due to exit_on_exception command line argument.")
+      os._exit(1)
+
   if max_workers == 1 or len(dsids) == 1:
     for dsid in dsids:
       try:
         get_one(datasets_all[dsid], mloggers)
       except:
-        msg = f"{dsid}: {traceback.print_exc()}"
-        cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
+        _exception(dsid, traceback.format_exc().strip())
   else:
     def call_get_one(dsid):
       try:
         get_one(datasets_all[dsid], mloggers)
       except:
-        msg = f"{dsid}: {traceback.print_exc()}"
-        cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
-
+        _exception(dsid, traceback.format_exc().strip())
       return dsid
 
     from concurrent.futures import ThreadPoolExecutor
@@ -593,7 +600,6 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
 
   cache_dir = os.path.join(cdawmeta.DATA_DIR, 'CachedSession', meta_type)
   subdir = '' if meta_type == 'allxml' else 'info'
-  print(meta_type)
   json_file = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f"{id}.json")
   pkl_file = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f"{id}.pkl")
 
@@ -607,7 +613,6 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
   logger.info(f'Getting using requests-cache: {url}')
 
   result = {'id': id, 'url': url, 'data-file': None, 'data': None}
-
   get = cdawmeta.util.get_json(url, cache_dir=cache_dir, headers=headers, timeout=timeout, diffs=diffs)
 
   if get['emsg']:

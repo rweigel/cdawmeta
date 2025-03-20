@@ -1,3 +1,4 @@
+import sys
 from setuptools import setup, find_packages
 
 install_requires = [
@@ -8,8 +9,13 @@ install_requires = [
     "pymongo",
     "timedelta_isoformat",
     "fastapi",
-    "uvicorn"
+    "uvicorn",
+    "dicttoxml"
 ]
+
+print(sys.version_info)
+if sys.version_info < (3, 9):
+  sys.exit('\n\n  Python < 3.9 is not supported\n\n')
 
 try:
   # Will work if utilrsw was already installed, for example via pip install -e .

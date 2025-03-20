@@ -6,6 +6,17 @@ def cli(script, defs=False):
 
   meta_types = cdawmeta.dependencies['all']
 
+  # Define the custom type function
+  def meta_types_list(value):
+    if value == '':
+      return ''
+
+    items = value.split(',')
+    for item in items:
+      if item not in meta_types:
+        raise argparse.ArgumentTypeError(f"Invalid meta-type: '{item}'")
+    return items
+
   clkws = {
     "id": {
       "help": "ID or pattern for dataset IDs to include (prefix with ^ to use pattern match, e.g., '^A|^B') (default: ^.*)",
@@ -34,7 +45,7 @@ def cli(script, defs=False):
     "max-workers": {
       "metavar": "N",
       "type": int,
-      "help": "Number of threads to use for downloading",
+      "help": "Number of threads to use for downloading (default: %(default)s).",
       "default": 3,
       "_used_by_all": True,
     },
@@ -46,26 +57,32 @@ def cli(script, defs=False):
     },
     "update": {
       "action": "store_true",
-      "help": "Update existing cached HTTP responses and regenerate computed metadata except cadence.",
+      "help": "Update existing cached HTTP responses and regenerate computed metadata.",
       "default": False,
       "_used_by_all": True
     },
     "update-skip": {
       "help": "Comma separated list of meta-types to not regenerate.",
       "default": '',
-      "choices": meta_types,
+      "type": meta_types_list,
       "_used_by_all": True
     },
     "regen": {
       "action": "store_true",
-      "help": "Regenerate computed metadata except cadence. Use for testing computed metadata code changes.",
+      "help": "Regenerate computed metadata. Use for testing computed metadata code changes.",
       "default": False,
       "_used_by_all": True
     },
     "regen-skip": {
       "help": "Comma separated list of meta-types to not regenerate.",
       "default": '',
-      "choices": meta_types,
+      "type": meta_types_list,
+      "_used_by_all": True
+    },
+    "exit-on-exception": {
+      "action": "store_true",
+      "help": "Exit on unhandled exception",
+      "default": False,
       "_used_by_all": True
     },
     "log-level": {

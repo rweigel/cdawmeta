@@ -7,6 +7,12 @@
   "_comment": "Set to false to reduce number of warnings due to mismatch with Nand's metadata",
   "strip_description": false,
 
+  "_comment": "Set to false to reduce number of warnings due to mismatch with Nand's metadata",
+  "strip_units": false,
+
+  "_comment": "Applies to LABLAXIS and LABL_AXIS_PTRs. Set to false to reduce number of warnings due to mismatch with Nand's metadata",
+  "strip_labelaxis": false,
+
   "id_skip": "AIM_CIPS_SCI_3A",
 
   "_comment": "Remove ---> in description",
@@ -100,8 +106,12 @@
         "DMSP-F18_SSIES-3_THERMAL-PLASMA": ["mlt", "glat_tt", "alt", "frachqual", "fracoqual", "mlt_tt", "mlat_tt", "corrpaqual", "vzqual", "glon_tt", "vyqual", "glat", "sza", "mlat", "idmqual", "vxqual", "alt_tt", "frachequal", "rpainfo", "densqual", "glon", "tempqual", "sza_tt"],
         "ELA_L1_EPDEF": ["ela_pef", "ela_pef_sectnum"],
         "ELA_L1_EPDIF": ["ela_pif_sectnum", "ela_pif"],
-        "ELA_L1_STATE_DEFN@1": ["ela_att_solution_date", "ela_spin_sun_angle", "ela_spin_orbnorm_angle"],
-        "ELB_L1_STATE_DEFN@1": ["elb_spin_sun_angle", "elb_att_solution_date", "elb_spin_orbnorm_angle"],
+        "ELA_L1_STATE_DEFN@1": ["ela_att_solution_date", "ela_spin_sun_angle", "ela_spin_orbnorm_angle", "ela_att_spinper", "ela_att_flag"],
+        "ELB_L1_STATE_DEFN@1": ["elb_att_solution_date", "elb_spin_sun_angle", "elb_spin_orbnorm_angle", "elb_att_spinper", "elb_att_flag"],
+
+        "ELA_L1_STATE_PRED@1": ["ela_att_solution_date", "ela_att_gei", "ela_spin_sun_angle", "ela_spin_orbnorm_angle"],
+        "ELB_L1_STATE_PRED@1": ["elb_att_solution_date", "elb_att_gei", "elb_spin_sun_angle", "elb_spin_orbnorm_angle"],
+
         "ERG_PWE_HFA_L2_SPEC_HIGH": ["obs_stat", "spectra_eu_bg_d2", "spectra_ev_bg_d1", "spectra_eu_bg_d1", "mscpa_gain", "ave_stat", "spectra_esum", "spectra_ev", "wpt_ac_gain", "ch2_gain", "spectra_e_mix", "spectra_er", "ch2_in", "ch1_gain", "spectra_ev_bg", "ch1_in", "e_mix_content", "spectra_el", "spectra_eu_ev", "spectra_e_ar", "spectra_eu_bg", "spectra_ev_bg_d2", "spectra_eu", "wav_stat", "spectra_bgamma", "spectra_eu_ev_d1", "spectra_eu_ev_d2"],
         "ERG_PWE_HFA_L2_SPEC_LOW": ["obs_stat", "spectra_eu_bg_d2", "spectra_ev_bg_d1", "spectra_eu_bg_d1", "mscpa_gain", "ave_stat", "spectra_esum", "spectra_ev", "wpt_ac_gain", "ch2_gain", "spectra_e_mix", "spectra_er", "ch2_in", "ch1_gain", "spectra_ev_bg", "ch1_in", "e_mix_content", "spectra_el", "spectra_eu_ev", "spectra_e_ar", "spectra_eu_bg", "spectra_ev_bg_d2", "spectra_eu", "wav_stat", "spectra_bgamma", "spectra_eu_ev_d1", "spectra_eu_ev_d2"],
         "ERG_PWE_HFA_L2_SPEC_MONIT": ["obs_stat", "spectra_eu_bg_d2", "spectra_ev_bg_d1", "spectra_eu_bg_d1", "mscpa_gain", "ave_stat", "spectra_esum", "spectra_ev", "wpt_ac_gain", "spectra_e_mix", "spectra_er", "ch2_in", "ch1_gain", "spectra_ev_bg", "ch1_in", "e_mix_content", "spectra_el", "spectra_eu_ev", "spectra_e_ar", "spectra_eu_bg", "spectra_ev_bg_d2", "spectra_eu", "wav_stat", "spectra_bgamma", "spectra_eu_ev_d1", "spectra_eu_ev_d2"],
@@ -154,8 +164,7 @@
       "omitDatasetSubset": {
         "AEROCUBE-6-A_DOSIMETER_L2": ["Epoch_10Hz"],
         "AEROCUBE-6-B_DOSIMETER_L2": ["Epoch_10Hz"],
-        "ELA_L1_STATE_PRED": ["ela_att_time"],
-        "ELB_L1_STATE_PRED": ["elb_att_time"],
+        "ENDURANCE_L1B_PES": ["Epoch_steps"],
         "FA_ESA_L2_EEB": ["orbit_number_epoch"],
         "FA_ESA_L2_EES": ["orbit_number_epoch"],
         "FA_ESA_L2_IEB": ["orbit_number_epoch"],

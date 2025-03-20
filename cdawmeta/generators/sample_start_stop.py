@@ -1,7 +1,7 @@
 dependencies = ['orig_data']
 
 # TODO: Like cadence(), there should be an option to not update this
-# information. The requests take a long time and once a sample start and stop
+# information. The requests take a long time, and once a sample start and stop
 # date is created it is unlikely to need updating.
 
 def sample_start_stop(metadatum, logger):

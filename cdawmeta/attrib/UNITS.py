@@ -31,7 +31,7 @@ def UNITS(dsid, name, all_variables, x=None):
         # Catch case where empty string or whitespace string used for UNITS,
         # presumably to "satisfy" ISTP requirements that UNITS be present.
         msg = f"{msgo} VAR_TYPE = '{VAR_TYPE}' and UNITS.strip() = ''"
-        return '', "ISTP.UNITS", msg
+        return units, "ISTP.UNITS", msg
 
     if ptrs['UNIT_PTR'] is not None:
       etype = "ISTP.UNITS"

@@ -4,9 +4,10 @@
     "name": "default",
     "file_log": "{dir_name}/{name}.log",
     "file_error": "{dir_name}/{name}.error.log",
-    "console_format": "%(name)s %(levelname)s %(message)s",
+    "console_format": "%(name)s %(levelname)s [%(threadName)s] %(message)s",
     "console_format_debug": "%(name)s %(levelname)s %(filename)s:%(lineno)d %(message)s",
-    "color": true
+    "color": true,
+    "rm_string": " [MainThread]"
   },
   "metadata": {
     "name": "metadata",
