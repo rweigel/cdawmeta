@@ -100,7 +100,7 @@ def cli(script, defs=False):
       "action": "store_true",
       "help": "Compute response diffs if --update",
       "default": False,
-      "used_by": ['metadata.py']
+      "_used_by": ['metadata.py']
     },
     "data-dir": {
       "metavar": "DIR",

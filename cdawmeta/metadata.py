@@ -327,7 +327,17 @@ def allxml(update=False, diffs=False, log_level='info'):
 
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['allxml']
   allurl = cdawmeta.CONFIG['urls']['all.xml']
-  allxml_data = _fetch(allurl, 'allxml', 'allxml', referrer='config.json', timeout=timeout, update=update, diffs=diffs)
+
+  # For explanation of {'Accept-Encoding': None}, see email to Bernie
+  # Harris on 2025-03-22 about issue with their server.
+  kwargs = {
+    'referrer': allurl,
+    'timeout': timeout,
+    'headers': {'Accept-Encoding': None},
+    'update': update,
+    'diffs': diffs
+  }
+  allxml_data = _fetch(allurl, 'allxml', 'allxml', **kwargs)
 
   return allxml_data
 
@@ -621,6 +631,7 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
 
   result = {'id': id, 'url': url, 'data-file': None, 'data': None}
   get = cdawmeta.util.get_json(url, cache_dir=cache_dir, headers=headers, timeout=timeout, diffs=diffs)
+
   if get['emsg']:
     emsg = f"{id}: {get['emsg']}"
     if referrer is not None:
@@ -638,7 +649,7 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
 
   result['request'] = {}
   result['request']["url"] = url
-  result['request']["log"] = _fetch_log(get['response'], get['diff'])
+  result['request']["log"] = get['log']
   result['request']["diff"] = get['diff']
   result['request']["file"] = cache_file
   result['request']["file-header"] = dict(get['response'].headers)
@@ -660,30 +671,3 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
       cdawmeta.error('metadata', id, None, 'WriteError', msg, logger)
 
   return result
-
-def _fetch_log(resp, diff):
-  # Combine into single string to deal with parallel processing
-
-  req_cache_headers = {k: v for k, v in resp.request.headers.items() if k in ['If-None-Match', 'If-Modified-Since']}
-  res_cache_headers = {k: v for k, v in resp.headers.items() if k in ['ETag', 'Last-Modified', 'Cache-Control', 'Vary']}
-  msg = "\n"
-  msg += f"  Status code: {resp.status_code}\n"
-  msg += f"  From cache: {resp.from_cache}\n"
-  if diff and 'diff' in diff:
-    msg += f"  Current cache file: {diff['file_now']}\n"
-    if 'file_last' in diff:
-      msg += f"  Last cache file:    {diff['file_last']}\n"
-  msg += "  Request Cache-Related Headers:\n"
-  for k, v in req_cache_headers.items():
-    msg += f"    {k}: {v}\n"
-  msg += "  Response Cache-Related Headers:\n"
-  for k, v in res_cache_headers.items():
-    msg += f"    {k}: {v}\n"
-  if diff and 'diff' in diff:
-    if diff['diff'] is None or len(diff['diff']) == 0:
-      msg += "  Cache diff: None\n"
-    else:
-      msg += "  Cache diff:\n    "
-      json_indented = "\n    ".join(diff['diff'].to_json(indent=2).split('\n'))
-      msg += f"{json_indented}\n"
-  return msg.rstrip()
