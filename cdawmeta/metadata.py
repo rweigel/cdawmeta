@@ -656,14 +656,18 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
 
   logger.info(result['request']["log"])
 
-  if not os.path.exists(json_file):
+  if os.path.exists(json_file) and get['response'].from_cache:
+    logger.info(f"File {json_file} exists and response was from cache. Not re-writing it.")
+  else:
     try:
       cdawmeta.util.write(json_file, result, logger=logger)
     except Exception as e:
       msg = f"Error writing {json_file}: {e}"
       cdawmeta.error('metadata', id, None, 'WriteError', msg, logger)
 
-  if not os.path.exists(pkl_file):
+  if os.path.exists(pkl_file) and get['response'].from_cache:
+    logger.info(f"File {pkl_file} exists and response was from cache. Not re-writing it.")
+  else:
     try:
       cdawmeta.util.write(pkl_file, result, logger=logger)
     except Exception as e:
