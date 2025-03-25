@@ -82,7 +82,7 @@ def cli(script, defs=False):
       "action": "store_true",
       "help": "Exit on unhandled exception",
       "default": False,
-      "_used_by_all": True
+      "_used_by": ['metadata.py']
     },
     "log-level": {
       "help": "Log level",

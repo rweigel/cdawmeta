@@ -3,6 +3,7 @@ __all__ = [
             'attrib',
             'CONFIG',
             'cli',
+            'db',
             'dependencies',
             'DATA_DIR',
             'error',
@@ -22,6 +23,7 @@ __all__ = [
 import utilrsw as util
 
 from cdawmeta import attrib
+from cdawmeta import db
 from cdawmeta import io
 from cdawmeta import reports
 from cdawmeta import restructure

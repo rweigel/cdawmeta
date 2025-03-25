@@ -1,5 +1,5 @@
 def write_mongodb(id=None, id_skip=None, mongod_binary=None, collection_name=None, port=27017,
-                  update=False, regen=False, max_workers=1, log_level='info'):
+                  update=False, update_skip=None, regen=False, regen_skip=None, max_workers=1, log_level='info'):
 
   import os
   import cdawmeta

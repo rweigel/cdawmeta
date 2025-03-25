@@ -19,7 +19,7 @@ try:
 except Exception:
   raise ValueError(f"Could not parse filter as JSON: {filter}")
 
-if collection_name is not None: 
+if collection_name is not None:
   collection_names = [collection_name]
 
 for collection_name in collection_names:
