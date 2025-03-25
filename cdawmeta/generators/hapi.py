@@ -123,6 +123,18 @@ def hapi(metadatum, _logger):
 
 def _info_head(metadatum, depend_0_name):
 
+  def update_timestamp(id, date_orig_data, date_allxml, which):
+    translates = str.maketrans({'T': '', 'Z': '', '.': '', ':': '', '-': ''})
+    date_orig_data_x = date_orig_data.translate(translates)
+    date_allxml_x = date_allxml.translate(translates)
+    min_len = min(len(date_orig_data_x), len(date_allxml_x))
+    print(date_allxml_x[0:min_len], date_orig_data_x[0:min_len])
+    if date_orig_data_x[0:min_len] != date_allxml_x[0:min_len]:
+      msg = f"{which}Date ({date_orig_data}) from orig_data does not match {which}Date ({date_allxml}) from all.xml. Using orig_data value."
+      cdawmeta.error('hapi', id, None, "HAPI.SampleStartDateMismatch", "    " + msg, logger)
+
+    return date_orig_data
+
   id = metadatum['id']
   allxml = metadatum['allxml']
 
@@ -163,6 +175,8 @@ def _info_head(metadatum, depend_0_name):
     sample_start_stop = metadatum['sample_start_stop']['data']
     info['sampleStartDate'] = sample_start_stop['sampleStartDate']
     info['sampleStopDate'] = sample_start_stop['sampleStopDate']
+    info['startDate'] = update_timestamp(id, sample_start_stop['startDate'], startDate, 'start')
+    info['stopDate'] = update_timestamp(id, sample_start_stop['stopDate'], stopDate, 'stop')
   else:
     logger.warn(f"    No sample_start_stop for {id}")
     del info['sampleStartDate']

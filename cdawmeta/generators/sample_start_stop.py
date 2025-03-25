@@ -31,6 +31,8 @@ def sample_start_stop(metadatum, logger):
   if sampleFile is not None:
     sampleStartDate = sampleFile["StartTime"]
     sampleStopDate = sampleFile["EndTime"]
+    startDate = orig_data["FileDescription"][0]["StartTime"]
+    stopDate = orig_data["FileDescription"][-1]["EndTime"]
 
   url = metadatum["orig_data"]["url"]
   note = "sample{Start,Stop}Date corresponds to the time range spanned "
@@ -39,6 +41,8 @@ def sample_start_stop(metadatum, logger):
   range = {
             "sampleStartDate": sampleStartDate,
             "sampleStopDate": sampleStopDate,
+            "startDate": startDate,
+            "stopDate": stopDate,
             "note": note
           }
 
