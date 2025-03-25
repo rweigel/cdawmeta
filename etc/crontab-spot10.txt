@@ -1,2 +1,2 @@
 #*/1 * * * * ~/cdawmeta/etc/crontab-spot10.sh
-0 * * * * ~/cdawmeta/etc/crontab-spot10.sh
+0 */3 * * * ~/cdawmeta/etc/crontab-spot10.sh
