@@ -47,6 +47,7 @@ def master_resolved(metadatum, logger):
     logger.info(f"{indent}VAR_TYPE: '{VAR_TYPE}'")
 
     DataType = variables[variable_name]['VarDescription']['DataType']
+    logger.info(f"{indent}DataType = {DataType}")
 
     NumDims = variable['VarDescription'].get('NumDims', None)
     logger.info(f"{indent}NumDims = {NumDims}")
@@ -75,7 +76,7 @@ def master_resolved(metadatum, logger):
 
     if 'LABLAXIS' in variable['VarAttributes']:
       LABLAXIS = variable['VarAttributes']['LABLAXIS']
-      logger.info(f"    LABELAXIS given:    {LABLAXIS}")
+      logger.info(f"    LABELAXIS given: {LABLAXIS}")
       if cdawmeta.CONFIG['hapi']['strip_labelaxis']:
         LABLAXIS_RESOLVED = cdawmeta.util.trim(LABLAXIS)
         variable['VarAttributes']['LABLAXIS'] = LABLAXIS_RESOLVED
@@ -90,6 +91,31 @@ def master_resolved(metadatum, logger):
     if DEPEND_RESOLVED is not None:
       variable['DEPEND_RESOLVED'] = DEPEND_RESOLVED
       logger.info(f"    DEPEND_RESOLVED: {DEPEND_RESOLVED}")
+
+    v = variables[variable_name]['VarAttributes'].get('VIRTUAL', None)
+    if v is not None and v.lower() == 'true':
+      logger.info("    VIRTUAL: true")
+
+    funct = variables[variable_name]['VarAttributes'].get('FUNC', None)
+    if funct is not None:
+      logger.info(f"    FUNCT: {funct}")
+
+    function = variables[variable_name]['VarAttributes'].get('FUNCTION', None)
+    if function is not None:
+      logger.info(f"    FUNCT: {function}")
+      emsg = f"{indent}FUNCTION attribute found; was FUNCT meant?"
+      cdawmeta.error('master_resolved', id, variable_name, "CDF.FunctionAttribute", emsg, logger)
+
+    if v is not None and (function is None and funct is None):
+      emsg = f"{indent}VIRTUAL attribute found, but no FUNCTION or FUNCT."
+      cdawmeta.error('master_resolved', id, variable_name, "CDF.VirtualButNoFunctAttribute", emsg, logger)
+
+    for i in [0, 1, 2, 3]:
+      c = variables[variable_name]['VarAttributes'].get(f'COMPONENT_{i}', None)
+      if c is not None:
+        logger.info(f'    COMPONENT_{i}: {c}')
+        if c not in variables:
+          cdawmeta.error('master_resolved', id, variable_name, "CDF.InvalidComponentReference", emsg, logger)
 
   return [master]
 
@@ -113,11 +139,6 @@ def _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_na
 
   msgo = f"{indent}{id}/{variable_name} has {ptr_name} = '{ptr_var}' "
 
-  if 'VarDescription' not in variables[ptr_var]:
-    emsg = f"{msgo} with no VarDescription."
-    cdawmeta.error('master_resolved', id, ptr_var, "CDF.NoVarAttributes", emsg, logger)
-    return None
-
   if 'DataType' not in variables[ptr_var]['VarDescription']:
     emsg = f"{msgo} with no DataType."
     cdawmeta.error('master_resolved', id, ptr_var, "CDF.NoDataType", emsg, logger)
@@ -128,7 +149,7 @@ def _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_na
       emsg = f"{msgo} with no VarData."
       cdawmeta.error('master_resolved', id, ptr_var, "CDF.NoVarData", emsg, logger)
       return None
-    if ptr_name.startswith('DEPEND'):
+    if ptr_name.startswith('DEPEND') or ptr_name.startswith('COMPONENT'):
       # TODO: Check that dims match variable that references
       logger.info(f"{indent}{ptr_name} Does not have VarData, so not resolving values.")
       return {'variable_name': ptr_var, 'values': None, 'values_trimmed': None}
@@ -136,7 +157,7 @@ def _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_na
   cdf_string_types = ['CDF_CHAR', 'CDF_UCHAR']
   DataType = variables[ptr_var]['VarDescription']['DataType']
   if DataType not in cdf_string_types:
-    if ptr_name.startswith('DEPEND'):
+    if ptr_name.startswith('DEPEND') or ptr_name.startswith('COMPONENT'):
       # TODO: Check that dims match variable that references
       logger.info(f"{indent}{ptr_name} has VarData, but values are not strings, so not resolving.")
       return {'variable_name': ptr_var, 'values': None, 'values_trimmed': None}
@@ -202,6 +223,12 @@ def _check_variable(id, variable_name, variables, logger):
     del variables[variable_name]
     return variable_name
 
+  if 'DataType' not in variables[variable_name]['VarDescription']:
+    emsg = f"{indent}{variable_name}No DataType. {removing}"
+    cdawmeta.error('master_resolved', id, variable_name, "CDF.NoDataType", emsg, logger)
+    del variables[variable_name]
+    return variable_name
+
   NumDims = variable['VarDescription'].get('NumDims', None)
   #logger.info(f"{indent}NumDims: {NumDims}")
 
@@ -230,31 +257,6 @@ def _check_variable(id, variable_name, variables, logger):
     return variable_name
 
   return None
-
-def _summary(original, resolved, attribute_name, logger):
-  indent = "    "
-
-  msg = f"{indent}{attribute_name} given:    "
-  if original is None:
-    logger.info(f"{msg}{original}")
-  else:
-    logger.info(f"{msg}'{original}'")
-
-  if type(original) is type(resolved):
-    if isinstance(original, list):
-      if "".join(original) == "".join(resolved):
-        return
-    if original == resolved:
-      return
-
-  msg = f"{indent}{attribute_name} resolved: "
-  if isinstance(resolved, list):
-    logger.info(f"{msg}{resolved}")
-  else:
-    if resolved is None:
-      logger.info(f"{msg}{resolved}")
-    else:
-      logger.info(f"{msg}'{resolved}'")
 
 def _DEPEND_RESOLVED(id, variable_name, variables, variables_removed, logger):
   depend = []
@@ -290,6 +292,31 @@ def _LABL_PTR_RESOLVED(id, variable_name, variables, variables_removed, logger):
   return labl_ptrs
 
 def _UNITS(id, variable_name, variables, variables_removed, logger):
+
+  def _summary(original, resolved, attribute_name, logger):
+    indent = "    "
+
+    msg = f"{indent}{attribute_name} given: "
+    if original is None:
+      logger.info(f"{msg}{original}")
+    else:
+      logger.info(f"{msg}'{original}'")
+
+    if type(original) is type(resolved):
+      if isinstance(original, list):
+        if "".join(original) == "".join(resolved):
+          return
+      if original == resolved:
+        return
+
+    msg = f"{indent}{attribute_name} resolved: "
+    if isinstance(resolved, list):
+      logger.info(f"{msg}{resolved}")
+    else:
+      if resolved is None:
+        logger.info(f"{msg}{resolved}")
+      else:
+        logger.info(f"{msg}'{resolved}'")
 
   indent = "    "
   units = None

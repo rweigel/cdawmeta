@@ -128,7 +128,7 @@ def _info_head(metadatum, depend_0_name):
     date_orig_data_x = date_orig_data.translate(translates)
     date_allxml_x = date_allxml.translate(translates)
     min_len = min(len(date_orig_data_x), len(date_allxml_x))
-    print(date_allxml_x[0:min_len], date_orig_data_x[0:min_len])
+    #print(date_allxml_x[0:min_len], date_orig_data_x[0:min_len])
     if date_orig_data_x[0:min_len] != date_allxml_x[0:min_len]:
       msg = f"{which}Date ({date_orig_data}) from orig_data does not match {which}Date ({date_allxml}) from all.xml. Using orig_data value."
       cdawmeta.error('hapi', id, None, "HAPI.SampleStartDateMismatch", "    " + msg, logger)
@@ -584,7 +584,7 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
                     "centers": DEPEND_x["VarData"],
                     "x_label": LABLAXIS
                   }
-    _set_units(dsid, name, all_variables, bins_object, print_info=False, x=None)
+    _set_units(dsid, DEPEND_x_NAME, all_variables, bins_object, print_info=False, x=None)
     return bins_object
   else:
     if print_info:
