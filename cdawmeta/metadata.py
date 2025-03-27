@@ -362,7 +362,14 @@ def _master(dataset, update=False, diffs=False):
   mastercdf = dataset['allxml']['mastercdf']['@ID']
   url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
 
-  master = _fetch(url, dataset['id'], 'master', referrer=url, timeout=timeout, update=update, diffs=diffs)
+  kwargs = {
+    'referrer': url,
+    'timeout': timeout,
+    'update': update,
+    'diffs': diffs
+  }
+
+  master = _fetch(url, dataset['id'], 'master', **kwargs)
 
   master['data'] = cdawmeta.restructure.master(master['data'], url, logger=logger)
 
