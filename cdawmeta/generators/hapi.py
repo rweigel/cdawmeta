@@ -7,7 +7,8 @@ import cdawmeta
 
 logger = None
 
-dependencies = ['master', 'cadence', 'sample_start_stop']
+#dependencies = ['master', 'master_resolved', 'cadence', 'sample_start_stop']
+dependencies = ['master_resolved', 'cadence', 'sample_start_stop']
 
 def hapi(metadatum, _logger):
   global logger
@@ -20,7 +21,8 @@ def hapi(metadatum, _logger):
     cdawmeta.error('hapi', id, None, "ISTP.NoMaster", msg, logger)
     return {"error": msg}
 
-  master = metadatum['master']['data']
+  #master = metadatum['master']['data']
+  master = metadatum['master_resolved']['data']
 
   variables = master['CDFVariables']
   # Split variables to be under their DEPEND_0 (Keys are DEPEND_0 names), e.g.,
@@ -332,11 +334,6 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     if VAR_TYPE != 'data':
       continue
 
-    virtual = 'VIRTUAL' in variable['VarAttributes']
-    if print_info:
-      virtual_txt = f' (virtual: {virtual})'
-      logger.info(f"    {name}{virtual_txt}")
-
     type_ = _to_hapi_type(variable['VarDescription']['DataType'])
     if type_ is None and print_info:
       msg = f"Variable '{name}' has unhandled DataType: {variable['VarDescription']['DataType']}. Dropping variable."
@@ -434,8 +431,17 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     if FIELDNAM is not None:
       parameter['x_cdf_FIELDNAM'] = FIELDNAM
 
-    parameter["x_cdf_VIRTUAL"] = virtual
+    virtual = 'VIRTUAL' in variable['VarAttributes']
+    if print_info:
+      virtual_txt = f' (virtual: {virtual})'
+      logger.info(f"    {name}{virtual_txt}")
 
+    parameter["x_cdf_VIRTUAL"] = virtual
+    if virtual:
+      parameter["x_cdf_FUNCT"] = variable['VarAttributes']['FUNCT']
+      parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['COMPONENTS']
+      parameter['description'] += f". This variable is a 'virtual' variable that is computed using the function {parameter['x_cdf_FUNCT']} (see https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro) on the with inputs of the variables {parameter['x_cdf_COMPONENTS']}."
+      parameter['description'] += " Note that not all COMPONENTS are time series and so their values are not available from the HAPI interface. They are accessible from the raw CDF files, however."
     DISPLAY_TYPE, emsg, etype = cdawmeta.attrib.DISPLAY_TYPE(dsid, name, variable)
     if etype is not None and print_info:
       cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)

@@ -23,9 +23,12 @@ def write_mongodb(id=None, id_skip=None, mongod_binary=None, collection_name=Non
 
   documents = []
   for dsid in meta.keys():
-    spase = cdawmeta.util.get_path(meta[dsid], ['spase', 'data', 'Spase'])
-    if spase:
-      documents.append({"_id": dsid, **spase})
+    if collection_name == 'spase':
+      spase = cdawmeta.util.get_path(meta[dsid], ['spase', 'data', 'Spase'])
+      if spase:
+        documents.append({"_id": dsid, **spase})
+    else:
+      documents.append({"_id": dsid, **meta[dsid]})
 
   logger.info(f"Creating database {collection_name} and collection {collection_name}.")
 
@@ -38,6 +41,10 @@ def write_mongodb(id=None, id_skip=None, mongod_binary=None, collection_name=Non
 
   db_list = client.list_database_names()
   logger.info(f"{indent}Database list: {db_list}")
+
+  logger.info(f"{indent}Creating wildcard index on all fields.")
+  client[collection_name].command("createIndexes", collection_name, indexes=[{"key": {"$**": 1}, "name": "wildcard_index"}])
+  logger.info(done)
 
   if collection_name in db_list:
     logger.info(f"{indent}Database '{collection_name}' exists. Dropping it.")

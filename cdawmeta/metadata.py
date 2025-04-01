@@ -218,8 +218,6 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
                                              update=update_, regen=regen_,
                                              exit_on_exception=exit_on_exception)
 
-    logger.debug("Removing metadata that was used to generate requested metadata.")
-
     for meta_type in meta_types:
       if meta_type_requested is not None and meta_type not in meta_type_requested:
         if meta_type in dataset:
@@ -513,8 +511,15 @@ def _orig_data(dataset, update=True, diffs=False):
   stop = dataset['allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z"
   url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop
 
-  headers = {'Accept': 'application/json'}
-  return _fetch(url, dataset['id'], 'orig_data', headers=headers, timeout=timeout, update=update, diffs=diffs)
+  kwargs = {
+    'referrer': url,
+    'timeout': timeout,
+    'headers': {'Accept': 'application/json'},
+    'update': update,
+    'diffs': diffs
+  }
+
+  return _fetch(url, dataset['id'], 'orig_data', **kwargs)
 
 def _write_combined(metadata_, id, meta_types):
 
