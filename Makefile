@@ -4,8 +4,8 @@ PYTHON=~/anaconda3/bin/python
 ID_SKIP=
 NO_UPDATE=cadence
 NO_REGEN=$(NO_UPDATE)
-UPDATE=$(ID_SKIP) --write-catalog --update --update-skip $(NO_UPDATE) --diffs --max-workers 1
-REGEN=$(ID_SKIP) --write-catalog  --regen --regen-skip $(NO_REGEN) --diffs --max-workers 1
+UPDATE=$(ID_SKIP) --write-catalog --update --update-skip $(NO_UPDATE) --diffs --max-workers 3
+REGEN=$(ID_SKIP) --write-catalog  --regen --regen-skip $(NO_REGEN) --diffs --max-workers 3
 
 spase_auto-update: cdawmeta.egg-info
 	python metadata.py --meta-type spase_auto $(UPDATE)
