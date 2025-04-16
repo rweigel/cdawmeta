@@ -4,6 +4,7 @@ import glob
 import traceback
 
 import cdawmeta
+import cdawmeta.config
 
 # Can't call logger = cdawmeta.logger(...) here because it calls cdawmeta.DATA_DIR
 # which is set to a default. If user modifies using cdawmeta.DATA_DIR = ...,
@@ -152,7 +153,7 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
   allxml_data = _allxml(update=update)
   datasets_all = _datasets(allxml_data)
 
-  not_generated = ['allxml', 'master', 'orig_data', 'spase', 'spase_hpde_io']
+  not_generated = ['allxml', 'master', 'cdfmetafile', 'orig_data', 'spase', 'spase_hpde_io']
   mloggers = {}
   for meta_type in meta_types:
     if meta_type in not_generated:
@@ -197,6 +198,10 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
     if 'orig_data' in meta_types:
       update_ = step_needed('orig_data', 'update', update, update_skip)
       dataset['orig_data'] = _orig_data(dataset, update=update_, diffs=diffs)
+
+    if 'cdfmetafile' in meta_types:
+      update_ = step_needed('cdfmetafile', 'update', update, update_skip)
+      dataset['cdfmetafile'] = _cdfmetafile(dataset, update=update_, diffs=diffs)
 
     if 'spase' in meta_types:
       update_ = step_needed('spase', 'update', update, update_skip)
@@ -281,7 +286,8 @@ def _datasets(allxml_data):
 
   datasites = cdawmeta.util.get_path(allxml_data, ['data', 'sites', 'datasite'])
   if datasites is None:
-    raise Exception("Error[all.xml]: No 'sites/datasite' node in all.xml")
+    raise Exception("Error[all.xml]: No 'sites/datasite' node in all.xml. Cannot continue. Exiting with signal 1.")
+    exit(1)
 
   datasets_allxml = None
   for datasite in datasites:
@@ -289,7 +295,8 @@ def _datasets(allxml_data):
       datasets_allxml = datasite['dataset']
       break
   if datasets_allxml is None:
-    raise Exception("Error[all.xml]: No 'sites/datasite' with ID=CDAWeb_HTTPS")
+    raise Exception("Error[all.xml]: No 'sites/datasite' with ID=CDAWeb_HTTPS. Cannot continue. Exiting with signal 1.")
+    exit(1)
 
   datasets_ = {}
   for dataset_allxml in datasets_allxml:
@@ -368,6 +375,9 @@ def _master(dataset, update=False, diffs=False):
   }
 
   master = _fetch(url, dataset['id'], 'master', **kwargs)
+
+  if 'error' in master:
+    return master
 
   master['data'] = cdawmeta.restructure.master(master['data'], url, logger=logger)
 
@@ -520,6 +530,67 @@ def _orig_data(dataset, update=True, diffs=False):
   }
 
   return _fetch(url, dataset['id'], 'orig_data', **kwargs)
+
+def _cdfmetafile(dataset, update=True, diffs=False):
+
+  id = dataset['id']
+  out_dir = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'info')
+  if not update:
+    pkl_file = os.path.join(out_dir, f"{id}.pkl")
+    print(pkl_file)
+    if os.path.exists(pkl_file):
+      print('here')
+      return cdawmeta.util.read(pkl_file, logger=logger)
+
+  def write_info(dataset_name, url, files):
+    output_file = os.path.join(out_dir, f'{dataset_name}.json')
+    meta = {
+      'id': id,
+      'url': url,
+      'data-file': output_file,
+      'data': {'FileDescription': files}
+    }
+    logger.info(f"  Writing {output_file.replace('.json', '')}.{{json,pkl}}")
+    cdawmeta.util.write(output_file, meta)
+    cdawmeta.util.write(output_file.replace(".json", ".pkl"), meta)
+
+  def create_infos():
+    dataset_line = "DATASET>"
+    file_line = "/home/cdaweb/data/"
+
+    file = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'sp_phys_cdfmetafile.txt')
+    url = cdawmeta.CONFIG['urls']['cdfmetafile']
+
+    logger.info(f"Getting {url}")
+    info = cdawmeta.util.get_conditional(url, file=file, stream=True)
+    logger.info(f"Got {url}")
+
+    logger.info(f"Parsing {file}")
+    dataset_name_last = None
+    with open(info['cache_file'], "r") as file:
+      files = None
+      for line in file:
+        line = line.strip()
+        if line.startswith(dataset_line):
+          dataset_name = line.split(">")[1]
+          logger(f"  Found dataset: {dataset_name}")
+          if dataset_name_last is not None:
+            write_info(dataset_name_last, url, files)
+          dataset_name_last = dataset_name
+          files = []
+        elif line.startswith(file_line):
+          parts = line.split(">")
+          parts[0] = parts[0].replace(file_line, cdawmeta.CONFIG['urls']['cdfdata'])
+          parts[1] = parts[1].replace("/", "-").replace(" ", "T") + "Z"
+          parts[2] = parts[2].replace("/", "-").replace(" ", "T") + "Z"
+          files.append({'Name': parts[0], 'StartTime': parts[1], 'EndTime': parts[2]})
+
+  create_infos()
+  pkl_file = os.path.join(out_dir, f"{id}.pkl")
+  if os.path.exists(pkl_file):
+    return cdawmeta.util.read(pkl_file, logger=logger)
+  else:
+    pass
 
 def _write_combined(metadata_, id, meta_types):
 

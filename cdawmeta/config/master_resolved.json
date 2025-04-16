@@ -1,0 +1,14 @@
+{
+  "CDFglobalAttributes": {
+  },
+  "DISPLAY_TYPES": [
+      "time_series",
+      "spectrogram",
+      "stack_plot",
+      "image",
+      "no_plot",
+      "orbit",
+      "plasmagram",
+      "skymap"
+    ]
+}

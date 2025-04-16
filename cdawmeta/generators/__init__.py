@@ -23,6 +23,7 @@ def _get_dependencies():
   # TODO: This list should be generated in metadata.py.
   all_dependencies['allxml'] = None
   all_dependencies['master'] = None
+  all_dependencies['cdfmetafile'] = None
   all_dependencies['orig_data'] = None
   all_dependencies['spase'] = None
   all_dependencies['spase_hpde_io'] = None

@@ -83,6 +83,11 @@ cdawmeta.egg-info:
 ################################################################################
 
 ################################################################################
+
+skterrors:
+	find data/cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS -name "*.cdf" | xargs -J{} java -cp data/skteditor-1.3.11/spdfjavaClasses.jar gsfc.spdf.istp.tools.CDFCheck {} > {}.log
+
+################################################################################
 table/table-ui:
 	@- cd table; git clone https://github.com/rweigel/table-ui
 	@- cd table; git pull https://github.com/rweigel/table-ui

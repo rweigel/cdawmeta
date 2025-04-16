@@ -16,7 +16,7 @@ def hapi(metadatum, _logger):
 
   id = metadatum['id']
 
-  if 'data' not in metadatum['master']:
+  if 'data' not in metadatum['master_resolved']:
     msg = f"{id}: Not creating dataset for {id} b/c it has no 'data' key"
     cdawmeta.error('hapi', id, None, "ISTP.NoMaster", msg, logger)
     return {"error": msg}
@@ -193,95 +193,6 @@ def _info_head(metadatum, depend_0_name):
 
   return info
 
-def _max_request_duration(depend_0_name, metadatum, info):
-
-  # sample{Start,Stop}Date is based on time range of 1 file
-  # If sample{Start,Stop}Date available max duration is span of n_files files
-  n_files = 50
-  # If sample{Start,Stop}Date not available max duration is 1000*cadence
-  n_cadence = 1000
-
-  if 'sampleStartDate' in info and 'sampleStopDate' in info:
-    logger.info("    Calculating maxRequestDuration from sample{Start,Stop}Date")
-    try:
-      start = datetime.datetime.fromisoformat(info['startDate'][0:-1])
-      stop = datetime.datetime.fromisoformat(info['stopDate'][0:-1])
-      sampleStart = datetime.datetime.fromisoformat(info['sampleStartDate'][0:-1])
-      sampleStop = datetime.datetime.fromisoformat(info['sampleStopDate'][0:-1])
-
-      logger.info(f"    startDate       = {info['startDate']}")
-      logger.info(f"    stopDate        = {info['stopDate']}")
-      logger.info(f"    sampleStartDate = {info['sampleStartDate']}")
-      logger.info(f"    sampleStopDate  = {info['sampleStopDate']}")
-
-      delta_sample = sampleStop - sampleStart
-      delta_datset = stop - start
-
-      total_seconds_sample = delta_sample.total_seconds()
-      total_seconds_datset = delta_datset.total_seconds()
-      logger.info(f"    sample length  = {total_seconds_sample} [s]")
-      logger.info(f"    dataset length = {total_seconds_datset} [s]")
-
-      total_seconds = min(total_seconds_datset, n_files*total_seconds_sample)
-      logger.info(f"    min(dataset, {n_files}*sample) = {total_seconds} [s]")
-
-      td = timedelta_isoformat.timedelta(milliseconds=1000*total_seconds)
-      logger.info(f"    maxRequestDuration = {td.isoformat()}")
-      maxRequestDuration = td.isoformat()
-      logger.info(f"    maxRequestDuration = {td.isoformat()} (based on sample{{Start,Stop}}Date)")
-
-      return maxRequestDuration, None
-
-    except Exception as e:
-      msg = f"Calculation of maxRequestDuration from sample{{Start,Stop}}Date failed: {e}"
-      cdawmeta.error('hapi', id, None, "HAPI.UnHandledException", "  " + msg, logger)
-
-  if 'cadence' in info:
-    counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
-    if counts is not None:
-      logger.info("    No sample{Start,Stop}Date. Calculating maxRequestDuration from cadence")
-      try:
-        td = timedelta_isoformat.timedelta(milliseconds=n_cadence*counts[0]['duration_ms'])
-        maxRequestDuration = td.isoformat()
-        logger.info(f"    maxRequestDuration = {td.isoformat()} (based on cadence)")
-        return maxRequestDuration, None
-      except Exception as e:
-        msg = f"    Calculation of maxRequestDuration from cadence failed: {e}"
-        cdawmeta.error('hapi', id, None, "HAPI.UnHandledException", "  " + msg, logger)
-        return None, msg
-
-  return None, None
-
-def _cadence(id, depend_0_name, metadatum):
-
-  if 'cadence' not in metadatum:
-    return None, f"{id}/{depend_0_name}: No cadence information available."
-
-  if 'cadence' in metadatum:
-    if 'error' in metadatum['cadence'] or 'data' not in metadatum['cadence']:
-      return None, f"{id}/{depend_0_name}: No cadence information available."
-    else:
-      cadence_dict = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence'])
-      if 'error' in cadence_dict:
-        return None, f"{id}/{depend_0_name}: No cadence information available due to {cadence_dict['error']}."
-
-      depend_0_cadence_dict = cdawmeta.util.get_path(cadence_dict, [depend_0_name])
-      if depend_0_cadence_dict is None:
-        return None, f"{id}/{depend_0_name}: No cadence information available."
-
-      if 'error' in depend_0_cadence_dict:
-        return None, f"{id}/{depend_0_name}: No cadence information available due to {depend_0_cadence_dict['error']}."
-
-      counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence', depend_0_name, 'counts'])
-      if counts is not None and len(counts) > 0:
-        note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence', depend_0_name, 'note'])
-        cadence = counts[0]['duration_iso8601']
-        fraction = counts[0]['fraction']
-        cadence_info = {'cadence': cadence, 'x_cadence_fraction': fraction, 'x_cadence_note': note}
-        return cadence_info, None
-      else:
-        return None, f"{id}/{depend_0_name}: No cadence information available due to unspecified error."
-
 def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid, print_info=False):
 
   depend_0_variable = all_variables[depend_0_name]
@@ -400,15 +311,8 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       fill = str(fill)
     parameter['fill'] = fill
 
-    _set_units(dsid, name, all_variables, parameter, print_info=False, x=None)
-
-    LABLAXIS, emsg, etype = cdawmeta.attrib.LABLAXIS(dsid, name, all_variables, x=None)
-    if etype is not None and print_info:
-      cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
-    if LABLAXIS is not None and cdawmeta.CONFIG['hapi']['keep_label']:
-      parameter['label'] = LABLAXIS
-    else:
-      parameter['x_label'] = LABLAXIS
+    parameter = {**parameter, **_units(variable)}
+    parameter = {**parameter, **_labels(variable)}
 
     format_f, emsg, etype = cdawmeta.attrib.FORMAT(dsid, name, all_variables, c_specifier=False)
     if etype is not None and print_info:
@@ -442,6 +346,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['COMPONENTS']
       parameter['description'] += f". This variable is a 'virtual' variable that is computed using the function {parameter['x_cdf_FUNCT']} (see https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro) on the with inputs of the variables {parameter['x_cdf_COMPONENTS']}."
       parameter['description'] += " Note that not all COMPONENTS are time series and so their values are not available from the HAPI interface. They are accessible from the raw CDF files, however."
+
     DISPLAY_TYPE, emsg, etype = cdawmeta.attrib.DISPLAY_TYPE(dsid, name, variable)
     if etype is not None and print_info:
       cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
@@ -579,18 +484,14 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
       cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
     return None
 
-  LABLAXIS, emsg, etype = cdawmeta.attrib.LABLAXIS(dsid, DEPEND_x_NAME, all_variables, x=x)
-  if etype is not None and print_info:
-    cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
-
   if 'VarData' in DEPEND_x:
     bins_object = {
                     "name": DEPEND_x_NAME,
                     "description": _description(dsid, name, DEPEND_x, x=x, print_info=print_info),
                     "centers": DEPEND_x["VarData"],
-                    "x_label": LABLAXIS
+                    **_labels(DEPEND_x),
+                    **_units(DEPEND_x)
                   }
-    _set_units(dsid, DEPEND_x_NAME, all_variables, bins_object, print_info=False, x=None)
     return bins_object
   else:
     if print_info:
@@ -599,21 +500,149 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
       logger.warn(f"      {msg}")
     return None
 
-def _set_units(dsid, name, all_variables, parameter, print_info=False, x=None):
-  UNITS, etype, emsg  = cdawmeta.attrib.UNITS(dsid, name, all_variables, x=x)
-  if etype is not None and print_info:
-    cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
-  parameter['units'] = UNITS
-  if cdawmeta.CONFIG['hapi']['use_vounits']:
-    additions = cdawmeta.additions(logger)
-    if UNITS in additions['Units']:
-      if additions['Units'][UNITS] is not None:
-        parameter['units'] = additions['Units'][UNITS]
-        parameter['x_unitsSchema'] = 'VOUnits'
-        parameter['x_units_original'] = UNITS
+def _labels(variable):
+
+  LABLAXIS = variable['VarAttributes'].get('x_LABLAXIS', None)
+  LABLAXES = variable['VarAttributes'].get('x_LABLAXES', None)
+  labels = {}
+  if LABLAXIS is not None:
+    if cdawmeta.CONFIG['hapi']['keep_label']:
+      labels['label'] = LABLAXIS
+    else:
+      labels['x_label'] = LABLAXIS
+  if LABLAXES is not None:
+    if LABLAXIS is None:
+      if len(LABLAXES) == 1:
+        LABLAXES = LABLAXES[0]
+      if cdawmeta.CONFIG['hapi']['keep_label']:
+        labels['label'] = LABLAXES
+      else:
+        labels['x_label'] = LABLAXES
+    else:
+      labels['x_labelComponents'] = LABLAXES
+      if isinstance(LABLAXIS, str) and len(set(LABLAXES[0])) == 1:
+        if LABLAXES[0][0] == LABLAXIS:
+          # Catches case where (i.e., C1_CP_STA_PPP)
+          # LABLAXIS = "F"
+          # LABLAXES = [["F", "F", ...]]
+          # => remove labelComponents b/c redundant
+          # TODO: Does not handle
+          # labels = ["F", "G"],
+          # labelComponents = [["F", "F", ...], ["G", "G", ...]]
+          del labels['x_labelComponents']
+
+  return labels
+
+def _units(variable):
+  UNITS = variable['VarAttributes'].get('x_UNITS', None)
+  UNITS_VO = variable['VarAttributes'].get('x_UNITS_VO', None)
+  units = {}
+  if UNITS_VO is not None:
+    units['units'] = UNITS_VO
+    units['unitsSchema'] = 'VOUnits1.1'
+    units['x_unitsOriginal'] = UNITS
+  else:
+    units['units'] = UNITS
 
   if cdawmeta.CONFIG['hapi']['strip_units']:
-    parameter['units'] = cdawmeta.util.trim(parameter['units'])
+    if 'units' in units:
+      units['units'] = cdawmeta.util.trim(units)
+
+  if isinstance(units, list) and isinstance(units[0], str):
+    # Catch case where units = ["A", "A", ...] => units = "A"
+    if len(set(units)) == 1:
+      units = units[0]
+
+  return units
+
+def _max_request_duration(depend_0_name, metadatum, info):
+
+  # sample{Start,Stop}Date is based on time range of 1 file
+  # If sample{Start,Stop}Date available max duration is span of n_files files
+  n_files = 50
+  # If sample{Start,Stop}Date not available max duration is 1000*cadence
+  n_cadence = 1000
+
+  if 'sampleStartDate' in info and 'sampleStopDate' in info:
+    logger.info("    Calculating maxRequestDuration from sample{Start,Stop}Date")
+    try:
+      start = datetime.datetime.fromisoformat(info['startDate'][0:-1])
+      stop = datetime.datetime.fromisoformat(info['stopDate'][0:-1])
+      sampleStart = datetime.datetime.fromisoformat(info['sampleStartDate'][0:-1])
+      sampleStop = datetime.datetime.fromisoformat(info['sampleStopDate'][0:-1])
+
+      logger.info(f"    startDate       = {info['startDate']}")
+      logger.info(f"    stopDate        = {info['stopDate']}")
+      logger.info(f"    sampleStartDate = {info['sampleStartDate']}")
+      logger.info(f"    sampleStopDate  = {info['sampleStopDate']}")
+
+      delta_sample = sampleStop - sampleStart
+      delta_datset = stop - start
+
+      total_seconds_sample = delta_sample.total_seconds()
+      total_seconds_datset = delta_datset.total_seconds()
+      logger.info(f"    sample length  = {total_seconds_sample} [s]")
+      logger.info(f"    dataset length = {total_seconds_datset} [s]")
+
+      total_seconds = min(total_seconds_datset, n_files*total_seconds_sample)
+      logger.info(f"    min(dataset, {n_files}*sample) = {total_seconds} [s]")
+
+      td = timedelta_isoformat.timedelta(milliseconds=1000*total_seconds)
+      logger.info(f"    maxRequestDuration = {td.isoformat()}")
+      maxRequestDuration = td.isoformat()
+      logger.info(f"    maxRequestDuration = {td.isoformat()} (based on sample{{Start,Stop}}Date)")
+
+      return maxRequestDuration, None
+
+    except Exception as e:
+      msg = f"Calculation of maxRequestDuration from sample{{Start,Stop}}Date failed: {e}"
+      cdawmeta.error('hapi', id, None, "HAPI.UnHandledException", "  " + msg, logger)
+
+  if 'cadence' in info:
+    counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
+    if counts is not None:
+      logger.info("    No sample{Start,Stop}Date. Calculating maxRequestDuration from cadence")
+      try:
+        td = timedelta_isoformat.timedelta(milliseconds=n_cadence*counts[0]['duration_ms'])
+        maxRequestDuration = td.isoformat()
+        logger.info(f"    maxRequestDuration = {td.isoformat()} (based on cadence)")
+        return maxRequestDuration, None
+      except Exception as e:
+        msg = f"    Calculation of maxRequestDuration from cadence failed: {e}"
+        cdawmeta.error('hapi', id, None, "HAPI.UnHandledException", "  " + msg, logger)
+        return None, msg
+
+  return None, None
+
+def _cadence(id, depend_0_name, metadatum):
+
+  if 'cadence' not in metadatum:
+    return None, f"{id}/{depend_0_name}: No cadence information available."
+
+  if 'cadence' in metadatum:
+    if 'error' in metadatum['cadence'] or 'data' not in metadatum['cadence']:
+      return None, f"{id}/{depend_0_name}: No cadence information available."
+    else:
+      cadence_dict = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence'])
+      if 'error' in cadence_dict:
+        return None, f"{id}/{depend_0_name}: No cadence information available due to {cadence_dict['error']}."
+
+      depend_0_cadence_dict = cdawmeta.util.get_path(cadence_dict, [depend_0_name])
+      if depend_0_cadence_dict is None:
+        return None, f"{id}/{depend_0_name}: No cadence information available."
+
+      if 'error' in depend_0_cadence_dict:
+        return None, f"{id}/{depend_0_name}: No cadence information available due to {depend_0_cadence_dict['error']}."
+
+      counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence', depend_0_name, 'counts'])
+      if counts is not None and len(counts) > 0:
+        note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence', depend_0_name, 'note'])
+        cadence = counts[0]['duration_iso8601']
+        fraction = counts[0]['fraction']
+        cadence_info = {'cadence': cadence, 'x_cadence_fraction': fraction, 'x_cadence_note': note}
+        return cadence_info, None
+      else:
+        return None, f"{id}/{depend_0_name}: No cadence information available due to unspecified error."
 
 def _order_depend0s(id, depend0_names):
 
