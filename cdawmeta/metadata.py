@@ -1,7 +1,6 @@
 import os
 import re
 import glob
-import traceback
 
 import cdawmeta
 import cdawmeta.config
@@ -201,7 +200,7 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
 
     if 'cdfmetafile' in meta_types:
       update_ = step_needed('cdfmetafile', 'update', update, update_skip)
-      dataset['cdfmetafile'] = _cdfmetafile(dataset, update=update_, diffs=diffs)
+      dataset['cdfmetafile'] = _cdfmetafile(dataset, update=update_, diffs=diffs, exit_on_exception=exit_on_exception)
 
     if 'spase' in meta_types:
       update_ = step_needed('spase', 'update', update, update_skip)
@@ -234,25 +233,18 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
         logger.debug(f"  embed_data=False; removing 'data' node from {meta_type} for {dataset['id']}")
         del dataset[meta_type]['data']
 
-  def _exception(dsid, _traceback):
-    msg = f"{dsid}: {_traceback}"
-    cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
-    if exit_on_exception:
-      logger.error("Exiting due to exit_on_exception command line argument.")
-      os._exit(1)
-
   if max_workers == 1 or len(dsids) == 1:
     for dsid in dsids:
       try:
         get_one(datasets_all[dsid], mloggers)
       except:
-        _exception(dsid, traceback.format_exc().strip())
+        cdawmeta.exception(dsid, logger, exit_on_exception=exit_on_exception)
   else:
     def call_get_one(dsid):
       try:
         get_one(datasets_all[dsid], mloggers)
       except:
-        _exception(dsid, traceback.format_exc().strip())
+        cdawmeta.exception(dsid, logger, exit_on_exception=exit_on_exception)
       return dsid
 
     from concurrent.futures import ThreadPoolExecutor
@@ -531,15 +523,13 @@ def _orig_data(dataset, update=True, diffs=False):
 
   return _fetch(url, dataset['id'], 'orig_data', **kwargs)
 
-def _cdfmetafile(dataset, update=True, diffs=False):
+def _cdfmetafile(dataset, update=True, diffs=False, exit_on_exception=False):
 
   id = dataset['id']
   out_dir = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'info')
   if not update:
     pkl_file = os.path.join(out_dir, f"{id}.pkl")
-    print(pkl_file)
     if os.path.exists(pkl_file):
-      print('here')
       return cdawmeta.util.read(pkl_file, logger=logger)
 
   def write_info(dataset_name, url, files):
@@ -554,18 +544,11 @@ def _cdfmetafile(dataset, update=True, diffs=False):
     cdawmeta.util.write(output_file, meta)
     cdawmeta.util.write(output_file.replace(".json", ".pkl"), meta)
 
-  def create_infos():
+  def create_infos(info):
     dataset_line = "DATASET>"
     file_line = "/home/cdaweb/data/"
 
-    file = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'sp_phys_cdfmetafile.txt')
-    url = cdawmeta.CONFIG['urls']['cdfmetafile']
-
-    logger.info(f"Getting {url}")
-    info = cdawmeta.util.get_conditional(url, file=file, stream=True)
-    logger.info(f"Got {url}")
-
-    logger.info(f"Parsing {file}")
+    logger.info(f"Parsing {info['cache_file']}")
     dataset_name_last = None
     with open(info['cache_file'], "r") as file:
       files = None
@@ -573,7 +556,7 @@ def _cdfmetafile(dataset, update=True, diffs=False):
         line = line.strip()
         if line.startswith(dataset_line):
           dataset_name = line.split(">")[1]
-          logger(f"  Found dataset: {dataset_name}")
+          logger.info(f"  Found dataset: {dataset_name}")
           if dataset_name_last is not None:
             write_info(dataset_name_last, url, files)
           dataset_name_last = dataset_name
@@ -582,15 +565,35 @@ def _cdfmetafile(dataset, update=True, diffs=False):
           parts = line.split(">")
           parts[0] = parts[0].replace(file_line, cdawmeta.CONFIG['urls']['cdfdata'])
           parts[1] = parts[1].replace("/", "-").replace(" ", "T") + "Z"
-          parts[2] = parts[2].replace("/", "-").replace(" ", "T") + "Z"
+          parts[2] = parts[3].replace("/", "-").replace(" ", "T") + "Z"
           files.append({'Name': parts[0], 'StartTime': parts[1], 'EndTime': parts[2]})
 
-  create_infos()
+  url = cdawmeta.CONFIG['urls']['cdfmetafile']
+  file = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'sp_phys_cdfmetafile.txt')
+  error_result = {'id': id, 'url': url, 'data-file': None, 'data': None}
+
+  logger.info(f"Getting {url}")
+  info = cdawmeta.util.get_conditional(url, file=file, stream=True)
+  logger.info(f"Got {url}")
+
+  if 'emsg' in info:
+    logger.error(f"Error when getting {url}: {info['emsg']}")
+    error_result['error'] = info['emsg']
+    return error_result
+
+  try:
+    create_infos(info)
+  except Exception as e:
+    cdawmeta.exception(id, logger, exit_on_exception=exit_on_exception)
+    error_result['error'] = f"Error when parsing {info['cache_file']}: {e}"
+    return error_result
+
   pkl_file = os.path.join(out_dir, f"{id}.pkl")
   if os.path.exists(pkl_file):
     return cdawmeta.util.read(pkl_file, logger=logger)
   else:
-    pass
+    error_result['error'] = f"{pkl_file} should have been created but was not found."
+    return error_result
 
 def _write_combined(metadata_, id, meta_types):
 
