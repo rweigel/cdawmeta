@@ -629,7 +629,7 @@ def _cadence(id, depend_0_name, metadatum):
     if 'error' in metadatum['cadence'] or 'data' not in metadatum['cadence']:
       return None, f"{id}/{depend_0_name}: No cadence information available."
     else:
-      cadence_dict = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence'])
+      cadence_dict = cdawmeta.util.get_path(metadatum, ['cadence', 'data'])
       if 'error' in cadence_dict:
         return None, f"{id}/{depend_0_name}: No cadence information available due to {cadence_dict['error']}."
 
@@ -640,9 +640,9 @@ def _cadence(id, depend_0_name, metadatum):
       if 'error' in depend_0_cadence_dict:
         return None, f"{id}/{depend_0_name}: No cadence information available due to {depend_0_cadence_dict['error']}."
 
-      counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence', depend_0_name, 'counts'])
+      counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
       if counts is not None and len(counts) > 0:
-        note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence', depend_0_name, 'note'])
+        note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'note'])
         cadence = counts[0]['duration_iso8601']
         fraction = counts[0]['fraction']
         cadence_info = {'cadence': cadence, 'x_cadence_fraction': fraction, 'x_cadence_note': note}

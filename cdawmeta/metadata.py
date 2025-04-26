@@ -43,17 +43,17 @@ def ids(id=None, id_skip=None, update=False):
     # TODO: Repeated code.
     ids_original = ids
     if id_skip is not None:
-      logger.info(f"Removing ids that match id_skip {id_skip}")
+      logger.info(f"Removing ids that match command line id_skip: {id_skip}")
       regex = re.compile(id_skip)
       ids = [id for id in ids if not regex.match(id)]
-      logger.info(f"# of ids removed: {len(ids_original) - len(ids)}")
+      logger.info(f"  # of ids removed: {len(ids_original) - len(ids)}")
 
     ids_original = ids
     if id_skip_default is not None:
       logger.info(f"Removing ids that match id_skip in hapi.conf: {id_skip_default}")
       regex = re.compile(id_skip_default)
       ids = [id for id in ids if not regex.match(id)]
-      logger.info(f"# of ids removed: {len(ids_original) - len(ids)}")
+      logger.info(f"  # of ids removed: {len(ids_original) - len(ids)}")
 
     return ids
 
@@ -85,10 +85,15 @@ def ids(id=None, id_skip=None, update=False):
 
   return _remove_skips(id_skip, ids_reduced)
 
-def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
+def metadata(id=None,
+             id_skip=None,
+             meta_type=None,
+             embed_data=True,
              write_catalog=False,
-             update=False, update_skip='',
-             regen=False, regen_skip='',
+             update=False,
+             update_skip='',
+             regen=False,
+             regen_skip='',
              max_workers=3,
              diffs=False,
              exit_on_exception=False,
@@ -101,37 +106,13 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
   '''
 
   logger = _logger(log_level=log_level)
-  meta_type_requested = meta_type
-  if not isinstance(meta_type, list):
-    meta_type = [meta_type]
+  meta_types_requested = meta_type
 
-  if False:
-    if len(meta_type) > 1 or meta_type[0] is None:
-      max_workers = 1
+  # Computed meta_types need to be generated given requested meta_type(s).
+  meta_types = _meta_types(meta_types_requested)
 
-  logger.info(f"Requested meta_type: {meta_type}")
-  if meta_type_requested is None:
-    meta_types = cdawmeta.dependencies['all']
-  else:
-    choices = cdawmeta.dependencies['all']
-    meta_types = []
-    for _type in meta_type:
-      if _type not in choices:
-        raise ValueError(f"Error: {meta_type}: Not in {choices}")
-      deps = cdawmeta.dependencies[_type]
-      if deps is None:
-        if _type not in meta_types:
-          meta_types.append(_type)
-        continue
-      for dep in deps:
-        meta_types.append(dep)
-      if _type not in meta_types:
-        meta_types.append(_type)
-
-    if 'allxml' not in meta_types:
-      meta_types = ['allxml', *meta_types]
-
-  logger.info(f"Given requested meta_type = {meta_type_requested}, need to create: {meta_types}")
+  msg = f"Given requested meta_type = {meta_types_requested}, need to create: {meta_types}"
+  logger.info(msg)
 
   if not update and not regen:
     # TODO: Read cached catalog files.
@@ -152,95 +133,29 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
   allxml_data = _allxml(update=update)
   datasets_all = _datasets(allxml_data)
 
-  not_generated = ['allxml', 'master', 'cdfmetafile', 'orig_data', 'spase', 'spase_hpde_io']
-  mloggers = {}
-  for meta_type in meta_types:
-    if meta_type in not_generated:
-      continue
-    mloggers[meta_type] = cdawmeta.logger(meta_type, log_level=log_level)
-
   if 'spase_hpde_io' in meta_types:
-    import git
-    repo_path = os.path.join(cdawmeta.DATA_DIR, 'hpde.io')
-    up_to_date = False
-    repo_url = cdawmeta.CONFIG['urls']['hpde.io']
-    if not os.path.exists(repo_path):
-      logger.info(f"Cloning {repo_url} into {repo_path}")
-      logger.info("Initial clone takes ~30s")
-      git.Repo.clone_from(repo_url, repo_path, depth=1)
-      _spase_hpde_io(update=True, diffs=diffs)
-      up_to_date = True
-
-    if update and not up_to_date:
-      repo = git.Repo(repo_path)
-      origin = repo.remotes.origin
-      origin.fetch()
-      logger.info(f"Pulling from {repo_url}")
-      repo.git.merge('origin/master')
-      _spase_hpde_io(update=True, diffs=diffs)
+      _spase_hpde_io(update=update, diffs=diffs)
 
   if 'cdfmetafile' in meta_types:
-    update_ = _step_needed('cdfmetafile', 'update', update, update_skip)
-    if update_:
-      # This causes file to be fetched and parsed.
-      _cdfmetafile(None, exit_on_exception=exit_on_exception)
+    # This will create or update files in cdfmetafile/info/
+    # When _cdfmetafile is called later with a dataset, it is called with update=False
+    _cdfmetafile(None, update=update, exit_on_exception=exit_on_exception)
 
-  def get_one(dataset, mloggers):
-
-    if 'master' in meta_types or 'spase' in meta_types:
-      # 'spase' needs 'master' to get spase_DatasetResourceID, so this must be before.
-      update_ = _step_needed('master', 'update', update, update_skip)
-      update_ = update_ or _step_needed('spase', 'update', update, update_skip)
-      dataset['master'] = _master(dataset, update=update_, diffs=diffs)
-
-    if 'orig_data' in meta_types:
-      update_ = _step_needed('orig_data', 'update', update, update_skip)
-      dataset['orig_data'] = _orig_data(dataset, update=update_, diffs=diffs)
-
-    if 'cdfmetafile' in meta_types:
-      dataset['cdfmetafile'] = _cdfmetafile(dataset, exit_on_exception=exit_on_exception)
-
-    if 'spase' in meta_types:
-      update_ = _step_needed('spase', 'update', update, update_skip)
-      dataset['spase'] = _spase(dataset, update=update_, diffs=diffs)
-
-    if 'spase_hpde_io' in meta_types:
-      # Here we never update b/c update is done in earlier call to _spase_hpde_io
-      dataset['spase_hpde_io'] = _spase_hpde_io(id=dataset['id'], update=False)
-
-    for meta_type in meta_types:
-      if meta_type in not_generated:
-        continue
-
-      logger.info(f"Generating: {meta_type} for {dataset['id']}")
-      update_ = _step_needed(meta_type, 'update', update, update_skip)
-      regen_ = _step_needed(meta_type, 'regen', regen, regen_skip)
-
-      dataset[meta_type] = cdawmeta.generate(dataset, meta_type, mloggers[meta_type],
-                                             update=update_, regen=regen_,
-                                             exit_on_exception=exit_on_exception)
-
-    for meta_type in meta_types:
-      if meta_type_requested is not None and meta_type not in meta_type_requested:
-        if meta_type in dataset:
-          logger.debug(f"  Removing {meta_type} from {dataset['id']} metadata")
-          del dataset[meta_type]
-          continue
-
-      if not embed_data and 'data' in dataset[meta_type]:
-        logger.debug(f"  embed_data=False; removing 'data' node from {meta_type} for {dataset['id']}")
-        del dataset[meta_type]['data']
+  # meta_types that do not require execution of a function in cdawmeta/generators/
+  # The code that creates metadata is in this script.
+  not_generated = ['allxml', 'master', 'cdfmetafile', 'orig_data', 'spase', 'spase_hpde_io']
+  mloggers = _meta_loggers(meta_types, not_generated, log_level='info')
 
   if max_workers == 1 or len(dsids) == 1:
     for dsid in dsids:
       try:
-        get_one(datasets_all[dsid], mloggers)
+        get_one(datasets_all[dsid], meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception)
       except:
         cdawmeta.exception(dsid, logger, exit_on_exception=exit_on_exception)
   else:
     def call_get_one(dsid):
       try:
-        get_one(datasets_all[dsid], mloggers)
+        get_one(datasets_all[dsid], meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception)
       except:
         cdawmeta.exception(dsid, logger, exit_on_exception=exit_on_exception)
       return dsid
@@ -258,12 +173,103 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
     cdawmeta.write_errors(logger, update, id=id)
 
   if write_catalog:
-    if meta_type_requested is None:
+    if meta_types_requested is None:
       _write_combined(metadata_, id, meta_types)
     else:
-      _write_combined(metadata_, id, meta_type_requested)
+      _write_combined(metadata_, id, meta_types_requested)
 
   return metadata_
+
+def _meta_loggers(meta_types, not_generated, log_level='info'):
+  mloggers = {}
+  for meta_type in meta_types:
+    if meta_type in not_generated:
+      continue
+    mloggers[meta_type] = cdawmeta.logger(meta_type, log_level=log_level)
+  return mloggers
+
+def get_one(dataset, meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception):
+
+  if 'master' in meta_types or 'spase' in meta_types:
+    # 'spase' needs 'master' to get spase_DatasetResourceID, so this must be before.
+    update_ = _step_needed('master', 'update', update, update_skip)
+    update_ = update_ or _step_needed('spase', 'update', update, update_skip)
+    dataset['master'] = _master(dataset, update=update_, diffs=diffs)
+
+  if 'orig_data' in meta_types:
+    update_ = _step_needed('orig_data', 'update', update, update_skip)
+    dataset['orig_data'] = _orig_data(dataset, update=update_, diffs=diffs)
+
+  if 'cdfmetafile' in meta_types:
+    # Here we never update b/c update is done in earlier call to _cdfmetafile
+    dataset['cdfmetafile'] = _cdfmetafile(dataset, update=False, exit_on_exception=exit_on_exception)
+
+  if 'spase' in meta_types:
+    update_ = _step_needed('spase', 'update', update, update_skip)
+    dataset['spase'] = _spase(dataset, update=update_, diffs=diffs)
+
+  if 'spase_hpde_io' in meta_types:
+    # Here we never update b/c update is done in earlier call to _spase_hpde_io
+    dataset['spase_hpde_io'] = _spase_hpde_io(id=dataset['id'], update=False)
+
+  for meta_type in meta_types:
+    if meta_type in not_generated:
+      continue
+
+    logger.info(f"Generating: {meta_type} for {dataset['id']}")
+    update_ = _step_needed(meta_type, 'update', update, update_skip)
+    regen_ = _step_needed(meta_type, 'regen', regen, regen_skip)
+
+    dataset[meta_type] = cdawmeta.generate(dataset,
+                                           meta_type,
+                                           mloggers[meta_type],
+                                           update=update_, regen=regen_,
+                                           exit_on_exception=exit_on_exception)
+
+  for meta_type in meta_types:
+    if meta_types_requested is not None and meta_type not in meta_types_requested:
+      # Remove metadata that was generated by not requested.
+      if meta_type in dataset:
+        logger.debug(f"  Removing {meta_type} from {dataset['id']} metadata")
+        del dataset[meta_type]
+        continue
+
+    if not embed_data and 'data' in dataset[meta_type]:
+      dmsg = f"  embed_data=False; removing 'data' node from {meta_type} for {dataset['id']}"
+      logger.debug(dmsg)
+      del dataset[meta_type]['data']
+
+
+def _meta_types(meta_types_requested):
+  """Returns list of meta_types to needed to produce meta_types_requested."""
+
+  logger.info(f"Requested meta_type(s): {meta_types_requested}")
+
+  if not isinstance(meta_types_requested, list):
+    meta_types_requested = [meta_types_requested]
+
+  if meta_types_requested is None:
+    meta_types = cdawmeta.dependencies['all']
+  else:
+    choices = cdawmeta.dependencies['all']
+    meta_types = []
+    for _type in meta_types_requested:
+      if _type not in choices:
+        raise ValueError(f"Error: {_type}: Not in {choices}")
+      deps = cdawmeta.dependencies[_type]
+      if deps is None:
+        if _type not in meta_types:
+          meta_types.append(_type)
+        continue
+      for dep in deps:
+        meta_types.append(dep)
+      if _type not in meta_types:
+        meta_types.append(_type)
+
+    if 'allxml' not in meta_types:
+      meta_types = ['allxml', *meta_types]
+
+  return meta_types
 
 def _step_needed(meta_type, step, update, update_skips):
   if meta_type in update_skips:
@@ -412,6 +418,23 @@ def _spase(dataset, update=True, diffs=False):
 
 def _spase_hpde_io(id=None, update=True, diffs=False):
 
+  import git
+  repo_path = os.path.join(cdawmeta.DATA_DIR, 'hpde.io')
+  up_to_date = False
+  repo_url = cdawmeta.CONFIG['urls']['hpde.io']
+  if not os.path.exists(repo_path):
+    logger.info(f"Cloning {repo_url} into {repo_path}")
+    logger.info("Initial clone takes ~30s")
+    git.Repo.clone_from(repo_url, repo_path, depth=1)
+    up_to_date = True
+
+  if update and not up_to_date:
+    repo = git.Repo(repo_path)
+    origin = repo.remotes.origin
+    origin.fetch()
+    logger.info(f"Pulling from {repo_url}")
+    repo.git.merge('origin/master')
+
   out_dir = os.path.join(cdawmeta.DATA_DIR, 'spase_hpde_io', 'info')
 
   if id is not None and not update:
@@ -528,7 +551,7 @@ def _orig_data(dataset, update=True, diffs=False):
 
   return _fetch(url, dataset['id'], 'orig_data', **kwargs)
 
-def _cdfmetafile(dataset, diffs=False, exit_on_exception=False):
+def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
 
   def write_info(out_dir, dataset_name, url, files):
     output_file = os.path.join(out_dir, f'{dataset_name}.json')
@@ -570,10 +593,23 @@ def _cdfmetafile(dataset, diffs=False, exit_on_exception=False):
   url = cdawmeta.CONFIG['urls']['cdfmetafile']
   file = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'sp_phys_cdfmetafile.txt')
   file_allxml = os.path.join(cdawmeta.DATA_DIR, 'allxml', 'all.xml')
-
   out_dir = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'info')
 
+  need_update = not os.path.exists(file) or update
+
+  if need_update:
+    logger.info(f"Getting {url}")
+    info = cdawmeta.util.get_conditional(url, file=file, stream=True)
+    logger.info(f"Got {url}")
+
+    if 'emsg' not in info:
+      try:
+        create_infos(out_dir, info)
+      except Exception as e:
+        cdawmeta.exception(None, logger, exit_on_exception=exit_on_exception)
+
   if dataset is not None:
+    # If file exists, it means there should be a cache file in cdfmetafile/info/dataset.pkl
     id = dataset['id']
     error_result = {'id': id, 'url': url, 'data-file': None, 'data': None}
     pkl_file = os.path.join(out_dir, f"{id}.pkl")
@@ -583,16 +619,6 @@ def _cdfmetafile(dataset, diffs=False, exit_on_exception=False):
       causes = f"Can be caused by failed download or parse of {url} or if dataset '{id}' in {file_allxml} but not in {file}."
       error_result['error'] = f"File {pkl_file} not found. {causes}"
       return error_result
-
-  logger.info(f"Getting {url}")
-  info = cdawmeta.util.get_conditional(url, file=file, stream=True)
-  logger.info(f"Got {url}")
-
-  if 'emsg' not in info:
-    try:
-      create_infos(out_dir, info)
-    except Exception as e:
-      cdawmeta.exception(None, logger, exit_on_exception=exit_on_exception)
 
 def _write_combined(metadata_, id, meta_types):
 

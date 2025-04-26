@@ -21,7 +21,7 @@ def cadence(metadatum, logger):
   use_cache = True
   # N.B. use_cache=True is set. This assumes that content for a given file
   # name is constant. If not, would need to use use_cache=update and have
-  # read_file() handle headers to determine if content has change and a
+  # read_file() handle headers to determine if content has changed and a
   # re-download is needed.
 
   id = metadatum['id']
@@ -75,13 +75,13 @@ def cadence(metadatum, logger):
     msg = f"  Computing cadence for DEPEND_0 = '{depend_0_name}'"
     logger.info(msg)
 
-    depend_0_data = {"url": url, "note": "", "counts": []}
-    depend_0_counts[depend_0_name] = depend_0_data
+    depend_0_meta = {"url": url, "start": None, "stop": None, "note": None, "counts": []}
+    depend_0_counts[depend_0_name] = depend_0_meta
 
     emsg = _check_data_types(id, master, depend_0_name, logger)
 
     if emsg is not None:
-      _update_for_error(depend_0_data, emsg)
+      _update_for_error(depend_0_meta, emsg)
       continue
 
     try:
@@ -92,58 +92,61 @@ def cadence(metadatum, logger):
       emsg = f"{id}: cdawmeta.io.read_cdf("
       emsg += f"'{url}', variables='{depend_0_name}', iso8601=False) raised: \n{e}"
       emsg += "\n" + _trace()
-      _update_for_error(depend_0_data, emsg, logger=logger)
+      _update_for_error(depend_0_meta, emsg, logger=logger)
       cdawmeta.error("cadence", id, None, "CDF.FailedCDFRead", emsg, logger)
       continue
 
-    DataType, emsg = _check_data(id, depend_0_name, data, url, logger)
+    master = metadatum['master']['data']
+    DataType, emsg = _check_data(id, depend_0_name, data, master, url, logger)
     if emsg is not None:
-      _update_for_error(depend_0_data, emsg)
+      _update_for_error(depend_0_meta, emsg)
       continue
 
+    epoch = data[depend_0_name]
+    epoch_values = epoch['VarData']
+
     try:
-      epoch = data[depend_0_name]['VarData']
-      start, stop = _check_start_stop(id, startDate, stopDate, epoch, logger, first_file=True)
+      start, stop = _check_start_stop(epoch_values, startDate, stopDate, logger, first_file=True)
     except Exception as e:
       emsg = f"{id}: _check_start_stop() failed: {e}"
       emsg += "\n" + _trace()
-      _update_for_error(depend_0_data, emsg, logger=logger)
+      _update_for_error(depend_0_meta, emsg, logger=logger)
       cdawmeta.error("cadence", id, None, "CDF.FailedStartStop", emsg, logger)
       continue
 
-    depend_0_data['start'] = start
-    depend_0_data['stop'] = stop
+    depend_0_meta['start'] = start
+    depend_0_meta['stop'] = stop
 
-    if epoch.size == 1 or len(epoch) < 2:
+    if epoch_values.size == 1 or len(epoch_values) < 2:
       emsg = "Could not determine cadence because "
-      if epoch.size == 1:
+      if epoch_values.size == 1:
         emsg += f"Returned {depend_0_name} value is a scalar in {url}"
       else:
-        emsg += f"len({depend_0_name}) = {len(epoch)} in {url}"
-      _update_for_error(depend_0_data, emsg, logger)
+        emsg += f"len({depend_0_name}) = {len(epoch_values)} in {url}"
+      _update_for_error(depend_0_meta, emsg, logger)
       continue
 
     try:
       if DataType == 'CDF_EPOCH16':
         # e.g., C1_CP_EFW_L3_E3D_INERT
-        diff = _diff_cdf_epoch16(epoch)
+        diff = _diff_cdf_epoch16(epoch_values)
       else:
-        diff = numpy.diff(epoch)
+        diff = numpy.diff(epoch_values)
         diff = diff.astype(int)
     except Exception as e:
       emsg = f"{url}: numpy.diff({depend_0_name}['VarData']) error: {e}"
       raise Exception(emsg)
 
-    depend_0_data['counts'] = _count_dicts(diff, depend_0_name, DataType, logger)
+    depend_0_meta['counts'] = _count_dicts(diff, depend_0_name, DataType, logger)
 
-    if 0 == len(depend_0_data['counts']):
+    if 0 == len(depend_0_meta['counts']):
       emsg = f"Could not determine cadence in {url}"
-      _update_for_error(depend_0_data, emsg, logger=logger)
+      _update_for_error(depend_0_meta, emsg, logger=logger)
       continue
 
-    depend_0_data['note'] = _note(depend_0_name, depend_0_counts, url)
+    depend_0_meta['note'] = _note(depend_0_name, depend_0_counts, url)
 
-  return [{"id": id, "cadence": depend_0_counts}]
+  return [depend_0_counts]
 
 def _count_dicts(diff, depend_0_name, DataType, logger):
 
@@ -159,7 +162,7 @@ def _count_dicts(diff, depend_0_name, DataType, logger):
   counts = Counter(diff)
   total = sum(counts.values())
   ucounts = sorted(counts.items(), key=lambda item: item[1], reverse=True)
-  logger.info(f"    {total} timestamps; {len(ucounts)} unique Δts. Top 10:")
+  logger.info(f"    {total} timestamps; {len(ucounts)} unique Δt(s). Top 10 by count:")
 
   idx = 0
   count_dicts = []
@@ -199,12 +202,15 @@ def _count_dicts(diff, depend_0_name, DataType, logger):
 
   return count_dicts
 
-def _update_for_error(depend_0_data, emsg, logger=None):
+def _update_for_error(depend_0_meta, emsg, logger=None):
   if logger is not None:
     logger.error("  " + emsg)
-  depend_0_data['error'] = emsg.strip()
-  del depend_0_data['counts']
-  del depend_0_data['note']
+  depend_0_meta['error'] = emsg.strip()
+
+  del depend_0_meta['start']
+  for key in depend_0_meta.keys():
+    if depend_0_meta[key] is None:
+      del depend_0_meta[key]
 
 def _note(depend_0_name, depend_0_counts, url):
   counts = depend_0_counts[depend_0_name]['counts'][0]
@@ -215,8 +221,8 @@ def _note(depend_0_name, depend_0_counts, url):
   cnt = counts['count']
   pct = 100*counts['fraction']
 
-  note = f"Cadence based on variable '{depend_0_name}' in {url}. "
-  note += f"This most common cadence occurred for {pct:0.4f}% of the {cnt} timesteps. "
+  note = f"Counts based on variable '{depend_0_name}' in {url}. "
+  note += f"The most common cadence occurred for {pct:0.4f}% of the {cnt} timesteps. "
   note += f"Cadence = {duration} [{duration_unit}] = {iso}."
 
   return note
@@ -271,7 +277,7 @@ def _extract_and_check_metadata(id, metadatum, logger):
 
   return file_list, master, None
 
-def _check_start_stop(id, startDate, stopDate, epoch, logger, first_file=False, last_file=False):
+def _check_start_stop(epoch_values, startDate, stopDate, logger, first_file=False, last_file=False):
   import cdflib
 
   def handle_nat(timestamp, epoch, which):
@@ -292,12 +298,14 @@ def _check_start_stop(id, startDate, stopDate, epoch, logger, first_file=False, 
         logger.info("  All timestamps are 'NaT'")
         return None
 
-  # TODO: Duplicate code in the function.
+    return timestamp
 
-  first_timestamp = str(cdflib.cdfepoch.to_datetime(epoch[0])[0])
+  # TODO: Duplicate code below.
+
+  first_timestamp = str(cdflib.cdfepoch.to_datetime(epoch_values[0])[0])
   logger.info(f"    First timestamp in first CDF: {first_timestamp}")
   logger.info(f"    Start date from start_stop:   {startDate}")
-  first_timestamp = handle_nat(first_timestamp, epoch, "first")
+  first_timestamp = handle_nat(first_timestamp, epoch_values, "first")
   if first_timestamp is not None:
     first_timestamp_pad = cdawmeta.util.pad_iso8601(first_timestamp)
     startDate_pad = cdawmeta.util.pad_iso8601(startDate)
@@ -305,10 +313,10 @@ def _check_start_stop(id, startDate, stopDate, epoch, logger, first_file=False, 
       emsg = f"    Start date from start_stop ({startDate}) is after the first non-NaT timestamp ({first_timestamp})"
       cdawmeta.error("cadence", id, None, "CDF.StartDateAfterFirstTimestamp", emsg, logger)
 
-  last_timestamp = str(cdflib.cdfepoch.to_datetime(epoch[-1])[0])
+  last_timestamp = str(cdflib.cdfepoch.to_datetime(epoch_values[-1])[0])
   logger.info(f"    Last timestamp in first CDF:  {last_timestamp}")
   logger.info(f"    Stop date from start_stop:    {stopDate}")
-  last_timestamp = handle_nat(last_timestamp, epoch, "last")
+  last_timestamp = handle_nat(last_timestamp, epoch_values, "last")
   if last_timestamp is not None:
     last_timestamp_pad = cdawmeta.util.pad_iso8601(last_timestamp)
     stopDate_pad = cdawmeta.util.pad_iso8601(stopDate)
@@ -361,7 +369,7 @@ def _check_data_types(id, master, depend_0_name, logger):
 
   return None
 
-def _check_data(id, depend_0_name, data, url, logger):
+def _check_data(id, depend_0_name, data, master, url, logger):
 
   if data is None:
     emsg = f"  cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) returned None."
@@ -392,5 +400,20 @@ def _check_data(id, depend_0_name, data, url, logger):
     emsg = f"  {depend_0_name}['VarDescription']['DataType'] = None in {emsg_coda}"
     cdawmeta.error("cadence", id, None, "CDF.NoDataType", emsg, logger)
     return None, emsg
+
+  data_type = data[depend_0_name]['VarDescription']['DataType']
+  time_types = ['CDF_EPOCH', 'CDF_EPOCH16', 'CDF_TIME_TT2000']
+
+  if data_type not in time_types:
+    emsg = f"  DataType = {data_type} is not one of {time_types}"
+    cdawmeta.error("cadence", id, depend_0_name, "CDF.FileDEPEND_0NotTimeDataType", emsg, logger)
+    try:
+      data_type_master = master['CDFVariables'][depend_0_name]['VarDescription']['DataType']
+      if data_type_master != data_type:
+        emsg += f" and does not match DataType in master = {data_type_master}"
+    except:
+      emsg += " and cannot determine DataType in master"
+      cdawmeta.error("cadence", id, depend_0_name, "CDF.FileDEPEND_0NotTimeDataType", emsg, logger)
+      return None, emsg
 
   return DataType, None
