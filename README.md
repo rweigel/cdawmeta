@@ -147,7 +147,7 @@ Produces the following output (full output can be [downloaded directly](http://m
       "cadence": {
         "Epoch2": {
           "url": "https://cdaweb.gsfc.nasa.gov/sp_phys/data/voyager/voyager1/magnetic_fields_cdaweb/mag_10s/1977/voyager1_10s_mag_19770905_v01.cdf",
-          "note": "Cadence based on variable 'Epoch2' in https://cdaweb.gsfc.nasa.gov/sp_phys/data/voyager/voyager1/magnetic_fields_cdaweb/mag_10s/1977/voyager1_10s_mag_19770905_v01.cdf. This most common cadence occured for 98.8448% of the 20964 timesteps. Cadence = 9600 [ms] = PT9.6S.",
+          "note": "Cadence based on variable 'Epoch2' in https://cdaweb.gsfc.nasa.gov/sp_phys/data/voyager/voyager1/magnetic_fields_cdaweb/mag_10s/1977/voyager1_10s_mag_19770905_v01.cdf. This most common cadence occurred for 98.8448% of the 20964 timesteps. Cadence = 9600 [ms] = PT9.6S.",
           "counts": [
             {
               "count": 20964,
