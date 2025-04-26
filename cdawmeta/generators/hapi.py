@@ -7,8 +7,8 @@ import cdawmeta
 
 logger = None
 
-#dependencies = ['master', 'master_resolved', 'cadence', 'sample_start_stop']
-dependencies = ['master_resolved', 'cadence', 'sample_start_stop']
+#dependencies = ['master', 'cadence', 'start_stop']
+dependencies = ['master_resolved', 'cadence', 'start_stop']
 
 def hapi(metadatum, _logger):
   global logger
@@ -16,12 +16,13 @@ def hapi(metadatum, _logger):
 
   id = metadatum['id']
 
-  if 'data' not in metadatum['master_resolved']:
-    msg = f"{id}: Not creating dataset for {id} b/c it has no 'data' key"
-    cdawmeta.error('hapi', id, None, "ISTP.NoMaster", msg, logger)
-    return {"error": msg}
+  master = metadatum['master_resolved'].get('data', None)
 
-  #master = metadatum['master']['data']
+  if master is None:
+    emsg = f"{id}: Not creating dataset for {id} b/c it has no 'data' key (or data=None) in master_resolved"
+    cdawmeta.error('hapi', id, None, "ISTP.NoMaster", emsg, logger)
+    return {"error": emsg}
+
   master = metadatum['master_resolved']['data']
 
   variables = master['CDFVariables']
@@ -64,6 +65,18 @@ def hapi(metadatum, _logger):
     if 'data' not in VAR_TYPES and not _keep_dataset(id, depend_0=depend_0_name):
       # In general, Nand drops these, but not always
       logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE = 'data'.")
+      continue
+
+    start_stop = metadatum['start_stop'].get('data', None)
+    if start_stop is None:
+      cdawmeta.error('hapi', id, None, "CDAWeb.NoStartStop", "No start/stop info. Omitting dataset.", logger)
+      continue
+
+    if 'startDate' not in start_stop:
+      cdawmeta.error('hapi', id, None, "CDAWeb.NoStartDate", "No startDate info. Omitting dataset.", logger)
+      continue
+    if 'stopDate' not in start_stop:
+      cdawmeta.error('hapi', id, None, "CDAWeb.NoStopDate", "No stopDate info. Omitting dataset.", logger)
       continue
 
     parameters = _variables2parameters(depend_0_name, depend_0_variables, variables, id, print_info=False)
@@ -125,23 +138,8 @@ def hapi(metadatum, _logger):
 
 def _info_head(metadatum, depend_0_name):
 
-  def update_timestamp(id, date_orig_data, date_allxml, which):
-    translates = str.maketrans({'T': '', 'Z': '', '.': '', ':': '', '-': ''})
-    date_orig_data_x = date_orig_data.translate(translates)
-    date_allxml_x = date_allxml.translate(translates)
-    min_len = min(len(date_orig_data_x), len(date_allxml_x))
-    #print(date_allxml_x[0:min_len], date_orig_data_x[0:min_len])
-    if date_orig_data_x[0:min_len] != date_allxml_x[0:min_len]:
-      msg = f"{which}Date ({date_orig_data}) from orig_data does not match {which}Date ({date_allxml}) from all.xml. Using orig_data value."
-      cdawmeta.error('hapi', id, None, "HAPI.SampleStartDateMismatch", "    " + msg, logger)
-
-    return date_orig_data
-
   id = metadatum['id']
   allxml = metadatum['allxml']
-
-  startDate = allxml['@timerange_start'].replace(' ', 'T') + 'Z'
-  stopDate = allxml['@timerange_stop'].replace(' ', 'T') + 'Z'
 
   contact = ''
   if 'data_producer' in allxml:
@@ -151,8 +149,8 @@ def _info_head(metadatum, depend_0_name):
       contact = contact + " @ " + allxml['data_producer']['@affiliation']
 
   info = {
-      'startDate': startDate,
-      'stopDate': stopDate,
+      'startDate': None,
+      'stopDate': None,
       'sampleStartDate': None,
       'sampleStopDate': None,
       'cadence': None,
@@ -173,14 +171,16 @@ def _info_head(metadatum, depend_0_name):
   else:
     info.update(cadence_info)
 
-  if 'sample_start_stop' in metadatum:
-    sample_start_stop = metadatum['sample_start_stop']['data']
-    info['sampleStartDate'] = sample_start_stop['sampleStartDate']
-    info['sampleStopDate'] = sample_start_stop['sampleStopDate']
-    info['startDate'] = update_timestamp(id, sample_start_stop['startDate'], startDate, 'start')
-    info['stopDate'] = update_timestamp(id, sample_start_stop['stopDate'], stopDate, 'stop')
+  start_stop = metadatum['start_stop'].get('data', None)
+  if start_stop is not None:
+    start_stop = metadatum['start_stop']['data']
+    info['startDate'] = start_stop['startDate']
+    info['stopDate'] = start_stop['stopDate']
+    if 'sampleStartDate' in start_stop:
+      info['sampleStartDate'] = start_stop['sampleStartDate']
+      info['sampleStopDate'] = start_stop['sampleStopDate']
   else:
-    logger.warn(f"    No sample_start_stop for {id}")
+    logger.warn(f"    No start_stop for {id}")
     del info['sampleStartDate']
     del info['sampleStopDate']
 
@@ -409,13 +409,19 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     if print_info:
       for key, value in parameter.items():
-        logger.info(f"      {key} = {value}")
+        if key != 'bins':
+          logger.info(f"      {key} = {value}")
       if bins_object is not None:
         for idx, bin in enumerate(bins_object):
-          bin_copy = bin.copy()
-          if 'centers' in bin and len(bin['centers']) > 10:
-            bin_copy['centers'] = f'{bin["centers"][0]} ... {bin["centers"][-1]}'  
-          logger.info(f"      bins[{idx}] = {bin_copy}")
+          logger.info(f"      bins[{idx}]")
+          for bin_key, bin_value in bin.items():
+            if bin_key != 'centers':
+              logger.info(f"        {bin_key} = {bin_value}")
+            else:
+              centers = bin['centers']
+              if len(bin['centers']) > 10:
+                tmp = f'[{centers[0]}, ..., {centers[-1]}]'
+                logger.info(f"        {bin_key} = {tmp}")
 
     parameters.append(parameter)
 

@@ -38,7 +38,7 @@ test-README: cdawmeta.egg-info
 	python metadata.py --id AC_OR_SSC --meta-type hapi --regen
 	python metadata.py --id AC_OR_SSC --meta-type spase_auto
 	python metadata.py --id VOYAGER1_10S_MAG --meta-type AccessInformation
-	python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_start_stop
+	python metadata.py --id VOYAGER1_10S_MAG --meta-type start_stop
 	python metadata.py --id VOYAGER1_10S_MAG --meta-type cadence
 	python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_links
 

@@ -179,31 +179,29 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
       repo.git.merge('origin/master')
       _spase_hpde_io(update=True, diffs=diffs)
 
-  def step_needed(meta_type, step, update, update_skips):
-    if meta_type in update_skips:
-      if update:
-        logger.info(f"Setting {step}=False for '{meta_type}' because it is in {step}_skip.")
-      return False
-    return update
+  if 'cdfmetafile' in meta_types:
+    update_ = _step_needed('cdfmetafile', 'update', update, update_skip)
+    if update_:
+      # This causes file to be fetched and parsed.
+      _cdfmetafile(None, exit_on_exception=exit_on_exception)
 
   def get_one(dataset, mloggers):
 
     if 'master' in meta_types or 'spase' in meta_types:
       # 'spase' needs 'master' to get spase_DatasetResourceID, so this must be before.
-      update_ = step_needed('master', 'update', update, update_skip)
-      update_ = update_ or step_needed('spase', 'update', update, update_skip)
+      update_ = _step_needed('master', 'update', update, update_skip)
+      update_ = update_ or _step_needed('spase', 'update', update, update_skip)
       dataset['master'] = _master(dataset, update=update_, diffs=diffs)
 
     if 'orig_data' in meta_types:
-      update_ = step_needed('orig_data', 'update', update, update_skip)
+      update_ = _step_needed('orig_data', 'update', update, update_skip)
       dataset['orig_data'] = _orig_data(dataset, update=update_, diffs=diffs)
 
     if 'cdfmetafile' in meta_types:
-      update_ = step_needed('cdfmetafile', 'update', update, update_skip)
-      dataset['cdfmetafile'] = _cdfmetafile(dataset, update=update_, diffs=diffs, exit_on_exception=exit_on_exception)
+      dataset['cdfmetafile'] = _cdfmetafile(dataset, exit_on_exception=exit_on_exception)
 
     if 'spase' in meta_types:
-      update_ = step_needed('spase', 'update', update, update_skip)
+      update_ = _step_needed('spase', 'update', update, update_skip)
       dataset['spase'] = _spase(dataset, update=update_, diffs=diffs)
 
     if 'spase_hpde_io' in meta_types:
@@ -215,8 +213,8 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
         continue
 
       logger.info(f"Generating: {meta_type} for {dataset['id']}")
-      update_ = step_needed(meta_type, 'update', update, update_skip)
-      regen_ = step_needed(meta_type, 'regen', regen, regen_skip)
+      update_ = _step_needed(meta_type, 'update', update, update_skip)
+      regen_ = _step_needed(meta_type, 'regen', regen, regen_skip)
 
       dataset[meta_type] = cdawmeta.generate(dataset, meta_type, mloggers[meta_type],
                                              update=update_, regen=regen_,
@@ -266,6 +264,13 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
       _write_combined(metadata_, id, meta_type_requested)
 
   return metadata_
+
+def _step_needed(meta_type, step, update, update_skips):
+  if meta_type in update_skips:
+    if update:
+      logger.info(f"Setting {step}=False for '{meta_type}' because it is in {step}_skip.")
+    return False
+  return update
 
 def _datasets(allxml_data):
   '''
@@ -328,7 +333,7 @@ def allxml(update=False, diffs=False, log_level='info'):
   # For explanation of {'Accept-Encoding': None}, see email to Bernie
   # Harris on 2025-03-22 about issue with their server.
   kwargs = {
-    'referrer': allurl,
+    'referrer': None,
     'timeout': timeout,
     'headers': {'Accept-Encoding': None},
     'update': update,
@@ -360,7 +365,7 @@ def _master(dataset, update=False, diffs=False):
   url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
 
   kwargs = {
-    'referrer': url,
+    'referrer': cdawmeta.CONFIG['urls']['all.xml'],
     'timeout': timeout,
     'update': update,
     'diffs': diffs
@@ -514,7 +519,7 @@ def _orig_data(dataset, update=True, diffs=False):
   url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop
 
   kwargs = {
-    'referrer': url,
+    'referrer': None,
     'timeout': timeout,
     'headers': {'Accept': 'application/json'},
     'update': update,
@@ -523,19 +528,12 @@ def _orig_data(dataset, update=True, diffs=False):
 
   return _fetch(url, dataset['id'], 'orig_data', **kwargs)
 
-def _cdfmetafile(dataset, update=True, diffs=False, exit_on_exception=False):
+def _cdfmetafile(dataset, diffs=False, exit_on_exception=False):
 
-  id = dataset['id']
-  out_dir = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'info')
-  if not update:
-    pkl_file = os.path.join(out_dir, f"{id}.pkl")
-    if os.path.exists(pkl_file):
-      return cdawmeta.util.read(pkl_file, logger=logger)
-
-  def write_info(dataset_name, url, files):
+  def write_info(out_dir, dataset_name, url, files):
     output_file = os.path.join(out_dir, f'{dataset_name}.json')
     meta = {
-      'id': id,
+      'id': dataset_name,
       'url': url,
       'data-file': output_file,
       'data': {'FileDescription': files}
@@ -544,7 +542,7 @@ def _cdfmetafile(dataset, update=True, diffs=False, exit_on_exception=False):
     cdawmeta.util.write(output_file, meta)
     cdawmeta.util.write(output_file.replace(".json", ".pkl"), meta)
 
-  def create_infos(info):
+  def create_infos(out_dir, info):
     dataset_line = "DATASET>"
     file_line = "/home/cdaweb/data/"
 
@@ -558,42 +556,43 @@ def _cdfmetafile(dataset, update=True, diffs=False, exit_on_exception=False):
           dataset_name = line.split(">")[1]
           logger.info(f"  Found dataset: {dataset_name}")
           if dataset_name_last is not None:
-            write_info(dataset_name_last, url, files)
+            write_info(out_dir, dataset_name_last, url, files)
           dataset_name_last = dataset_name
           files = []
         elif line.startswith(file_line):
           parts = line.split(">")
           parts[0] = parts[0].replace(file_line, cdawmeta.CONFIG['urls']['cdfdata'])
           parts[1] = parts[1].replace("/", "-").replace(" ", "T") + "Z"
-          parts[2] = parts[3].replace("/", "-").replace(" ", "T") + "Z"
+          parts[2] = parts[2].replace("/", "-").replace(" ", "T") + "Z"
           files.append({'Name': parts[0], 'StartTime': parts[1], 'EndTime': parts[2]})
+
 
   url = cdawmeta.CONFIG['urls']['cdfmetafile']
   file = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'sp_phys_cdfmetafile.txt')
-  error_result = {'id': id, 'url': url, 'data-file': None, 'data': None}
+  file_allxml = os.path.join(cdawmeta.DATA_DIR, 'allxml', 'all.xml')
+
+  out_dir = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'info')
+
+  if dataset is not None:
+    id = dataset['id']
+    error_result = {'id': id, 'url': url, 'data-file': None, 'data': None}
+    pkl_file = os.path.join(out_dir, f"{id}.pkl")
+    if os.path.exists(pkl_file):
+      return cdawmeta.util.read(pkl_file, logger=logger)
+    else:
+      causes = f"Can be caused by failed download or parse of {url} or if dataset '{id}' in {file_allxml} but not in {file}."
+      error_result['error'] = f"File {pkl_file} not found. {causes}"
+      return error_result
 
   logger.info(f"Getting {url}")
   info = cdawmeta.util.get_conditional(url, file=file, stream=True)
   logger.info(f"Got {url}")
 
-  if 'emsg' in info:
-    logger.error(f"Error when getting {url}: {info['emsg']}")
-    error_result['error'] = info['emsg']
-    return error_result
-
-  try:
-    create_infos(info)
-  except Exception as e:
-    cdawmeta.exception(id, logger, exit_on_exception=exit_on_exception)
-    error_result['error'] = f"Error when parsing {info['cache_file']}: {e}"
-    return error_result
-
-  pkl_file = os.path.join(out_dir, f"{id}.pkl")
-  if os.path.exists(pkl_file):
-    return cdawmeta.util.read(pkl_file, logger=logger)
-  else:
-    error_result['error'] = f"{pkl_file} should have been created but was not found."
-    return error_result
+  if 'emsg' not in info:
+    try:
+      create_infos(out_dir, info)
+    except Exception as e:
+      cdawmeta.exception(None, logger, exit_on_exception=exit_on_exception)
 
 def _write_combined(metadata_, id, meta_types):
 

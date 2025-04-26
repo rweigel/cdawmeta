@@ -8,12 +8,13 @@ def master_resolved(metadatum, logger):
 
   id = metadatum['id']
 
-  if 'data' not in metadatum['master']:
+  master = metadatum['master'].get('data', None)
+  if master is None:
     msg = f"{id}: Not creating dataset for {id} b/c it has no 'data' attribute"
     cdawmeta.error('master_resolved', id, None, "ISTP.NoMaster", msg, logger)
     return {"error": msg}
 
-  master = metadatum['master']['data'].copy()
+  master = master.copy()
 
   if 'CDFVariables' not in master:
     msg = f"{id}: Not creating dataset for {id} b/c it has no 'CDFVariables' attribute"
@@ -78,16 +79,10 @@ def master_resolved(metadatum, logger):
     if UNITS_VO is not None:
       variable['VarAttributes']['x_UNITS_VO'] = UNITS_VO
 
-    # TODO: There are rules for when LABELAXIS and LABL_PTR_1, LABL_PTR_2,
-    # LABL_PTR_3 are required depending on DISPLAY_TYPE
-    LABLAXIS = variable['VarAttributes'].get('LABLAXIS', None)
+    LABLAXIS = _LABLAXIS(id, variable, logger)
     if LABLAXIS is not None:
-      LABLAXIS = variable['VarAttributes']['LABLAXIS']
-      logger.info(f"    LABLAXIS given: {LABLAXIS}")
-      if cdawmeta.CONFIG['hapi']['strip_labelaxis']:
-        LABLAXIS = cdawmeta.util.trim(LABLAXIS)
       variable['VarAttributes']['x_LABLAXIS'] = LABLAXIS
-      logger.info(f"{indent}x_LABLAXIS: {variable['VarAttributes']['LABLAXIS']}")
+      logger.info(f"{indent}x_LABLAXIS: {LABLAXIS}")
 
     LABL_PTR = _LABL_PTR(id, variable_name, variables, variables_removed, logger)
     if LABL_PTR is not None:
@@ -107,9 +102,9 @@ def master_resolved(metadatum, logger):
     if DEPEND is not None and DEPEND == LABL_PTR:
       emsg = f"{indent}DEPEND == LABL_PTR. Removing redundant DEPEND and DEPEND_{{1,2,3}}"
       cdawmeta.error('master_resolved', id, None, "CDF.DEPENDsEqualLABL_PTR", emsg, logger)
-      # TODO: This could create a metadata variable that is not referenced.
       del variable['VarAttributes']['x_DEPEND']
       for i in [1, 2, 3]:
+        # TODO: This could create a metadata variable that is not referenced.
         variable['VarAttributes'].pop(f'DEPEND_{i}', None)
 
     v = variables[variable_name]['VarAttributes'].get('VIRTUAL', None)
@@ -430,7 +425,7 @@ def _DISPLAY_TYPE(dsid, variable_name, variable, logger):
     del variable['VarAttributes']['DISPLAY_TYPE']
 
   display_types_known = cdawmeta.CONFIG['master_resolved']['DISPLAY_TYPES']
-  import pdb; pdb.set_trace()
+  #import pdb; pdb.set_trace()
 
   if display_type not in display_types_known:
     emsg = f"{indent}{variable_name} DISPLAY_TYPE = '{display_type}' is not in "
@@ -469,6 +464,24 @@ def _DEPEND(id, variable_name, variables, variables_removed, logger):
     depend = None
 
   return depend
+
+def _LABLAXIS(id, variable, logger):
+
+  # TODO: There are rules for when LABLAXIS and LABL_PTR_1, LABL_PTR_2,
+  # LABL_PTR_3 are required depending on DISPLAY_TYPE
+
+  LABLAXIS = variable['VarAttributes'].get('LABLAXIS', None)
+  if LABLAXIS is None:
+    return None
+
+  logger.info(f"    LABLAXIS given: {LABLAXIS}")
+  if cdawmeta.CONFIG['hapi']['strip_labelaxis']:
+    if isinstance(LABLAXIS, str):
+      LABLAXIS = cdawmeta.util.trim(LABLAXIS)
+    else:
+      emsg = f"{indent}LABLAXIS = {LABLAXIS} is not a string. Casting to string."
+      cdawmeta.error('master_resolved', id, None, "CDF.LABLAXISNotString", emsg, logger)
+      LABLAXIS = cdawmeta.util.trim(str(LABLAXIS))
 
 def _LABL_PTR(id, variable_name, variables, variables_removed, logger):
 

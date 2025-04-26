@@ -5,7 +5,7 @@
 [2 Installing and Running](#2-installing-and-running)<br/>
 &nbsp;&nbsp;&nbsp;[2.1 Examples](#21-examples)<br/>
 &nbsp;&nbsp;&nbsp;[2.2 Generators](#22-generators)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2.1 sample_start_stop](#221-sample_start_stop)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2.1 start_stop](#221-start_stop)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2.2 cadence](#222-cadence)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2.3 sample_links](#223-sample_links)<br/>
 [3 CDAWeb](#3-cdaweb)<br/>
@@ -96,25 +96,25 @@ python metadata.py --id VOYAGER1_10S_MAG --meta-type hapi
 
 ## 2.2 Generators
 
-`cdawmeta` uses ["generator" functions](https://github.com/rweigel/cdawmeta/tree/main/cdawmeta/generators) to create parts used in high-level metadata such as HAPI and SPASE. Each generator takes inputs that include its dependencies a produce new metadata. For example `sample_start_stop.py` uses the output of `orig_data` to determine a `sample{StartStop}Date` to include in HAPI metadata.
+`cdawmeta` uses ["generator" functions](https://github.com/rweigel/cdawmeta/tree/main/cdawmeta/generators) to create parts used in high-level metadata such as HAPI and SPASE. Each generator takes inputs that include its dependencies a produce new metadata. For example `start_stop.py` uses the output of `orig_data` to determine a `sample{StartStop}Date` to include in HAPI metadata.
 
-### 2.2.1 sample_start_stop
+### 2.2.1 start_stop
 
 Used in HAPI.
 
 ```
-python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_start_stop
+python metadata.py --id VOYAGER1_10S_MAG --meta-type start_stop
 ```
 
-Produces the following output, which can be [downloaded directly](http://mag.gmu.edu/git-data/cdawmeta/data/sample_start_stop/info/VOYAGER1_10S_MAG.json).
+Produces the following output, which can be [downloaded directly](http://mag.gmu.edu/git-data/cdawmeta/data/start_stop/info/VOYAGER1_10S_MAG.json).
 <details>
 <summary>Output</summary>
 <pre>
 {
   "id": "VOYAGER1_10S_MAG",
-  "sample_start_stop": {
+  "start_stop": {
     "id": "VOYAGER1_10S_MAG",
-    "data-file": "./data/sample_start_stop/info/VOYAGER1_10S_MAG.json",
+    "data-file": "./data/start_stop/info/VOYAGER1_10S_MAG.json",
     "data": {
       "sampleStartDate": "1991-10-28T04:59:54.000Z",
       "sampleStopDate": "1991-11-26T19:09:30.000Z",
@@ -130,7 +130,7 @@ Produces the following output, which can be [downloaded directly](http://mag.gmu
 Used in HAPI and SPASE.
 
 ```
-python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_start_stop
+python metadata.py --id VOYAGER1_10S_MAG --meta-type start_stop
 ```
 Produces the following output (full output can be [downloaded directly](http://mag.gmu.edu/git-data/cdawmeta/data/cadence/info/VOYAGER1_10S_MAG.json)).
 
