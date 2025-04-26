@@ -567,7 +567,7 @@ def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
 
   def create_infos(out_dir, info):
     dataset_line = "DATASET>"
-    file_line = "/home/cdaweb/data/"
+    file_line = cdawmeta.CONFIG['urls']['cdffile_root']
 
     logger.info(f"Parsing {info['cache_file']}")
     dataset_name_last = None
@@ -584,7 +584,7 @@ def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
           files = []
         elif line.startswith(file_line):
           parts = line.split(">")
-          parts[0] = parts[0].replace(file_line, cdawmeta.CONFIG['urls']['cdfdata'])
+          parts[0] = parts[0].replace(file_line, cdawmeta.CONFIG['urls']['cdfurl_root'])
           parts[1] = parts[1].replace("/", "-").replace(" ", "T") + "Z"
           parts[2] = parts[2].replace("/", "-").replace(" ", "T") + "Z"
           files.append({'Name': parts[0], 'StartTime': parts[1], 'EndTime': parts[2]})

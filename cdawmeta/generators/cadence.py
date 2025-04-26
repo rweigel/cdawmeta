@@ -91,7 +91,7 @@ def cadence(metadatum, logger):
     except Exception as e:
       emsg = f"{id}: cdawmeta.io.read_cdf("
       emsg += f"'{url}', variables='{depend_0_name}', iso8601=False) raised: \n{e}"
-      emsg += "\n" + _trace()
+      #emsg += "\n" + _trace()
       _update_for_error(depend_0_meta, emsg, logger=logger)
       cdawmeta.error("cadence", id, None, "CDF.FailedCDFRead", emsg, logger)
       continue
@@ -106,7 +106,7 @@ def cadence(metadatum, logger):
     epoch_values = epoch['VarData']
 
     try:
-      start, stop = _check_start_stop(epoch_values, startDate, stopDate, logger, first_file=True)
+      start, stop = _check_start_stop(id, depend_0_name, epoch_values, startDate, stopDate, logger, first_file=True)
     except Exception as e:
       emsg = f"{id}: _check_start_stop() failed: {e}"
       emsg += "\n" + _trace()
@@ -208,7 +208,7 @@ def _update_for_error(depend_0_meta, emsg, logger=None):
   depend_0_meta['error'] = emsg.strip()
 
   del depend_0_meta['start']
-  for key in depend_0_meta.keys():
+  for key in depend_0_meta.copy().keys():
     if depend_0_meta[key] is None:
       del depend_0_meta[key]
 
@@ -277,7 +277,7 @@ def _extract_and_check_metadata(id, metadatum, logger):
 
   return file_list, master, None
 
-def _check_start_stop(epoch_values, startDate, stopDate, logger, first_file=False, last_file=False):
+def _check_start_stop(id, epoch_name, epoch_values, startDate, stopDate, logger, first_file=False, last_file=False):
   import cdflib
 
   def handle_nat(timestamp, epoch, which):
@@ -311,7 +311,7 @@ def _check_start_stop(epoch_values, startDate, stopDate, logger, first_file=Fals
     startDate_pad = cdawmeta.util.pad_iso8601(startDate)
     if first_file and first_timestamp_pad < startDate_pad:
       emsg = f"    Start date from start_stop ({startDate}) is after the first non-NaT timestamp ({first_timestamp})"
-      cdawmeta.error("cadence", id, None, "CDF.StartDateAfterFirstTimestamp", emsg, logger)
+      cdawmeta.error("cadence", id, epoch_name, "CDF.StartDateAfterFirstTimestamp", emsg, logger)
 
   last_timestamp = str(cdflib.cdfepoch.to_datetime(epoch_values[-1])[0])
   logger.info(f"    Last timestamp in first CDF:  {last_timestamp}")
@@ -322,7 +322,7 @@ def _check_start_stop(epoch_values, startDate, stopDate, logger, first_file=Fals
     stopDate_pad = cdawmeta.util.pad_iso8601(stopDate)
     if last_file and last_timestamp_pad > stopDate_pad:
       emsg = f"    Stop date from start_stop ({stopDate}) is before the last non-NaT timestamp ({last_timestamp})"
-      cdawmeta.error("cadence", id, None, "CDF.StopDateBeforeLastTimestamp", emsg, logger)
+      cdawmeta.error("cadence", id, epoch_name, "CDF.StopDateBeforeLastTimestamp", emsg, logger)
 
   return first_timestamp, last_timestamp
 

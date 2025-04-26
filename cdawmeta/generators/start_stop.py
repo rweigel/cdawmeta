@@ -47,8 +47,12 @@ def start_stop(metadatum, logger):
     stopDate_files = file_list["FileDescription"][-1]["EndTime"]
     stopDate = _update_timestamp(id, stopDate_files, stopDate, "stop", logger)
 
-  range = {"startDate": startDate, "stopDate": stopDate}
+  if num_files > 0:
+    if cdawmeta.util.pad_iso8601(sampleFile["StartTime"]) < cdawmeta.util.pad_iso8601(sampleFile["EndTime"]):
+      emsg = f"StartTime ({sampleFile['StartTime']}) > EndTime ({sampleFile['EndTime']}) in {FILE_LIST}['data']['FileDescription']"
+      cdawmeta.error('start_stop', id, None, "CDF.NoFiles", emsg, logger)
 
+  range = {"startDate": startDate, "stopDate": stopDate}
   if num_files > 0:
     url = metadatum[FILE_LIST]["url"]
     range["sampleStartDate"] = sampleFile["StartTime"]

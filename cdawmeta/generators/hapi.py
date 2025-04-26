@@ -186,7 +186,7 @@ def _info_head(metadatum, depend_0_name):
 
   maxRequestDuration, emsg = _max_request_duration(depend_0_name, metadatum, info)
   if emsg is not None:
-    cdawmeta.info(f"    Using default maxRequestDuration = {info['maxRequestDuration']}")
+    logger.info(f"    Using default maxRequestDuration = {info['maxRequestDuration']}")
     info["maxRequestDuration"] = cdawmeta.CONFIG['hapi']['maxRequestDurationDefault']
   if maxRequestDuration is not None:
     info["maxRequestDuration"] = maxRequestDuration
