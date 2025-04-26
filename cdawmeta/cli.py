@@ -45,7 +45,7 @@ def cli(script, defs=False):
       "metavar": "N",
       "type": int,
       "help": "Number of threads to use for downloading (default: %(default)s).",
-      "default": 3,
+      "default": 1,
       "_used_by_all": True,
     },
     "embed-data": {
@@ -124,12 +124,12 @@ def cli(script, defs=False):
     "collection-name": {
       "help": "Name of MongoDB collection to create (default: all collections)",
       "default": None,
-      "choices": list(cdawmeta.CONFIG['table']['mongo']['dbs'].keys()),
+      "choices": meta_types,#list(cdawmeta.CONFIG['table']['mongo']['dbs'].keys()),
       "_used_by": ['query.py']
     },
     "mongod-binary": {
       "help": "Path to mongod binary",
-      "default": os.path.expanduser("~/mongodb/bin/mongod"),
+      "default": "mongod",#os.path.expanduser("~/mongodb/bin/mongod"),
       "_used_by": ['query.py']
     },
     "filter": {

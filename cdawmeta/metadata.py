@@ -1,9 +1,9 @@
 import os
 import re
 import glob
-import traceback
 
 import cdawmeta
+import cdawmeta.config
 
 # Can't call logger = cdawmeta.logger(...) here because it calls cdawmeta.DATA_DIR
 # which is set to a default. If user modifies using cdawmeta.DATA_DIR = ...,
@@ -152,7 +152,7 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
   allxml_data = _allxml(update=update)
   datasets_all = _datasets(allxml_data)
 
-  not_generated = ['allxml', 'master', 'orig_data', 'spase', 'spase_hpde_io']
+  not_generated = ['allxml', 'master', 'cdfmetafile', 'orig_data', 'spase', 'spase_hpde_io']
   mloggers = {}
   for meta_type in meta_types:
     if meta_type in not_generated:
@@ -179,27 +179,29 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
       repo.git.merge('origin/master')
       _spase_hpde_io(update=True, diffs=diffs)
 
-  def step_needed(meta_type, step, update, update_skips):
-    if meta_type in update_skips:
-      if update:
-        logger.info(f"Setting {step}=False for '{meta_type}' because it is in {step}_skip.")
-      return False
-    return update
+  if 'cdfmetafile' in meta_types:
+    update_ = _step_needed('cdfmetafile', 'update', update, update_skip)
+    if update_:
+      # This causes file to be fetched and parsed.
+      _cdfmetafile(None, exit_on_exception=exit_on_exception)
 
   def get_one(dataset, mloggers):
 
     if 'master' in meta_types or 'spase' in meta_types:
       # 'spase' needs 'master' to get spase_DatasetResourceID, so this must be before.
-      update_ = step_needed('master', 'update', update, update_skip)
-      update_ = update_ or step_needed('spase', 'update', update, update_skip)
+      update_ = _step_needed('master', 'update', update, update_skip)
+      update_ = update_ or _step_needed('spase', 'update', update, update_skip)
       dataset['master'] = _master(dataset, update=update_, diffs=diffs)
 
     if 'orig_data' in meta_types:
-      update_ = step_needed('orig_data', 'update', update, update_skip)
+      update_ = _step_needed('orig_data', 'update', update, update_skip)
       dataset['orig_data'] = _orig_data(dataset, update=update_, diffs=diffs)
 
+    if 'cdfmetafile' in meta_types:
+      dataset['cdfmetafile'] = _cdfmetafile(dataset, exit_on_exception=exit_on_exception)
+
     if 'spase' in meta_types:
-      update_ = step_needed('spase', 'update', update, update_skip)
+      update_ = _step_needed('spase', 'update', update, update_skip)
       dataset['spase'] = _spase(dataset, update=update_, diffs=diffs)
 
     if 'spase_hpde_io' in meta_types:
@@ -211,14 +213,12 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
         continue
 
       logger.info(f"Generating: {meta_type} for {dataset['id']}")
-      update_ = step_needed(meta_type, 'update', update, update_skip)
-      regen_ = step_needed(meta_type, 'regen', regen, regen_skip)
+      update_ = _step_needed(meta_type, 'update', update, update_skip)
+      regen_ = _step_needed(meta_type, 'regen', regen, regen_skip)
 
       dataset[meta_type] = cdawmeta.generate(dataset, meta_type, mloggers[meta_type],
                                              update=update_, regen=regen_,
                                              exit_on_exception=exit_on_exception)
-
-    logger.debug("Removing metadata that was used to generate requested metadata.")
 
     for meta_type in meta_types:
       if meta_type_requested is not None and meta_type not in meta_type_requested:
@@ -231,25 +231,18 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
         logger.debug(f"  embed_data=False; removing 'data' node from {meta_type} for {dataset['id']}")
         del dataset[meta_type]['data']
 
-  def _exception(dsid, _traceback):
-    msg = f"{dsid}: {_traceback}"
-    cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
-    if exit_on_exception:
-      logger.error("Exiting due to exit_on_exception command line argument.")
-      os._exit(1)
-
   if max_workers == 1 or len(dsids) == 1:
     for dsid in dsids:
       try:
         get_one(datasets_all[dsid], mloggers)
       except:
-        _exception(dsid, traceback.format_exc().strip())
+        cdawmeta.exception(dsid, logger, exit_on_exception=exit_on_exception)
   else:
     def call_get_one(dsid):
       try:
         get_one(datasets_all[dsid], mloggers)
       except:
-        _exception(dsid, traceback.format_exc().strip())
+        cdawmeta.exception(dsid, logger, exit_on_exception=exit_on_exception)
       return dsid
 
     from concurrent.futures import ThreadPoolExecutor
@@ -272,6 +265,13 @@ def metadata(id=None, id_skip=None, meta_type=None, embed_data=True,
 
   return metadata_
 
+def _step_needed(meta_type, step, update, update_skips):
+  if meta_type in update_skips:
+    if update:
+      logger.info(f"Setting {step}=False for '{meta_type}' because it is in {step}_skip.")
+    return False
+  return update
+
 def _datasets(allxml_data):
   '''
   Returns dict of datasets. Keys are dataset IDs and values are dicts 
@@ -283,7 +283,8 @@ def _datasets(allxml_data):
 
   datasites = cdawmeta.util.get_path(allxml_data, ['data', 'sites', 'datasite'])
   if datasites is None:
-    raise Exception("Error[all.xml]: No 'sites/datasite' node in all.xml")
+    raise Exception("Error[all.xml]: No 'sites/datasite' node in all.xml. Cannot continue. Exiting with signal 1.")
+    exit(1)
 
   datasets_allxml = None
   for datasite in datasites:
@@ -291,7 +292,8 @@ def _datasets(allxml_data):
       datasets_allxml = datasite['dataset']
       break
   if datasets_allxml is None:
-    raise Exception("Error[all.xml]: No 'sites/datasite' with ID=CDAWeb_HTTPS")
+    raise Exception("Error[all.xml]: No 'sites/datasite' with ID=CDAWeb_HTTPS. Cannot continue. Exiting with signal 1.")
+    exit(1)
 
   datasets_ = {}
   for dataset_allxml in datasets_allxml:
@@ -331,7 +333,7 @@ def allxml(update=False, diffs=False, log_level='info'):
   # For explanation of {'Accept-Encoding': None}, see email to Bernie
   # Harris on 2025-03-22 about issue with their server.
   kwargs = {
-    'referrer': allurl,
+    'referrer': None,
     'timeout': timeout,
     'headers': {'Accept-Encoding': None},
     'update': update,
@@ -362,7 +364,17 @@ def _master(dataset, update=False, diffs=False):
   mastercdf = dataset['allxml']['mastercdf']['@ID']
   url = mastercdf.replace('.cdf', '.json').replace('0MASTERS', '0JSONS')
 
-  master = _fetch(url, dataset['id'], 'master', referrer=url, timeout=timeout, update=update, diffs=diffs)
+  kwargs = {
+    'referrer': cdawmeta.CONFIG['urls']['all.xml'],
+    'timeout': timeout,
+    'update': update,
+    'diffs': diffs
+  }
+
+  master = _fetch(url, dataset['id'], 'master', **kwargs)
+
+  if 'error' in master:
+    return master
 
   master['data'] = cdawmeta.restructure.master(master['data'], url, logger=logger)
 
@@ -506,8 +518,81 @@ def _orig_data(dataset, update=True, diffs=False):
   stop = dataset['allxml']['@timerange_stop'].replace(" ", "T").replace("-","").replace(":","") + "Z"
   url = wsbase + dataset["id"] + "/orig_data/" + start + "," + stop
 
-  headers = {'Accept': 'application/json'}
-  return _fetch(url, dataset['id'], 'orig_data', headers=headers, timeout=timeout, update=update, diffs=diffs)
+  kwargs = {
+    'referrer': None,
+    'timeout': timeout,
+    'headers': {'Accept': 'application/json'},
+    'update': update,
+    'diffs': diffs
+  }
+
+  return _fetch(url, dataset['id'], 'orig_data', **kwargs)
+
+def _cdfmetafile(dataset, diffs=False, exit_on_exception=False):
+
+  def write_info(out_dir, dataset_name, url, files):
+    output_file = os.path.join(out_dir, f'{dataset_name}.json')
+    meta = {
+      'id': dataset_name,
+      'url': url,
+      'data-file': output_file,
+      'data': {'FileDescription': files}
+    }
+    logger.info(f"  Writing {output_file.replace('.json', '')}.{{json,pkl}}")
+    cdawmeta.util.write(output_file, meta)
+    cdawmeta.util.write(output_file.replace(".json", ".pkl"), meta)
+
+  def create_infos(out_dir, info):
+    dataset_line = "DATASET>"
+    file_line = "/home/cdaweb/data/"
+
+    logger.info(f"Parsing {info['cache_file']}")
+    dataset_name_last = None
+    with open(info['cache_file'], "r") as file:
+      files = None
+      for line in file:
+        line = line.strip()
+        if line.startswith(dataset_line):
+          dataset_name = line.split(">")[1]
+          logger.info(f"  Found dataset: {dataset_name}")
+          if dataset_name_last is not None:
+            write_info(out_dir, dataset_name_last, url, files)
+          dataset_name_last = dataset_name
+          files = []
+        elif line.startswith(file_line):
+          parts = line.split(">")
+          parts[0] = parts[0].replace(file_line, cdawmeta.CONFIG['urls']['cdfdata'])
+          parts[1] = parts[1].replace("/", "-").replace(" ", "T") + "Z"
+          parts[2] = parts[2].replace("/", "-").replace(" ", "T") + "Z"
+          files.append({'Name': parts[0], 'StartTime': parts[1], 'EndTime': parts[2]})
+
+
+  url = cdawmeta.CONFIG['urls']['cdfmetafile']
+  file = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'sp_phys_cdfmetafile.txt')
+  file_allxml = os.path.join(cdawmeta.DATA_DIR, 'allxml', 'all.xml')
+
+  out_dir = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'info')
+
+  if dataset is not None:
+    id = dataset['id']
+    error_result = {'id': id, 'url': url, 'data-file': None, 'data': None}
+    pkl_file = os.path.join(out_dir, f"{id}.pkl")
+    if os.path.exists(pkl_file):
+      return cdawmeta.util.read(pkl_file, logger=logger)
+    else:
+      causes = f"Can be caused by failed download or parse of {url} or if dataset '{id}' in {file_allxml} but not in {file}."
+      error_result['error'] = f"File {pkl_file} not found. {causes}"
+      return error_result
+
+  logger.info(f"Getting {url}")
+  info = cdawmeta.util.get_conditional(url, file=file, stream=True)
+  logger.info(f"Got {url}")
+
+  if 'emsg' not in info:
+    try:
+      create_infos(out_dir, info)
+    except Exception as e:
+      cdawmeta.exception(None, logger, exit_on_exception=exit_on_exception)
 
 def _write_combined(metadata_, id, meta_types):
 

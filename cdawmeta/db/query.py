@@ -34,6 +34,12 @@ def query(collection_name, port=27017, filter=None, log_level='info'):
   count = _count({})
   logger.info(f"  {count} documents found.")
 
+  #logger.info(f"{indent}Printing all documents without filtering.")
+  #for document in collection.find():
+  #  print(document)
+  #logger.info(done)
+
+  logger.info(done)
   logger.info(f"{indent}Executing collection.find('{filter}').")
   documents_iter = collection.find(filter)
   logger.info(done)
@@ -44,6 +50,7 @@ def query(collection_name, port=27017, filter=None, log_level='info'):
     # Iterate over documents iterable to pull documents from db.
     documents.append(document)
   logger.info(done)
+  logger.info(f"  {len(documents)} documents match filter = {filter}.")
 
   logger.info(f"{indent}Closing client.")
   client.close()

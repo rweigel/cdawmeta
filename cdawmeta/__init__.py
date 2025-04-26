@@ -37,6 +37,7 @@ from cdawmeta.config import CONFIG
 from cdawmeta.config import DATA_DIR
 from cdawmeta.error import error
 from cdawmeta.error import write_errors
+from cdawmeta.error import exception
 from cdawmeta.generate import generate
 from cdawmeta.logger import logger
 from cdawmeta.metadata import ids
