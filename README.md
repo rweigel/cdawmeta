@@ -248,6 +248,7 @@ We also recommend
 * documentation of non-ISTP attributes so that users know if an attribute is important for interpretation;
 * a clearer indication of, or documentation of, attributes that are CDAWeb-software specific; and
 * tests on Master CDFs and newly uploaded data CDFs that catch problems that will cause downstream software to fail, some of those listed in the [issue tracker](https://github.com/rweigel/cdawmeta/issues) fall in this category; a examples include issues with recently updated [PSP data CDF files](https://github.com/rweigel/cdawmeta/issues/12) and [incorrect `SI_CONVERSION` factors](https://github.com/rweigel/cdawmeta/issues/29).
+* Standards for the representation of CDF in JSON (there exists one for XML, CDFML) and as a Python dictionary. The code used in this project assumes the JSON structure of the Masters will not change and the data structures returned by `cdflib` will not change. Effort was needed to modify the data structures returned by `cdflib` to match that found in the Masters. 
 
 Early indications are that much of this is out-of-scope of the CDAWeb project. For example, CDAWeb does not control the content or quality of the files that they host and improving the metadata for use by non-CDAWeb software may not be supported. However, addressing these issues will greatly impact the quality of code and metadata downstream (e.g., HAPI, SPASE, SOSO, etc.); if it is out-of-scope, leadership should find support for addressing these perennial issues.
 

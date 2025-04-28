@@ -71,8 +71,6 @@ def _resolve_ptrs(dsid, name, all_variables, ptr_names=None):
           if 'VarData' in all_variables[x_NAME]:
             ptrs[prefix+"_VALID"][x-1] = True
             ptrs[prefix][x-1] = x_NAME
-            print(prefix)
-            print(x_NAME)
             values = cdawmeta.util.trim(all_variables[x_NAME]['VarData'])
             ptrs[prefix+"_VALUES"][x-1] = values
           else:

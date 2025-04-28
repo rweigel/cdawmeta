@@ -48,7 +48,7 @@ def start_stop(metadatum, logger):
     stopDate = _update_timestamp(id, stopDate_files, stopDate, "stop", logger)
 
   if num_files > 0:
-    if cdawmeta.util.pad_iso8601(sampleFile["StartTime"]) < cdawmeta.util.pad_iso8601(sampleFile["EndTime"]):
+    if cdawmeta.util.pad_iso8601(sampleFile["StartTime"]) > cdawmeta.util.pad_iso8601(sampleFile["EndTime"]):
       emsg = f"StartTime ({sampleFile['StartTime']}) > EndTime ({sampleFile['EndTime']}) in {FILE_LIST}['data']['FileDescription']"
       cdawmeta.error('start_stop', id, None, "CDF.NoFiles", emsg, logger)
 

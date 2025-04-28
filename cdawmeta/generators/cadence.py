@@ -30,38 +30,59 @@ def cadence(metadatum, logger):
   if emsg is not None:
     return {"error": emsg}
 
-  url = file_list['FileDescription'][0]['Name']
+  all_file_counts = []
+  for file_idx in [0, -1]:
+    url = file_list['FileDescription'][file_idx]['Name']
 
-  # FORMOSAT5_AIP_IDN
-  if url.endswith('.nc'):
-    # Use HAPI client instead (CDAWeb service could be used, but can be up to ~5x slower).
-    emsg = f"{id}: Computing cadence for file type '.nc' is not implemented"
-    cdawmeta.error("cadence", id, None, "HAPI.NotImplementedNetCDF", emsg, logger)
-    return {"error": emsg}
+    # FORMOSAT5_AIP_IDN
+    if url.endswith('.nc'):
+      # Use HAPI client instead (CDAWeb service could be used, but can be up to ~5x slower).
+      emsg = f"{id}: Computing cadence for file type '.nc' is not implemented"
+      cdawmeta.error("cadence", id, None, "HAPI.NotImplementedNetCDF", emsg, logger)
+      return {"error": emsg}
+
+    file_counts = _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache)
+    depend_0s = file_counts.keys()
+    all_file_counts.append(file_counts)
+
+  counts_restructured = {}
+  for depend_0 in depend_0s:
+    counts_restructured[depend_0] = []
+    for file_counts in all_file_counts:
+      if depend_0 not in all_file_counts[0]:
+        emsg = f"  {depend_0} not found in first file."
+        cdawmeta.error("cadence", id, None, "CDF.NoDEPEND_0s", emsg, logger)
+        return {"error": emsg}
+      counts_restructured[depend_0].append(file_counts[depend_0])
+
+  return [counts_restructured]
+
+def _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache):
 
   startDate = metadatum['start_stop']['data']['startDate']
   stopDate = metadatum['start_stop']['data']['stopDate']
+  master = metadatum['master']['data']
 
   logger.info(f"{id}")
   logger.info(f"  Extracting DEPEND_0 names from {url}")
 
   try:
-    depend_0_names = cdawmeta.io.read_cdf_depend_0s(url, logger=logger, use_cache=use_cache)
+    depend_0_names = cdawmeta.io.read_cdf_depend_0s(url, logger=None, use_cache=use_cache)
   except Exception as e:
-    emsg = f"{id}: cdawmeta.io.read_cdf_depend_0s('{url}') failed with error: {e}"
+    emsg = f"  cdawmeta.io.read_cdf_depend_0s('{url}') failed with error: {e}"
     emsg  = emsg + "\n" + _trace()
     cdawmeta.error("cadence", id, None, "CDF.FailedCDFRead", emsg, logger)
     return {"error": emsg}
 
   if depend_0_names is None:
-    emsg = f"{id}: cdawmeta.io.read_cdf_depend_0s('{url}') returned no DEPEND_0s."
+    emsg = f"  cdawmeta.io.read_cdf_depend_0s('{url}') returned no DEPEND_0s."
     cdawmeta.error("cadence", id, None, "CDF.NoDEPEND_0s", emsg, logger)
     return {"error": emsg}
 
   if len(depend_0_names) > 1:
-    logger.info(f"{id}: {len(depend_0_names)} DEPEND_0s: {depend_0_names}")
+    logger.info(f"  {len(depend_0_names)} DEPEND_0s: {depend_0_names}")
   else:
-    logger.info(f"{id}: {len(depend_0_names)} DEPEND_0: {depend_0_names}")
+    logger.info(f"  {len(depend_0_names)} DEPEND_0: {depend_0_names}")
 
   depend_0_counts = {}
 
@@ -69,7 +90,6 @@ def cadence(metadatum, logger):
   # found in data CDF. Mismatches have been found for DEPEND_0 names, so
   # expect this to happen for other variables. Should also check that DataTypes
   # match.
-
   for depend_0_name in depend_0_names:
 
     msg = f"  Computing cadence for DEPEND_0 = '{depend_0_name}'"
@@ -86,7 +106,7 @@ def cadence(metadatum, logger):
 
     try:
       logger.info(f"    Reading '{depend_0_name}' from CDF file")
-      data = cdawmeta.io.read_cdf(url, variables=depend_0_name, logger=logger, iso8601=False)
+      data = cdawmeta.io.read_cdf(url, variables=depend_0_name, logger=None, iso8601=False)
       logger.info(f"    Read '{depend_0_name}'")
     except Exception as e:
       emsg = f"{id}: cdawmeta.io.read_cdf("
@@ -96,7 +116,6 @@ def cadence(metadatum, logger):
       cdawmeta.error("cadence", id, None, "CDF.FailedCDFRead", emsg, logger)
       continue
 
-    master = metadatum['master']['data']
     DataType, emsg = _check_data(id, depend_0_name, data, master, url, logger)
     if emsg is not None:
       _update_for_error(depend_0_meta, emsg)
@@ -106,9 +125,9 @@ def cadence(metadatum, logger):
     epoch_values = epoch['VarData']
 
     try:
-      start, stop = _check_start_stop(id, depend_0_name, epoch_values, startDate, stopDate, logger, first_file=True)
+      start, stop = _check_start_stop(id, depend_0_name, epoch_values, startDate, stopDate, file_idx, logger)
     except Exception as e:
-      emsg = f"{id}: _check_start_stop() failed: {e}"
+      emsg = f"    _check_start_stop() failed: {e}"
       emsg += "\n" + _trace()
       _update_for_error(depend_0_meta, emsg, logger=logger)
       cdawmeta.error("cadence", id, None, "CDF.FailedStartStop", emsg, logger)
@@ -126,6 +145,13 @@ def cadence(metadatum, logger):
       _update_for_error(depend_0_meta, emsg, logger)
       continue
 
+    if DataType == 'CDF_TIME_TT2000':
+      FILL= -9223372036854775808
+    if DataType == 'CDF_EPOCH16':
+      FILL = -1e31j - 1e31j
+    if DataType == 'CDF_EPOCH':
+      FILL = 1e31
+
     try:
       if DataType == 'CDF_EPOCH16':
         # e.g., C1_CP_EFW_L3_E3D_INERT
@@ -137,6 +163,14 @@ def cadence(metadatum, logger):
       emsg = f"{url}: numpy.diff({depend_0_name}['VarData']) error: {e}"
       raise Exception(emsg)
 
+    epoch_values = epoch_values[epoch_values != FILL]
+
+    if numpy.any(diff) <= 0:
+      n = numpy.sum(diff <= 0)
+      emsg = f"{n} negative or zero time difference(s) found."
+      cdawmeta.error("cadence", id, depend_0_name, "CDF.NegativeTimeStep", emsg, logger)
+      continue
+
     depend_0_meta['counts'] = _count_dicts(diff, depend_0_name, DataType, logger)
 
     if 0 == len(depend_0_meta['counts']):
@@ -146,7 +180,7 @@ def cadence(metadatum, logger):
 
     depend_0_meta['note'] = _note(depend_0_name, depend_0_counts, url)
 
-  return [depend_0_counts]
+  return depend_0_counts
 
 def _count_dicts(diff, depend_0_name, DataType, logger):
 
@@ -162,7 +196,8 @@ def _count_dicts(diff, depend_0_name, DataType, logger):
   counts = Counter(diff)
   total = sum(counts.values())
   ucounts = sorted(counts.items(), key=lambda item: item[1], reverse=True)
-  logger.info(f"    {total} timestamps; {len(ucounts)} unique Δt(s). Top 10 by count:")
+  s = "s" if len(ucounts) + 1 > 1 else ""
+  logger.info(f"    {total} Δt{s}; {len(ucounts)} unique. Top 10 by count:")
 
   idx = 0
   count_dicts = []
@@ -186,6 +221,11 @@ def _count_dicts(diff, depend_0_name, DataType, logger):
         duration_iso8601 = f"PT{value_s:.12f}S"
       else:
         duration_iso8601 = f"PT{value_s:.15f}S"
+
+    if value <= 0:
+      # Error message created before call to this function.
+      logger.info("    Skipping negative or zero cadence.")
+      continue
 
     count_dict = {
       "count": count,
@@ -251,33 +291,33 @@ def _extract_and_check_metadata(id, metadatum, logger):
   file_list = cdawmeta.util.get_path(metadatum, [FILE_LIST, 'data'])
   if file_list is None:
     emsg = f"{id}: No {FILE_LIST} result"
-    cdawmeta.error("cadence", id, None, "CDF.NoOrigData", emsg, logger)
+    cdawmeta.error("cadence", id, None, f"CDF.No{FILE_LIST}", emsg, logger)
     return None, None, emsg
 
   master = cdawmeta.util.get_path(metadatum, ['master', 'data'])
   if master is None:
-    emsg = f"{id}: No master"
+    emsg = "No master"
     cdawmeta.error("cadence", id, None, "CDAWeb.NoMaster", emsg, logger)
     return None, None, emsg
 
   if 'FileDescription' not in file_list:
-    emsg = f"{id}: No FileDescription in {FILE_LIST}"
-    cdawmeta.error("cadence", id, None, "CDASR.NoFileDescriptionInOrigData", emsg, logger)
+    emsg = f"No FileDescription in {FILE_LIST}"
+    cdawmeta.error("cadence", id, None, f"CDAWeb.NoFileDescriptionIn{FILE_LIST}", emsg, logger)
     return None, None, emsg
 
   if len(file_list['FileDescription']) == 0:
-    emsg = f"{id}: Empty FileDescription in {FILE_LIST}"
-    cdawmeta.error("cadence", id, None, "CDASR.FileDescriptionInOrigDataEmpty", emsg, logger)
+    emsg = f"Empty FileDescription in {FILE_LIST}"
+    cdawmeta.error("cadence", id, None, f"CDAWeb.FileDescriptionIn{FILE_LIST}Empty", emsg, logger)
     return None, None, emsg
 
   if 'Name' not in file_list['FileDescription'][0]:
-    emsg = f"{id}: No 'Name' attribute in {FILE_LIST}['FileDescription'][0]"
-    cdawmeta.error("cadence", id, None, "CDASR.NoNameInFileDescriptionInOrigData", emsg, logger)
+    emsg = f"No 'Name' attribute in {FILE_LIST}['FileDescription'][0]"
+    cdawmeta.error("cadence", id, None, f"CDAWeb.NoNameInFileDescriptionIn{FILE_LIST}", emsg, logger)
     return None, None, emsg
 
   return file_list, master, None
 
-def _check_start_stop(id, epoch_name, epoch_values, startDate, stopDate, logger, first_file=False, last_file=False):
+def _check_start_stop(id, epoch_name, epoch_values, startDate, stopDate, file_idx, logger):
   import cdflib
 
   def handle_nat(timestamp, epoch, which):
@@ -287,12 +327,12 @@ def _check_start_stop(id, epoch_name, epoch_values, startDate, stopDate, logger,
       idx = numpy.where(~isnat)[0]
       if len(idx) > 0:
         if which == 'first':
-          timestamp = str(all_timestamps[idx[0]]) + "Z"
-          logger.info(f"  First non-NaT in first CDF:   {timestamp}")
+          timestamp = str(all_timestamps[idx[0]])
+          logger.info(f"    First non-NaT in first CDF:   {timestamp}")
           return timestamp
         else:
-          timestamp = str(all_timestamps[idx[-1]]) + "Z"
-          logger.info(f"  Last non-NaT in first CDF:    {timestamp}")
+          timestamp = str(all_timestamps[idx[-1]])
+          logger.info(f"    Last non-NaT in first CDF:    {timestamp}")
           return timestamp
       else:
         logger.info("  All timestamps are 'NaT'")
@@ -306,22 +346,24 @@ def _check_start_stop(id, epoch_name, epoch_values, startDate, stopDate, logger,
   logger.info(f"    First timestamp in first CDF: {first_timestamp}")
   logger.info(f"    Start date from start_stop:   {startDate}")
   first_timestamp = handle_nat(first_timestamp, epoch_values, "first")
-  if first_timestamp is not None:
-    first_timestamp_pad = cdawmeta.util.pad_iso8601(first_timestamp)
+  first_timestamp += "Z"
+  if file_idx == 0:
     startDate_pad = cdawmeta.util.pad_iso8601(startDate)
-    if first_file and first_timestamp_pad < startDate_pad:
-      emsg = f"    Start date from start_stop ({startDate}) is after the first non-NaT timestamp ({first_timestamp})"
+    first_timestamp_pad = cdawmeta.util.pad_iso8601(first_timestamp)
+    if first_timestamp_pad < startDate_pad:
+      emsg = f"    Start date from start_stop ({startDate}) is after first non-NaT timestamp in first file: {first_timestamp}"
       cdawmeta.error("cadence", id, epoch_name, "CDF.StartDateAfterFirstTimestamp", emsg, logger)
 
   last_timestamp = str(cdflib.cdfepoch.to_datetime(epoch_values[-1])[0])
   logger.info(f"    Last timestamp in first CDF:  {last_timestamp}")
   logger.info(f"    Stop date from start_stop:    {stopDate}")
   last_timestamp = handle_nat(last_timestamp, epoch_values, "last")
-  if last_timestamp is not None:
-    last_timestamp_pad = cdawmeta.util.pad_iso8601(last_timestamp)
+  last_timestamp += "Z"
+  if file_idx == -1:
     stopDate_pad = cdawmeta.util.pad_iso8601(stopDate)
-    if last_file and last_timestamp_pad > stopDate_pad:
-      emsg = f"    Stop date from start_stop ({stopDate}) is before the last non-NaT timestamp ({last_timestamp})"
+    last_timestamp_pad = cdawmeta.util.pad_iso8601(last_timestamp)
+    if last_timestamp_pad > stopDate_pad:
+      emsg = f"    Stop date from start_stop ({startDate}) is before last non-NaT timestamp in last file: {last_timestamp}"
       cdawmeta.error("cadence", id, epoch_name, "CDF.StopDateBeforeLastTimestamp", emsg, logger)
 
   return first_timestamp, last_timestamp
@@ -372,7 +414,7 @@ def _check_data_types(id, master, depend_0_name, logger):
 def _check_data(id, depend_0_name, data, master, url, logger):
 
   if data is None:
-    emsg = f"  cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) returned None."
+    emsg = f"    cdawmeta.io.read_cdf('{url}', variables='{depend_0_name}', iso8601=False) returned None."
     cdawmeta.error("cadence", id, None, "CDF.FailedCDFRead", emsg, logger)
     return None, emsg
 
@@ -380,24 +422,24 @@ def _check_data(id, depend_0_name, data, master, url, logger):
 
   VarAttributes = data[depend_0_name].get('VarAttributes', None)
   if VarAttributes is None:
-    emsg = f"  {depend_0_name}['VarAttributes'] = None {emsg_coda}"
+    emsg = f"    {depend_0_name}['VarAttributes'] = None {emsg_coda}"
     cdawmeta.error("cadence", id, None, "CDF.NoVarAttributes", emsg, logger)
     return None, emsg
 
   if 'VarData' not in data[depend_0_name]:
-    emsg = f"  {depend_0_name}: No 'VarData' in {emsg_coda}"
+    emsg = f"    {depend_0_name}: No 'VarData' in {emsg_coda}"
     cdawmeta.error("cadence", id, None, "CDF.NoVarDataAttribute", emsg, logger)
     return None, emsg
 
   # e.g., PSP_FLD_L3_RFS_HFR
   if data[depend_0_name]['VarData'] is None:
-    emsg = f"  {depend_0_name}['VarData'] = None in {emsg_coda}"
+    emsg = f"    {depend_0_name}['VarData'] = None in {emsg_coda}"
     cdawmeta.error("cadence", id, None, "CDF.NoVarData", emsg, logger)
     return None, emsg
 
   DataType = cdawmeta.util.get_path(data[depend_0_name],['VarDescription', 'DataType'])
   if DataType is None:
-    emsg = f"  {depend_0_name}['VarDescription']['DataType'] = None in {emsg_coda}"
+    emsg = f"    {depend_0_name}['VarDescription']['DataType'] = None in {emsg_coda}"
     cdawmeta.error("cadence", id, None, "CDF.NoDataType", emsg, logger)
     return None, emsg
 
@@ -405,12 +447,13 @@ def _check_data(id, depend_0_name, data, master, url, logger):
   time_types = ['CDF_EPOCH', 'CDF_EPOCH16', 'CDF_TIME_TT2000']
 
   if data_type not in time_types:
-    emsg = f"  DataType = {data_type} is not one of {time_types}"
+    emsg = f"    DataType = {data_type} is not one of {time_types}"
     cdawmeta.error("cadence", id, depend_0_name, "CDF.FileDEPEND_0NotTimeDataType", emsg, logger)
     try:
       data_type_master = master['CDFVariables'][depend_0_name]['VarDescription']['DataType']
       if data_type_master != data_type:
         emsg += f" and does not match DataType in master = {data_type_master}"
+      return None, emsg
     except:
       emsg += " and cannot determine DataType in master"
       cdawmeta.error("cadence", id, depend_0_name, "CDF.FileDEPEND_0NotTimeDataType", emsg, logger)

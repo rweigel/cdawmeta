@@ -197,18 +197,13 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
   depend_0_variable = all_variables[depend_0_name]
 
-  if 'DataType' not in depend_0_variable['VarDescription']:
-    msg = f"DEPEND_0 variable '{dsid}'/{depend_0_name} has no DataType attribute. Dropping variables associated with it"
-    cdawmeta.error('hapi', dsid, depend_0_name, "CDF.MissingDataType.", "    " + msg, logger)
-    return None
-
   DEPEND_0_DataType = depend_0_variable['VarDescription']['DataType']
   DEPEND_0_length = _cdftimelen(DEPEND_0_DataType)
 
   if DEPEND_0_length is None:
     msg = f"Error: DEPEND_0 variable '{dsid}'/{depend_0_name} has unhandled type: '{DEPEND_0_DataType}'. "
     msg += "Dropping variables associated with it"
-    cdawmeta.error('hapi', dsid, depend_0_name, "HAPI.NotImplementedDataType.", "    " + msg, logger)
+    cdawmeta.error('hapi', dsid, depend_0_name, "HAPI.NotImplementedDataType", "    " + msg, logger)
     return None
 
   if print_info:
@@ -251,38 +246,18 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       cdawmeta.error('hapi', dsid, name, "HAPI.NotImplemented", "      " + msg, logger)
       continue
 
+    FILLVAL = None
+    if 'FILLVAL' in variable['VarAttributes']:
+      FILLVAL = variable['VarAttributes']['FILLVAL']
+
     length = None
     if VAR_TYPE == 'data' and type_ == 'string':
-
-      PadValue = None
-      if 'PadValue' in variable['VarDescription']:
-        PadValue = variable['VarDescription']['PadValue']
-
-      FillValue = None
-      if 'FillValue' in variable['VarDescription']:
-        FillValue = variable['VarDescription']['FillValue']
-
-      NumElements = None
       if 'NumElements' in variable['VarDescription']:
-        NumElements = variable['VarDescription']['NumElements']
-
-      if PadValue is None and FillValue is None and NumElements is None:
-        emsg = "Dropping '{name}' because _to_hapi_type(VAR_TYPE) returns string but no PadValue, FillValue, or NumElements given to allow length to be determined."
-        cdawmeta.error('hapi', dsid, name, "CDF.MissingMetadata", "      " + emsg, logger)
+        length = variable['VarDescription']['NumElements']
+      else:
+        msg = "String type variable does not have NumElements. Dropping variable."
+        cdawmeta.error('hapi', dsid, name, "HAPI.NoNumElementsForStringVariable", "      " + msg, logger)
         continue
-
-      if NumElements is None:
-        if PadValue is not None and FillValue is not None and PadValue != FillValue:
-          emsg = f"Dropping '{name}' because PadValue and FillValue lengths differ."
-          cdawmeta.error('hapi', dsid, name, "CDF.LengthMismatch", "      " + emsg, logger)
-          continue
-
-      if PadValue is not None:
-        length = len(PadValue)
-      if FillValue is not None:
-        length = len(FillValue)
-      if NumElements is not None:
-        length = int(NumElements)
 
     parameter = {
       "name": name,
@@ -292,24 +267,11 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     parameter['description'] = _description(dsid, name, variable, print_info=print_info)
 
-    fill = None
-    if 'FILLVAL' in variable['VarAttributes']:
-      fill = variable['VarAttributes']['FILLVAL']
-    else:
-      emsg = f"No FILLVAL for '{name}'"
-      cdawmeta.error('hapi', dsid, name, "CDF.MissingFillValue", "      " + emsg, logger)
-      # Could use _default_fill()
+    if FILLVAL is not None:
+       parameter['fill'] = str(FILLVAL)
 
-    if fill is not None:
-      if isinstance(fill, str) and fill.lower() != 'nan':
-        if not type_ == 'integer' or type_ == 'double':
-          emsg = f"FILLVAL = '{fill}' is string but data type is not integer or double. Setting fill to None."
-          cdawmeta.error('hapi', dsid, name, "CDF.WrongFillType", "      " + emsg, logger)
-          # TODO: Drop this variable?
-          fill = None
-    if fill is not None:
-      fill = str(fill)
-    parameter['fill'] = fill
+    if length is not None:
+      parameter['length'] = length
 
     parameter = {**parameter, **_units(variable)}
     parameter = {**parameter, **_labels(variable)}
@@ -344,12 +306,11 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     if virtual:
       parameter["x_cdf_FUNCT"] = variable['VarAttributes']['FUNCT']
       parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['COMPONENTS']
+      parameter['description'] = parameter['description'].strip()
       parameter['description'] += f". This variable is a 'virtual' variable that is computed using the function {parameter['x_cdf_FUNCT']} (see https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro) on the with inputs of the variables {parameter['x_cdf_COMPONENTS']}."
-      parameter['description'] += " Note that not all COMPONENTS are time series and so their values are not available from the HAPI interface. They are accessible from the raw CDF files, however."
+      parameter['description'] += " Note that some COMPONENTS may not be available from the HAPI interface. They are accessible from the raw CDF files, however."
 
-    DISPLAY_TYPE, emsg, etype = cdawmeta.attrib.DISPLAY_TYPE(dsid, name, variable)
-    if etype is not None and print_info:
-      cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
+    DISPLAY_TYPE = cdawmeta.util.get_path(variable, 'VarAttributes.DISPLAY_TYPE')
     if DISPLAY_TYPE is not None:
       parameter['x_cdf_DISPLAY_TYPE'] = DISPLAY_TYPE
 
@@ -357,21 +318,13 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     #deltas = _extract_deltas(dsid, name, variable, print_info=print_info)
     #parameter = {**parameter, **deltas}
 
-    if length is not None:
-      parameter['length'] = length
-
     if 'DEPEND_0' in variable['VarAttributes']:
       parameter['x_cdf_DEPEND_0'] = variable['VarAttributes']['DEPEND_0']
 
     if 'DimSizes' in variable['VarDescription']:
       parameter['size'] = variable['VarDescription']['DimSizes']
 
-    if 'DataType' not in variable['VarDescription']:
-      msg = f"Variable '{dsid}'/{depend_0_name} has no DataType attribute. Dropping variables associated with it"
-      cdawmeta.error('hapi', dsid, name, "CDF.MissingDataType", "      " + msg, logger)
-      return None
-
-    ptr_names = ['DEPEND','LABL_PTR']
+    ptr_names = ['DEPEND', 'LABL_PTR']
     ptrs = cdawmeta.attrib._resolve_ptrs(dsid, name, all_variables, ptr_names=ptr_names)
     for ptr_name in ptr_names:
       if ptrs[ptr_name] is not None and ptrs[ptr_name] is not None:
@@ -481,13 +434,6 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
   if RecVariance == "VARY":
     if print_info:
       logger.warn(f"      NotImplemented[TimeVaryingBins]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY'. Not creating bins b/c Nand does not for this case.")
-    return None
-
-  _, emsg, etype = cdawmeta.attrib.VAR_TYPE(dsid, name, DEPEND_x, x=x)
-  if etype is not None:
-    if print_info:
-      emsg = emsg +  " Not creating bins."
-      cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
     return None
 
   if 'VarData' in DEPEND_x:
@@ -605,7 +551,7 @@ def _max_request_duration(depend_0_name, metadatum, info):
       cdawmeta.error('hapi', id, None, "HAPI.UnHandledException", "  " + msg, logger)
 
   if 'cadence' in info:
-    counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
+    counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 0, 'counts'])
     if counts is not None:
       logger.info("    No sample{Start,Stop}Date. Calculating maxRequestDuration from cadence")
       try:
@@ -640,9 +586,9 @@ def _cadence(id, depend_0_name, metadatum):
       if 'error' in depend_0_cadence_dict:
         return None, f"{id}/{depend_0_name}: No cadence information available due to {depend_0_cadence_dict['error']}."
 
-      counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
+      counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 0, 'counts'])
       if counts is not None and len(counts) > 0:
-        note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'note'])
+        note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 0, 'note'])
         cadence = counts[0]['duration_iso8601']
         fraction = counts[0]['fraction']
         cadence_info = {'cadence': cadence, 'x_cadence_fraction': fraction, 'x_cadence_note': note}
@@ -713,16 +659,6 @@ def _split_variables(id, variables):
   for name in names:
 
     variable_meta = variables[name]
-
-    if 'VarAttributes' not in variable_meta:
-      msg = f"Dropping variable '{name}' b/c it has no VarAttributes"
-      cdawmeta.error('hapi', id, name, "ISTP.NoVarAttributes", "  " + msg, logger)
-      continue
-
-    if 'VAR_TYPE' not in variable_meta['VarAttributes']:
-      msg = f"Dropping variable {id}/{name} b/c it has no has no VAR_TYPE"
-      cdawmeta.error('hapi', id, name, "ISTP.VAR_TYPE", "  " + msg, logger)
-      continue
 
     if _omit_variable(id, name):
       continue
@@ -847,53 +783,13 @@ def _description(dsid, name, variable, x=None, print_info=False):
 def _cdftimelen(cdf_type):
 
   # Based on table at https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html
-  # Could also get from PadValue or FillValue, but they are not always present (!).
+  # Could also get from PadValue or FILLVAL, but they are not always present (!).
   if cdf_type == 'CDF_EPOCH':
     return len('0000-01-01:00:00:00.000Z')
   if cdf_type == 'CDF_TIME_TT2000':
     return len('0000-01-01:00:00:00.000000000Z')
   if cdf_type == 'CDF_EPOCH16':
     return len('0000-01-01:00:00:00.000000000000Z')
-
-  return None
-
-def _default_fill(cdf_type):
-
-  if cdf_type == 'CDF_EPOCH':
-    return '9999-12-31T23:59:59.999'
-
-  if cdf_type == 'CDF_EPOCH16':
-    return '9999-12-31T23:59:59.999999999999'
-
-  if cdf_type == 'CDF_TT2000':
-    return '9999-12-31T23:59:59.999999999'
-
-  if cdf_type in ['CDF_FLOAT', 'CDF_DOUBLE', 'CDF_REAL4', 'CDF_REAL8']:
-    return "-1.0e31"
-
-  if cdf_type == 'CDF_BYTE':
-    return -128
-
-  if cdf_type == 'CDF_INT1':
-    return -128
-
-  if cdf_type == 'CDF_UINT1':
-    return 255
-
-  if cdf_type == 'CDF_INT2':
-    return -32768
-
-  if cdf_type == 'CDF_UINT2':
-    return 65535
-
-  if cdf_type == 'CDF_INT4':
-    return -2147483648
-
-  if cdf_type == 'CDF_UINT4':
-    return 4294967295
-
-  if cdf_type == 'CDF_INT8':
-    return -9223372036854775808
 
   return None
 

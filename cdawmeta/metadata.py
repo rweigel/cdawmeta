@@ -151,7 +151,7 @@ def metadata(id=None,
       try:
         get_one(datasets_all[dsid], meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception)
       except:
-        cdawmeta.exception(dsid, logger, exit_on_exception=exit_on_exception)
+        cdawmeta(dsid, logger, exit_on_exception=exit_on_exception)
   else:
     def call_get_one(dsid):
       try:
@@ -588,6 +588,9 @@ def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
           parts[1] = parts[1].replace("/", "-").replace(" ", "T") + "Z"
           parts[2] = parts[2].replace("/", "-").replace(" ", "T") + "Z"
           files.append({'Name': parts[0], 'StartTime': parts[1], 'EndTime': parts[2]})
+
+      # Last dataset
+      write_info(out_dir, dataset_name, url, files)
 
 
   url = cdawmeta.CONFIG['urls']['cdfmetafile']
