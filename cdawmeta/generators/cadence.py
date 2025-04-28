@@ -106,7 +106,7 @@ def _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache):
 
     try:
       logger.info(f"    Reading '{depend_0_name}' from CDF file")
-      data = cdawmeta.io.read_cdf(url, variables=depend_0_name, logger=None, iso8601=False)
+      data = cdawmeta.io.read_cdf(url, variables=depend_0_name, logger=logger, iso8601=False)
       logger.info(f"    Read '{depend_0_name}'")
     except Exception as e:
       emsg = f"{id}: cdawmeta.io.read_cdf("

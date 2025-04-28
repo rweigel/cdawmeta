@@ -57,16 +57,26 @@ def open_cdf(file, logger=None, cache_dir=None, use_cache=True):
   cache_dir = _cache_dir(cache_dir)
 
   if file.startswith('http'):
-    kwargs = {
-      'url2file': url2file,
-      'logger': logger,
-      'cache_dir': cache_dir,
-      'use_cache': use_cache,
-    }
+    if False:
+      kwargs = {
+        'url2file': url2file,
+        'logger': logger,
+        'cache_dir': cache_dir,
+        'use_cache': use_cache,
+      }
+      file_path = cdawmeta.util.get_file(file, **kwargs)
+      if file_path is None:
+        return None
 
-    file_path = cdawmeta.util.get_file(file, **kwargs)
-    if file_path is None:
+    # File is URL
+    file_out = os.path.join(cache_dir, url2file(file))
+    info = cdawmeta.util.get_conditional(file, file_out, stream=True, logger=logger)
+    if 'emsg' in info:
+      if logger is not None:
+        logger.error(f"Error: {file}: {info['emsg']}")
       return None
+    else:
+      file_path = info['cache_file']
 
   try:
     cdffile = cdflib.CDF(file_path)
