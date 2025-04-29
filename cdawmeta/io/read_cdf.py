@@ -4,73 +4,19 @@ import cdflib
 
 import cdawmeta
 
-def _cache_dir(dir):
-  if dir is None:
-    dir = os.path.join(cdawmeta.DATA_DIR, 'cdaweb.gsfc.nasa.gov')
-  return os.path.abspath(dir)
-
-def url2file(url):
-  return url.replace("https://cdaweb.gsfc.nasa.gov/", "")
-
-def _test_config():
-
-  kwargs = {
-    "update": False,
-    "max_workers": 1,
-    "diffs": False
-  }
-
-  tests = {
-    'AC_OR_SSC': {
-      'start': None,
-      'stop': None,
-      'depend_0s': ['Epoch'],
-      'variable': 'RADIUS'
-    },
-    'C1_WAVEFORM_WBD': {
-      'start': None,
-      'stop': None,
-      'depend_0s': ['Epoch'],
-      'variable': 'Bandwidth'
-    },
-    'BAR_1A_L2_EPHM': {
-      'start': None,
-      'stop': None,
-      'depend_0s': ['Epoch'],
-      'variable': 'Quality'
-    },
-    'VOYAGER1_10S_MAG': {
-      'start': None,
-      'stop': None,
-      'depend_0s': ['Epoch','Epoch2'],
-      'variable': 'magStatus'
-    }
-  }
-
-  for id in tests.keys():
-    tests[id]['metadata'] = cdawmeta.metadata(id=id, **kwargs)[id]
-
-  return tests
-
 def open_cdf(file, logger=None, cache_dir=None, use_cache=True):
 
   cache_dir = _cache_dir(cache_dir)
 
   if file.startswith('http'):
-    if False:
-      kwargs = {
-        'url2file': url2file,
-        'logger': logger,
-        'cache_dir': cache_dir,
-        'use_cache': use_cache,
-      }
-      file_path = cdawmeta.util.get_file(file, **kwargs)
-      if file_path is None:
-        return None
-
     # File is URL
-    file_out = os.path.join(cache_dir, url2file(file))
-    info = cdawmeta.util.get_conditional(file, file_out, stream=True, logger=logger)
+    kwargs = {
+      'logger': logger,
+      'stream': True,        # Stream to file, don't return data.
+      'use_cache': use_cache # If file exists, don't do conditional request.
+    }
+    file_out = os.path.join(cache_dir, _url2file(file))
+    info = cdawmeta.util.get_conditional(file, file_out, **kwargs)
     if 'emsg' in info:
       if logger is not None:
         logger.error(f"Error: {file}: {info['emsg']}")
@@ -119,72 +65,72 @@ def read_cdf_depend_0s_test(logger=None, cache_dir=None, use_cache=True):
 
   return ok
 
-method_map = {
-      'Block_Factor': 'BlockingFactor',
-      'Compress': 'Compress',
-      'Data_Type': 'DataTypeValue',
-      'Data_Type_Description': 'DataType',
-      'Dim_Sizes': 'DimSizes',
-      'Dim_Vary': 'DimVariances',
-      'Last_Rec': 'LastRecord',
-      'Num': 'Num',
-      'Num_Dims': 'NumDims',
-      'Num_Elements': 'NumElements',
-      'Pad': 'PadValue',
-      'Rec_Vary': 'RecVariance',
-      'Sparse': 'SparseRecords',
-      'Var_Type': 'VarType',
-      'Variable': 'VariableName',
-      'Version': 'FileVersion'
-}
-
-def _cdf_file_info(info, file=None, logger=None):
-
-  if hasattr(info, 'CDF'):
-    file_path = str(info.CDF)
-  else:
-    raise ValueError(f"No CDF attribute in cdffile.cdf_info() result for {file}")
-
-  CDFFileInfo = {"File": file_path}
-  if file is not None:
-    if file.startswith('http'):
-      CDFFileInfo['FileSource'] = file
-    if file != file_path:
-      CDFFileInfo['FileSource'] = file
-
-  unused = ['Attributes', 'CDF', 'Copyright', 'Num_rdim', 'rDim_sizes', 'rVariables', 'zVariables']
-  used = ['Checksum', 'Compressed', 'Encoding', 'Format', 'LeapSecondUpdate', 'Version']
-
-  # TODO: For Encoding, translate integer to string, e.g. 'NETWORK' appears in
-  # master CDF JSONs. In what is returned by cdflib for data CDFs, it is an integer.
-
-  for attr in used:
-    if hasattr(info, attr):
-      value = getattr(info, attr)
-    if attr in method_map:
-      attr = method_map[attr]
-    CDFFileInfo[attr] = value
-
-  if hasattr(info, 'Majority'):
-    used.append('Majority')
-    Majority = info.Majority
-    if Majority == 'Row_major':
-      Majority = 'ROW'
-    else:
-      Majority = 'COLUMN'
-    CDFFileInfo['Majority'] = Majority
-
-  knowns = [*used, *unused]
-  for attr in dir(info):
-    if attr.startswith('__'):
-      continue
-    if attr not in knowns:
-      if logger is not None:
-        logger.error(f"Unhandled attribute '{attr}' found in {file}")
-
-  return CDFFileInfo
-
 def read_cdf_meta(file, subset=False, resolve=False, logger=None, cache_dir=None, use_cache=True):
+
+  method_map = {
+        'Block_Factor': 'BlockingFactor',
+        'Compress': 'Compress',
+        'Data_Type': 'DataTypeValue',
+        'Data_Type_Description': 'DataType',
+        'Dim_Sizes': 'DimSizes',
+        'Dim_Vary': 'DimVariances',
+        'Last_Rec': 'LastRecord',
+        'Num': 'Num',
+        'Num_Dims': 'NumDims',
+        'Num_Elements': 'NumElements',
+        'Pad': 'PadValue',
+        'Rec_Vary': 'RecVariance',
+        'Sparse': 'SparseRecords',
+        'Var_Type': 'VarType',
+        'Variable': 'VariableName',
+        'Version': 'FileVersion'
+  }
+
+  def file_info(info, file=None, logger=None):
+
+    if hasattr(info, 'CDF'):
+      file_path = str(info.CDF)
+    else:
+      raise ValueError(f"No CDF attribute in cdffile.cdf_info() result for {file}")
+
+    CDFFileInfo = {"File": file_path}
+    if file is not None:
+      if file.startswith('http'):
+        CDFFileInfo['FileSource'] = file
+      if file != file_path:
+        CDFFileInfo['FileSource'] = file
+
+    unused = ['Attributes', 'CDF', 'Copyright', 'Num_rdim', 'rDim_sizes', 'rVariables', 'zVariables']
+    used = ['Checksum', 'Compressed', 'Encoding', 'Format', 'LeapSecondUpdate', 'Version']
+
+    # TODO: For Encoding, translate integer to string, e.g. 'NETWORK' appears in
+    # master CDF JSONs. In what is returned by cdflib for data CDFs, it is an integer.
+
+    for attr in used:
+      if hasattr(info, attr):
+        value = getattr(info, attr)
+      if attr in method_map:
+        attr = method_map[attr]
+      CDFFileInfo[attr] = value
+
+    if hasattr(info, 'Majority'):
+      used.append('Majority')
+      Majority = info.Majority
+      if Majority == 'Row_major':
+        Majority = 'ROW'
+      else:
+        Majority = 'COLUMN'
+      CDFFileInfo['Majority'] = Majority
+
+    knowns = [*used, *unused]
+    for attr in dir(info):
+      if attr.startswith('__'):
+        continue
+      if attr not in knowns:
+        if logger is not None:
+          logger.error(f"Unhandled attribute '{attr}' found in {file}")
+
+    return CDFFileInfo
 
   cache_dir = _cache_dir(cache_dir)
 
@@ -195,7 +141,7 @@ def read_cdf_meta(file, subset=False, resolve=False, logger=None, cache_dir=None
   depend_0s = []
   info = cdffile.cdf_info()
 
-  CDFFileInfo = _cdf_file_info(info, file=file, logger=logger)
+  CDFFileInfo = file_info(info, file=file, logger=logger)
 
   CDFglobalAttributes = cdffile.globalattsget()
   for key, val in CDFglobalAttributes.items():
@@ -237,13 +183,6 @@ def read_cdf_meta(file, subset=False, resolve=False, logger=None, cache_dir=None
             if 'PTR' in key:
               meta_subsetted[depend_0][variable][key] = cdffile.varget(variable=meta[variable][key])
     return meta_subsetted
-
-
-  if False:
-    CDFVariables = []
-    for variable in meta.keys():
-      CDVVariable = { variable: meta[variable] }
-      CDFVariables.append(CDVVariable)
 
   metadatum = {
         "CDFFileInfo": CDFFileInfo,
@@ -363,6 +302,36 @@ def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601
 
   return meta
 
+def files(id=id, start=None, stop=None, logger=None, cache_dir=None, update=False):
+
+  cache_dir = _cache_dir(cache_dir)
+
+  if logger is not None:
+    logger.info(f"Getting file URLs for {id} between {start} and {stop}")
+
+  metadata = cdawmeta.metadata(id=id, meta_type='orig_data', update=update, embed_data=True, write_catalog=False)
+  files_all = metadata[id]['orig_data']['data']['FileDescription']
+  if logger is not None:
+    logger.info(f"Total of {len(files_all)} URLs for {id}")
+
+  files_needed = []
+  start = cdawmeta.util.pad_iso8601(start.strip())
+  stop = cdawmeta.util.pad_iso8601(stop.strip())
+  #print(start, stop)
+  for file in files_all:
+    #print(file['StartTime'], file['EndTime'], file['Name'].split('/')[-1])
+    file_start = file['StartTime'].strip().replace("Z", "")
+    file_stop = file['EndTime'].strip().replace("Z", "")
+    if file_start >= start[0:len(file_start)]:
+      files_needed.append(file['Name'])
+    if file_stop >= stop:
+      break
+
+  if logger is not None:
+    logger.info(f"Total {len(files_needed)} URLs for {id} between {start} and {stop}")
+
+  return files_needed
+
 def read_cdf_test1(id=None, depend_0=None, variable=None):
   """
   Read a data variable from three files with the three different DataTypes
@@ -445,7 +414,55 @@ def read_cdf_test2(id=None, depend_0=None, variable=None):
   data = read_cdf(file, variables=variable, depend_0=depend_0, iso8601=False)
   cdawmeta.util.print_dict(data, sort_dicts=True)
 
-def subset_meta(meta, DEPEND_0=None, VAR_TYPE='data', RecVariance=True):
+def _cache_dir(dir):
+  if dir is None:
+    dir = os.path.join(cdawmeta.DATA_DIR, 'cdaweb.gsfc.nasa.gov')
+  return os.path.abspath(dir)
+
+def _url2file(url):
+  return url.replace("https://cdaweb.gsfc.nasa.gov/", "")
+
+def _test_config():
+
+  kwargs = {
+    "update": False,
+    "max_workers": 1,
+    "diffs": False
+  }
+
+  tests = {
+    'AC_OR_SSC': {
+      'start': None,
+      'stop': None,
+      'depend_0s': ['Epoch'],
+      'variable': 'RADIUS'
+    },
+    'C1_WAVEFORM_WBD': {
+      'start': None,
+      'stop': None,
+      'depend_0s': ['Epoch'],
+      'variable': 'Bandwidth'
+    },
+    'BAR_1A_L2_EPHM': {
+      'start': None,
+      'stop': None,
+      'depend_0s': ['Epoch'],
+      'variable': 'Quality'
+    },
+    'VOYAGER1_10S_MAG': {
+      'start': None,
+      'stop': None,
+      'depend_0s': ['Epoch','Epoch2'],
+      'variable': 'magStatus'
+    }
+  }
+
+  for id in tests.keys():
+    tests[id]['metadata'] = cdawmeta.metadata(id=id, **kwargs)[id]
+
+  return tests
+
+def _subset_meta(meta, DEPEND_0=None, VAR_TYPE='data', RecVariance=True):
 
   if DEPEND_0 is not None:
     depend_0s = [DEPEND_0]
@@ -476,36 +493,6 @@ def subset_meta(meta, DEPEND_0=None, VAR_TYPE='data', RecVariance=True):
     return meta_sub[DEPEND_0]
 
   return meta_sub
-
-def files(id=id, start=None, stop=None, logger=None, cache_dir=None, update=False):
-
-  cache_dir = _cache_dir(cache_dir)
-
-  if logger is not None:
-    logger.info(f"Getting file URLs for {id} between {start} and {stop}")
-
-  metadata = cdawmeta.metadata(id=id, meta_type='orig_data', update=update, embed_data=True, write_catalog=False)
-  files_all = metadata[id]['orig_data']['data']['FileDescription']
-  if logger is not None:
-    logger.info(f"Total of {len(files_all)} URLs for {id}")
-
-  files_needed = []
-  start = cdawmeta.util.pad_iso8601(start.strip())
-  stop = cdawmeta.util.pad_iso8601(stop.strip())
-  #print(start, stop)
-  for file in files_all:
-    #print(file['StartTime'], file['EndTime'], file['Name'].split('/')[-1])
-    file_start = file['StartTime'].strip().replace("Z", "")
-    file_stop = file['EndTime'].strip().replace("Z", "")
-    if file_start >= start[0:len(file_start)]:
-      files_needed.append(file['Name'])
-    if file_stop >= stop:
-      break
-
-  if logger is not None:
-    logger.info(f"Total {len(files_needed)} URLs for {id} between {start} and {stop}")
-
-  return files_needed
 
 if __name__ == '__main__':
 

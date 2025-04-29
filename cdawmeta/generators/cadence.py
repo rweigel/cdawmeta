@@ -20,9 +20,8 @@ def cadence(metadatum, logger):
 
   use_cache = True
   # N.B. use_cache=True is set. This assumes that content for a given file
-  # name is constant. If not, would need to use use_cache=update and have
-  # read_file() handle headers to determine if content has changed and a
-  # re-download is needed.
+  # name is constant. If not, would need to pass the keyword argument update
+  # and set use_cache = not update.
 
   id = metadatum['id']
 
@@ -67,7 +66,7 @@ def _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache):
   logger.info(f"  Extracting DEPEND_0 names from {url}")
 
   try:
-    depend_0_names = cdawmeta.io.read_cdf_depend_0s(url, logger=None, use_cache=use_cache)
+    depend_0_names = cdawmeta.io.read_cdf_depend_0s(url, logger=logger, use_cache=use_cache)
   except Exception as e:
     emsg = f"  cdawmeta.io.read_cdf_depend_0s('{url}') failed with error: {e}"
     emsg  = emsg + "\n" + _trace()

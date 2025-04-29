@@ -36,9 +36,7 @@ def generate(metadatum, gen_name, logger,
       cdawmeta.util.write(file_name_error, datasets['error'])
       return {'id': id, 'log': None, 'error': datasets['error'], 'data-file': None, 'data': None}
   except Exception as e:
-    logger.info(f"Writing {file_name_error}")
-    cdawmeta.util.write(file_name_error, datasets['error'])
-    cdawmeta.exception(id, logger, exit_on_exception=exit_on_exception)
+    emsg = cdawmeta.exception(id, logger, exit_on_exception=exit_on_exception)
     return {'id': id, 'log': None, 'error': emsg, 'data-file': None, 'data': None}
 
   if os.path.exists(file_name_error):

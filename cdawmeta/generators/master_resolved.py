@@ -43,7 +43,7 @@ def master_resolved(metadatum, logger):
 
     logger.info(f"  {variable_name}")
     if variable_name in variables_removed:
-      logger.info(f"{indent} Skipping b/c removed.")
+      logger.info(f"{indent}Skipping b/c removed.")
       continue
 
     variable = variables[variable_name]
@@ -101,7 +101,7 @@ def master_resolved(metadatum, logger):
 
     if DEPEND is not None and DEPEND == LABL_PTR:
       emsg = f"{indent}DEPEND == LABL_PTR. Removing redundant DEPEND and DEPEND_{{1,2,3}}"
-      cdawmeta.error('master_resolved', id, None, "CDF.DEPENDsEqualLABL_PTR", emsg, logger)
+      cdawmeta.error('master_resolved', id, variable_name, "CDF.DEPENDsEqualLABL_PTR", emsg, logger)
       del variable['VarAttributes']['x_DEPEND']
       for i in [1, 2, 3]:
         # TODO: This could create a metadata variable that is not referenced.
@@ -210,7 +210,7 @@ def _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_na
   VAR_TYPE = variables[variable_name]['VarAttributes'].get('VAR_TYPE', None)
   if ptr_name.startswith('DEPEND') and VAR_TYPE != 'support_data':
     emsg = f"{msgo}with VAR_TYPE = '{VAR_TYPE}' which is not 'support_data'."
-    cdawmeta.error('master_resolved', id, ptr_var, "CDF.InvalidDependPtrVarType", emsg, logger)
+    cdawmeta.error('master_resolved', id, variable_name, "CDF.InvalidDependPtrVarType", emsg, logger)
 
   if ptr_name.startswith('DEPEND') or ptr_name.startswith('COMPONENT') or ptr_name.startswith('LABL_PTR'):
     ptr_name_end = ptr_name.split('_')[-1]
@@ -303,12 +303,17 @@ def _check_variable(id, variable_name, variables, logger):
     cdawmeta.error('hapi', id, variable_name, "CDF.MissingFillValue", emsg, logger)
     # Could use _default_fill()
   else:
+    # TODO: Check that FILLVAL is the ISTP convention value
     if isinstance(FILLVAL, str) and FILLVAL.lower() != 'nan':
-      if DataType not in ['CDF_CHAR', 'CDF_UCHAR']:
-        emsg = f"{indent}{variable_name}: FILLVAL = '{FILLVAL}' is string but DataType = {DataType} is not. {removing}"
+      # Even though CDF_EPOCH, CDF_EPOCH16, CDF_TIME_TT2000 are not stored as
+      # strings, their fill are.
+      string_fills = ['CDF_CHAR', 'CDF_UCHAR', 'CDF_EPOCH', 'CDF_EPOCH16', 'CDF_TIME_TT2000']
+      if DataType not in string_fills:
+        emsg = f"{indent}{variable_name}: FILLVAL = '{FILLVAL}' is string but DataType = {DataType} is not on of {string_fills}. {removing}"
         cdawmeta.error('hapi', id, variable_name, "CDF.WrongFillType", emsg, logger)
         del variables[variable_name]
         return variable_name
+
 
   if VAR_TYPE == 'data' and DataType in ['CDF_CHAR', 'CDF_UCHAR']:
     # C1_JP_PSE
@@ -324,16 +329,17 @@ def _check_variable(id, variable_name, variables, logger):
 
     if PadValue is not None:
       if FILLVAL is not None:
-        if type(PadValue) is not type(FILLVAL):
+        if type(PadValue) is type(FILLVAL):
+          if len(PadValue) != len(FILLVAL):
+            emsg = f"{indent}{variable_name}: len(PadValue) = {len(PadValue)} != len(FILLVAL) = {len(FILLVAL)}. {removing}"
+            cdawmeta.error('hapi', id, variable_name, "CDF.LengthMismatch", emsg, logger)
+            #del variables[variable_name]
+            #return variable_name
+        else:
           emsg = f"{indent}{variable_name}: type(PadValue) = {type(PadValue)} != type(FILLVAL) = {type(FILLVAL)}. {removing}"
           cdawmeta.error('hapi', id, variable_name, "CDF.PadValueFILLVALTypeMismatch", emsg, logger)
-          del variables[variable_name]
-          return variable_name
-        if len(PadValue) != len(FILLVAL):
-          emsg = f"{indent}{variable_name}: len(PadValue) = {len(PadValue)} != len(FILLVAL) = {len(FILLVAL)}. {removing}"
-          cdawmeta.error('hapi', id, variable_name, "CDF.LengthMismatch", emsg, logger)
-          del variables[variable_name]
-          return variable_name
+          #del variables[variable_name]
+          #return variable_name
 
   NumDims = variable['VarDescription'].get('NumDims', None)
   #logger.info(f"{indent}NumDims: {NumDims}")
@@ -447,7 +453,7 @@ def _DISPLAY_TYPE(dsid, variable_name, variable, logger):
   if 'DISPLAY_TYPE' not in variable['VarAttributes']:
     if variable['VarAttributes'].get('VAR_TYPE') == 'data':
       emsg = f"{indent}{variable_name} DISPLAY_TYPE for variable with VAR_TYPE = 'data'."
-      cdawmeta.error('master_resolved', id, variable_name, "ISTP.DISPLAY_TYPEMissing", emsg, logger)
+      cdawmeta.error('master_resolved', dsid, variable_name, "ISTP.DISPLAY_TYPEMissing", emsg, logger)
     return None
 
   display_type = variable['VarAttributes']['DISPLAY_TYPE']
@@ -461,27 +467,28 @@ def _DISPLAY_TYPE(dsid, variable_name, variable, logger):
 
   if display_type.strip() == '':
     emsg = f"{indent}{variable_name} DISPLAY_TYPE.strip() = ''. Removing attribute DISPLAY_TYPE."
-    cdawmeta.error('master_resolved', id, variable_name, "ISTP.DISPLAY_TYPEEmpty", emsg, logger)
+    cdawmeta.error('master_resolved', dsid, variable_name, "ISTP.DISPLAY_TYPEEmpty", emsg, logger)
     del variable['VarAttributes']['DISPLAY_TYPE']
+    return None
 
   display_types_known = cdawmeta.CONFIG['master_resolved']['DISPLAY_TYPES']
 
-  if display_type not in display_types_known:
-    emsg = f"{indent}{variable_name} DISPLAY_TYPE = '{display_type}' is not in "
-    emsg += f"{display_types_known}. Will attempt to infer."
-    cdawmeta.error('master_resolved', id, variable_name, "ISTP.DISPLAY_TYPEUnknown", emsg, logger)
+  if display_type.strip() != '':
+    if display_type not in display_types_known:
+      emsg = f"{indent}{variable_name} DISPLAY_TYPE = '{display_type}' is not in "
+      emsg += f"{display_types_known}. Will attempt to infer using DISPLAY_TYPE.strip().lower()."
+      cdawmeta.error('master_resolved', dsid, variable_name, "ISTP.DISPLAY_TYPEUnknown", emsg, logger)
 
   found = False
   for display_type in display_types_known:
     if display_type.strip().lower().startswith(display_type):
       found = True
       display_type = display_type.strip().lower()
-      break
 
   if not found:
-    emsg += "{indent}{variable_name}'DISPLAY_TYPE.strip().lower() = "
+    emsg += "{indent}{variable_name} DISPLAY_TYPE.strip().lower() = "
     emsg += f"'{display_type}' does not start with one of {display_types_known}"
-    cdawmeta.error('master_resolved', id, variable_name, "ISTP.DISPLAY_TYPEUnknown", emsg, logger)
+    cdawmeta.error('master_resolved', dsid, variable_name, "ISTP.DISPLAY_TYPEUnknown", emsg, logger)
     return None
 
   return display_type + display_type_attributes
@@ -521,6 +528,8 @@ def _LABLAXIS(id, variable, logger):
       emsg = f"{indent}LABLAXIS = {LABLAXIS} is not a string. Casting to string."
       cdawmeta.error('master_resolved', id, None, "CDF.LABLAXISNotString", emsg, logger)
       LABLAXIS = cdawmeta.util.trim(str(LABLAXIS))
+
+  return LABLAXIS
 
 def _LABL_PTR(id, variable_name, variables, variables_removed, logger):
 

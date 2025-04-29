@@ -631,19 +631,22 @@ def _order_variables(id, variables):
 
   order_wanted = fixes['variableOrder'][id]
   order_given = variables.keys()
-  if len(order_wanted) != len(order_wanted):
-    logger.error(f'Error[HAPI]: {id}\n  Number of variables in new order list ({len(order_wanted)}) does not match number found in dataset ({len(order_given)})')
-    logger.error(f'  New order:   {order_wanted}')
-    logger.error(f'  Given order: {list(order_given)}')
-    logger.error('  Exiting with code 1')
-    exit(1)
+  if len(order_wanted) != len(order_given):
+    diff_new = set(order_wanted) - set(order_given) or None
+    diff_given = set(order_given) - set(order_wanted) or None
+    emsg = "Number of variables in new order list from hapi.json "
+    emsg += f"({len(order_wanted)}) does not match number found in dataset ({len(order_given)})\n"
+    emsg += f"  Variables in new order but not in dataset: {diff_new}\n"
+    emsg += f"  Variables in found in dataset but not in new order: {diff_given}\n"
+    cdawmeta.error('hapi', id, None, "HAPI.BadConfig", emsg, logger)
+    raise Exception(emsg)
 
-  if sorted(order_wanted) != sorted(order_wanted):
-    logger.error(f'Error[HAPI]: {id}\n  Mismatch in variable names between new order list and dataset')
-    logger.error(f'  New order:   {order_wanted}')
-    logger.error(f'  Given order: {list(order_given)}')
-    logger.error('  Exiting with code 1')
-    exit(1)
+  if sorted(order_wanted) != sorted(order_given):
+    emsg = 'Mismatch in unique variable names between new order list from hapi.json and that found in dataset\n'
+    emsg += f'  New order:   {order_wanted}\n'
+    emsg += f'  Found order: {list(order_given)}\n'
+    cdawmeta.error('hapi', id, None, "HAPI.BadConfig", emsg, logger)
+    raise Exception(emsg)
 
   return {k: variables[k] for k in order_wanted}
 
@@ -721,6 +724,7 @@ def _omit_dataset(id, depend_0=None):
   return False
 
 def _omit_variable(id, variable_name):
+
   fixes = cdawmeta.CONFIG['hapi']['fixes']
 
   for key in list(fixes['omitVariables'].keys()):

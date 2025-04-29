@@ -10,6 +10,7 @@ def exception(dsid, logger, exit_on_exception=False):
   if exit_on_exception:
     logger.error("Exiting due to exit_on_exception command line argument.")
     os._exit(1)
+  return msg
 
 def error(generator, id, name, etype, msg, logger):
 
@@ -50,7 +51,7 @@ def write_errors(logger, update, id=None, name=None):
   if name == "metadata":
     subdir = ''
   else:
-    subdir = name
+    subdir = os.path.join(name, 'errors')
 
   if id is not None:
     if name == "metadata":
@@ -68,7 +69,7 @@ def write_errors(logger, update, id=None, name=None):
     _remove_errors(subdir, logger)
 
   for key in output.keys():
-    fname = os.path.join(cdawmeta.DATA_DIR, subdir, f'{name}.errors.{key}.log')
+    fname = os.path.join(cdawmeta.DATA_DIR, subdir, f'{key}.log')
     logger.info(f"Writing {fname}")
     cdawmeta.util.write(fname, "\n".join(output[key]))
 
