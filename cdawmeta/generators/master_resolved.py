@@ -278,7 +278,7 @@ def _check_variable(id, variable_name, variables, logger):
     return variable_name
 
   if VAR_TYPE not in var_types:
-    emsg = f"{indent}  {variable_name} VAR_TYPE = '{VAR_TYPE}' which is not in {var_types}."
+    emsg = f"{indent}  {variable_name} VAR_TYPE = '{VAR_TYPE}' which is not in ."
     cdawmeta.error('master_resolved', id, variable_name, "CDF.NoVarAttributes", emsg, logger)
     del variables[variable_name]
     return variable_name
@@ -476,7 +476,7 @@ def _DISPLAY_TYPE(dsid, variable_name, variable, logger):
   if display_type.strip() != '':
     if display_type not in display_types_known:
       emsg = f"{indent}{variable_name} DISPLAY_TYPE = '{display_type}' is not in "
-      emsg += f"{display_types_known}. Will attempt to infer using DISPLAY_TYPE.strip().lower()."
+      emsg += "list of known display types. Will attempt to infer using DISPLAY_TYPE.strip().lower()."
       cdawmeta.error('master_resolved', dsid, variable_name, "ISTP.DISPLAY_TYPEUnknown", emsg, logger)
 
   found = False

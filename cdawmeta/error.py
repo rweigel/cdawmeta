@@ -32,46 +32,118 @@ def error(generator, id, name, etype, msg, logger):
 
 error.errors = {}
 
-def write_errors(logger, update, id=None, name=None):
+def write_errors(logger, update, id=None, meta_type=None):
   '''
-  Write all errors to a single file if all datasets were requested. Errors
-  were already written to log file, but here we need to do additional formatting
-  that is more difficult if errors were written as they occur.
+  Writes errors for a given generated metadata type, META_TYPE (e.g., cadence,
+  master_resolved, hapi). Files written are:
+
+  * META_TYPE/errors/all.log, containing all errors for all datasets.
+
+  * META_TYPE/errors/ERRORID1.log, errors/ERRORID2.log, etc. Each file contains errors
+  for all datasets. If keyword `id` is given (`id` can be a dataset id or a
+  a dataset id pattern), then a partial run was performed and the errors are
+  written to errors/partial/ID.
+
+  * META_TYPE/info/DATASETID1.errors.log, META_TYPE/info/DATASETID2.errors.log, etc.
+  containing all errors for that dataset.
+
   '''
   import os
   import cdawmeta
 
-  if name is None:
+  """
+  At this point, error.errors has the form
+  meta_type1
+    dataset_id1
+      error_id1
+        variable_id1: [error_id1_message]
+        ...
+      ...
+  ...
+  """
+
+  if meta_type is None:
     for key in error.errors.keys():
-      write_errors(logger, update, id=id, name=key)
+      write_errors(logger, update, id=id, meta_type=key)
     return
 
-  output = _create_log(cdawmeta.error.errors[name])
-
-  if name == "metadata":
+  if meta_type == "metadata":
     subdir = ''
   else:
-    subdir = os.path.join(name, 'errors')
+    subdir = os.path.join(meta_type, 'errors')
 
   if id is not None:
-    if name == "metadata":
+    if meta_type == "metadata":
       subdir = os.path.join(subdir, 'metadata-partial', id)
     else:
       subdir = os.path.join(subdir, 'partial', id)
 
-  if name == "metadata" and not update:
-    # If not updating, there will not be name = "metadata" errors because
+  if meta_type == "metadata" and not update:
+    # If not updating, there will not be meta_type = "metadata" errors because
     # cache will have been used. We don't want to over-write errors that
     # occurred during the last update.
-    logger.info("Not removing or writing errors for 'metadata' because update = False")
+    msg = "Not removing or writing errors for 'metadata' because update = False"
+    logger.info(msg)
     return
   else:
     _remove_errors(subdir, logger)
 
+  errors_ = cdawmeta.error.errors[meta_type]
+  """
+  errors_ has the form
+    dataset_id
+      error_id1
+        variable_id1: [error_id1_message]
+        ...
+      ...
+  """
+  if meta_type != "metadata":
+    for dsid in errors_.keys():
+      fname = os.path.join(cdawmeta.DATA_DIR, meta_type, 'info', f'{dsid}.errors.json')
+      logger.info(f"Writing {fname}")
+      tmp = _transform_errors(dsid, errors_, meta_type)
+      #if meta_type == "master_resolved":
+      #  fname_master = os.path.join(cdawmeta.DATA_DIR, "master", 'info', f'{dsid}.errors.skt.log')
+      cdawmeta.util.print_dict(tmp)
+      #cdawmeta.util.write(fname, tmp)
+
+  output = _create_log(cdawmeta.error.errors[meta_type])
+
   for key in output.keys():
+    # Keys are "all", "error_id1", "error_id2", etc.
+    # Write files with keys as names.
     fname = os.path.join(cdawmeta.DATA_DIR, subdir, f'{key}.log')
     logger.info(f"Writing {fname}")
     cdawmeta.util.write(fname, "\n".join(output[key]))
+
+def _read_skt_errors(file_path):
+  errors_dict = {"_": []}  # Global errors will be stored under the "_" key
+  current_variable = None
+  with open(file_path, "r") as file:
+    lines = file.readlines()
+
+  for line in lines:
+    indent_level = len(line) - len(line.lstrip())
+
+    # Check for global errors
+    if line.startswith("Global errors:"):
+      current_variable = "_"  # Use "_" as the key for global errors
+
+    # Check for non-ISTP-compliant variables
+    elif line.startswith("The following variables are not ISTP-compliant:"):
+      current_variable = None  # Reset current variable
+
+    # Detect variable names (e.g., Epoch, RADIUS)
+
+    elif indent_level == 1 and current_variable != '_':
+      current_variable = line.strip()
+      errors_dict[current_variable] = []  # Initialize a list for this variable
+
+    # Add errors or warnings to the current variable
+    elif current_variable is not None:
+      errors_dict[current_variable].append(line.strip())
+
+  return errors_dict
 
 def _remove_errors(subdir, logger):
   import glob
@@ -84,27 +156,81 @@ def _remove_errors(subdir, logger):
     logger.info(f"Removing {file}")
     os.remove(file)
 
+def _transform_errors(dsid, errors_, meta_type):
+
+  if meta_type == "master_resolved":
+    import cdawmeta
+    fname_master = os.path.join(cdawmeta.DATA_DIR, "master", 'info', f'{dsid}.errors.skt.log')
+    skt = _read_skt_errors(fname_master)
+
+  result = {}
+
+  for error_id, variables in errors_[dsid].items():
+    for variable_id, messages in variables.items():
+      if variable_id not in result:
+        result[variable_id] = {}
+      # Assuming there's only one message per list
+      result[variable_id][error_id] = messages[0]
+      if meta_type == "master_resolved":
+        # Add SKT errors if present
+        if variable_id in skt:
+          result[variable_id]["SKT"] = skt[variable_id]
+
+  return result
+
 def _create_log(errors):
+  """
+  Converts input error dict from
+  dsid1
+    error_id1
+      varid1: error_id1msg
+      varid2: error_id1msg
+      ...
+    ...
+  dsid2
+    ...
+
+  to
+
+  all
+    dsid1 | etypeA:
+      varid1: etypeAmsg
+      varid1: etypeBmsg
+      ...
+    ...
+  etypeA
+    dsid1
+      varid1: error_id1msg
+      varid1: error_id1msg
+    ...
+  ...
+  """
+
   output = {"all": []}
+  # errors.copy().items() = 
+  #   [ ('dsid1', 'etypeA'), ('dsid1', 'etypeC'), 
+  #     ('dsid2', 'etypeA'), ('dsid2', 'etypeB')
+  #   ]
   for dsid, etypes in errors.copy().items():
     for etype, variables in etypes.items():
       if etype not in output:
         output[etype] = []
 
-      output['all'].append(f"{dsid}:")
-      output[etype].append(f"{dsid}:")
+      output['all'].append(f"{dsid} | {etype}:")
+      output[etype].append(f"{dsid} | {etype}:")
 
       for vid, msgs in variables.items():
         if len(msgs) == 1:
-          line = f"  {vid}: {etype}: {msgs[0]}"
+          line = f"  {vid}: {msgs[0]}"
           output['all'].append(line)
           output[etype].append(line)
         else:
-          line = f"  {vid} {etype}:"
+          line = f"  {vid}:"
           output['all'].append(line)
           output[etype].append(line)
           for msg in msgs:
             line = f"    {msg}"
             output['all'].append(line)
             output[etype].append(line)
+
   return output
