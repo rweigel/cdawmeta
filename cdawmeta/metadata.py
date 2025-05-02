@@ -130,16 +130,19 @@ def metadata(id=None,
   dsids = ids(id=id, id_skip=id_skip, update=update)
 
   # Create base datasets using info in all.xml
-  allxml_data = _allxml(update=update)
+  update_ = _step_needed('spase_hpde_io', 'update', update, update_skip)
+  allxml_data = _allxml(update=update_)
   datasets_all = _datasets(allxml_data)
 
   if 'spase_hpde_io' in meta_types:
-      _spase_hpde_io(update=update, diffs=diffs)
+    update_ = _step_needed('spase_hpde_io', 'update', update, update_skip)
+    _spase_hpde_io(update=update, diffs=diffs)
 
   if 'cdfmetafile' in meta_types:
+    update_ = _step_needed('cdfmetafile', 'update', update, update_skip)
     # This will create or update files in cdfmetafile/info/
     # When _cdfmetafile is called later with a dataset, it is called with update=False
-    _cdfmetafile(None, update=update, exit_on_exception=exit_on_exception)
+    _cdfmetafile(None, update=update_, exit_on_exception=exit_on_exception)
 
   # meta_types that do not require execution of a function in cdawmeta/generators/
   # The code that creates metadata is in this script.
@@ -170,7 +173,7 @@ def metadata(id=None,
   if regen or update:
     # Only write error logs if regenerating or updating. If not, cache is
     # used and errors are not encountered because no metadata is generated.
-    cdawmeta.write_errors(logger, update, id=id)
+    cdawmeta.write_errors(logger, update, id, dsids)
 
   if write_catalog:
     if meta_types_requested is None:
@@ -331,7 +334,6 @@ def _datasets(allxml_data):
   return datasets_
 
 def allxml(update=False, diffs=False, log_level='info'):
-  logger = _logger(log_level=log_level)
 
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['allxml']
   allurl = cdawmeta.CONFIG['urls']['all.xml']
@@ -627,8 +629,6 @@ def _write_combined(metadata_, id, meta_types):
 
   from copy import deepcopy
 
-  logger.info("----")
-
   if isinstance(meta_types, str):
     meta_types = [meta_types]
 
@@ -769,6 +769,7 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
   result['request']["file-header"] = dict(get['response'].headers)
 
   logger.info(result['request']["log"])
+  #logger.debug(result['request']["log"])
 
   if os.path.exists(json_file) and get['response'].from_cache:
     logger.info(f"File {json_file} exists and response was from cache. Not re-writing it.")
