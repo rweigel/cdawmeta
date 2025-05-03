@@ -124,7 +124,7 @@ def _read_skt_errors(file_path):
 
   for line in lines:
     indent_level = len(line) - len(line.lstrip())
-
+    line = line.strip()
     # Check for global errors
     if line.startswith("Global errors:"):
       current_variable = "_"  # Use "_" as the key for global errors
@@ -136,12 +136,12 @@ def _read_skt_errors(file_path):
     # Detect variable names (e.g., Epoch, RADIUS)
 
     elif indent_level == 1 and current_variable != '_':
-      current_variable = line.strip()
+      current_variable = line
       errors_dict[current_variable] = []  # Initialize a list for this variable
 
     # Add errors or warnings to the current variable
     elif current_variable is not None:
-      errors_dict[current_variable].append(line.strip())
+      errors_dict[current_variable].append(line)
 
   return errors_dict
 
