@@ -42,17 +42,22 @@ def start_stop(metadatum, logger):
   stopDate = _all_timestamp(metadatum['allxml'], 'stop')
 
   if num_files > 0:
-    startDate_files = file_list["FileDescription"][0]["StartTime"]
-    startDate = _update_timestamp(id, startDate_files, startDate, "start", logger)
-    stopDate_files = file_list["FileDescription"][-1]["EndTime"]
-    stopDate = _update_timestamp(id, stopDate_files, stopDate, "stop", logger)
-
-  if num_files > 0:
     if cdawmeta.util.pad_iso8601(sampleFile["StartTime"]) > cdawmeta.util.pad_iso8601(sampleFile["EndTime"]):
       emsg = f"StartTime ({sampleFile['StartTime']}) > EndTime ({sampleFile['EndTime']}) in {FILE_LIST}['data']['FileDescription']"
       cdawmeta.error('start_stop', id, None, "CDF.NoFiles", emsg, logger)
 
-  range = {"startDate": startDate, "stopDate": stopDate}
+    startDate_files = file_list["FileDescription"][0]["StartTime"]
+    startDate, startDateSource = _update_timestamp(id, startDate_files, startDate, "start", logger)
+    stopDate_files = file_list["FileDescription"][-1]["EndTime"]
+    stopDate, stopDateSource = _update_timestamp(id, stopDate_files, stopDate, "stop", logger)
+
+  range = {
+    "startDate": startDate,
+    "startDateSource": startDateSource,
+    "stopDate": stopDate,
+    "stopDateSource": stopDateSource
+  }
+
   if num_files > 0:
     url = metadatum[FILE_LIST]["url"]
     range["sampleStartDate"] = sampleFile["StartTime"]
@@ -82,11 +87,18 @@ def _update_timestamp(id, date_file_list, date_allxml, which, logger):
   date_file_list_x = date_file_list.translate(translates)
   date_allxml_x = date_allxml.translate(translates)
   min_len = min(len(date_file_list_x), len(date_allxml_x))
+
   if which == 'start' and date_file_list_x[0:min_len] < date_allxml_x[0:min_len]:
     emsg = f"{which}Date ({date_file_list}) determined from {FILE_LIST} < {which}Date ({date_allxml}) from all.xml. Using {FILE_LIST} value."
     cdawmeta.error('start_stop', id, None, "HAPI.StartStopMismatch", emsg, logger)
+    return date_file_list, FILE_LIST
+  else:
+    return date_allxml, 'all.xml'
+
   if which == 'stop' and date_file_list_x[0:min_len] > date_allxml_x[0:min_len]:
     emsg = f"{which}Date ({date_file_list}) determined from {FILE_LIST} > {which}Date ({date_allxml}) from all.xml. Using {FILE_LIST} value."
     cdawmeta.error('start_stop', id, None, "HAPI.StartStopMismatch", emsg, logger)
+    return date_file_list, FILE_LIST
+  else:
+    return date_allxml, 'all.xml'
 
-  return date_file_list

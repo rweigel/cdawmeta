@@ -12,24 +12,24 @@ def open_cdf(file, logger=None, cache_dir=None, use_cache=True):
     # File is URL
     kwargs = {
       'logger': logger,
-      'stream': True,        # Stream to file, don't return data.
-      'use_cache': use_cache # If file exists, don't do conditional request.
+      'stream': True        # Stream to file, don't return data.
     }
     file_out = os.path.join(cache_dir, _url2file(file))
-    info = cdawmeta.util.get_conditional(file, file_out, **kwargs)
-    if 'emsg' in info:
-      if logger is not None:
-        logger.error(f"Error: {file}: {info['emsg']}")
-      return None
+    if use_cache and os.path.exists(file_out) and logger is not None:
+      logger.info("use_cache = True and cached file found. Using it.")
     else:
-      file_path = info['cache_file']
+      info = cdawmeta.util.get_conditional(file, file_out, **kwargs)
+      if 'emsg' in info:
+        if logger is not None:
+          logger.error(f"Error: {file}: {info['emsg']}")
+        return None
 
   try:
-    cdffile = cdflib.CDF(file_path)
+    cdffile = cdflib.CDF(file_out)
     return cdffile
   except Exception as e:
     if logger is not None:
-      logger.error(f"Error opening {file_path}: {e}")
+      logger.error(f"Error opening {file_out}: {e}")
 
 def read_cdf_depend_0s(file, logger=None, cache_dir=None, use_cache=True):
 

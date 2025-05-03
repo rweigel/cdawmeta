@@ -3,12 +3,11 @@ import os
 def exception(dsid, logger, exit_on_exception=False):
   import traceback
   trace = traceback.format_exc().strip()
-  home_dir = os.path.expanduser("~")
-  trace = trace.replace(home_dir, "~")
+  trace = trace.replace(os.path.expanduser("~"), "~")
   msg = f"{dsid}:\n{trace}"
   error('metadata', dsid, None, 'UnHandledException', msg, logger)
   if exit_on_exception:
-    logger.error("Exiting due to exit_on_exception command line argument.")
+    logger.error("Exiting due to exit-on-exception command line argument.")
     os._exit(1)
   return msg
 
@@ -32,7 +31,7 @@ def error(generator, id, name, etype, msg, logger):
 
 error.errors = {}
 
-def write_errors(logger, update, id=None, meta_type=None):
+def write_errors(logger, update, id, ids, meta_type=None):
   '''
   Writes errors for a given generated metadata type, META_TYPE (e.g., cadence,
   master_resolved, hapi). Files written are:
@@ -64,7 +63,7 @@ def write_errors(logger, update, id=None, meta_type=None):
 
   if meta_type is None:
     for key in error.errors.keys():
-      write_errors(logger, update, id=id, meta_type=key)
+      write_errors(logger, update, id=id, ids=ids, meta_type=key)
     return
 
   if meta_type == "metadata":
@@ -73,6 +72,7 @@ def write_errors(logger, update, id=None, meta_type=None):
     subdir = os.path.join(meta_type, 'errors')
 
   if id is not None:
+    # Partial run - id is a pattern or a single dataset id.
     if meta_type == "metadata":
       subdir = os.path.join(subdir, 'metadata-partial', id)
     else:
@@ -86,6 +86,7 @@ def write_errors(logger, update, id=None, meta_type=None):
     logger.info(msg)
     return
   else:
+    # Remove errors in META_TYPE/errors
     _remove_errors(subdir, logger)
 
   errors_ = cdawmeta.error.errors[meta_type]
@@ -98,16 +99,18 @@ def write_errors(logger, update, id=None, meta_type=None):
       ...
   """
   if meta_type != "metadata":
-    for dsid in errors_.keys():
+    for dsid in ids:
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, 'info', f'{dsid}.errors.json')
-      logger.info(f"Writing {fname}")
-      tmp = _transform_errors(dsid, errors_, meta_type)
-      #if meta_type == "master_resolved":
-      #  fname_master = os.path.join(cdawmeta.DATA_DIR, "master", 'info', f'{dsid}.errors.skt.log')
-      cdawmeta.util.print_dict(tmp)
-      #cdawmeta.util.write(fname, tmp)
+      if dsid not in errors_ and os.path.exists(fname):
+        logger.info(f"Removing previous error file {fname}.")
+        os.remove(fname)
+      if dsid in errors_:
+        logger.info(f"Writing {fname}")
+        output = _errors_by_variable(dsid, errors_, meta_type, logger)
+        logger.debug("File content:\n" + cdawmeta.util.format_dict(output))
+        cdawmeta.util.write(fname, output)
 
-  output = _create_log(cdawmeta.error.errors[meta_type])
+  output = _errors_by_errorid(errors_)
 
   for key in output.keys():
     # Keys are "all", "error_id1", "error_id2", etc.
@@ -115,35 +118,6 @@ def write_errors(logger, update, id=None, meta_type=None):
     fname = os.path.join(cdawmeta.DATA_DIR, subdir, f'{key}.log')
     logger.info(f"Writing {fname}")
     cdawmeta.util.write(fname, "\n".join(output[key]))
-
-def _read_skt_errors(file_path):
-  errors_dict = {"_": []}  # Global errors will be stored under the "_" key
-  current_variable = None
-  with open(file_path, "r") as file:
-    lines = file.readlines()
-
-  for line in lines:
-    indent_level = len(line) - len(line.lstrip())
-    line = line.strip()
-    # Check for global errors
-    if line.startswith("Global errors:"):
-      current_variable = "_"  # Use "_" as the key for global errors
-
-    # Check for non-ISTP-compliant variables
-    elif line.startswith("The following variables are not ISTP-compliant:"):
-      current_variable = None  # Reset current variable
-
-    # Detect variable names (e.g., Epoch, RADIUS)
-
-    elif indent_level == 1 and current_variable != '_':
-      current_variable = line
-      errors_dict[current_variable] = []  # Initialize a list for this variable
-
-    # Add errors or warnings to the current variable
-    elif current_variable is not None:
-      errors_dict[current_variable].append(line)
-
-  return errors_dict
 
 def _remove_errors(subdir, logger):
   import glob
@@ -156,14 +130,52 @@ def _remove_errors(subdir, logger):
     logger.info(f"Removing {file}")
     os.remove(file)
 
-def _transform_errors(dsid, errors_, meta_type):
+def _errors_by_variable(dsid, errors_, meta_type, logger):
+  """Errors indexed by variable id."""
+
+  def read_skt_errors(file_path):
+    errors_dict = {"_": []}  # Global errors will be stored under the "_" key
+    current_variable = None
+    if not os.path.exists(file_path):
+      logger.info(f"File {file_path} does not exist.")
+      return None
+
+    with open(file_path, "r") as file:
+      lines = file.readlines()
+
+    for line in lines:
+      indent_level = len(line) - len(line.lstrip())
+
+      # Check for global errors
+      if line.startswith("Global errors:"):
+        current_variable = "_"  # Use "_" as the key for global errors
+
+      # Check for non-ISTP-compliant variables
+      elif line.startswith("The following variables are not ISTP-compliant:"):
+        current_variable = None  # Reset current variable
+
+      # Detect variable names (e.g., Epoch, RADIUS)
+
+      elif indent_level == 1 and current_variable != '_':
+        current_variable = line.strip()
+        errors_dict[current_variable] = []  # Initialize a list for this variable
+
+      # Add errors or warnings to the current variable
+      elif current_variable is not None:
+        errors_dict[current_variable].append(line.strip())
+
+    return errors_dict
 
   if meta_type == "master_resolved":
+    # These files are created by etc/skterrors.sh
     import cdawmeta
     fname_master = os.path.join(cdawmeta.DATA_DIR, "master", 'info', f'{dsid}.errors.skt.log')
-    skt = _read_skt_errors(fname_master)
+    skt = read_skt_errors(fname_master)
 
   result = {}
+
+  if dsid not in errors_:
+    return result
 
   for error_id, variables in errors_[dsid].items():
     for variable_id, messages in variables.items():
@@ -173,12 +185,12 @@ def _transform_errors(dsid, errors_, meta_type):
       result[variable_id][error_id] = messages[0]
       if meta_type == "master_resolved":
         # Add SKT errors if present
-        if variable_id in skt:
+        if skt is not None and variable_id in skt:
           result[variable_id]["SKT"] = skt[variable_id]
 
   return result
 
-def _create_log(errors):
+def _errors_by_errorid(errors):
   """
   Converts input error dict from
   dsid1

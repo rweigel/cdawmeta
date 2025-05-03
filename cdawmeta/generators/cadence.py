@@ -30,6 +30,8 @@ def cadence(metadatum, logger):
     return {"error": emsg}
 
   all_file_counts = []
+  depend_0s = []
+  success = False # True if at least one file was processed successfully.
   for file_idx in [0, -1]:
     url = file_list['FileDescription'][file_idx]['Name']
 
@@ -41,25 +43,70 @@ def cadence(metadatum, logger):
       return {"error": emsg}
 
     file_counts = _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache)
-    depend_0s = file_counts.keys()
+
+    if 'error' in file_counts:
+      # Failed to read file or no DEPEND_0s found.
+      all_file_counts.append(file_counts)
+      continue
+
+    if len(depend_0s) == 0:
+      depend_0s = file_counts.keys()
+    elif success:
+      new_depend_0s = set(file_counts.keys()) - set(depend_0s)
+      missing_depend_0s = set(depend_0s) - set(file_counts.keys())
+
+      if new_depend_0s:
+        emsg = f"New DEPEND_0(s) found in file {file_idx}: {new_depend_0s}"
+        cdawmeta.error("cadence", id, None, "CDF.NewDEPEND_0s", emsg, logger)
+
+      if missing_depend_0s:
+        emsg = f"Missing DEPEND_0(s) in file {file_idx}: {missing_depend_0s}"
+        cdawmeta.error("cadence", id, None, "CDF.MissingDEPEND_0s", emsg, logger)
+
+    if 'error' not in file_counts:
+      success = True
+
     all_file_counts.append(file_counts)
+
+  """
+  all_file_counts = [
+    {
+      depend_0_name1: {'url': url1, 'start': start, 'stop': stop, 'note': note, 'counts': counts11}},
+      depend_0_name2: {'url': url1, 'start': start, 'stop': stop, 'note': note, 'counts': counts21}},
+      ...
+    },
+      depend_0_name1: {'url': url2, 'start': start, 'stop': stop, 'note': note, 'counts': counts12}},
+      depend_0_name2: {'url': url2, 'start': start, 'stop': stop, 'note': note, 'counts': counts22}},
+      ...
+  ]
+  """
 
   counts_restructured = {}
   for depend_0 in depend_0s:
     counts_restructured[depend_0] = []
     for file_counts in all_file_counts:
-      if depend_0 not in all_file_counts[0]:
-        emsg = f"  {depend_0} not found in first file."
-        cdawmeta.error("cadence", id, None, "CDF.NoDEPEND_0s", emsg, logger)
-        return {"error": emsg}
-      counts_restructured[depend_0].append(file_counts[depend_0])
+      if depend_0 in file_counts:
+        counts_restructured[depend_0].append(file_counts[depend_0])
+  """
+    counts_restructured = {
+      depend_0_name1: [
+        {'url': url1, 'start': start, 'stop': stop, 'note': note, 'counts': counts11}},
+        {'url': url2, 'start': start, 'stop': stop, 'note': note, 'counts': counts12}},
+        ...
+      ],
+      depend_0_name2: [
+        {'url': url1, 'start': start, 'stop': stop, 'note': note, 'counts': counts21}},
+        {'url': url2, 'start': start, 'stop': stop, 'note': note, 'counts': counts22}},
+        ...
+      ],
+      ...
+    }
+  """
 
   return [counts_restructured]
 
 def _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache):
 
-  startDate = metadatum['start_stop']['data']['startDate']
-  stopDate = metadatum['start_stop']['data']['stopDate']
   master = metadatum['master']['data']
 
   logger.info(f"{id}")
@@ -124,7 +171,7 @@ def _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache):
     epoch_values = epoch['VarData']
 
     try:
-      start, stop = _check_start_stop(id, depend_0_name, epoch_values, startDate, stopDate, file_idx, logger)
+      start, stop = _check_start_stop(id, depend_0_name, epoch_values, metadatum, file_idx, logger)
     except Exception as e:
       emsg = f"    _check_start_stop() failed: {e}"
       emsg += "\n" + _trace()
@@ -261,8 +308,11 @@ def _note(depend_0_name, depend_0_counts, url):
   pct = 100*counts['fraction']
 
   note = f"Counts based on variable '{depend_0_name}' in {url}. "
-  note += f"The most common cadence occurred for {pct:0.4f}% of the {cnt} timesteps. "
-  note += f"Cadence = {duration} [{duration_unit}] = {iso}."
+  note += f"The most common cadence, {duration} [{duration_unit}] = {iso}, occurred for "
+  if pct == 100:
+    note += f"all {cnt} timesteps. "
+  else:
+    note += f"{pct:0.4f}% of the {cnt} timesteps. "
 
   return note
 
@@ -316,7 +366,7 @@ def _extract_and_check_metadata(id, metadatum, logger):
 
   return file_list, master, None
 
-def _check_start_stop(id, epoch_name, epoch_values, startDate, stopDate, file_idx, logger):
+def _check_start_stop(id, epoch_name, epoch_values, metadatum, file_idx, logger):
   import cdflib
 
   def handle_nat(timestamp, epoch, which):
@@ -339,11 +389,14 @@ def _check_start_stop(id, epoch_name, epoch_values, startDate, stopDate, file_id
 
     return timestamp
 
-  # TODO: Duplicate code below.
+  startDate = metadatum['start_stop']['data']['startDate']
+  startDateSource = metadatum['start_stop']['data']['startDateSource']
+  stopDate = metadatum['start_stop']['data']['stopDate']
+  stopDateSource = metadatum['start_stop']['data']['stopDateSource']
 
   first_timestamp = str(cdflib.cdfepoch.to_datetime(epoch_values[0])[0])
-  logger.info(f"    First timestamp in first CDF: {first_timestamp}")
-  logger.info(f"    Start date from start_stop:   {startDate}")
+  logger.info(f"    First timestamp in CDF:\t{first_timestamp}")
+  logger.info(f"    Start date from {startDateSource}:\t{startDate}")
   first_timestamp = handle_nat(first_timestamp, epoch_values, "first")
   first_timestamp += "Z"
   if file_idx == 0:
@@ -354,15 +407,15 @@ def _check_start_stop(id, epoch_name, epoch_values, startDate, stopDate, file_id
       cdawmeta.error("cadence", id, epoch_name, "CDF.StartDateAfterFirstTimestamp", emsg, logger)
 
   last_timestamp = str(cdflib.cdfepoch.to_datetime(epoch_values[-1])[0])
-  logger.info(f"    Last timestamp in first CDF:  {last_timestamp}")
-  logger.info(f"    Stop date from start_stop:    {stopDate}")
+  logger.info(f"    Last timestamp in CDF:\t{last_timestamp}")
+  logger.info(f"    Stop date from {stopDateSource}:\t{stopDate}")
   last_timestamp = handle_nat(last_timestamp, epoch_values, "last")
   last_timestamp += "Z"
   if file_idx == -1:
     stopDate_pad = cdawmeta.util.pad_iso8601(stopDate)
     last_timestamp_pad = cdawmeta.util.pad_iso8601(last_timestamp)
     if last_timestamp_pad > stopDate_pad:
-      emsg = f"    Stop date from start_stop ({startDate}) is before last non-NaT timestamp in last file: {last_timestamp}"
+      emsg = f"    Stop date from start_stop ({stopDate}) is before last non-NaT timestamp in last file: {last_timestamp}"
       cdawmeta.error("cadence", id, epoch_name, "CDF.StopDateBeforeLastTimestamp", emsg, logger)
 
   return first_timestamp, last_timestamp
