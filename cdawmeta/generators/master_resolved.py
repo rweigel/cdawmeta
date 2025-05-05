@@ -595,9 +595,11 @@ def _UNITS(id, variable_name, variables, variables_removed, logger):
       if VAR_TYPE is not None and VAR_TYPE in ['data', 'support_data']:
         # Catch case where empty string or whitespace string used for UNITS,
         # presumably to "satisfy" ISTP requirements that UNITS be present.
-        msg = f"{indent}VAR_TYPE = '{VAR_TYPE}' and UNITS.strip() = ''. Setting UNITS = None"
+        #msg = f"{indent}VAR_TYPE = '{VAR_TYPE}' and UNITS.strip() = ''. Setting UNITS = None"
+        msg = f"{indent}VAR_TYPE = '{VAR_TYPE}' and UNITS.strip() = ''."
         cdawmeta.error('master_resolved', id, variable_name, "ISTP.UNITS", msg, logger)
-        units = None
+        #units = None
+        units = units_o
     else:
       units = units_o
 
