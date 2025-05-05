@@ -1,8 +1,3 @@
-import re
-import datetime
-
-import timedelta_isoformat
-
 import cdawmeta
 
 logger = None
@@ -307,6 +302,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       parameter["x_cdf_FUNCT"] = variable['VarAttributes']['FUNCT']
       parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['COMPONENTS']
       parameter['description'] = parameter['description'].strip()
+      import pdb; pdb.set_trace()
       if cdawmeta.CONFIG['hapi']['virtual_note']:
         parameter['description'] += f". This variable is a 'virtual' variable that is computed using the function {parameter['x_cdf_FUNCT']} (see https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro) on the with inputs of the variables {parameter['x_cdf_COMPONENTS']}."
         parameter['description'] += " Note that some COMPONENTS may not be available from the HAPI interface. They are accessible from the raw CDF files, however."
@@ -490,7 +486,7 @@ def _units(variable):
   UNITS = variable['VarAttributes'].get('x_UNITS', None)
   UNITS_VO = variable['VarAttributes'].get('x_UNITS_VO', None)
   units = {}
-  if UNITS_VO is not None:
+  if UNITS_VO is not None and cdawmeta.CONFIG['hapi']['use_vounits']:
     units['units'] = UNITS_VO
     units['unitsSchema'] = 'VOUnits1.1'
     units['x_unitsOriginal'] = UNITS
@@ -509,6 +505,9 @@ def _units(variable):
   return units
 
 def _max_request_duration(depend_0_name, metadatum, info):
+
+  import datetime
+  import timedelta_isoformat
 
   # sample{Start,Stop}Date is based on time range of 1 file
   # If sample{Start,Stop}Date available max duration is span of n_files files
@@ -691,6 +690,7 @@ def _keep_dataset(id, depend_0=None):
   return False
 
 def _omit_dataset(id, depend_0=None):
+  import re
 
   if id is None:
     return None

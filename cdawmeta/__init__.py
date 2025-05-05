@@ -7,6 +7,7 @@ __all__ = [
             'dependencies',
             'DATA_DIR',
             'error',
+            'exception',
             'write_errors',
             'generate',
             'generators',
@@ -17,6 +18,7 @@ __all__ = [
             'reports',
             'restructure',
             'table',
+            'trace',
             'util'
           ]
 
@@ -35,6 +37,7 @@ from cdawmeta.additions import additions
 from cdawmeta.cli import cli
 from cdawmeta.config import CONFIG
 from cdawmeta.config import DATA_DIR
+from cdawmeta.error import trace
 from cdawmeta.error import error
 from cdawmeta.error import write_errors
 from cdawmeta.error import exception

@@ -99,4 +99,3 @@ def _update_timestamp(id, date_file_list, date_allxml, which, logger):
     return date_file_list, FILE_LIST
 
   return date_allxml, 'all.xml'
-

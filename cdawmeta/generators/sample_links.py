@@ -1,13 +1,13 @@
-import datetime
-
-from timedelta_isoformat import timedelta
-
 import cdawmeta
-import hapiclient
 
 dependencies = ['hapi']
 
 def sample_links(metadatum, logger):
+
+  import datetime
+
+  from timedelta_isoformat import timedelta
+  import hapiclient
 
   def file_based_start_stop(orig_data):
     def reformat_dt(dt, style='cdasr'):

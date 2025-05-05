@@ -1,9 +1,6 @@
 import os
-import re
-import glob
 
 import cdawmeta
-import cdawmeta.config
 
 # Can't call logger = cdawmeta.logger(...) here because it calls cdawmeta.DATA_DIR
 # which is set to a default. If user modifies using cdawmeta.DATA_DIR = ...,
@@ -30,6 +27,7 @@ def ids(id=None, id_skip=None, update=False):
   `update` is a boolean. If `True`, all.xml is updated before generating IDs.
   '''
 
+  import re
 
   # Needed to set logger for any called underscore functions.
   # TODO: Find a better way to handle this.
@@ -152,13 +150,13 @@ def metadata(id=None,
   if max_workers == 1 or len(dsids) == 1:
     for dsid in dsids:
       try:
-        get_one(datasets_all[dsid], meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception)
+        _get_one(datasets_all[dsid], meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception)
       except:
         cdawmeta(dsid, logger, exit_on_exception=exit_on_exception)
   else:
     def call_get_one(dsid):
       try:
-        get_one(datasets_all[dsid], meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception)
+        _get_one(datasets_all[dsid], meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception)
       except:
         cdawmeta.exception(dsid, logger, exit_on_exception=exit_on_exception)
       return dsid
@@ -191,7 +189,7 @@ def _meta_loggers(meta_types, not_generated, log_level='info'):
     mloggers[meta_type] = cdawmeta.logger(meta_type, log_level=log_level)
   return mloggers
 
-def get_one(dataset, meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception):
+def _get_one(dataset, meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception):
 
   if 'master' in meta_types or 'spase' in meta_types:
     # 'spase' needs 'master' to get spase_DatasetResourceID, so this must be before.
@@ -241,7 +239,6 @@ def get_one(dataset, meta_types, meta_types_requested, update, update_skip, rege
       dmsg = f"  embed_data=False; removing 'data' node from {meta_type} for {dataset['id']}"
       logger.debug(dmsg)
       del dataset[meta_type]['data']
-
 
 def _meta_types(meta_types_requested):
   """Returns list of meta_types to needed to produce meta_types_requested."""
@@ -419,6 +416,8 @@ def _spase(dataset, update=True, diffs=False):
   return spase
 
 def _spase_hpde_io(id=None, update=True, diffs=False):
+
+  import glob
 
   import git
   repo_path = os.path.join(cdawmeta.DATA_DIR, 'hpde.io')
@@ -608,12 +607,15 @@ def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
     logger.info(f"Getting {url}")
     info = cdawmeta.util.get_conditional(url, file=file, stream=True)
     logger.info(f"Got {url}")
-
-    if 'emsg' not in info:
-      try:
-        create_infos(out_dir, info)
-      except Exception as e:
-        cdawmeta.exception(None, logger, exit_on_exception=exit_on_exception)
+    status_code = info['response'].status_code
+    if status_code == 304:
+      logger.info(f"Not reparsing {file} because status_code = 304")
+    else:
+      if 'emsg' not in info:
+        try:
+          create_infos(out_dir, info)
+        except Exception as e:
+          cdawmeta.exception(None, logger, exit_on_exception=exit_on_exception)
 
   if dataset is not None:
     # If file exists, it means there should be a cache file in cdfmetafile/info/dataset.pkl

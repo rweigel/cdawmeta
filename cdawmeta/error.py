@@ -1,10 +1,14 @@
 import os
 
-def exception(dsid, logger, exit_on_exception=False):
+def trace():
   import traceback
-  trace = traceback.format_exc().strip()
-  trace = trace.replace(os.path.expanduser("~"), "~")
-  msg = f"{dsid}:\n{trace}"
+  trace = traceback.format_exc()
+  home_dir = os.path.expanduser("~")
+  trace = trace.replace(home_dir, "~")
+  return f"\n{trace}"
+
+def exception(dsid, logger, exit_on_exception=False):
+  msg = f"{dsid}:\n{trace()}"
   error('metadata', dsid, None, 'UnHandledException', msg, logger)
   if exit_on_exception:
     logger.error("Exiting due to exit-on-exception command line argument.")

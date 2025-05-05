@@ -1,10 +1,11 @@
-import re
-import copy
 import cdawmeta
 
 dependencies = ['orig_data', 'hapi']
 
 def AccessInformation(metadatum, logger):
+
+  import re
+  import copy
 
   additions = cdawmeta.additions(logger)
   AccessInformation = copy.deepcopy(additions['AccessInformation'])

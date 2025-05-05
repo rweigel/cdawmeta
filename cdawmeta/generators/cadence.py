@@ -1,12 +1,5 @@
-import os
-from collections import Counter
-
-import numpy
-from timedelta_isoformat import timedelta
-
 import cdawmeta
 
-#FILE_LIST = cdawmeta.config['metadata']['file_list']
 FILE_LIST = 'cdfmetafile'
 dependencies = [FILE_LIST, 'start_stop', 'master']
 
@@ -107,6 +100,8 @@ def cadence(metadatum, logger):
 
 def _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache):
 
+  import numpy
+
   master = metadatum['master']['data']
 
   logger.info(f"{id}")
@@ -116,7 +111,7 @@ def _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache):
     depend_0_names = cdawmeta.io.read_cdf_depend_0s(url, logger=logger, use_cache=use_cache)
   except Exception as e:
     emsg = f"  cdawmeta.io.read_cdf_depend_0s('{url}') failed with error: {e}"
-    emsg  = emsg + "\n" + _trace()
+    emsg  = emsg + "\n" + cdawmeta.trace()
     cdawmeta.error("cadence", id, None, "CDF.FailedCDFRead", emsg, logger)
     return {"error": emsg}
 
@@ -132,10 +127,6 @@ def _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache):
 
   depend_0_counts = {}
 
-  # TODO: Check that all DEPEND_0 data variable names in Master CDF match those
-  # found in data CDF. Mismatches have been found for DEPEND_0 names, so
-  # expect this to happen for other variables. Should also check that DataTypes
-  # match.
   for depend_0_name in depend_0_names:
 
     msg = f"  Computing cadence for DEPEND_0 = '{depend_0_name}'"
@@ -170,11 +161,12 @@ def _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache):
     epoch = data[depend_0_name]
     epoch_values = epoch['VarData']
 
+    VAR_TYPE = cdawmeta.util.get_path(epoch, 'VAR_TYPE')
     try:
-      start, stop = _check_start_stop(id, depend_0_name, epoch_values, metadatum, file_idx, logger)
+      start, stop = _check_start_stop(id, depend_0_name, epoch_values, VAR_TYPE, metadatum, file_idx, logger)
     except Exception as e:
       emsg = f"    _check_start_stop() failed: {e}"
-      emsg += "\n" + _trace()
+      emsg += "\n" + cdawmeta.trace()
       _update_for_error(depend_0_meta, emsg, logger=logger)
       cdawmeta.error("cadence", id, None, "CDF.FailedStartStop", emsg, logger)
       continue
@@ -229,6 +221,9 @@ def _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache):
   return depend_0_counts
 
 def _count_dicts(diff, depend_0_name, DataType, logger):
+
+  from collections import Counter
+  from timedelta_isoformat import timedelta
 
   sf = 1e3 # CDF_EPOCH is in milliseconds
   duration_unit = "ms"
@@ -310,20 +305,15 @@ def _note(depend_0_name, depend_0_counts, url):
   note = f"Counts based on variable '{depend_0_name}' in {url}. "
   note += f"The most common cadence, {duration} [{duration_unit}] = {iso}, occurred for "
   if pct == 100:
-    note += f"all {cnt} timesteps. "
+    note += f"all {cnt} timesteps."
   else:
-    note += f"{pct:0.4f}% of the {cnt} timesteps. "
+    note += f"{pct:0.4f}% of the {cnt} timesteps."
 
   return note
 
-def _trace():
-  import traceback
-  trace = traceback.format_exc()
-  home_dir = os.path.expanduser("~")
-  trace = trace.replace(home_dir, "~")
-  return f"\n{trace}"
-
 def _diff_cdf_epoch16(epoch):
+
+  import numpy
 
   # Real is seconds, imaginary is picoseconds. See
   #   https://github.com/MAVENSDC/cdflib/blob/main/cdflib/epochs.py#L1119
@@ -366,7 +356,8 @@ def _extract_and_check_metadata(id, metadatum, logger):
 
   return file_list, master, None
 
-def _check_start_stop(id, epoch_name, epoch_values, metadatum, file_idx, logger):
+def _check_start_stop(id, epoch_name, epoch_values, epoch_type, metadatum, file_idx, logger):
+  import numpy
   import cdflib
 
   def handle_nat(timestamp, epoch, which):
@@ -399,7 +390,7 @@ def _check_start_stop(id, epoch_name, epoch_values, metadatum, file_idx, logger)
   logger.info(f"    Start date from {startDateSource}:\t{startDate}")
   first_timestamp = handle_nat(first_timestamp, epoch_values, "first")
   first_timestamp += "Z"
-  if file_idx == 0:
+  if file_idx == 0 and epoch_type == 'data':
     startDate_pad = cdawmeta.util.pad_iso8601(startDate)
     first_timestamp_pad = cdawmeta.util.pad_iso8601(first_timestamp)
     if first_timestamp_pad < startDate_pad:
@@ -415,7 +406,7 @@ def _check_start_stop(id, epoch_name, epoch_values, metadatum, file_idx, logger)
   logger.info(f"    Stop date from {stopDateSource}:\t{stopDate}")
   last_timestamp = handle_nat(last_timestamp, epoch_values, "last")
   last_timestamp += "Z"
-  if file_idx == -1:
+  if file_idx == -1 and epoch_type == 'data':
     stopDate_pad = cdawmeta.util.pad_iso8601(stopDate)
     last_timestamp_pad = cdawmeta.util.pad_iso8601(last_timestamp)
     if last_timestamp_pad > stopDate_pad:
