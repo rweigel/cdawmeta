@@ -15,6 +15,9 @@
 
   "id_skip": "AIM_CIPS_SCI_3A",
 
+  "_comment": "Add note about virtual variable in description.",
+  "virtual_note": false,
+
   "_comment": "Remove ---> in description",
   "remove_arrows": false,
 

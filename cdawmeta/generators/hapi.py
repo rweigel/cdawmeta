@@ -307,8 +307,9 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       parameter["x_cdf_FUNCT"] = variable['VarAttributes']['FUNCT']
       parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['COMPONENTS']
       parameter['description'] = parameter['description'].strip()
-      parameter['description'] += f". This variable is a 'virtual' variable that is computed using the function {parameter['x_cdf_FUNCT']} (see https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro) on the with inputs of the variables {parameter['x_cdf_COMPONENTS']}."
-      parameter['description'] += " Note that some COMPONENTS may not be available from the HAPI interface. They are accessible from the raw CDF files, however."
+      if cdawmeta.CONFIG['hapi']['virtual_note']:
+        parameter['description'] += f". This variable is a 'virtual' variable that is computed using the function {parameter['x_cdf_FUNCT']} (see https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro) on the with inputs of the variables {parameter['x_cdf_COMPONENTS']}."
+        parameter['description'] += " Note that some COMPONENTS may not be available from the HAPI interface. They are accessible from the raw CDF files, however."
 
     DISPLAY_TYPE = cdawmeta.util.get_path(variable, 'VarAttributes.DISPLAY_TYPE')
     if DISPLAY_TYPE is not None:
