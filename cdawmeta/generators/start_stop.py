@@ -44,7 +44,7 @@ def start_stop(metadatum, logger):
   if num_files > 0:
     if cdawmeta.util.pad_iso8601(sampleFile["StartTime"]) > cdawmeta.util.pad_iso8601(sampleFile["EndTime"]):
       emsg = f"StartTime ({sampleFile['StartTime']}) > EndTime ({sampleFile['EndTime']}) in {FILE_LIST}['data']['FileDescription']"
-      cdawmeta.error('start_stop', id, None, "CDF.NoFiles", emsg, logger)
+      cdawmeta.error('start_stop', id, None, "CDF.SartTimeDateBeforeEndTime", emsg, logger)
 
     startDate_files = file_list["FileDescription"][0]["StartTime"]
     startDate, startDateSource = _update_timestamp(id, startDate_files, startDate, "start", logger)
@@ -92,13 +92,11 @@ def _update_timestamp(id, date_file_list, date_allxml, which, logger):
     emsg = f"{which}Date ({date_file_list}) determined from {FILE_LIST} < {which}Date ({date_allxml}) from all.xml. Using {FILE_LIST} value."
     cdawmeta.error('start_stop', id, None, "HAPI.StartStopMismatch", emsg, logger)
     return date_file_list, FILE_LIST
-  else:
-    return date_allxml, 'all.xml'
 
   if which == 'stop' and date_file_list_x[0:min_len] > date_allxml_x[0:min_len]:
     emsg = f"{which}Date ({date_file_list}) determined from {FILE_LIST} > {which}Date ({date_allxml}) from all.xml. Using {FILE_LIST} value."
     cdawmeta.error('start_stop', id, None, "HAPI.StartStopMismatch", emsg, logger)
     return date_file_list, FILE_LIST
-  else:
-    return date_allxml, 'all.xml'
+
+  return date_allxml, 'all.xml'
 

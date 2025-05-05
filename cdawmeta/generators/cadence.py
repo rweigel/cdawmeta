@@ -403,8 +403,12 @@ def _check_start_stop(id, epoch_name, epoch_values, metadatum, file_idx, logger)
     startDate_pad = cdawmeta.util.pad_iso8601(startDate)
     first_timestamp_pad = cdawmeta.util.pad_iso8601(first_timestamp)
     if first_timestamp_pad < startDate_pad:
-      emsg = f"    Start date from start_stop ({startDate}) is after first non-NaT timestamp in first file: {first_timestamp}"
-      cdawmeta.error("cadence", id, epoch_name, "CDF.StartDateAfterFirstTimestamp", emsg, logger)
+      emsg = f"    Start date from {startDateSource} ({startDate}) is after first non-NaT timestamp in first file: {first_timestamp} from {FILE_LIST}"
+      #logger.error("cadence", id, epoch_name, "CDF.StartDateAfterFirstTimestamp", emsg, logger)
+      logger.warn(emsg)
+    if first_timestamp[0:19] < startDate[0:19]:
+      emsg = f"    Start date from {startDateSource} ({startDate}) is after first non-NaT timestamp in first file ({first_timestamp}) from {FILE_LIST} rounded down to 1 s"
+      cdawmeta.error("cadence", id, epoch_name, "CDF.StartDateMismatch", emsg, logger)
 
   last_timestamp = str(cdflib.cdfepoch.to_datetime(epoch_values[-1])[0])
   logger.info(f"    Last timestamp in CDF:\t{last_timestamp}")
@@ -415,8 +419,11 @@ def _check_start_stop(id, epoch_name, epoch_values, metadatum, file_idx, logger)
     stopDate_pad = cdawmeta.util.pad_iso8601(stopDate)
     last_timestamp_pad = cdawmeta.util.pad_iso8601(last_timestamp)
     if last_timestamp_pad > stopDate_pad:
-      emsg = f"    Stop date from start_stop ({stopDate}) is before last non-NaT timestamp in last file: {last_timestamp}"
-      cdawmeta.error("cadence", id, epoch_name, "CDF.StopDateBeforeLastTimestamp", emsg, logger)
+      emsg = f"    Stop date from {stopDateSource} ({stopDate}) is before last non-NaT timestamp in last file in {FILE_LIST}: {last_timestamp}"
+      logger.warn(emsg)
+    if last_timestamp[0:19] > stopDate[0:19]:
+      emsg = f"    Stop date from {stopDateSource} ({stopDate}) is before last non-NaT timestamp in last file ({last_timestamp}) in {FILE_LIST} rounded down to 1 s"
+      cdawmeta.error("cadence", id, epoch_name, "CDF.StopDateMismatch", emsg, logger)
 
   return first_timestamp, last_timestamp
 

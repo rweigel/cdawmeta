@@ -557,6 +557,8 @@ def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
 
   def write_info(out_dir, dataset_name, url, files):
     output_file = os.path.join(out_dir, f'{dataset_name}.json')
+    # Sort files by StartTime
+    files.sort(key=lambda x: x['StartTime'])
     meta = {
       'id': dataset_name,
       'url': url,
