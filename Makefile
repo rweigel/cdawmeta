@@ -4,8 +4,8 @@ PYTHON=~/anaconda3/bin/python
 ID_SKIP=
 NO_UPDATE=cadence
 NO_REGEN=$(NO_UPDATE)
-UPDATE=$(ID_SKIP) --write-catalog --update --update-skip $(NO_UPDATE) --diffs --max-workers 3
-REGEN=$(ID_SKIP) --write-catalog  --regen --regen-skip $(NO_REGEN) --diffs --max-workers 3
+UPDATE=$(ID_SKIP) --write-catalog --update --update-skip $(NO_UPDATE) --max-workers 1
+REGEN=$(ID_SKIP) --write-catalog  --regen --regen-skip $(NO_REGEN) --max-workers 1
 
 spase_auto-update: cdawmeta.egg-info
 	python metadata.py --meta-type spase_auto $(UPDATE)
@@ -14,6 +14,9 @@ spase_auto-regen: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(REGEN)
 
 hapi-update: cdawmeta.egg-info
+	python metadata.py --meta-type hapi $(UPDATE)
+
+hapi-updatex: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE) --id-skip '^MMS|^C|^T'
 	python metadata.py --meta-type hapi $(UPDATE) --id '^MMS|^C|^T'
 
@@ -38,7 +41,7 @@ test-README: cdawmeta.egg-info
 	python metadata.py --id AC_OR_SSC --meta-type hapi --regen
 	python metadata.py --id AC_OR_SSC --meta-type spase_auto
 	python metadata.py --id VOYAGER1_10S_MAG --meta-type AccessInformation
-	python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_start_stop
+	python metadata.py --id VOYAGER1_10S_MAG --meta-type start_stop
 	python metadata.py --id VOYAGER1_10S_MAG --meta-type cadence
 	python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_links
 
@@ -81,6 +84,11 @@ rsync-from-mag:
 cdawmeta.egg-info:
 	pip install -e .
 ################################################################################
+
+################################################################################
+
+skterrors:
+	find data/cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS -name "*.cdf" | xargs -J{} java -cp data/skteditor-1.3.11/spdfjavaClasses.jar gsfc.spdf.istp.tools.CDFCheck {} > {}.log
 
 ################################################################################
 table/table-ui:

@@ -14,10 +14,18 @@ def generate(metadatum, gen_name, logger,
   file_name_error = os.path.join(base_path, f'{id}.error.txt')
 
   if not update and not regen:
-    if os.path.exists(file_name_pkl):
+    if os.path.exists(file_name_pkl) or os.path.exists(file_name_json):
       msg = "Using cache because update = regen = False and found cached file."
       logger.info(msg)
-      data = cdawmeta.util.read(file_name_pkl, logger=logger)
+      if os.path.exists(file_name_pkl):
+        data = cdawmeta.util.read(file_name_pkl, logger=logger)
+      if not os.path.exists(file_name_pkl) and os.path.exists(file_name_json):
+        # This will happen if git dir is used for data. Only json files are
+        # written in git dir.
+        logger.info("Using JSON file because pkl file not found.")
+        data = cdawmeta.util.read(file_name_json, logger=logger)
+        logger.info(f"Writing {file_name_pkl}")
+        cdawmeta.util.write(file_name_pkl, data)
       if isinstance(data, list) and len(data) == 1:
         data = data[0]
       return {'id': id, 'log': msg, 'data-file': file_name_json, 'data': data}
@@ -36,17 +44,8 @@ def generate(metadatum, gen_name, logger,
       cdawmeta.util.write(file_name_error, datasets['error'])
       return {'id': id, 'log': None, 'error': datasets['error'], 'data-file': None, 'data': None}
   except Exception as e:
-    import traceback
-    trace = traceback.format_exc()
-    home_dir = os.path.expanduser("~")
-    trace = trace.replace(home_dir, "~")
-    emsg = f"{id}:\n{trace}"
-    cdawmeta.error("metadata", id, None, "UnHandledException", emsg, logger)
-    logger.info(f"Writing {file_name_error}")
-    cdawmeta.util.write(file_name_error, datasets['error'])
-    if exit_on_exception:
-      logger.error("\nExiting due to exit_on_exception'] command line argument.")
-      exit(1)
+    # TODO: Use cached version if it exists?
+    emsg = cdawmeta.exception(id, logger, exit_on_exception=exit_on_exception)
     return {'id': id, 'log': None, 'error': emsg, 'data-file': None, 'data': None}
 
   if os.path.exists(file_name_error):

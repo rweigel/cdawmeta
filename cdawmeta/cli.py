@@ -45,7 +45,7 @@ def cli(script, defs=False):
       "metavar": "N",
       "type": int,
       "help": "Number of threads to use for downloading (default: %(default)s).",
-      "default": 3,
+      "default": 1,
       "_used_by_all": True,
     },
     "embed-data": {

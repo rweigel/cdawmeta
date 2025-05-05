@@ -7,8 +7,8 @@ import cdawmeta
 
 logger = None
 
-#dependencies = ['master', 'master_resolved', 'cadence', 'sample_start_stop']
-dependencies = ['master_resolved', 'cadence', 'sample_start_stop']
+#dependencies = ['master', 'cadence', 'start_stop']
+dependencies = ['master_resolved', 'cadence', 'start_stop']
 
 def hapi(metadatum, _logger):
   global logger
@@ -16,12 +16,13 @@ def hapi(metadatum, _logger):
 
   id = metadatum['id']
 
-  if 'data' not in metadatum['master']:
-    msg = f"{id}: Not creating dataset for {id} b/c it has no 'data' key"
-    cdawmeta.error('hapi', id, None, "ISTP.NoMaster", msg, logger)
-    return {"error": msg}
+  master = metadatum['master_resolved'].get('data', None)
 
-  #master = metadatum['master']['data']
+  if master is None:
+    emsg = f"{id}: Not creating dataset for {id} b/c it has no 'data' key (or data=None) in master_resolved"
+    cdawmeta.error('hapi', id, None, "ISTP.NoMaster", emsg, logger)
+    return {"error": emsg}
+
   master = metadatum['master_resolved']['data']
 
   variables = master['CDFVariables']
@@ -64,6 +65,18 @@ def hapi(metadatum, _logger):
     if 'data' not in VAR_TYPES and not _keep_dataset(id, depend_0=depend_0_name):
       # In general, Nand drops these, but not always
       logger.info(f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because none of its variables have VAR_TYPE = 'data'.")
+      continue
+
+    start_stop = metadatum['start_stop'].get('data', None)
+    if start_stop is None:
+      cdawmeta.error('hapi', id, None, "CDAWeb.NoStartStop", "No start/stop info. Omitting dataset.", logger)
+      continue
+
+    if 'startDate' not in start_stop:
+      cdawmeta.error('hapi', id, None, "CDAWeb.NoStartDate", "No startDate info. Omitting dataset.", logger)
+      continue
+    if 'stopDate' not in start_stop:
+      cdawmeta.error('hapi', id, None, "CDAWeb.NoStopDate", "No stopDate info. Omitting dataset.", logger)
       continue
 
     parameters = _variables2parameters(depend_0_name, depend_0_variables, variables, id, print_info=False)
@@ -125,23 +138,8 @@ def hapi(metadatum, _logger):
 
 def _info_head(metadatum, depend_0_name):
 
-  def update_timestamp(id, date_orig_data, date_allxml, which):
-    translates = str.maketrans({'T': '', 'Z': '', '.': '', ':': '', '-': ''})
-    date_orig_data_x = date_orig_data.translate(translates)
-    date_allxml_x = date_allxml.translate(translates)
-    min_len = min(len(date_orig_data_x), len(date_allxml_x))
-    #print(date_allxml_x[0:min_len], date_orig_data_x[0:min_len])
-    if date_orig_data_x[0:min_len] != date_allxml_x[0:min_len]:
-      msg = f"{which}Date ({date_orig_data}) from orig_data does not match {which}Date ({date_allxml}) from all.xml. Using orig_data value."
-      cdawmeta.error('hapi', id, None, "HAPI.SampleStartDateMismatch", "    " + msg, logger)
-
-    return date_orig_data
-
   id = metadatum['id']
   allxml = metadatum['allxml']
-
-  startDate = allxml['@timerange_start'].replace(' ', 'T') + 'Z'
-  stopDate = allxml['@timerange_stop'].replace(' ', 'T') + 'Z'
 
   contact = ''
   if 'data_producer' in allxml:
@@ -151,8 +149,8 @@ def _info_head(metadatum, depend_0_name):
       contact = contact + " @ " + allxml['data_producer']['@affiliation']
 
   info = {
-      'startDate': startDate,
-      'stopDate': stopDate,
+      'startDate': None,
+      'stopDate': None,
       'sampleStartDate': None,
       'sampleStopDate': None,
       'cadence': None,
@@ -173,123 +171,31 @@ def _info_head(metadatum, depend_0_name):
   else:
     info.update(cadence_info)
 
-  if 'sample_start_stop' in metadatum:
-    sample_start_stop = metadatum['sample_start_stop']['data']
-    info['sampleStartDate'] = sample_start_stop['sampleStartDate']
-    info['sampleStopDate'] = sample_start_stop['sampleStopDate']
-    info['startDate'] = update_timestamp(id, sample_start_stop['startDate'], startDate, 'start')
-    info['stopDate'] = update_timestamp(id, sample_start_stop['stopDate'], stopDate, 'stop')
+  start_stop = metadatum['start_stop'].get('data', None)
+  if start_stop is not None:
+    start_stop = metadatum['start_stop']['data']
+    info['startDate'] = start_stop['startDate']
+    info['stopDate'] = start_stop['stopDate']
+    if 'sampleStartDate' in start_stop:
+      info['sampleStartDate'] = start_stop['sampleStartDate']
+      info['sampleStopDate'] = start_stop['sampleStopDate']
   else:
-    logger.warn(f"    No sample_start_stop for {id}")
+    logger.warn(f"    No start_stop for {id}")
     del info['sampleStartDate']
     del info['sampleStopDate']
 
   maxRequestDuration, emsg = _max_request_duration(depend_0_name, metadatum, info)
   if emsg is not None:
-    cdawmeta.info(f"    Using default maxRequestDuration = {info['maxRequestDuration']}")
+    logger.info(f"    Using default maxRequestDuration = {info['maxRequestDuration']}")
     info["maxRequestDuration"] = cdawmeta.CONFIG['hapi']['maxRequestDurationDefault']
   if maxRequestDuration is not None:
     info["maxRequestDuration"] = maxRequestDuration
 
   return info
 
-def _max_request_duration(depend_0_name, metadatum, info):
-
-  # sample{Start,Stop}Date is based on time range of 1 file
-  # If sample{Start,Stop}Date available max duration is span of n_files files
-  n_files = 50
-  # If sample{Start,Stop}Date not available max duration is 1000*cadence
-  n_cadence = 1000
-
-  if 'sampleStartDate' in info and 'sampleStopDate' in info:
-    logger.info("    Calculating maxRequestDuration from sample{Start,Stop}Date")
-    try:
-      start = datetime.datetime.fromisoformat(info['startDate'][0:-1])
-      stop = datetime.datetime.fromisoformat(info['stopDate'][0:-1])
-      sampleStart = datetime.datetime.fromisoformat(info['sampleStartDate'][0:-1])
-      sampleStop = datetime.datetime.fromisoformat(info['sampleStopDate'][0:-1])
-
-      logger.info(f"    startDate       = {info['startDate']}")
-      logger.info(f"    stopDate        = {info['stopDate']}")
-      logger.info(f"    sampleStartDate = {info['sampleStartDate']}")
-      logger.info(f"    sampleStopDate  = {info['sampleStopDate']}")
-
-      delta_sample = sampleStop - sampleStart
-      delta_datset = stop - start
-
-      total_seconds_sample = delta_sample.total_seconds()
-      total_seconds_datset = delta_datset.total_seconds()
-      logger.info(f"    sample length  = {total_seconds_sample} [s]")
-      logger.info(f"    dataset length = {total_seconds_datset} [s]")
-
-      total_seconds = min(total_seconds_datset, n_files*total_seconds_sample)
-      logger.info(f"    min(dataset, {n_files}*sample) = {total_seconds} [s]")
-
-      td = timedelta_isoformat.timedelta(milliseconds=1000*total_seconds)
-      logger.info(f"    maxRequestDuration = {td.isoformat()}")
-      maxRequestDuration = td.isoformat()
-      logger.info(f"    maxRequestDuration = {td.isoformat()} (based on sample{{Start,Stop}}Date)")
-
-      return maxRequestDuration, None
-
-    except Exception as e:
-      msg = f"Calculation of maxRequestDuration from sample{{Start,Stop}}Date failed: {e}"
-      cdawmeta.error('hapi', id, None, "HAPI.UnHandledException", "  " + msg, logger)
-
-  if 'cadence' in info:
-    counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 'counts'])
-    if counts is not None:
-      logger.info("    No sample{Start,Stop}Date. Calculating maxRequestDuration from cadence")
-      try:
-        td = timedelta_isoformat.timedelta(milliseconds=n_cadence*counts[0]['duration_ms'])
-        maxRequestDuration = td.isoformat()
-        logger.info(f"    maxRequestDuration = {td.isoformat()} (based on cadence)")
-        return maxRequestDuration, None
-      except Exception as e:
-        msg = f"    Calculation of maxRequestDuration from cadence failed: {e}"
-        cdawmeta.error('hapi', id, None, "HAPI.UnHandledException", "  " + msg, logger)
-        return None, msg
-
-  return None, None
-
-def _cadence(id, depend_0_name, metadatum):
-
-  if 'cadence' not in metadatum:
-    return None, f"{id}/{depend_0_name}: No cadence information available."
-
-  if 'cadence' in metadatum:
-    if 'error' in metadatum['cadence'] or 'data' not in metadatum['cadence']:
-      return None, f"{id}/{depend_0_name}: No cadence information available."
-    else:
-      cadence_dict = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence'])
-      if 'error' in cadence_dict:
-        return None, f"{id}/{depend_0_name}: No cadence information available due to {cadence_dict['error']}."
-
-      depend_0_cadence_dict = cdawmeta.util.get_path(cadence_dict, [depend_0_name])
-      if depend_0_cadence_dict is None:
-        return None, f"{id}/{depend_0_name}: No cadence information available."
-
-      if 'error' in depend_0_cadence_dict:
-        return None, f"{id}/{depend_0_name}: No cadence information available due to {depend_0_cadence_dict['error']}."
-
-      counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence', depend_0_name, 'counts'])
-      if counts is not None and len(counts) > 0:
-        note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', 'cadence', depend_0_name, 'note'])
-        cadence = counts[0]['duration_iso8601']
-        fraction = counts[0]['fraction']
-        cadence_info = {'cadence': cadence, 'x_cadence_fraction': fraction, 'x_cadence_note': note}
-        return cadence_info, None
-      else:
-        return None, f"{id}/{depend_0_name}: No cadence information available due to unspecified error."
-
 def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid, print_info=False):
 
   depend_0_variable = all_variables[depend_0_name]
-
-  if 'DataType' not in depend_0_variable['VarDescription']:
-    msg = f"DEPEND_0 variable '{dsid}'/{depend_0_name} has no DataType attribute. Dropping variables associated with it"
-    cdawmeta.error('hapi', dsid, depend_0_name, "CDF.MissingDataType.", "    " + msg, logger)
-    return None
 
   DEPEND_0_DataType = depend_0_variable['VarDescription']['DataType']
   DEPEND_0_length = _cdftimelen(DEPEND_0_DataType)
@@ -297,7 +203,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
   if DEPEND_0_length is None:
     msg = f"Error: DEPEND_0 variable '{dsid}'/{depend_0_name} has unhandled type: '{DEPEND_0_DataType}'. "
     msg += "Dropping variables associated with it"
-    cdawmeta.error('hapi', dsid, depend_0_name, "HAPI.NotImplementedDataType.", "    " + msg, logger)
+    cdawmeta.error('hapi', dsid, depend_0_name, "HAPI.NotImplementedDataType", "    " + msg, logger)
     return None
 
   if print_info:
@@ -340,38 +246,18 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       cdawmeta.error('hapi', dsid, name, "HAPI.NotImplemented", "      " + msg, logger)
       continue
 
+    FILLVAL = None
+    if 'FILLVAL' in variable['VarAttributes']:
+      FILLVAL = variable['VarAttributes']['FILLVAL']
+
     length = None
     if VAR_TYPE == 'data' and type_ == 'string':
-
-      PadValue = None
-      if 'PadValue' in variable['VarDescription']:
-        PadValue = variable['VarDescription']['PadValue']
-
-      FillValue = None
-      if 'FillValue' in variable['VarDescription']:
-        FillValue = variable['VarDescription']['FillValue']
-
-      NumElements = None
       if 'NumElements' in variable['VarDescription']:
-        NumElements = variable['VarDescription']['NumElements']
-
-      if PadValue is None and FillValue is None and NumElements is None:
-        emsg = "Dropping '{name}' because _to_hapi_type(VAR_TYPE) returns string but no PadValue, FillValue, or NumElements given to allow length to be determined."
-        cdawmeta.error('hapi', dsid, name, "CDF.MissingMetadata", "      " + emsg, logger)
+        length = variable['VarDescription']['NumElements']
+      else:
+        msg = "String type variable does not have NumElements. Dropping variable."
+        cdawmeta.error('hapi', dsid, name, "HAPI.NoNumElementsForStringVariable", "      " + msg, logger)
         continue
-
-      if NumElements is None:
-        if PadValue is not None and FillValue is not None and PadValue != FillValue:
-          emsg = f"Dropping '{name}' because PadValue and FillValue lengths differ."
-          cdawmeta.error('hapi', dsid, name, "CDF.LengthMismatch", "      " + emsg, logger)
-          continue
-
-      if PadValue is not None:
-        length = len(PadValue)
-      if FillValue is not None:
-        length = len(FillValue)
-      if NumElements is not None:
-        length = int(NumElements)
 
     parameter = {
       "name": name,
@@ -381,34 +267,14 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     parameter['description'] = _description(dsid, name, variable, print_info=print_info)
 
-    fill = None
-    if 'FILLVAL' in variable['VarAttributes']:
-      fill = variable['VarAttributes']['FILLVAL']
-    else:
-      emsg = f"No FILLVAL for '{name}'"
-      cdawmeta.error('hapi', dsid, name, "CDF.MissingFillValue", "      " + emsg, logger)
-      # Could use _default_fill()
+    if FILLVAL is not None:
+       parameter['fill'] = str(FILLVAL)
 
-    if fill is not None:
-      if isinstance(fill, str) and fill.lower() != 'nan':
-        if not type_ == 'integer' or type_ == 'double':
-          emsg = f"FILLVAL = '{fill}' is string but data type is not integer or double. Setting fill to None."
-          cdawmeta.error('hapi', dsid, name, "CDF.WrongFillType", "      " + emsg, logger)
-          # TODO: Drop this variable?
-          fill = None
-    if fill is not None:
-      fill = str(fill)
-    parameter['fill'] = fill
+    if length is not None:
+      parameter['length'] = length
 
-    _set_units(dsid, name, all_variables, parameter, print_info=False, x=None)
-
-    LABLAXIS, emsg, etype = cdawmeta.attrib.LABLAXIS(dsid, name, all_variables, x=None)
-    if etype is not None and print_info:
-      cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
-    if LABLAXIS is not None and cdawmeta.CONFIG['hapi']['keep_label']:
-      parameter['label'] = LABLAXIS
-    else:
-      parameter['x_label'] = LABLAXIS
+    parameter = {**parameter, **_units(variable)}
+    parameter = {**parameter, **_labels(variable)}
 
     format_f, emsg, etype = cdawmeta.attrib.FORMAT(dsid, name, all_variables, c_specifier=False)
     if etype is not None and print_info:
@@ -440,11 +306,11 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     if virtual:
       parameter["x_cdf_FUNCT"] = variable['VarAttributes']['FUNCT']
       parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['COMPONENTS']
+      parameter['description'] = parameter['description'].strip()
       parameter['description'] += f". This variable is a 'virtual' variable that is computed using the function {parameter['x_cdf_FUNCT']} (see https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro) on the with inputs of the variables {parameter['x_cdf_COMPONENTS']}."
-      parameter['description'] += " Note that not all COMPONENTS are time series and so their values are not available from the HAPI interface. They are accessible from the raw CDF files, however."
-    DISPLAY_TYPE, emsg, etype = cdawmeta.attrib.DISPLAY_TYPE(dsid, name, variable)
-    if etype is not None and print_info:
-      cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
+      parameter['description'] += " Note that some COMPONENTS may not be available from the HAPI interface. They are accessible from the raw CDF files, however."
+
+    DISPLAY_TYPE = cdawmeta.util.get_path(variable, 'VarAttributes.DISPLAY_TYPE')
     if DISPLAY_TYPE is not None:
       parameter['x_cdf_DISPLAY_TYPE'] = DISPLAY_TYPE
 
@@ -452,21 +318,13 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     #deltas = _extract_deltas(dsid, name, variable, print_info=print_info)
     #parameter = {**parameter, **deltas}
 
-    if length is not None:
-      parameter['length'] = length
-
     if 'DEPEND_0' in variable['VarAttributes']:
       parameter['x_cdf_DEPEND_0'] = variable['VarAttributes']['DEPEND_0']
 
     if 'DimSizes' in variable['VarDescription']:
       parameter['size'] = variable['VarDescription']['DimSizes']
 
-    if 'DataType' not in variable['VarDescription']:
-      msg = f"Variable '{dsid}'/{depend_0_name} has no DataType attribute. Dropping variables associated with it"
-      cdawmeta.error('hapi', dsid, name, "CDF.MissingDataType", "      " + msg, logger)
-      return None
-
-    ptr_names = ['DEPEND','LABL_PTR']
+    ptr_names = ['DEPEND', 'LABL_PTR']
     ptrs = cdawmeta.attrib._resolve_ptrs(dsid, name, all_variables, ptr_names=ptr_names)
     for ptr_name in ptr_names:
       if ptrs[ptr_name] is not None and ptrs[ptr_name] is not None:
@@ -504,13 +362,19 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     if print_info:
       for key, value in parameter.items():
-        logger.info(f"      {key} = {value}")
+        if key != 'bins':
+          logger.info(f"      {key} = {value}")
       if bins_object is not None:
         for idx, bin in enumerate(bins_object):
-          bin_copy = bin.copy()
-          if 'centers' in bin and len(bin['centers']) > 10:
-            bin_copy['centers'] = f'{bin["centers"][0]} ... {bin["centers"][-1]}'  
-          logger.info(f"      bins[{idx}] = {bin_copy}")
+          logger.info(f"      bins[{idx}]")
+          for bin_key, bin_value in bin.items():
+            if bin_key != 'centers':
+              logger.info(f"        {bin_key} = {bin_value}")
+            else:
+              centers = bin['centers']
+              if len(bin['centers']) > 10:
+                tmp = f'[{centers[0]}, ..., {centers[-1]}]'
+                logger.info(f"        {bin_key} = {tmp}")
 
     parameters.append(parameter)
 
@@ -572,25 +436,14 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
       logger.warn(f"      NotImplemented[TimeVaryingBins]: DEPEND_{x} = {DEPEND_x_NAME} has RecVariance = 'VARY'. Not creating bins b/c Nand does not for this case.")
     return None
 
-  _, emsg, etype = cdawmeta.attrib.VAR_TYPE(dsid, name, DEPEND_x, x=x)
-  if etype is not None:
-    if print_info:
-      emsg = emsg +  " Not creating bins."
-      cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
-    return None
-
-  LABLAXIS, emsg, etype = cdawmeta.attrib.LABLAXIS(dsid, DEPEND_x_NAME, all_variables, x=x)
-  if etype is not None and print_info:
-    cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
-
   if 'VarData' in DEPEND_x:
     bins_object = {
                     "name": DEPEND_x_NAME,
                     "description": _description(dsid, name, DEPEND_x, x=x, print_info=print_info),
                     "centers": DEPEND_x["VarData"],
-                    "x_label": LABLAXIS
+                    **_labels(DEPEND_x),
+                    **_units(DEPEND_x)
                   }
-    _set_units(dsid, DEPEND_x_NAME, all_variables, bins_object, print_info=False, x=None)
     return bins_object
   else:
     if print_info:
@@ -599,21 +452,149 @@ def _create_bins(dsid, name, x, DEPEND_x_NAME, all_variables, print_info=False):
       logger.warn(f"      {msg}")
     return None
 
-def _set_units(dsid, name, all_variables, parameter, print_info=False, x=None):
-  UNITS, etype, emsg  = cdawmeta.attrib.UNITS(dsid, name, all_variables, x=x)
-  if etype is not None and print_info:
-    cdawmeta.error('hapi', dsid, name, etype, "      " + emsg, logger)
-  parameter['units'] = UNITS
-  if cdawmeta.CONFIG['hapi']['use_vounits']:
-    additions = cdawmeta.additions(logger)
-    if UNITS in additions['Units']:
-      if additions['Units'][UNITS] is not None:
-        parameter['units'] = additions['Units'][UNITS]
-        parameter['x_unitsSchema'] = 'VOUnits'
-        parameter['x_units_original'] = UNITS
+def _labels(variable):
+
+  LABLAXIS = variable['VarAttributes'].get('x_LABLAXIS', None)
+  LABLAXES = variable['VarAttributes'].get('x_LABLAXES', None)
+  labels = {}
+  if LABLAXIS is not None:
+    if cdawmeta.CONFIG['hapi']['keep_label']:
+      labels['label'] = LABLAXIS
+    else:
+      labels['x_label'] = LABLAXIS
+  if LABLAXES is not None:
+    if LABLAXIS is None:
+      if len(LABLAXES) == 1:
+        LABLAXES = LABLAXES[0]
+      if cdawmeta.CONFIG['hapi']['keep_label']:
+        labels['label'] = LABLAXES
+      else:
+        labels['x_label'] = LABLAXES
+    else:
+      labels['x_labelComponents'] = LABLAXES
+      if isinstance(LABLAXIS, str) and len(set(LABLAXES[0])) == 1:
+        if LABLAXES[0][0] == LABLAXIS:
+          # Catches case where (i.e., C1_CP_STA_PPP)
+          # LABLAXIS = "F"
+          # LABLAXES = [["F", "F", ...]]
+          # => remove labelComponents b/c redundant
+          # TODO: Does not handle
+          # labels = ["F", "G"],
+          # labelComponents = [["F", "F", ...], ["G", "G", ...]]
+          del labels['x_labelComponents']
+
+  return labels
+
+def _units(variable):
+  UNITS = variable['VarAttributes'].get('x_UNITS', None)
+  UNITS_VO = variable['VarAttributes'].get('x_UNITS_VO', None)
+  units = {}
+  if UNITS_VO is not None:
+    units['units'] = UNITS_VO
+    units['unitsSchema'] = 'VOUnits1.1'
+    units['x_unitsOriginal'] = UNITS
+  else:
+    units['units'] = UNITS
 
   if cdawmeta.CONFIG['hapi']['strip_units']:
-    parameter['units'] = cdawmeta.util.trim(parameter['units'])
+    if 'units' in units:
+      units['units'] = cdawmeta.util.trim(units)
+
+  if isinstance(units, list) and isinstance(units[0], str):
+    # Catch case where units = ["A", "A", ...] => units = "A"
+    if len(set(units)) == 1:
+      units = units[0]
+
+  return units
+
+def _max_request_duration(depend_0_name, metadatum, info):
+
+  # sample{Start,Stop}Date is based on time range of 1 file
+  # If sample{Start,Stop}Date available max duration is span of n_files files
+  n_files = 50
+  # If sample{Start,Stop}Date not available max duration is 1000*cadence
+  n_cadence = 1000
+
+  if 'sampleStartDate' in info and 'sampleStopDate' in info:
+    logger.info("    Calculating maxRequestDuration from sample{Start,Stop}Date")
+    try:
+      start = datetime.datetime.fromisoformat(info['startDate'][0:-1])
+      stop = datetime.datetime.fromisoformat(info['stopDate'][0:-1])
+      sampleStart = datetime.datetime.fromisoformat(info['sampleStartDate'][0:-1])
+      sampleStop = datetime.datetime.fromisoformat(info['sampleStopDate'][0:-1])
+
+      logger.info(f"    startDate       = {info['startDate']}")
+      logger.info(f"    stopDate        = {info['stopDate']}")
+      logger.info(f"    sampleStartDate = {info['sampleStartDate']}")
+      logger.info(f"    sampleStopDate  = {info['sampleStopDate']}")
+
+      delta_sample = sampleStop - sampleStart
+      delta_datset = stop - start
+
+      total_seconds_sample = delta_sample.total_seconds()
+      total_seconds_datset = delta_datset.total_seconds()
+      logger.info(f"    sample length  = {total_seconds_sample} [s]")
+      logger.info(f"    dataset length = {total_seconds_datset} [s]")
+
+      total_seconds = min(total_seconds_datset, n_files*total_seconds_sample)
+      logger.info(f"    min(dataset, {n_files}*sample) = {total_seconds} [s]")
+
+      td = timedelta_isoformat.timedelta(milliseconds=1000*total_seconds)
+      logger.info(f"    maxRequestDuration = {td.isoformat()}")
+      maxRequestDuration = td.isoformat()
+      logger.info(f"    maxRequestDuration = {td.isoformat()} (based on sample{{Start,Stop}}Date)")
+
+      return maxRequestDuration, None
+
+    except Exception as e:
+      msg = f"Calculation of maxRequestDuration from sample{{Start,Stop}}Date failed: {e}"
+      cdawmeta.error('hapi', id, None, "HAPI.UnHandledException", "  " + msg, logger)
+
+  if 'cadence' in info:
+    counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 0, 'counts'])
+    if counts is not None:
+      logger.info("    No sample{Start,Stop}Date. Calculating maxRequestDuration from cadence")
+      try:
+        td = timedelta_isoformat.timedelta(milliseconds=n_cadence*counts[0]['duration_ms'])
+        maxRequestDuration = td.isoformat()
+        logger.info(f"    maxRequestDuration = {td.isoformat()} (based on cadence)")
+        return maxRequestDuration, None
+      except Exception as e:
+        msg = f"    Calculation of maxRequestDuration from cadence failed: {e}"
+        cdawmeta.error('hapi', id, None, "HAPI.UnHandledException", "  " + msg, logger)
+        return None, msg
+
+  return None, None
+
+def _cadence(id, depend_0_name, metadatum):
+
+  if 'cadence' not in metadatum:
+    return None, f"{id}/{depend_0_name}: No cadence information available."
+
+  if 'cadence' in metadatum:
+    if 'error' in metadatum['cadence'] or 'data' not in metadatum['cadence']:
+      return None, f"{id}/{depend_0_name}: No cadence information available."
+    else:
+      cadence_dict = cdawmeta.util.get_path(metadatum, ['cadence', 'data'])
+      if 'error' in cadence_dict:
+        return None, f"{id}/{depend_0_name}: No cadence information available due to {cadence_dict['error']}."
+
+      depend_0_cadence_dict = cdawmeta.util.get_path(cadence_dict, [depend_0_name])
+      if depend_0_cadence_dict is None:
+        return None, f"{id}/{depend_0_name}: No cadence information available."
+
+      if 'error' in depend_0_cadence_dict:
+        return None, f"{id}/{depend_0_name}: No cadence information available due to {depend_0_cadence_dict['error']}."
+
+      counts = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 0, 'counts'])
+      if counts is not None and len(counts) > 0:
+        note = cdawmeta.util.get_path(metadatum, ['cadence', 'data', depend_0_name, 0, 'note'])
+        cadence = counts[0]['duration_iso8601']
+        fraction = counts[0]['fraction']
+        cadence_info = {'cadence': cadence, 'x_cadence_fraction': fraction, 'x_cadence_note': note}
+        return cadence_info, None
+      else:
+        return None, f"{id}/{depend_0_name}: No cadence information available due to unspecified error."
 
 def _order_depend0s(id, depend0_names):
 
@@ -650,19 +631,22 @@ def _order_variables(id, variables):
 
   order_wanted = fixes['variableOrder'][id]
   order_given = variables.keys()
-  if len(order_wanted) != len(order_wanted):
-    logger.error(f'Error[HAPI]: {id}\n  Number of variables in new order list ({len(order_wanted)}) does not match number found in dataset ({len(order_given)})')
-    logger.error(f'  New order:   {order_wanted}')
-    logger.error(f'  Given order: {list(order_given)}')
-    logger.error('  Exiting with code 1')
-    exit(1)
+  if len(order_wanted) != len(order_given):
+    diff_new = set(order_wanted) - set(order_given) or None
+    diff_given = set(order_given) - set(order_wanted) or None
+    emsg = "Number of variables in new order list from hapi.json "
+    emsg += f"({len(order_wanted)}) does not match number found in dataset ({len(order_given)})\n"
+    emsg += f"  Variables in new order but not in dataset: {diff_new}\n"
+    emsg += f"  Variables in found in dataset but not in new order: {diff_given}\n"
+    cdawmeta.error('hapi', id, None, "HAPI.BadConfig", emsg, logger)
+    raise Exception(emsg)
 
-  if sorted(order_wanted) != sorted(order_wanted):
-    logger.error(f'Error[HAPI]: {id}\n  Mismatch in variable names between new order list and dataset')
-    logger.error(f'  New order:   {order_wanted}')
-    logger.error(f'  Given order: {list(order_given)}')
-    logger.error('  Exiting with code 1')
-    exit(1)
+  if sorted(order_wanted) != sorted(order_given):
+    emsg = 'Mismatch in unique variable names between new order list from hapi.json and that found in dataset\n'
+    emsg += f'  New order:   {order_wanted}\n'
+    emsg += f'  Found order: {list(order_given)}\n'
+    cdawmeta.error('hapi', id, None, "HAPI.BadConfig", emsg, logger)
+    raise Exception(emsg)
 
   return {k: variables[k] for k in order_wanted}
 
@@ -678,16 +662,6 @@ def _split_variables(id, variables):
   for name in names:
 
     variable_meta = variables[name]
-
-    if 'VarAttributes' not in variable_meta:
-      msg = f"Dropping variable '{name}' b/c it has no VarAttributes"
-      cdawmeta.error('hapi', id, name, "ISTP.NoVarAttributes", "  " + msg, logger)
-      continue
-
-    if 'VAR_TYPE' not in variable_meta['VarAttributes']:
-      msg = f"Dropping variable {id}/{name} b/c it has no has no VAR_TYPE"
-      cdawmeta.error('hapi', id, name, "ISTP.VAR_TYPE", "  " + msg, logger)
-      continue
 
     if _omit_variable(id, name):
       continue
@@ -750,6 +724,7 @@ def _omit_dataset(id, depend_0=None):
   return False
 
 def _omit_variable(id, variable_name):
+
   fixes = cdawmeta.CONFIG['hapi']['fixes']
 
   for key in list(fixes['omitVariables'].keys()):
@@ -812,53 +787,13 @@ def _description(dsid, name, variable, x=None, print_info=False):
 def _cdftimelen(cdf_type):
 
   # Based on table at https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html
-  # Could also get from PadValue or FillValue, but they are not always present (!).
+  # Could also get from PadValue or FILLVAL, but they are not always present (!).
   if cdf_type == 'CDF_EPOCH':
     return len('0000-01-01:00:00:00.000Z')
   if cdf_type == 'CDF_TIME_TT2000':
     return len('0000-01-01:00:00:00.000000000Z')
   if cdf_type == 'CDF_EPOCH16':
     return len('0000-01-01:00:00:00.000000000000Z')
-
-  return None
-
-def _default_fill(cdf_type):
-
-  if cdf_type == 'CDF_EPOCH':
-    return '9999-12-31T23:59:59.999'
-
-  if cdf_type == 'CDF_EPOCH16':
-    return '9999-12-31T23:59:59.999999999999'
-
-  if cdf_type == 'CDF_TT2000':
-    return '9999-12-31T23:59:59.999999999'
-
-  if cdf_type in ['CDF_FLOAT', 'CDF_DOUBLE', 'CDF_REAL4', 'CDF_REAL8']:
-    return "-1.0e31"
-
-  if cdf_type == 'CDF_BYTE':
-    return -128
-
-  if cdf_type == 'CDF_INT1':
-    return -128
-
-  if cdf_type == 'CDF_UINT1':
-    return 255
-
-  if cdf_type == 'CDF_INT2':
-    return -32768
-
-  if cdf_type == 'CDF_UINT2':
-    return 65535
-
-  if cdf_type == 'CDF_INT4':
-    return -2147483648
-
-  if cdf_type == 'CDF_UINT4':
-    return 4294967295
-
-  if cdf_type == 'CDF_INT8':
-    return -9223372036854775808
 
   return None
 

@@ -5,7 +5,7 @@
 [2 Installing and Running](#2-installing-and-running)<br/>
 &nbsp;&nbsp;&nbsp;[2.1 Examples](#21-examples)<br/>
 &nbsp;&nbsp;&nbsp;[2.2 Generators](#22-generators)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2.1 sample_start_stop](#221-sample_start_stop)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2.1 start_stop](#221-start_stop)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2.2 cadence](#222-cadence)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2.2.3 sample_links](#223-sample_links)<br/>
 [3 CDAWeb](#3-cdaweb)<br/>
@@ -96,25 +96,25 @@ python metadata.py --id VOYAGER1_10S_MAG --meta-type hapi
 
 ## 2.2 Generators
 
-`cdawmeta` uses ["generator" functions](https://github.com/rweigel/cdawmeta/tree/main/cdawmeta/generators) to create parts used in high-level metadata such as HAPI and SPASE. Each generator takes inputs that include its dependencies a produce new metadata. For example `sample_start_stop.py` uses the output of `orig_data` to determine a `sample{StartStop}Date` to include in HAPI metadata.
+`cdawmeta` uses ["generator" functions](https://github.com/rweigel/cdawmeta/tree/main/cdawmeta/generators) to create parts used in high-level metadata such as HAPI and SPASE. Each generator takes inputs that include its dependencies a produce new metadata. For example `start_stop.py` uses the output of `orig_data` to determine a `sample{StartStop}Date` to include in HAPI metadata.
 
-### 2.2.1 sample_start_stop
+### 2.2.1 start_stop
 
 Used in HAPI.
 
 ```
-python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_start_stop
+python metadata.py --id VOYAGER1_10S_MAG --meta-type start_stop
 ```
 
-Produces the following output, which can be [downloaded directly](http://mag.gmu.edu/git-data/cdawmeta/data/sample_start_stop/info/VOYAGER1_10S_MAG.json).
+Produces the following output, which can be [downloaded directly](http://mag.gmu.edu/git-data/cdawmeta/data/start_stop/info/VOYAGER1_10S_MAG.json).
 <details>
 <summary>Output</summary>
 <pre>
 {
   "id": "VOYAGER1_10S_MAG",
-  "sample_start_stop": {
+  "start_stop": {
     "id": "VOYAGER1_10S_MAG",
-    "data-file": "./data/sample_start_stop/info/VOYAGER1_10S_MAG.json",
+    "data-file": "./data/start_stop/info/VOYAGER1_10S_MAG.json",
     "data": {
       "sampleStartDate": "1991-10-28T04:59:54.000Z",
       "sampleStopDate": "1991-11-26T19:09:30.000Z",
@@ -130,7 +130,7 @@ Produces the following output, which can be [downloaded directly](http://mag.gmu
 Used in HAPI and SPASE.
 
 ```
-python metadata.py --id VOYAGER1_10S_MAG --meta-type sample_start_stop
+python metadata.py --id VOYAGER1_10S_MAG --meta-type start_stop
 ```
 Produces the following output (full output can be [downloaded directly](http://mag.gmu.edu/git-data/cdawmeta/data/cadence/info/VOYAGER1_10S_MAG.json)).
 
@@ -147,7 +147,7 @@ Produces the following output (full output can be [downloaded directly](http://m
       "cadence": {
         "Epoch2": {
           "url": "https://cdaweb.gsfc.nasa.gov/sp_phys/data/voyager/voyager1/magnetic_fields_cdaweb/mag_10s/1977/voyager1_10s_mag_19770905_v01.cdf",
-          "note": "Cadence based on variable 'Epoch2' in https://cdaweb.gsfc.nasa.gov/sp_phys/data/voyager/voyager1/magnetic_fields_cdaweb/mag_10s/1977/voyager1_10s_mag_19770905_v01.cdf. This most common cadence occured for 98.8448% of the 20964 timesteps. Cadence = 9600 [ms] = PT9.6S.",
+          "note": "Cadence based on variable 'Epoch2' in https://cdaweb.gsfc.nasa.gov/sp_phys/data/voyager/voyager1/magnetic_fields_cdaweb/mag_10s/1977/voyager1_10s_mag_19770905_v01.cdf. This most common cadence occurred for 98.8448% of the 20964 timesteps. Cadence = 9600 [ms] = PT9.6S.",
           "counts": [
             {
               "count": 20964,
@@ -248,6 +248,7 @@ We also recommend
 * documentation of non-ISTP attributes so that users know if an attribute is important for interpretation;
 * a clearer indication of, or documentation of, attributes that are CDAWeb-software specific; and
 * tests on Master CDFs and newly uploaded data CDFs that catch problems that will cause downstream software to fail, some of those listed in the [issue tracker](https://github.com/rweigel/cdawmeta/issues) fall in this category; a examples include issues with recently updated [PSP data CDF files](https://github.com/rweigel/cdawmeta/issues/12) and [incorrect `SI_CONVERSION` factors](https://github.com/rweigel/cdawmeta/issues/29).
+* Standards for the representation of CDF in JSON (there exists one for XML, CDFML) and as a Python dictionary. The code used in this project assumes the JSON structure of the Masters will not change and the data structures returned by `cdflib` will not change. Effort was needed to modify the data structures returned by `cdflib` to match that found in the Masters. 
 
 Early indications are that much of this is out-of-scope of the CDAWeb project. For example, CDAWeb does not control the content or quality of the files that they host and improving the metadata for use by non-CDAWeb software may not be supported. However, addressing these issues will greatly impact the quality of code and metadata downstream (e.g., HAPI, SPASE, SOSO, etc.); if it is out-of-scope, leadership should find support for addressing these perennial issues.
 

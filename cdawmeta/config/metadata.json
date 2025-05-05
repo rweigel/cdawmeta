@@ -1,5 +1,6 @@
 {
-  "_comment": "Options used by metadata.py",
+  "_comment": "Options used by metadata.py or more than one generator",
+  "file_list": "cdfmetafile",
   "timeouts": {
     "allxml": 30,
     "master": 30,

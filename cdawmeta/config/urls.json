@@ -4,5 +4,8 @@
   "hapiplot": "https://hapi-server.org/plot/",
   "hpde.io": "https://github.com/hpde/hpde.io",
   "all.xml": "https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml",
-  "cdawmeta-spase": "https://github.com/rweigel/cdawmeta-spase"
+  "cdawmeta-spase": "https://github.com/rweigel/cdawmeta-spase",
+  "cdfmetafile": "https://cdaweb.gsfc.nasa.gov/~tkovalic/metadata/sp_phys_cdfmetafile.txt",
+  "cdfurl_root": "https://cdaweb.gsfc.nasa.gov/sp_phys/data/",
+  "cdffile_root": "/home/cdaweb/data/"
 }

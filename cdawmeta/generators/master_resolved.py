@@ -8,12 +8,13 @@ def master_resolved(metadatum, logger):
 
   id = metadatum['id']
 
-  if 'data' not in metadatum['master']:
+  master = metadatum['master'].get('data', None)
+  if master is None:
     msg = f"{id}: Not creating dataset for {id} b/c it has no 'data' attribute"
     cdawmeta.error('master_resolved', id, None, "ISTP.NoMaster", msg, logger)
     return {"error": msg}
 
-  master = metadatum['master']['data'].copy()
+  master = master.copy()
 
   if 'CDFVariables' not in master:
     msg = f"{id}: Not creating dataset for {id} b/c it has no 'CDFVariables' attribute"
@@ -34,11 +35,15 @@ def master_resolved(metadatum, logger):
       variables_removed.append(removed_variable)
   logger.info("- End check for variables to drop")
 
+  logger.info("- Start fixing of attributes in master CDF")
+  _fix_attributes(metadatum, logger)
+  logger.info("- End fixing of attributes in master CDF")
+
   for variable_name in variable_names.copy():
 
     logger.info(f"  {variable_name}")
     if variable_name in variables_removed:
-      logger.info("Skipping b/c removed.")
+      logger.info(f"{indent}Skipping b/c removed.")
       continue
 
     variable = variables[variable_name]
@@ -66,63 +71,96 @@ def master_resolved(metadatum, logger):
 
     if VAR_TYPE == 'metadata' and DataType not in ['CDF_CHAR', 'CDF_UCHAR']:
       emsg = f"{indent}CDF VAR_TYPE = 'metadata' and DataType not one of ['CDF_CHAR', 'CDF_UCHAR']"
-      cdawmeta.error('master_resolved', id, variable_name, "CDF.DataTypeWrong", emsg, logger)
+      cdawmeta.error('master_resolved', id, variable_name, "ISTP.DataTypeWrong", emsg, logger)
 
-    variable['UNITS'] = _UNITS(id, variable_name, variables, variables_removed, logger)
+    variable['VarAttributes']['x_UNITS'] = _UNITS(id, variable_name, variables, variables_removed, logger)
 
-    UNITS_VO = _UNITS_VO(id, variable_name, variable['UNITS'], additions, logger)
+    UNITS_VO = _UNITS_VO(id, variable_name, variable['VarAttributes']['x_UNITS'], additions, logger)
     if UNITS_VO is not None:
-      variable['UNITS_VO'] = UNITS_VO
+      variable['VarAttributes']['x_UNITS_VO'] = UNITS_VO
 
-    if 'LABLAXIS' in variable['VarAttributes']:
-      LABLAXIS = variable['VarAttributes']['LABLAXIS']
-      logger.info(f"    LABELAXIS given: {LABLAXIS}")
-      if cdawmeta.CONFIG['hapi']['strip_labelaxis']:
-        LABLAXIS_RESOLVED = cdawmeta.util.trim(LABLAXIS)
-        variable['VarAttributes']['LABLAXIS'] = LABLAXIS_RESOLVED
-      logger.info(f"    LABELAXIS resolved: {variable['VarAttributes']['LABLAXIS']}")
+    LABLAXIS = _LABLAXIS(id, variable, logger)
+    if LABLAXIS is not None:
+      variable['VarAttributes']['x_LABLAXIS'] = LABLAXIS
+      logger.info(f"{indent}x_LABLAXIS: {LABLAXIS}")
 
-    LABL_PTR_RESOLVED = _LABL_PTR_RESOLVED(id, variable_name, variables, variables_removed, logger)
-    if LABL_PTR_RESOLVED is not None:
-      variable['LABL_PTR_RESOLVED'] = LABL_PTR_RESOLVED
-      logger.info(f"    LABL_PTR_RESOLVED: {LABL_PTR_RESOLVED}")
+    LABL_PTR = _LABL_PTR(id, variable_name, variables, variables_removed, logger)
+    if LABL_PTR is not None:
+      variable['VarAttributes']['x_LABLAXES'] = LABL_PTR
+      logger.info(f"{indent}x_LABLAXES: {LABL_PTR}")
 
-    DEPEND_RESOLVED = _DEPEND_RESOLVED(id, variable_name, variables, variables_removed, logger)
-    if DEPEND_RESOLVED is not None:
-      variable['DEPEND_RESOLVED'] = DEPEND_RESOLVED
-      logger.info(f"    DEPEND_RESOLVED: {DEPEND_RESOLVED}")
+    if VAR_TYPE in ['data', 'support_data']:
+      if LABLAXIS is None and LABL_PTR is None:
+        emsg = f"{indent}For VAR_TYPE = 'data' or 'support_data', if no LABLAXIS, LABL_PTR_i is required."
+        cdawmeta.error('master_resolved', id, variable_name, "CDF.MissingLABL_PTR", emsg, logger)
 
-    if DEPEND_RESOLVED is not None and DEPEND_RESOLVED == LABL_PTR_RESOLVED:
-      emsg = f"{indent}DEPEND_RESOLVED == LABL_PTR_RESOLVED. Removing redundant DEPEND_RESOLVED and DEPEND_{{1,2,3}}"
-      cdawmeta.error('master_resolved', id, None, "CDF.DEPENDsEqualLABL_PTR", emsg, logger)
-      # TODO: This could create a metadata variable that is not referenced.
-      del variable['DEPEND_RESOLVED']
+    DEPEND = _DEPEND(id, variable_name, variables, variables_removed, logger)
+    if DEPEND is not None:
+      variable['VarAttributes']['x_DEPEND'] = DEPEND
+      logger.info(f"{indent}x_DEPEND: {DEPEND}")
+
+    if DEPEND is not None and DEPEND == LABL_PTR:
+      emsg = f"{indent}DEPEND == LABL_PTR. Removing redundant DEPEND and DEPEND_{{1,2,3}}"
+      cdawmeta.error('master_resolved', id, variable_name, "CDF.DEPENDsEqualLABL_PTR", emsg, logger)
+      del variable['VarAttributes']['x_DEPEND']
       for i in [1, 2, 3]:
+        # TODO: This could create a metadata variable that is not referenced.
         variable['VarAttributes'].pop(f'DEPEND_{i}', None)
 
     v = variables[variable_name]['VarAttributes'].get('VIRTUAL', None)
-    if v is not None and v.lower() == 'true':
-      logger.info("    VIRTUAL: true")
+    if v is not None and v == 'true':
+      logger.info(f"{indent}VIRTUAL: true")
       funct = variables[variable_name]['VarAttributes'].get('FUNCT', None)
       if funct is not None:
-        logger.info(f"    FUNCT: {funct}")
+        logger.info(f"{indent}FUNCT: {funct}")
 
       COMPONENTS = []
       for i in [0, 1, 2, 3]:
         c = variables[variable_name]['VarAttributes'].get(f'COMPONENT_{i}', None)
-        print(c)
         if c is not None:
           COMPONENTS.append(c)
-          logger.info(f'    COMPONENT_{i}: {c}')
+          logger.info(f'{indent}COMPONENT_{i}: {c}')
       if len(COMPONENTS) > 0:
         variable['VarAttributes']['COMPONENTS'] = COMPONENTS
-        logger.info(f"    COMPONENTS: {COMPONENTS}")
+        logger.info(f"{indent}COMPONENTS: {COMPONENTS}")
 
   return [master]
 
-def _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_name=None):
+def _fix_attributes(metadatum, logger):
+  id = metadatum['id']
+  table_config = cdawmeta.CONFIG['table']['tables']['cdaweb.dataset']
+  CDFglobalAttributes = metadatum['master']['data']['CDFglobalAttributes']
+  for attribute in list(CDFglobalAttributes.keys()).copy():
+    if attribute in table_config['fixes']:
+      emsg = f"{indent}Renaming CDFglobalAttribute '{attribute}' to '{table_config['fixes'][attribute]}'"
+      cdawmeta.error('master_resolved', id, None, "CDF.AttributeNameError", emsg, logger)
+      fixed_attribute = table_config['fixes'][attribute]
+      CDFglobalAttributes[fixed_attribute] = CDFglobalAttributes.pop(attribute)
 
-  # This will replace _resolve_ptrs.py
+  table_config = cdawmeta.CONFIG['table']['tables']['cdaweb.variable']
+  CDFVariables = metadatum['master']['data']['CDFVariables']
+  for variable_name in CDFVariables.keys():
+    variable = CDFVariables[variable_name]
+    for attribute in list(variable['VarAttributes'].keys()).copy():
+      if attribute in table_config['fixes']:
+        emsg = f"{indent}{variable_name}: Renaming VarAttributes attribute '{attribute}' to '{table_config['fixes'][attribute]}'"
+        cdawmeta.error('master_resolved', id, variable_name, "CDF.AttributeNameError", emsg, logger)
+        fixed_attribute = table_config['fixes'][attribute]
+        variable['VarAttributes'][fixed_attribute] = variable['VarAttributes'].pop(attribute)
+
+    VIRTUAL = _VIRTUAL(id, variable_name, variable, logger)
+    if VIRTUAL is not None:
+      variable['VarAttributes']['VIRTUAL'] = VIRTUAL
+
+    FUNCT = _FUNCT(id, variable_name, variable, VIRTUAL, logger)
+    if FUNCT is not None:
+      variable['VarAttributes']['FUNCT'] = FUNCT
+
+    DISPLAY_TYPE = _DISPLAY_TYPE(id, variable_name, variable, logger)
+    if DISPLAY_TYPE is not None:
+      variable['VarAttributes']['DISPLAY_TYPE'] = DISPLAY_TYPE
+
+def _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_name=None):
 
   ptr_var = variables[variable_name]['VarAttributes'].get(ptr_name, None)
   if ptr_var is None:
@@ -138,7 +176,7 @@ def _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_na
     cdawmeta.error('master_resolved', id, variable_name, "CDF.InvalidPtrReference", emsg, logger)
     return None
 
-  msgo = f"{indent}{id}/{variable_name} has {ptr_name} = '{ptr_var}' "
+  msgo = f"{indent}Variable has {ptr_name} = '{ptr_var}' "
 
   if 'VarData' not in variables[ptr_var]:
     if ptr_name == 'UNIT_PTR' or ptr_name.startswith('LABL_PTR'):
@@ -166,33 +204,51 @@ def _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_na
   values = variables[ptr_var]['VarData']
   values_trimmed = cdawmeta.util.trim(values)
 
+  DimSizes = variables[ptr_var]['VarDescription'].get('DimSizes', None)
   DimSizesParent = variables[variable_name]['VarDescription'].get('DimSizes', None)
 
-  DimSizes = variables[ptr_var]['VarDescription'].get('DimSizes', None)
-  if False and DimSizes is None and len(values_trimmed) > 0:
-    emsg = f"{msgo}with {len(values_trimmed)} values, but "
-    emsg += f"'{ptr_var}' has no DimSizes."
-    cdawmeta.error('master_resolved', id, ptr_var, "CDF.PtrSizeMismatch", emsg, logger)
-    return None
+  VAR_TYPE = variables[variable_name]['VarAttributes'].get('VAR_TYPE', None)
+  if ptr_name.startswith('DEPEND') and VAR_TYPE != 'support_data':
+    emsg = f"{msgo}with VAR_TYPE = '{VAR_TYPE}' which is not 'support_data'."
+    cdawmeta.error('master_resolved', id, variable_name, "CDF.InvalidDependPtrVarType", emsg, logger)
 
-  ptr_name_end = ptr_name.split('_')[-1]
-  if ptr_name_end.isdigit():
-    ptr_idx = int(ptr_name_end) - 1
-    if ptr_idx + 1 and DimSizesParent is None:
-      emsg = f"{msgo}with ptr_idx = {ptr_idx} having DimsSizes = {DimSizes}, but DimSizesParent = None."
-      cdawmeta.error('master_resolved', id, ptr_var, "CDF.PtrSizeMismatch", emsg, logger)
-      return None
-    if ptr_idx + 1 > len(DimSizesParent):
-      emsg = f"{msgo}with ptr_idx = {ptr_idx} which is greater than len(DimSizesParent) = {len(DimSizesParent)}."
-      cdawmeta.error('master_resolved', id, ptr_var, "CDF.PtrSizeMismatch", emsg, logger)
-      return None
-    if len(values_trimmed) > 1 and len(values_trimmed) != DimSizesParent[ptr_idx]:
-      emsg = f"{msgo}with {len(values_trimmed)} values, but "
-      emsg += f"'{variable_name}' has DimSizesParent[{ptr_idx}] = {DimSizesParent[ptr_idx]}."
-      cdawmeta.error('master_resolved', id, ptr_var, "CDF.PtrSizeMismatch", emsg, logger)
-      return None
+  if ptr_name.startswith('DEPEND') or ptr_name.startswith('COMPONENT') or ptr_name.startswith('LABL_PTR'):
+    ptr_name_end = ptr_name.split('_')[-1]
+    if ptr_name_end.isdigit():
+      ptr_idx = int(ptr_name_end) - 1
+      if DimSizesParent is None:
+        emsg = f"{msgo}with ptr_idx = {ptr_idx} having DimsSizes = {DimSizes}, "
+        emsg += "but referencing variable has DimSizes = None."
+        cdawmeta.error('master_resolved', id, ptr_var, "CDF.PtrSizeMismatch", emsg, logger)
+        return None
+      if ptr_idx + 1 > len(DimSizesParent):
+        emsg = f"{msgo}with ptr_idx = {ptr_idx} which is greater than "
+        emsg += f"len(DimSizes) = {len(DimSizesParent)} of referencing variable."
+        cdawmeta.error('master_resolved', id, ptr_var, "CDF.PtrSizeMismatch", emsg, logger)
+        return None
+      if len(values_trimmed) > 1 and len(values_trimmed) != DimSizesParent[ptr_idx]:
+        emsg = f"{msgo}with {len(values_trimmed)} values, but referencing variable "
+        emsg += f"has DimSizes[{ptr_idx}] = {DimSizesParent[ptr_idx]}."
+        cdawmeta.error('master_resolved', id, ptr_var, "CDF.PtrSizeMismatch", emsg, logger)
+        return None
+    else:
+      emsg = f"{msgo}with ptr_name = '{ptr_name}' does not end with an integer."
   else:
-    logger.info(f"{indent}{ptr_var} does not end with an integer after splitting on '_'.")
+    if DimSizesParent is None:
+      emsg = f"{msgo}with DimsSizes = {DimSizes}, but referencing variable "
+      emsg += "has DimSizes = None."
+      cdawmeta.error('master_resolved', id, ptr_var, "CDF.PtrSizeMismatch", emsg, logger)
+      return None
+    if len(values_trimmed) != DimSizesParent[0]:
+      emsg = f"{msgo}with {len(values_trimmed)} values, but "
+      emsg += f"of referencing variable '{variable_name}' has DimSizes[0] = {DimSizesParent[0]}."
+      cdawmeta.error('master_resolved', id, ptr_var, "CDF.PtrSizeMismatch", emsg, logger)
+      return None
+
+  if not isinstance(values, list):
+    values = [values]
+  if not isinstance(values_trimmed, list):
+    values_trimmed = [values_trimmed]
 
   logger.info(f"{indent}{ptr_name} name:   {ptr_var}")
   logger.info(f"{indent}{ptr_name} values: {values}")
@@ -207,7 +263,7 @@ def _check_variable(id, variable_name, variables, logger):
   variable = variables[variable_name]
 
   if 'VarAttributes' not in variable:
-    emsg = f"{indent}{variable_name}No VarAttributes. {removing}"
+    emsg = f"{indent}  {variable_name}No VarAttributes. {removing}"
     cdawmeta.error('master_resolved', id, variable_name, "CDF.NoVarAttributes", emsg, logger)
     del variables[variable_name]
     return variable_name
@@ -216,28 +272,74 @@ def _check_variable(id, variable_name, variables, logger):
   VAR_TYPE = variable['VarAttributes'].get('VAR_TYPE', None)
 
   if VAR_TYPE is None:
-    emsg = f"{indent}{variable_name} No VAR_TYPE. {removing}"
+    emsg = f"{indent}  {variable_name} No VAR_TYPE. {removing}"
     cdawmeta.error('master_resolved', id, variable_name, "CDF.NoVAR_TYPE", emsg, logger)
     del variables[variable_name]
     return variable_name
 
   if VAR_TYPE not in var_types:
-    emsg = f"{indent}{variable_name} VAR_TYPE = '{VAR_TYPE}' which is not in {var_types}."
+    emsg = f"{indent}  {variable_name} VAR_TYPE = '{VAR_TYPE}' which is not in ."
     cdawmeta.error('master_resolved', id, variable_name, "CDF.NoVarAttributes", emsg, logger)
     del variables[variable_name]
     return variable_name
 
   if 'VarDescription' not in variable:
-    emsg = f"{indent}{variable_name} No VarDescription. {removing}"
+    emsg = f"{indent}  {variable_name} No VarDescription. {removing}"
     cdawmeta.error('master_resolved', id, variable_name, "CDF.VarDescription", emsg, logger)
     del variables[variable_name]
     return variable_name
 
-  if 'DataType' not in variables[variable_name]['VarDescription']:
-    emsg = f"{indent}{variable_name} No DataType. {removing}"
+  DataType = variables[variable_name]['VarDescription'].get('DataType', None)
+
+  if DataType is None:
+    emsg = f"{indent}  {variable_name} No DataType. {removing}"
     cdawmeta.error('master_resolved', id, variable_name, "CDF.NoDataType", emsg, logger)
     del variables[variable_name]
     return variable_name
+
+  FILLVAL = variables[variable_name]['VarAttributes'].get('FILLVAL', None)
+  if FILLVAL is None:
+    emsg = f"{indent}{variable_name}: No FILLVAL. Not removing variable."
+    cdawmeta.error('hapi', id, variable_name, "CDF.MissingFillValue", emsg, logger)
+    # Could use _default_fill()
+  else:
+    # TODO: Check that FILLVAL is the ISTP convention value
+    if isinstance(FILLVAL, str) and FILLVAL.lower() != 'nan':
+      # Even though CDF_EPOCH, CDF_EPOCH16, CDF_TIME_TT2000 are not stored as
+      # strings, their fill are.
+      string_fills = ['CDF_CHAR', 'CDF_UCHAR', 'CDF_EPOCH', 'CDF_EPOCH16', 'CDF_TIME_TT2000']
+      if DataType not in string_fills:
+        emsg = f"{indent}{variable_name}: FILLVAL = '{FILLVAL}' is string but DataType = {DataType} is not on of {string_fills}. {removing}"
+        cdawmeta.error('hapi', id, variable_name, "CDF.WrongFillType", emsg, logger)
+        del variables[variable_name]
+        return variable_name
+
+
+  if VAR_TYPE == 'data' and DataType in ['CDF_CHAR', 'CDF_UCHAR']:
+    # C1_JP_PSE
+
+    PadValue = variable['VarDescription'].get('PadValue', None)
+    NumElements = variable['VarDescription'].get('NumElements', None)
+
+    if PadValue is None and NumElements is None:
+      emsg = f"{indent}{variable_name}: No PadValue and no NumElements. {removing}"
+      cdawmeta.error('hapi', id, variable_name, "CDF.MissingMetadata", emsg, logger)
+      del variables[variable_name]
+      return variable_name
+
+    if PadValue is not None:
+      if FILLVAL is not None:
+        if type(PadValue) is type(FILLVAL):
+          if len(PadValue) != len(FILLVAL):
+            emsg = f"{indent}{variable_name}: len(PadValue) = {len(PadValue)} != len(FILLVAL) = {len(FILLVAL)}. {removing}"
+            cdawmeta.error('hapi', id, variable_name, "CDF.LengthMismatch", emsg, logger)
+            #del variables[variable_name]
+            #return variable_name
+        else:
+          emsg = f"{indent}{variable_name}: type(PadValue) = {type(PadValue)} != type(FILLVAL) = {type(FILLVAL)}. {removing}"
+          cdawmeta.error('hapi', id, variable_name, "CDF.PadValueFILLVALTypeMismatch", emsg, logger)
+          #del variables[variable_name]
+          #return variable_name
 
   NumDims = variable['VarDescription'].get('NumDims', None)
   #logger.info(f"{indent}NumDims: {NumDims}")
@@ -253,40 +355,30 @@ def _check_variable(id, variable_name, variables, logger):
     DimVariances = []
 
   if NumDims != len(DimSizes):
-    emsg = f"{indent}{variable_name}DimSizes mismatch: NumDims = {NumDims} "
+    emsg = f"{indent} {variable_name}: DimSizes mismatch: NumDims = {NumDims} "
     emsg += f"!= len(DimSizes) = {len(DimSizes)}. {removing}"
     cdawmeta.error('hapi', id, variable_name, "CDF.DimSizes", emsg, logger)
     del variables[variable_name]
     return variable_name
 
   if len(DimSizes) != len(DimVariances):
-    emsg = f"{indent}{variable_name}DimVariances mismatch: len(DimSizes) = {DimSizes} "
+    emsg = f"{indent} {variable_name}: DimVariances mismatch: len(DimSizes) = {DimSizes} "
     emsg += f"!= len(DimVariances) = {len(DimVariances)}. {removing}"
     cdawmeta.error('hapi', id, variable_name, "CDF.DimVariance", emsg, logger)
     del variables[variable_name]
     return variable_name
 
   virtual = variable['VarAttributes'].get('VIRTUAL', None)
-  if virtual is not None and virtual.lower() == 'true':
-    logger.info("    VIRTUAL: true")
+  if virtual is not None:
+    virtual = virtual.lower().strip()
+  else:
+    virtual = 'false'
 
   funct = variable['VarAttributes'].get('FUNCT', None)
-  if funct is not None:
-    logger.info(f"    FUNCT: {funct}")
-
   function = variable['VarAttributes'].get('FUNCTION', None)
-  if function is not None:
-    logger.info(f"    FUNCT: {function}")
-    emsg = f"{indent}{variable_name} FUNCTION attribute found; Renaming to FUNCT."
-    variable['VarAttributes']['FUNCT'] = function
-    cdawmeta.error('master_resolved', id, variable_name, "CDF.FunctionAttribute", emsg, logger)
 
-    if variable['VarAttributes']['FUNCT'] == 'ALTERNATE_VIEW':
-      emsg = f"{indent}{variable_name} FUNCT with value 'ALTERNATE_VIEW'; Renaming value to 'alternate_view'."
-      cdawmeta.error('master_resolved', id, variable_name, "CDF.VirtualFunctionName", emsg, logger)
-
-  if virtual is not None and virtual is True and (function is None and funct is None):
-    emsg = f"{indent}{variable_name} VIRTUAL=True, but no FUNCTION or FUNCT. {removing}"
+  if virtual == 'true' and virtual is True and (function is None and funct is None):
+    emsg = f"{indent} {variable_name}: VIRTUAL = 'true', but no FUNCTION or FUNCT. {removing}"
     cdawmeta.error('master_resolved', id, variable_name, "CDF.VirtualButNoFunctAttribute", emsg, logger)
     del variables[variable_name]
     return variable_name
@@ -298,7 +390,6 @@ def _check_variable(id, variable_name, variables, logger):
     c = variables[variable_name]['VarAttributes'].get(f'COMPONENT_{i}', None)
     if c is not None:
       components[i] = True
-      logger.info(f'    COMPONENT_{i}: {c}')
       if c not in variables:
         if virtual:
           emsg = f"{indent}{variable_name} is VIRTUAL and has COMPONENT_{i} = '{c}' which is not a variable in dataset. {removing}"
@@ -322,7 +413,87 @@ def _check_variable(id, variable_name, variables, logger):
 
   return None
 
-def _DEPEND_RESOLVED(id, variable_name, variables, variables_removed, logger):
+def _FUNCT(id, variable_name, variable, VIRTUAL, logger):
+  FUNCT = variable['VarAttributes'].get('FUNCT', None)
+  if VIRTUAL == 'false' and FUNCT is not None:
+    emsg = f"{indent}{variable_name} VIRTUAL = 'false' and FUNCT = '{FUNCT}'. Removing attribute FUNCT."
+    cdawmeta.error('master_resolved', id, variable_name, "CDF.AttributeError", emsg, logger)
+    del variable['VarAttributes']['FUNCT']
+    return None
+
+  if FUNCT is not None and FUNCT == 'ALTERNATE_VIEW':
+    emsg = f"{indent}{variable_name} FUNCT with value 'ALTERNATE_VIEW'; Renaming value to 'alternate_view'."
+    cdawmeta.error('master_resolved', id, variable_name, "CDF.AttributeValueError", emsg, logger)
+    FUNCT = 'alternate_view'
+
+  return FUNCT
+
+def _VIRTUAL(id, variable_name, variable, logger):
+  VIRTUAL = variable['VarAttributes'].get('VIRTUAL', None)
+  if VIRTUAL is not None:
+    if VIRTUAL.lower() != VIRTUAL:
+      emsg = f"{indent}{variable_name} VIRTUAL with value '{VIRTUAL}' which is not all lowercase; Renaming value to be all lowercase."
+      cdawmeta.error('master_resolved', id, variable_name, "CDF.AttributeValueError", emsg, logger)
+      VIRTUAL = VIRTUAL.lower()
+    if VIRTUAL.strip() != VIRTUAL:
+      emsg = f"{indent}{variable_name} VIRTUAL with value '{VIRTUAL}' which has leading or trailing whitespace; Renaming value to be stripped."
+      cdawmeta.error('master_resolved', id, variable_name, "CDF.AttributeValueError", emsg, logger)
+      VIRTUAL = VIRTUAL.strip()
+    if VIRTUAL not in ['true', 'false']:
+      emsg = f"{indent}{variable_name} VIRTUAL with value '{VIRTUAL}' which is not 'true' or 'false' after stripping whitespace and setting to all lowercase. Removing attribute VIRTUAL."
+      cdawmeta.error('master_resolved', id, variable_name, "CDF.AttributeValueError", emsg, logger)
+      del variable['VarAttributes']['VIRTUAL']
+      return None
+    variable['VarAttributes']['VIRTUAL'] = VIRTUAL
+
+  return VIRTUAL
+
+def _DISPLAY_TYPE(dsid, variable_name, variable, logger):
+
+  if 'DISPLAY_TYPE' not in variable['VarAttributes']:
+    if variable['VarAttributes'].get('VAR_TYPE') == 'data':
+      emsg = f"{indent}{variable_name} DISPLAY_TYPE for variable with VAR_TYPE = 'data'."
+      cdawmeta.error('master_resolved', dsid, variable_name, "ISTP.DISPLAY_TYPEMissing", emsg, logger)
+    return None
+
+  display_type = variable['VarAttributes']['DISPLAY_TYPE']
+  display_type_parts = display_type.split(">")
+  display_type = display_type_parts[0]
+
+  display_type_attributes = ""
+  if len(display_type_parts) > 1:
+    display_type_attributes = display_type_parts[1:]
+    display_type_attributes = ">".join(display_type_attributes)
+
+  if display_type.strip() == '':
+    emsg = f"{indent}{variable_name} DISPLAY_TYPE.strip() = ''. Removing attribute DISPLAY_TYPE."
+    cdawmeta.error('master_resolved', dsid, variable_name, "ISTP.DISPLAY_TYPEEmpty", emsg, logger)
+    del variable['VarAttributes']['DISPLAY_TYPE']
+    return None
+
+  display_types_known = cdawmeta.CONFIG['master_resolved']['DISPLAY_TYPES']
+
+  if display_type.strip() != '':
+    if display_type not in display_types_known:
+      emsg = f"{indent}{variable_name} DISPLAY_TYPE = '{display_type}' is not in "
+      emsg += "list of known display types. Will attempt to infer using DISPLAY_TYPE.strip().lower()."
+      cdawmeta.error('master_resolved', dsid, variable_name, "ISTP.DISPLAY_TYPEUnknown", emsg, logger)
+
+  found = False
+  for display_type in display_types_known:
+    if display_type.strip().lower().startswith(display_type):
+      found = True
+      display_type = display_type.strip().lower()
+
+  if not found:
+    emsg += "{indent}{variable_name} DISPLAY_TYPE.strip().lower() = "
+    emsg += f"'{display_type}' does not start with one of {display_types_known}"
+    cdawmeta.error('master_resolved', dsid, variable_name, "ISTP.DISPLAY_TYPEUnknown", emsg, logger)
+    return None
+
+  return display_type + display_type_attributes
+
+def _DEPEND(id, variable_name, variables, variables_removed, logger):
   depend = []
 
   found = False
@@ -340,7 +511,27 @@ def _DEPEND_RESOLVED(id, variable_name, variables, variables_removed, logger):
 
   return depend
 
-def _LABL_PTR_RESOLVED(id, variable_name, variables, variables_removed, logger):
+def _LABLAXIS(id, variable, logger):
+
+  # TODO: There are rules for when LABLAXIS and LABL_PTR_1, LABL_PTR_2,
+  # LABL_PTR_3 are required depending on DISPLAY_TYPE
+
+  LABLAXIS = variable['VarAttributes'].get('LABLAXIS', None)
+  if LABLAXIS is None:
+    return None
+
+  logger.info(f"    LABLAXIS given: {LABLAXIS}")
+  if cdawmeta.CONFIG['hapi']['strip_labelaxis']:
+    if isinstance(LABLAXIS, str):
+      LABLAXIS = cdawmeta.util.trim(LABLAXIS)
+    else:
+      emsg = f"{indent}LABLAXIS = {LABLAXIS} is not a string. Casting to string."
+      cdawmeta.error('master_resolved', id, None, "CDF.LABLAXISNotString", emsg, logger)
+      LABLAXIS = cdawmeta.util.trim(str(LABLAXIS))
+
+  return LABLAXIS
+
+def _LABL_PTR(id, variable_name, variables, variables_removed, logger):
 
   labl_ptrs = []
   found = False
@@ -373,7 +564,7 @@ def _UNITS(id, variable_name, variables, variables_removed, logger):
       if original == resolved:
         return
 
-    msg = f"{indent}{attribute_name} resolved: "
+    msg = f"{indent}x_{attribute_name}: "
     if isinstance(resolved, list):
       logger.info(f"{msg}{resolved}")
     else:
@@ -408,7 +599,7 @@ def _UNITS(id, variable_name, variables, variables_removed, logger):
         cdawmeta.error('master_resolved', id, variable_name, "ISTP.UNITS", msg, logger)
         units = None
     else:
-      units = units_o.strip()
+      units = units_o
 
     if units_ptr_resolved is not None:
       msg = f"{indent}Both UNIT_PTR and UNITS attributes found. Using UNITS."
@@ -470,3 +661,43 @@ def _UNITS_VO(id, variable_name, UNITS, additions, logger):
       logger.info(f"{indent}UNITS_VO:       '{UNITS_VO}'")
 
   return UNITS_VO
+
+def _default_fill(cdf_type):
+
+  if cdf_type == 'CDF_EPOCH':
+    return '9999-12-31T23:59:59.999'
+
+  if cdf_type == 'CDF_EPOCH16':
+    return '9999-12-31T23:59:59.999999999999'
+
+  if cdf_type == 'CDF_TT2000':
+    return '9999-12-31T23:59:59.999999999'
+
+  if cdf_type in ['CDF_FLOAT', 'CDF_DOUBLE', 'CDF_REAL4', 'CDF_REAL8']:
+    return "-1.0e31"
+
+  if cdf_type == 'CDF_BYTE':
+    return -128
+
+  if cdf_type == 'CDF_INT1':
+    return -128
+
+  if cdf_type == 'CDF_UINT1':
+    return 255
+
+  if cdf_type == 'CDF_INT2':
+    return -32768
+
+  if cdf_type == 'CDF_UINT2':
+    return 65535
+
+  if cdf_type == 'CDF_INT4':
+    return -2147483648
+
+  if cdf_type == 'CDF_UINT4':
+    return 4294967295
+
+  if cdf_type == 'CDF_INT8':
+    return -9223372036854775808
+
+  return None

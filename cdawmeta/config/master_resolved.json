@@ -1,0 +1,31 @@
+{
+  "_comment": "DISPLAY_TYPES from DisplayType.java in SKTEditor (https://github.com/rweigel/skteditor-src/blob/faf0988dde1ca19cdcae2af847316e6c3f35a375/skteditor-1.3.11/src/gsfc/spdf/istp/DisplayType.java#L793C1-L827C1)",
+  "DISPLAY_TYPES": [
+     "bar_chart",
+     "flux_image",
+     "flux_movie",
+     "fuv_image",
+     "label",
+     "line",
+     "list",
+     "fuv_movie",
+     "wind_plot",
+     "xy_plot",
+     "plasma_movie",
+     "plasmagram",
+     "time_series",
+     "spectrogram",
+     "orbit",
+     "topside_ionogram",
+     "radar_vector",
+     "stack_plot",
+     "map_image",
+     "image",
+     "map_movie",
+     "movie",
+     "mapped",
+     "skymap",
+     "skymap_movie",
+     "default_dimension"
+    ]
+}
