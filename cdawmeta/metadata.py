@@ -57,7 +57,7 @@ def ids(id=None, id_skip=None, update=False):
 
   allxml_data = _allxml(update=update)
   datasets_all = _datasets(allxml_data)
-  ids_all = datasets_all.keys()
+  ids_all = sorted(datasets_all.keys())
 
   if id is None:
     return _remove_skips(id_skip, list(ids_all))
