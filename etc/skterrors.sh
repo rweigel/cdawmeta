@@ -12,7 +12,7 @@ DATA="../data"
 BASE=$DATA/cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS
 JAR=$DATA/skteditor-1.3.11/spdfjavaClasses.jar
 CLASS=gsfc.spdf.istp.tools.CDFCheck
-#find $BASE -name "a1*.cdf" | while read -r cdf_file; do
+#find $BASE -name "WI_H0_SWE*.cdf" | while read -r cdf_file; do
 find $BASE -name "*.cdf" | while read -r cdf_file; do
   # Run the command and redirect stdout/stderr to a log file
   echo "Processing $cdf_file"
