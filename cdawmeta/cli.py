@@ -1,7 +1,5 @@
 def cli(script, defs=False):
 
-  import os
-
   import cdawmeta
 
   meta_types = cdawmeta.dependencies['all']
