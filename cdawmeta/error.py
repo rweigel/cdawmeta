@@ -1,10 +1,12 @@
 import os
 
 def trace():
+  import re
   import traceback
   trace = traceback.format_exc()
   home_dir = os.path.expanduser("~")
-  trace = trace.replace(home_dir, "~")
+  trace = re.sub(rf'File ".*{home_dir}/', 'File "~/', trace)
+  trace = trace.replace(f'File ".*{home_dir}', 'File "~')
   return f"\n{trace}"
 
 def exception(dsid, logger, exit_on_exception=False):
@@ -250,3 +252,9 @@ def _errors_by_errorid(errors):
             output[etype].append(line)
 
   return output
+
+if __name__ == "__main__":
+  try:
+    raise ValueError("This is a test exception.")
+  except Exception as e:
+    print(trace())
