@@ -641,8 +641,8 @@ def _UNITS_VO(id, variable_name, UNITS, additions, logger):
       msg = f"{indent}Did not find mapping from CDAWeb UNITS.strip() = '{unit}' to VO_UNIT in additions['Units']"
       cdawmeta.error('master_resolved', id, variable_name, "VOUnits.NotFound", msg, logger)
       return None
-    units_vo = additions['Units'][unit]
-    if unit.strip() in additions['Units'] and units_vo is not None:
+    units_vo = additions['Units'].get('unit', None)
+    if units_vo is not None and unit.strip() in additions['Units']:
       logger.info(f"{indent}Found UNITS_VO = '{units_vo}' for UNITS.strip() = '{unit}'")
       UNITS_VO.append(units_vo)
 
