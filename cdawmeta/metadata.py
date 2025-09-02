@@ -697,6 +697,8 @@ def _write_combined(metadata_, id, meta_types):
         if isinstance(datum, dict):
           datum = [datum]
         for d in datum:
+          # If CDAWeb dataset has multiple DEPEND_0s, it is expanded to
+          # multiple HAPI datasets.
           data_hapi.append(d)
           d_copy = deepcopy(d)
           if 'info' not in d_copy:
@@ -711,14 +713,14 @@ def _write_combined(metadata_, id, meta_types):
       subdir = 'partial'
       qualifier = f'-{id}'
 
-    fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'combined{qualifier}')
-    logger.info(f'Writing {fname}.json')
-    cdawmeta.util.write(fname + ".json", data)
-    logger.info(f'Writing {fname}.pkl')
-    cdawmeta.util.write(fname + ".pkl", data)
 
-    if meta_type == 'hapi':
-
+    if meta_type != 'hapi':
+      fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'combined{qualifier}')
+      logger.info(f'Writing {fname}.json')
+      cdawmeta.util.write(fname + ".json", data)
+      logger.info(f'Writing {fname}.pkl')
+      cdawmeta.util.write(fname + ".pkl", data)
+    else:
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}')
       logger.info(f'Writing {fname}.json')
       cdawmeta.util.write(fname + ".json", data_hapi_no_info)
