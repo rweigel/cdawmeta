@@ -237,7 +237,22 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     type_ = _to_hapi_type(variable['VarDescription']['DataType'])
     if type_ is None and print_info:
-      msg = f"Variable '{name}' has unhandled DataType: {variable['VarDescription']['DataType']}. Dropping variable."
+      msg = f"Variable '{name}' has unhandled DataType: "
+      msg += f"{variable['VarDescription']['DataType']}. Dropping variable."
+      cdawmeta.error('hapi', dsid, name, "HAPI.NotImplemented", "      " + msg, logger)
+      continue
+
+    if variable['VarDescription']['DataType'] == 'CDF_UINT4':
+      msg = f"Variable '{name}' has unhandled DataType: "
+      msg += f"{variable['VarDescription']['DataType']} that cannot be mapped"
+      msg += "to HAPI 32-bit signed integer type. Setting type to HAPI double."
+      type_ = 'double'
+      continue
+
+    if variable['VarDescription']['DataType'] == 'CDF_INT8':
+      msg = f"Variable '{name}' has unhandled DataType: "
+      msg += f"{variable['VarDescription']['DataType']} that cannot be mapped"
+      msg += "to HAPI 32-bit signed integer type or HAPI double."
       cdawmeta.error('hapi', dsid, name, "HAPI.NotImplemented", "      " + msg, logger)
       continue
 
@@ -798,6 +813,17 @@ def _cdftimelen(cdf_type):
   return None
 
 def _to_hapi_type(cdf_type):
+
+  # Table 2.8 of https://spdf.gsfc.nasa.gov/pub/software/cdf/doc/cdf380/cdf380ug.pdf
+  known_types = ['CDF_BYTE',
+                 'CDF_INT1', 'CDF_UINT1', 'CDF_INT2', 'CDF_UINT2', 'CDF_INT4',  'CDF_UINT4',
+                 'CDF_INT8',
+                 'CDF_REAL4', 'CDF_FLOAT', 'CDF_REAL8', 'CDF_DOUBLE',
+                 'CDF_EPOCH', 'CDF_EPOCH16', 'CDF_TIME_TT2000',
+                 'CDF_CHAR', 'CDF_UCHAR'
+                ]
+  if cdf_type not in known_types:
+    return None
 
   if cdf_type in ['CDF_CHAR', 'CDF_UCHAR']:
     return 'string'

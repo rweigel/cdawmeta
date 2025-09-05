@@ -255,7 +255,7 @@ def _meta_types(meta_types_requested):
     meta_types = []
     for _type in meta_types_requested:
       if _type not in choices:
-        raise ValueError(f"Error: {_type}: Not in {choices}")
+        raise ValueError(f"Error: meta_type = {_type} is not in {choices}")
       deps = cdawmeta.dependencies[_type]
       if deps is None:
         if _type not in meta_types:
