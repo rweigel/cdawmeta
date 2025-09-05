@@ -224,6 +224,8 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
                   }
                 ]
 
+  _add_virtual_metadata('Time', depend_0_variable, parameters[0], print_info=False)
+
   for name, variable in depend_0_variables.items():
 
     VAR_TYPE, emsg, etype = cdawmeta.attrib.VAR_TYPE(dsid, name, variable, x=None)
@@ -307,19 +309,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     if FIELDNAM is not None:
       parameter['x_cdf_FIELDNAM'] = FIELDNAM
 
-    virtual = 'VIRTUAL' in variable['VarAttributes']
-    if print_info:
-      virtual_txt = f' (virtual: {virtual})'
-      logger.info(f"    {name}{virtual_txt}")
-
-    parameter["x_cdf_VIRTUAL"] = virtual
-    if virtual:
-      parameter["x_cdf_FUNCT"] = variable['VarAttributes']['FUNCT']
-      parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['COMPONENTS']
-      if cdawmeta.CONFIG['hapi']['virtual_note']:
-        parameter['description'] = parameter['description'].strip()
-        parameter['description'] += f". This variable is a 'virtual' variable that is computed using the function {parameter['x_cdf_FUNCT']} (see https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro) on the with inputs of the variables {parameter['x_cdf_COMPONENTS']}."
-        parameter['description'] += " Note that some COMPONENTS may not be available from the HAPI interface. They are accessible from the raw CDF files, however."
+    _add_virtual_metadata(name, variable, parameter, print_info=False)
 
     DISPLAY_TYPE = cdawmeta.util.get_path(variable, 'VarAttributes.DISPLAY_TYPE')
     if DISPLAY_TYPE is not None:
@@ -517,6 +507,22 @@ def _units(variable):
       units = units[0]
 
   return units
+
+def _add_virtual_metadata(name, variable, parameter, print_info=False):
+
+  virtual = 'VIRTUAL' in variable['VarAttributes']
+  if print_info:
+    virtual_txt = f' (virtual: {virtual})'
+    logger.info(f"    {name}{virtual_txt}")
+
+  parameter["x_cdf_VIRTUAL"] = virtual
+  if virtual:
+    parameter["x_cdf_FUNCT"] = variable['VarAttributes']['FUNCT']
+    parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['COMPONENTS']
+    if cdawmeta.CONFIG['hapi']['virtual_note']:
+      parameter['description'] = parameter['description'].strip()
+      parameter['description'] += f". This variable is a 'virtual' variable that is computed using the function {parameter['x_cdf_FUNCT']} (see https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro) on the with inputs of the variables {parameter['x_cdf_COMPONENTS']}."
+      parameter['description'] += " Note that some COMPONENTS may not be available from the HAPI interface. They are accessible from the raw CDF files, however."
 
 def _max_request_duration(depend_0_name, metadatum, info):
 
