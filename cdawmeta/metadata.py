@@ -74,7 +74,7 @@ def ids(id=None, id_skip=None, update=False):
       if id.endswith('.json'):
         raise ValueError(f"\n\nError: id = '{id}': Not found. Did you mean '{id.replace('.json', '')}'?")
       else:
-        raise ValueError(f"\n\nError: id = '{id}': Not found.")
+        raise ValueError(f"\n\nError: id = '{id}': Not found. Prefix with '^' to use pattern match, e.g., '^A|^B'.")
     else:
       ids_reduced = [id]
 
