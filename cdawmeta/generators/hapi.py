@@ -228,6 +228,8 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
   for name, variable in depend_0_variables.items():
 
+    hapi_note = ""
+
     VAR_TYPE, emsg, etype = cdawmeta.attrib.VAR_TYPE(dsid, name, variable, x=None)
     if etype is not None:
       # Should not happen because variable will be dropped in _split_variables
@@ -249,7 +251,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       msg += f"{variable['VarDescription']['DataType']} that cannot be mapped"
       msg += "to HAPI 32-bit signed integer type. Setting type to HAPI double."
       type_ = 'double'
-      continue
+      hapi_note = "Note: CDF_UINT4 data was converted to HAPI double."
 
     if variable['VarDescription']['DataType'] == 'CDF_INT8':
       msg = f"Variable '{name}' has unhandled DataType: "
@@ -277,7 +279,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       "x_cdf_DataType": variable['VarDescription']['DataType']
     }
 
-    parameter['description'] = _description(dsid, name, variable, print_info=print_info)
+    parameter['description'] = _description(dsid, name, variable, note=hapi_note, print_info=print_info)
 
     if FILLVAL is not None:
        parameter['fill'] = str(FILLVAL)
@@ -769,7 +771,7 @@ def _omit_variable(id, variable_name):
     return True
   return False
 
-def _description(dsid, name, variable, x=None, print_info=False):
+def _description(dsid, name, variable, x=None, note="", print_info=False):
 
   # TODO: This was written to match Nand's logic and reduce number of mis-matches.
   #       This should be modified to use FIELDNAM.
@@ -802,6 +804,13 @@ def _description(dsid, name, variable, x=None, print_info=False):
 
   if cdawmeta.CONFIG['hapi']['remove_arrows']:
     desc = desc.replace('--->', '')
+
+  if note == "":
+    return desc
+  desc = desc.strip()
+  if not desc.endswith('.'):
+    desc += '.'
+  desc += ' ' + note
 
   return desc
 
