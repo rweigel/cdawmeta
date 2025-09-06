@@ -247,12 +247,11 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       msg += f"{variable['VarDescription']['DataType']} that cannot be mapped"
       msg += "to HAPI 32-bit signed integer type. Setting type to HAPI double."
       type_ = 'double'
-      continue
 
     if variable['VarDescription']['DataType'] == 'CDF_INT8':
       msg = f"Variable '{name}' has unhandled DataType: "
       msg += f"{variable['VarDescription']['DataType']} that cannot be mapped"
-      msg += "to HAPI 32-bit signed integer type or HAPI double."
+      msg += "to HAPI 32-bit signed integer type or HAPI double. Dropping variable."
       cdawmeta.error('hapi', dsid, name, "HAPI.NotImplemented", "      " + msg, logger)
       continue
 
