@@ -417,9 +417,9 @@ def _spase(dataset, update=True, diffs=False):
 
 def _spase_hpde_io(id=None, update=True, diffs=False):
 
+  import git
   import glob
 
-  import git
   repo_path = os.path.join(cdawmeta.DATA_DIR, 'hpde.io')
   up_to_date = False
   repo_url = cdawmeta.CONFIG['urls']['hpde.io']
@@ -432,8 +432,9 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
   if update and not up_to_date:
     repo = git.Repo(repo_path)
     origin = repo.remotes.origin
+    logger.info(f"Fetching from {repo_url} to {repo_path}")
     origin.fetch()
-    logger.info(f"Pulling from {repo_url}")
+    logger.info("Merging origin/master")
     repo.git.merge('origin/master')
 
   out_dir = os.path.join(cdawmeta.DATA_DIR, 'spase_hpde_io', 'info')
@@ -465,7 +466,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
 
     ResourceID = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'ResourceID'])
     if ResourceID is None:
-      cdawmeta.error('metadata', id, None, 'spase.hpde_io.NoResourceID', f"No ResourceID in {file}", logger)
+      cdawmeta.error('spase_hpde_io', id, None, 'spase.hpde_io.NoResourceID', f"No ResourceID in {file}", logger)
       continue
 
     hpde_url = f'{ResourceID.replace("spase://", "http://hpde.io/")}'
@@ -475,7 +476,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
     AccessInformation = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'AccessInformation'])
 
     if AccessInformation is None:
-      cdawmeta.error('metadata', id, None, 'spase.hpde_io.AccessInformation', f"No AccessInformation in {file}", logger)
+      cdawmeta.error('spase_hpde_io', id, None, 'spase.hpde_io.AccessInformation', f"No AccessInformation in {file}", logger)
       continue
 
     s = "s" if len(AccessInformation) > 1 else ""
@@ -493,7 +494,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
         URL = AccessURL.get('URL', None)
         if URL is None:
           msg = f"  No URL in AccessURL with Name '{Name}' in {hpde_url}"
-          cdawmeta.error('metadata', id, None, 'spase.hpde_io.NoURLInAccessURL', msg, logger)
+          cdawmeta.error('spase_hpde_io', id, None, 'spase.hpde_io.NoURLInAccessURL', msg, logger)
           continue
 
         logger.debug(f"    {ridx+1}. {Name}: {URL}")
@@ -504,7 +505,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
         if Name == 'CDAWeb':
           if found:
             msg = f"      Duplicate AccessURL/Name = 'CDAWeb' in {hpde_url}"
-            cdawmeta.error('metadata', id, None, 'spase.hpde_io.DuplicateAccessURLName', msg, logger)
+            cdawmeta.error('spase_hpde_io', id, None, 'spase.hpde_io.DuplicateAccessURLName', msg, logger)
           else:
             n_found += 1
             if 'ProductKey' in Repository['AccessURL']:
@@ -512,7 +513,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
               ProductKeyCDAWeb = Repository['AccessURL']['ProductKey']
               if ProductKeyCDAWeb.strip() == '':
                 msg = f"      ProductKey.strip() = '' in AccessURL with Name '{Name}' in {hpde_url}"
-                cdawmeta.error('metadata', id, None, 'spase.hpde_io.EmptyProductKey', msg, logger)
+                cdawmeta.error('spase_hpde_io', id, None, 'spase.hpde_io.EmptyProductKey', msg, logger)
               else:
                 json_file = os.path.join(out_dir, f"{ProductKeyCDAWeb}.json")
                 pkl_file = os.path.join(out_dir, f"{ProductKeyCDAWeb}.pkl")

@@ -16,10 +16,10 @@ def hpde_io(clargs):
   dir_additions = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-spase')
 
   report_name = sys._getframe().f_code.co_name
-  logger = cdawmeta.logger(name=f'{report_name}')
+  #logger = cdawmeta.logger(name=f'{report_name}')
 
   meta_type = 'spase_hpde_io'
-  meta = cdawmeta.metadata(meta_type=meta_type, **clargs)
+  meta = cdawmeta.metadata(meta_type=meta_type, **clargs, logger=logger)
   dsids = meta.keys() # CDAWeb dataset IDs
 
   attributes = {
@@ -32,6 +32,7 @@ def hpde_io(clargs):
 
   n_found = attributes.copy()
   ObservedRegion = {}
+  ObservedRegionIDMap = {}
   for attribute in attributes.keys():
     n_spase = 0
     n_found[attribute] = 0
@@ -43,6 +44,7 @@ def hpde_io(clargs):
       path = [*path, attribute]
 
     for dsid_spase in meta.keys():
+      ResourceID = cdawmeta.util.get_path(meta[dsid_spase], [meta_type, 'data', 'Spase', 'NumericalData', 'ResourceID'])
       spase = cdawmeta.util.get_path(meta[dsid_spase], [meta_type, 'data'])
       if spase is None:
         #logger.error(f"No SPASE for {dsid_spase}")
@@ -61,6 +63,7 @@ def hpde_io(clargs):
           sc_id = dsid_spase.split('_')[0]
           if sc_id not in ObservedRegion:
             ObservedRegion[sc_id] = value
+            ObservedRegionIDMap[sc_id] = []
             logger.info(f"  {dsid_spase}: Found first ObservedRegion for s/c ID = {sc_id}: {value}")
           elif sorted(ObservedRegion[sc_id]) != sorted(value):
             if not _merge_observed_regions(dsid_spase):
@@ -71,9 +74,13 @@ def hpde_io(clargs):
               logger.error(f"    This value  = {sorted(value)}")
               logger.error("    Combining values.")
               ObservedRegion[sc_id] = list(set(ObservedRegion[sc_id]) | set(value))
+          ObservedRegionIDMap[sc_id].append(dsid_spase)
         n_found[attribute] += 1
 
   attributes['ObservedRegion'] = ObservedRegion
+
+  n_found['ObservedRegionIDMap'] = n_found['ObservedRegion']
+  attributes['ObservedRegionIDMap'] = ObservedRegionIDMap
 
   ResourceIDs = {}
   n_parameters = 0
