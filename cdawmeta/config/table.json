@@ -134,7 +134,7 @@
       "description": "The content of this database is based information in <a href=\"https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/\">cdawlib/0JSONS</a>.",
       "column_definitions": {
       },
-      "_comment": "This table requires special handling because each variable two top-level attributes that are combined.",
+      "_comment": "This table requires special handling because each variables top-level attributes that are combined.",
       "paths": {
         "master/data/CDFVariables": {
           "VarDescription": {

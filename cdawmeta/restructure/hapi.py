@@ -12,7 +12,7 @@ def hapi(hapi, simplify_bins=False, logger=None):
 
   # bins = [{'name': val, 'attr': val, ...}, {'name': val, 'attr': val, ...}, ...] =>
   # {'bins[0]/name': val, 'bins[0]/attr': val, ..., 'bins[1]/name': val, 'bins[1]/attr': val, ...}
-  # Then bins object is removed an these attributes are placed at the parameter level
+  # Then bins object is removed and these attributes are placed at the parameter level
   if simplify_bins:
     for parameter in hapi['parameters']:
       new_bins = {}
