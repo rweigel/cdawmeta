@@ -74,7 +74,7 @@ def ids(id=None, id_skip=None, update=False):
       if id.endswith('.json'):
         raise ValueError(f"\n\nError: id = '{id}': Not found. Did you mean '{id.replace('.json', '')}'?")
       else:
-        raise ValueError(f"\n\nError: id = '{id}': Not found.")
+        raise ValueError(f"\n\nError: id = '{id}': Not found. Prefix with '^' to use pattern match, e.g., '^A|^B'.")
     else:
       ids_reduced = [id]
 
@@ -255,7 +255,7 @@ def _meta_types(meta_types_requested):
     meta_types = []
     for _type in meta_types_requested:
       if _type not in choices:
-        raise ValueError(f"Error: {_type}: Not in {choices}")
+        raise ValueError(f"Error: meta_type = {_type} is not in {choices}")
       deps = cdawmeta.dependencies[_type]
       if deps is None:
         if _type not in meta_types:
@@ -697,6 +697,8 @@ def _write_combined(metadata_, id, meta_types):
         if isinstance(datum, dict):
           datum = [datum]
         for d in datum:
+          # If CDAWeb dataset has multiple DEPEND_0s, it is expanded to
+          # multiple HAPI datasets.
           data_hapi.append(d)
           d_copy = deepcopy(d)
           if 'info' not in d_copy:
@@ -711,14 +713,14 @@ def _write_combined(metadata_, id, meta_types):
       subdir = 'partial'
       qualifier = f'-{id}'
 
-    fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'combined{qualifier}')
-    logger.info(f'Writing {fname}.json')
-    cdawmeta.util.write(fname + ".json", data)
-    logger.info(f'Writing {fname}.pkl')
-    cdawmeta.util.write(fname + ".pkl", data)
 
-    if meta_type == 'hapi':
-
+    if meta_type != 'hapi':
+      fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'combined{qualifier}')
+      logger.info(f'Writing {fname}.json')
+      cdawmeta.util.write(fname + ".json", data)
+      logger.info(f'Writing {fname}.pkl')
+      cdawmeta.util.write(fname + ".pkl", data)
+    else:
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}')
       logger.info(f'Writing {fname}.json')
       cdawmeta.util.write(fname + ".json", data_hapi_no_info)

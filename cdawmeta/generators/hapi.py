@@ -224,7 +224,11 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
                   }
                 ]
 
+  _add_virtual_metadata('Time', depend_0_variable, parameters[0], print_info=False)
+
   for name, variable in depend_0_variables.items():
+
+    hapi_note = ""
 
     VAR_TYPE, emsg, etype = cdawmeta.attrib.VAR_TYPE(dsid, name, variable, x=None)
     if etype is not None:
@@ -237,7 +241,22 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     type_ = _to_hapi_type(variable['VarDescription']['DataType'])
     if type_ is None and print_info:
-      msg = f"Variable '{name}' has unhandled DataType: {variable['VarDescription']['DataType']}. Dropping variable."
+      msg = f"Variable '{name}' has unhandled DataType: "
+      msg += f"{variable['VarDescription']['DataType']}. Dropping variable."
+      cdawmeta.error('hapi', dsid, name, "HAPI.NotImplemented", "      " + msg, logger)
+      continue
+
+    if variable['VarDescription']['DataType'] == 'CDF_UINT4':
+      msg = f"Variable '{name}' has unhandled DataType: "
+      msg += f"{variable['VarDescription']['DataType']} that cannot be mapped"
+      msg += "to HAPI 32-bit signed integer type. Setting type to HAPI double."
+      type_ = 'double'
+      hapi_note = "Note: CDF_UINT4 data was converted to HAPI double."
+
+    if variable['VarDescription']['DataType'] == 'CDF_INT8':
+      msg = f"Variable '{name}' has unhandled DataType: "
+      msg += f"{variable['VarDescription']['DataType']} that cannot be mapped"
+      msg += "to HAPI 32-bit signed integer type or HAPI double. Dropping variable."
       cdawmeta.error('hapi', dsid, name, "HAPI.NotImplemented", "      " + msg, logger)
       continue
 
@@ -260,7 +279,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       "x_cdf_DataType": variable['VarDescription']['DataType']
     }
 
-    parameter['description'] = _description(dsid, name, variable, print_info=print_info)
+    parameter['description'] = _description(dsid, name, variable, note=hapi_note, print_info=print_info)
 
     if FILLVAL is not None:
        parameter['fill'] = str(FILLVAL)
@@ -292,19 +311,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     if FIELDNAM is not None:
       parameter['x_cdf_FIELDNAM'] = FIELDNAM
 
-    virtual = 'VIRTUAL' in variable['VarAttributes']
-    if print_info:
-      virtual_txt = f' (virtual: {virtual})'
-      logger.info(f"    {name}{virtual_txt}")
-
-    parameter["x_cdf_VIRTUAL"] = virtual
-    if virtual:
-      parameter["x_cdf_FUNCT"] = variable['VarAttributes']['FUNCT']
-      parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['COMPONENTS']
-      if cdawmeta.CONFIG['hapi']['virtual_note']:
-        parameter['description'] = parameter['description'].strip()
-        parameter['description'] += f". This variable is a 'virtual' variable that is computed using the function {parameter['x_cdf_FUNCT']} (see https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro) on the with inputs of the variables {parameter['x_cdf_COMPONENTS']}."
-        parameter['description'] += " Note that some COMPONENTS may not be available from the HAPI interface. They are accessible from the raw CDF files, however."
+    _add_virtual_metadata(name, variable, parameter, print_info=False)
 
     DISPLAY_TYPE = cdawmeta.util.get_path(variable, 'VarAttributes.DISPLAY_TYPE')
     if DISPLAY_TYPE is not None:
@@ -502,6 +509,22 @@ def _units(variable):
       units = units[0]
 
   return units
+
+def _add_virtual_metadata(name, variable, parameter, print_info=False):
+
+  virtual = 'VIRTUAL' in variable['VarAttributes']
+  if print_info:
+    virtual_txt = f' (virtual: {virtual})'
+    logger.info(f"    {name}{virtual_txt}")
+
+  parameter["x_cdf_VIRTUAL"] = virtual
+  if virtual:
+    parameter["x_cdf_FUNCT"] = variable['VarAttributes']['FUNCT']
+    parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['COMPONENTS']
+    if cdawmeta.CONFIG['hapi']['virtual_note']:
+      parameter['description'] = parameter['description'].strip()
+      parameter['description'] += f". This variable is a 'virtual' variable that is computed using the function {parameter['x_cdf_FUNCT']} (see https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro) on the with inputs of the variables {parameter['x_cdf_COMPONENTS']}."
+      parameter['description'] += " Note that some COMPONENTS may not be available from the HAPI interface. They are accessible from the raw CDF files, however."
 
 def _max_request_duration(depend_0_name, metadatum, info):
 
@@ -748,7 +771,7 @@ def _omit_variable(id, variable_name):
     return True
   return False
 
-def _description(dsid, name, variable, x=None, print_info=False):
+def _description(dsid, name, variable, x=None, note="", print_info=False):
 
   # TODO: This was written to match Nand's logic and reduce number of mis-matches.
   #       This should be modified to use FIELDNAM.
@@ -782,6 +805,13 @@ def _description(dsid, name, variable, x=None, print_info=False):
   if cdawmeta.CONFIG['hapi']['remove_arrows']:
     desc = desc.replace('--->', '')
 
+  if note == "":
+    return desc
+  desc = desc.strip()
+  if not desc.endswith('.'):
+    desc += '.'
+  desc += ' ' + note
+
   return desc
 
 def _cdftimelen(cdf_type):
@@ -798,6 +828,17 @@ def _cdftimelen(cdf_type):
   return None
 
 def _to_hapi_type(cdf_type):
+
+  # Table 2.8 of https://spdf.gsfc.nasa.gov/pub/software/cdf/doc/cdf380/cdf380ug.pdf
+  known_types = ['CDF_BYTE',
+                 'CDF_INT1', 'CDF_UINT1', 'CDF_INT2', 'CDF_UINT2', 'CDF_INT4',  'CDF_UINT4',
+                 'CDF_INT8',
+                 'CDF_REAL4', 'CDF_FLOAT', 'CDF_REAL8', 'CDF_DOUBLE',
+                 'CDF_EPOCH', 'CDF_EPOCH16', 'CDF_TIME_TT2000',
+                 'CDF_CHAR', 'CDF_UCHAR'
+                ]
+  if cdf_type not in known_types:
+    return None
 
   if cdf_type in ['CDF_CHAR', 'CDF_UCHAR']:
     return 'string'
