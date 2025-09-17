@@ -9,17 +9,13 @@ def hpde_io(clargs):
   # 2023-01-01 63ab552190803d982d3f958c567313c02e1a660d
   # 2022-02-12 a57646d181a669c3285e75efa256891720818de8
 
-  out_dir = 'reports'
+  dir_additions = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-spase')
+  out_dir = os.path.join('cdawmeta-spase', 'log')
   report_name = sys._getframe().f_code.co_name
   logger = cdawmeta.logger(name=f'{report_name}', dir_name=out_dir, log_level=clargs['log_level'])
 
-  dir_additions = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-spase')
-
-  report_name = sys._getframe().f_code.co_name
-  #logger = cdawmeta.logger(name=f'{report_name}')
-
   meta_type = 'spase_hpde_io'
-  meta = cdawmeta.metadata(meta_type=meta_type, **clargs, logger=logger)
+  meta = cdawmeta.metadata(meta_type=meta_type, **clargs, logger_=logger)
   dsids = meta.keys() # CDAWeb dataset IDs
 
   attributes = {

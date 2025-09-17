@@ -8,10 +8,12 @@ import cdawmeta
 # TODO: Find a better way to handle this.
 logger = None
 
-def _logger(log_level='info'):
+def _logger(log_level='info', logger_=logger):
   global logger
-  if logger is None:
+  if logger_ is None:
     logger = cdawmeta.logger(name='metadata', log_level=log_level)
+  else:
+    logger = logger_
   return logger
 
 def ids(id=None, id_skip=None, update=False):
@@ -31,7 +33,7 @@ def ids(id=None, id_skip=None, update=False):
 
   # Needed to set logger for any called underscore functions.
   # TODO: Find a better way to handle this.
-  logger = _logger()
+  #logger = _logger()
 
   def _remove_skips(id_skip, ids):
     id_skip_default = cdawmeta.util.get_path(cdawmeta.CONFIG, ['hapi', 'id_skip'])
@@ -95,7 +97,8 @@ def metadata(id=None,
              max_workers=3,
              diffs=False,
              exit_on_exception=False,
-             log_level='info'):
+             log_level='info',
+             logger_=None):
   '''
   Options are documented in cli.py.
 
@@ -103,7 +106,10 @@ def metadata(id=None,
   metadata types.
   '''
 
-  logger = _logger(log_level=log_level)
+  logger = _logger(log_level=log_level, logger_=logger_)
+
+  logger.info("Starting cdawmeta.metadata()")
+
   meta_types_requested = meta_type
 
   # Computed meta_types need to be generated given requested meta_type(s).
