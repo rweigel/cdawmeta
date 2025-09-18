@@ -223,7 +223,8 @@ def _depend_0s_counts(id, url, metadatum, file_idx, logger, use_cache):
 def _count_dicts(diff, depend_0_name, DataType, logger):
 
   from collections import Counter
-  from timedelta_isoformat import timedelta
+  from datetime import timedelta
+  import utilrsw
 
   sf = 1e3 # CDF_EPOCH is in milliseconds
   duration_unit = "ms"
@@ -250,7 +251,8 @@ def _count_dicts(diff, depend_0_name, DataType, logger):
     value_s = value/sf
     if value_s >= 1e-3:
       t = timedelta(seconds=value_s)
-      duration_iso8601 = t.isoformat()
+      duration_iso8601 = utilrsw.time.timedelta_to_isoduration(t)
+      print(duration_iso8601)
     else: # timedelta() returns 0 for less than microsecond, so handle manually.
       # TODO: When there are fractional seconds, we should be rendering
       # with a fixed number of significant digits and then trimming extra trailing
@@ -510,3 +512,4 @@ def _check_data(id, depend_0_name, data, master, url, logger):
       return None, emsg
 
   return DataType, None
+
