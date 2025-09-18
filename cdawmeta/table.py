@@ -54,8 +54,8 @@ def table(id=None, id_skip=None, table_name=None, embed_data=False,
         for vid in variables:
           variables[vid] = cdawmeta.util.flatten_dicts(variables[vid], parent_key=None)
 
-    cdawmeta.util.print_dict(datasets[dsid]['master']['data']['CDFVariables'])
-    exit()
+    #cdawmeta.util.print_dict(datasets[dsid]['master']['data']['CDFVariables'])
+    #exit()
 
   if table_name == 'cdaweb.dataset':
     for dsid in datasets.keys():
