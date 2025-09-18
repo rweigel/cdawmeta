@@ -24,6 +24,9 @@
   "_comment": "Set label instead of x_label (Nand does not provide label attribute)",
   "keep_label": false,
 
+  "_comment": "Remove VIRTUAL variables with FUNCT or FUNCTION of alternate_view unless COMPONENT_0 points to a variable with DataType 'ignore_data'",
+  "rm_alternate_view": true,
+
   "_comment": "https://github.com/rweigel/cdawmeta/issues/10",
   "default_float_format": ".7g",
   "default_double_format": ".17g",
