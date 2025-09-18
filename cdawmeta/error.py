@@ -33,6 +33,7 @@ def error(generator, id, name, etype, msg, logger):
 
   if name not in error.errors[generator][id][etype]:
     error.errors[generator][id][etype][name] = []
+
   error.errors[generator][id][etype][name].append(msg.lstrip())
 
 error.errors = {}
