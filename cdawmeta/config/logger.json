@@ -12,13 +12,18 @@
   "metadata": {
     "name": "metadata",
     "file_log": "{name}.log",
-    "file_error": false,
-    "color": true
+    "file_error": false
   },
   "hapi": {
     "name": "hapi",
+    "file_format": "%(name)s %(levelname)s [%(threadName)s] %(message)s",
     "file_log": "{name}/{name}.log",
-    "file_error": false,
-    "color": true
+    "file_error": false
+  },
+  "master_resolved": {
+    "name": "master_resolved",
+    "file_format": "%(name)s %(levelname)s [%(threadName)s] %(message)s",
+    "file_log": "{name}/{name}.log",
+    "file_error": false
   }
 }
