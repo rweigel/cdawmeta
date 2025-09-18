@@ -2,9 +2,9 @@ import os
 
 import cdawmeta
 
-# Can't call logger = cdawmeta.logger(...) here because it calls cdawmeta.DATA_DIR
+# Can't call logger = cdawmeta.logger(...) here because it calls cdawmeta.DATA_DIR,
 # which is set to a default. If user modifies using cdawmeta.DATA_DIR = ...,
-# logger does not know about the change.
+# logger does not know about the change. (This is done in cli.py.)
 # TODO: Find a better way to handle this.
 logger = None
 
@@ -30,10 +30,6 @@ def ids(id=None, id_skip=None, update=False):
   '''
 
   import re
-
-  # Needed to set logger for any called underscore functions.
-  # TODO: Find a better way to handle this.
-  #logger = _logger()
 
   def _remove_skips(id_skip, ids):
     id_skip_default = cdawmeta.util.get_path(cdawmeta.CONFIG, ['hapi', 'id_skip'])
@@ -195,7 +191,8 @@ def _meta_loggers(meta_types, not_generated, log_level='info'):
     mloggers[meta_type] = cdawmeta.logger(meta_type, log_level=log_level)
   return mloggers
 
-def _get_one(dataset, meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception):
+def _get_one(dataset, meta_types, meta_types_requested, update, update_skip, regen,
+             regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception):
 
   if 'master' in meta_types or 'spase' in meta_types:
     # 'spase' needs 'master' to get spase_DatasetResourceID, so this must be before.
