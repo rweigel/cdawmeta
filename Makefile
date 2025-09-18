@@ -15,7 +15,8 @@ spase_auto-regen: cdawmeta.egg-info
 
 hapi-update: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE)
-	cd data/hapi; git add -A; git commit -a -m 'update'; git push
+	cd ../cdawmeta-data; find . -size +50M | sed 's|^./||g' >> .gitignore
+	cd ../cdawmeta-data/hapi; git add -A; git commit -a -m 'update'; git push --force
 
 hapi-updatex: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE) --id-skip '^MMS|^C|^T'
