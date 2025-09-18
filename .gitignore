@@ -8,4 +8,3 @@ __pycache__/
 .vscode/
 table/etc/cdawmeta-dynu.stderr
 table/etc/cdawmeta-dynu.stdout
-cdawmeta/util/logger_demo*.log
