@@ -252,7 +252,6 @@ def _count_dicts(diff, depend_0_name, DataType, logger):
     if value_s >= 1e-3:
       t = timedelta(seconds=value_s)
       duration_iso8601 = utilrsw.time.timedelta_to_isoduration(t)
-      print(duration_iso8601)
     else: # timedelta() returns 0 for less than microsecond, so handle manually.
       # TODO: When there are fractional seconds, we should be rendering
       # with a fixed number of significant digits and then trimming extra trailing
