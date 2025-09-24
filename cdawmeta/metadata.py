@@ -412,7 +412,7 @@ def _spase(dataset, update=True, diffs=False):
       cdawmeta.error('metadata', id, None, 'master.InvalidSpaseDatasetResourceID', msg, logger)
       return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
-    url = spase_id.replace('spase://', 'https://hpde.io/') + '.json'
+    url = spase_id.replace('spase://', 'https://spase-metadata.org/') + '.json'
 
   spase = _fetch(url, id, 'spase', referrer=master['url'], timeout=timeout, diffs=diffs, update=update)
 
