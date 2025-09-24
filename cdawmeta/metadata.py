@@ -392,28 +392,37 @@ def _spase(dataset, update=True, diffs=False):
 
   id = dataset['id']
 
-  master = dataset['master']
-  if 'data' not in master:
+  master = dataset.get('master', None)
+  if master is None:
     msg = 'No spase_DatasetResourceID because no master'
     return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
-  timeout = cdawmeta.CONFIG['metadata']['timeouts']['spase']
+  data = master.get('data', None)
+  if data is None:
+    msg = f"{id}: No data in master for {master['url']}."
+    cdawmeta.error('metadata', id, None, 'master.NoData', msg, logger)
+    return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
-  global_attributes = master['data']['CDFglobalAttributes']
-  if 'spase_DatasetResourceID' not in global_attributes:
+  global_attributes = master['data'].get('CDFglobalAttributes', None)
+  if global_attributes is None:
+    msg = f"{id}: No CDFglobalAttributes in {master['url']}."
+    cdawmeta.error('metadata', id, None, 'master.NoCDFglobalAttributes', msg, logger)
+    return {'id': id, 'error': msg, 'data-file': None, 'data': None}
+
+  spase_id = global_attributes.get('spase_DatasetResourceID', None)
+  if spase_id is None:
     msg = f"{id}: No spase_DatasetResourceID attribute in {master['url']}."
     cdawmeta.error('metadata', id, None, 'master.NoSpaseDatasetResourceID', msg, logger)
     return {'id': id, 'error': msg, 'data-file': None, 'data': None}
-
-  if 'spase_DatasetResourceID' in global_attributes:
-    spase_id = global_attributes['spase_DatasetResourceID']
-    if spase_id and not spase_id.startswith('spase://'):
+  else:
+    if not spase_id.startswith('spase://'):
       msg = f"{id}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://' in {master['url']}"
       cdawmeta.error('metadata', id, None, 'master.InvalidSpaseDatasetResourceID', msg, logger)
       return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
     url = spase_id.replace('spase://', 'https://spase-metadata.org/') + '.json'
 
+  timeout = cdawmeta.CONFIG['metadata']['timeouts']['spase']
   spase = _fetch(url, id, 'spase', referrer=master['url'], timeout=timeout, diffs=diffs, update=update)
 
   return spase
