@@ -37,7 +37,9 @@ def table(id=None, id_skip=None, table_name=None, embed_data=False,
   elif table_name.startswith('hapi'):
     meta_type = ['hapi']
 
-  datasets = cdawmeta.metadata(id=id, meta_type=meta_type)
+  del kwargs['table_name']
+  del kwargs['embed_data']
+  datasets = cdawmeta.metadata(**kwargs, meta_type=meta_type)
 
   if table_name.startswith('spase'):
     for dsid in datasets.keys():
