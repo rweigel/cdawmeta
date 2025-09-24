@@ -7,6 +7,8 @@ NO_REGEN=$(NO_UPDATE)
 UPDATE=$(ID_SKIP) --write-catalog --update --update-skip $(NO_UPDATE) --max-workers 1
 REGEN=$(ID_SKIP) --write-catalog  --regen --regen-skip $(NO_REGEN) --max-workers 1
 
+DATE_STR=$(shell date +%Y-%m-%d)
+
 spase_auto-update: cdawmeta.egg-info
 	python metadata.py --meta-type spase_auto $(UPDATE)
 
@@ -15,8 +17,20 @@ spase_auto-regen: cdawmeta.egg-info
 
 hapi-update: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE)
-	cd ../cdawmeta-data; find . -size +50M | sed 's|^./||g' >> .gitignore
-	cd ../cdawmeta-data/hapi; git add -A; git commit -a -m 'update'; git push --force
+	wget --mirror --no-host-directories --cut-dirs=3 --level=1 https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0SKELTABLES/
+	make diffs
+
+diffs:
+	cd ../cdawmeta-data; git add -A
+
+	cd ../cdawmeta-data; git commit -m 'update master' -- master; #git push --force
+	cd ../cdawmeta-data; mkdir -p master/diffs
+	cd ../cdawmeta-data; git diff -U0 HEAD~1 HEAD -- master > master/diffs/diffs.$(DATE_STR).log
+
+	cd ../cdawmeta-data; git commit -m 'update hapi' -- hapi; #git push --force
+	cd ../cdawmeta-data; mkdir -p hapi/diffs
+	cd ../cdawmeta-data; git diff -U0 HEAD~1 HEAD -- hapi > hapi/diffs/diffs.$(DATE_STR).log
+
 
 hapi-updatex: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE) --id-skip '^MMS|^C|^T'

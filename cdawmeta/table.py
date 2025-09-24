@@ -48,6 +48,9 @@ def table(id=None, id_skip=None, table_name=None, embed_data=False,
     datasets_expanded = {}
     for dsid in datasets.keys():
       sub_datasets = datasets[dsid]['hapi']['data']
+      if sub_datasets is None:
+        logger.warning(f"No hapi datasets for {dsid}. Skipping.")
+        continue
       if isinstance(sub_datasets, dict):
         sub_datasets = [sub_datasets]
       for sub_dataset in sub_datasets:

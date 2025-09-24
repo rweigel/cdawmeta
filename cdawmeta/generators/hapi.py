@@ -5,6 +5,12 @@ logger = None
 dependencies = ['master_resolved', 'cadence', 'start_stop']
 
 def hapi(metadatum, _logger):
+
+  # Determine if this is the first time the function is called in this process
+  if not hasattr(hapi, "_called"):
+    hapi._called = True
+    _alternate_view_log()
+
   global logger
   logger = _logger
 
@@ -55,7 +61,7 @@ def hapi(metadatum, _logger):
 
     if DEPEND_0_VAR_TYPE == 'ignore_data':
       msg = f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' "
-      msg = "because it has VAR_TYPE='ignore_data'."
+      msg += "because it has VAR_TYPE='ignore_data'."
       logger.info(msg)
       continue
 
@@ -250,19 +256,32 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
     if VAR_TYPE != 'data':
       continue
 
-    if 'VAR_TYPE' == 'data':
-      virtual = cdawmeta.util.get_path(variable, 'VarAttributes.VIRTUAL', 'false')
+    if VAR_TYPE == 'data':
+      # Remove VIRTUAL variables with FUNCT or FUNCTION of alternate_view
+      # unless COMPONENT_0 points to a variable with VAR_TYPE 'ignore_data'",
+      virtual = cdawmeta.util.get_path(variable, 'VarAttributes.VIRTUAL')
       if virtual == 'true':
-        funct = cdawmeta.util.get_path(variable, 'VarAttributes.FUNCT', None)
+        funct = cdawmeta.util.get_path(variable, 'VarAttributes.FUNCT')
         if funct == 'alternate_view' and cdawmeta.CONFIG['hapi']['rm_alternate_view']:
-          component_0 = cdawmeta.util.get_path(variable, 'VarAttributes.COMPONENT_0', None)
+          component_0 = cdawmeta.util.get_path(variable, 'VarAttributes.COMPONENT_0')
           if component_0 is not None:
-            DataType = all_variables[component_0]['VarDescription']['DataType']
-            if DataType != 'ignore_data':
+            VAR_TYPE = cdawmeta.util.get_path(all_variables, [component_0, 'VarAttributes', 'VAR_TYPE'])
+            if VAR_TYPE != 'ignore_data':
               msg = f"      Not including VIRTUAL variable '{name}' with FUNCT = 'alternate_view' "
-              msg += f"because its COMPONENT_0 = '{component_0}' does not have DataType = 'ignore_data'."
+              msg += f"because its COMPONENT_0 = '{component_0}' does not have VAR_TYPE = 'ignore_data'."
               logger.info(msg)
+              _alternate_view_log(dsid, name, 'dropped')
               continue
+            else:
+              msg = f"      Including VIRTUAL variable '{name}' with FUNCT = 'alternate_view' "
+              msg += f"because its COMPONENT_0 = '{component_0}' has VAR_TYPE = 'ignore_data'."
+              logger.info(msg)
+              _alternate_view_log(dsid, name, 'kept')
+          else:
+            msg = f"      Not including VIRTUAL variable '{name}' with FUNCT = 'alternate_view' "
+            msg += "because it does not have COMPONENT_0. This is probably a metadata error."
+            logger.warning(msg)
+            continue
 
     type_ = _to_hapi_type(variable['VarDescription']['DataType'])
     if type_ is None and print_info:
@@ -917,3 +936,27 @@ def _to_hapi_type(cdf_type):
     return 'double'
 
   return None
+
+def _alternate_view_log(dsid=None, name=None, action=None):
+  import os
+
+  if not cdawmeta.CONFIG['hapi']['rm_alternate_view_log']:
+    return
+
+  if not dsid:
+    dname = cdawmeta.DATA_DIR + "/hapi/logs"
+    for fname in [
+      "virtual_alternate_view_dropped.log",
+      "virtual_alternate_view_kept.log"
+    ]:
+      fpath = os.path.join(dname, fname)
+      if os.path.exists(fpath):
+        os.remove(fpath)
+    return
+
+  dname = cdawmeta.DATA_DIR + "/hapi/logs"
+  if not os.path.exists(dname):
+    os.makedirs(dname)
+  fname = os.path.join(dname, f"virtual_alternate_view_{action}.log")
+  with open(fname, "a") as f:
+    f.write(f"{dsid},{name}\n")

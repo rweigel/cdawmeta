@@ -24,8 +24,11 @@
   "_comment": "Set label instead of x_label (Nand does not provide label attribute)",
   "keep_label": false,
 
-  "_comment": "Remove VIRTUAL variables with FUNCT or FUNCTION of alternate_view unless COMPONENT_0 points to a variable with DataType 'ignore_data'",
+  "_comment": "Remove VIRTUAL variables with FUNCT or FUNCTION of alternate_view unless COMPONENT_0 points to a variable with VAR_TYPE 'ignore_data'",
   "rm_alternate_view": true,
+
+  "rm_alternate_view_log": "Log kept and removed VIRTUAL variables with FUNCT or FUNCTION of alternate_view to data/hapi/logs/virtual_alternate_view_kept.log and virtual_alternate_view_removed.log",
+  "rm_alternate_view_log": true,
 
   "_comment": "https://github.com/rweigel/cdawmeta/issues/10",
   "default_float_format": ".7g",
