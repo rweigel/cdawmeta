@@ -12,7 +12,9 @@ def table(id=None, id_skip=None, table_name=None, embed_data=False,
 
   kwargs = locals()
 
-  table_names = list(cdawmeta.CONFIG['table']['tables'].keys())
+  table_configs = cdawmeta.CONFIG['table']['tables']
+
+  table_names = list(table_configs.keys())
 
   if table_name is None:
     info = {}
@@ -44,6 +46,24 @@ def table(id=None, id_skip=None, table_name=None, embed_data=False,
       logger.debug(f"{dsid}: Restructuring SPASE")
       datasets[dsid]['spase']['data'] = cdawmeta.restructure.spase(datasets[dsid]['spase']['data'])
 
+  if table_name == 'cdaweb.variable':
+    for dsid in datasets.keys():
+      variables = cdawmeta.util.get_path(datasets[dsid], "master/data/CDFVariables".split('/'))
+      # {"a": {"b": "c"}, ...} -> {"a/b": "c"}
+      if variables is not None:
+        for vid in variables:
+          variables[vid] = cdawmeta.util.flatten_dicts(variables[vid], parent_key=None)
+
+    cdawmeta.util.print_dict(datasets[dsid]['master']['data']['CDFVariables'])
+    exit()
+
+  if table_name == 'cdaweb.dataset':
+    for dsid in datasets.keys():
+      dataset = datasets[dsid].get("allxml", None)
+      # {"a": {"b": "c"}, ...} -> {"a/b": "c"}
+      if dataset is not None:
+        datasets[dsid]["allxml"] = cdawmeta.util.flatten_dicts(dataset)
+
   if table_name.startswith('hapi'):
     datasets_expanded = {}
     for dsid in datasets.keys():
@@ -56,10 +76,9 @@ def table(id=None, id_skip=None, table_name=None, embed_data=False,
         datasets_expanded[sdsid] = {'id': sdsid, 'hapi': {'data': sub_dataset}}
     datasets = datasets_expanded
 
-
   logger.info(40*"-")
   logger.info(f"Creating table '{table_name}'")
-  header, body, attribute_counts = _table(datasets, table_name=table_name)
+  header, body, attribute_counts = _table(datasets, table_name, table_configs[table_name])
 
   if len(body) > 0 and len(header) != len(body[0]):
     raise Exception(f"len(header) == {len(header)} != len(body[0]) = {len(body[0])}")
@@ -79,10 +98,9 @@ def table(id=None, id_skip=None, table_name=None, embed_data=False,
 
   return info
 
-def _table(datasets, table_name='cdaweb.dataset'):
+def _table(datasets, table_name, table_config):
 
   attributes = {}
-  table_config = cdawmeta.CONFIG['table']['tables'][table_name]
   paths = table_config['paths']
   for path in paths:
     attributes[path] = table_config['paths'][path]
@@ -95,7 +113,7 @@ def _table(datasets, table_name='cdaweb.dataset'):
     # The return value of attributes_all is a list of all uncorrected attribute
     # names encountered.
     import collections
-    attributes_all = _table_walk(datasets, attributes, table_name, mode='attributes')
+    attributes_all = _table_walk(datasets, attributes, table_name, table_config, mode='attributes')
     attribute_counts = collections.Counter(attributes_all)
     attribute_counts = sorted(attribute_counts.items(), key=lambda i: i[0].lower())
 
@@ -103,12 +121,12 @@ def _table(datasets, table_name='cdaweb.dataset'):
   header = _table_header(attributes, table_name)
 
   logger.info(f"Creating {table_name} table row(s)")
-  table = _table_walk(datasets, attributes, table_name, mode='rows')
+  table = _table_walk(datasets, attributes, table_name, table_config, mode='rows')
   logger.info(f"Created {len(table)} {table_name} table row(s)")
 
   return header, table, attribute_counts
 
-def _table_walk(datasets, attributes, table_name, mode='attributes'):
+def _table_walk(datasets, attributes, table_name, table_config, mode='attributes'):
 
   """
   If mode='attributes', returns a dictionary of attributes found across all
@@ -123,7 +141,6 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
 
   assert mode in ['attributes', 'rows']
 
-  table_config = cdawmeta.CONFIG['table']['tables'][table_name]
   omit_attributes = table_config.get('omit_attributes', None)
 
   fixes = None
@@ -148,7 +165,6 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
 
   n_cols_last = None
   datasets = copy.deepcopy(datasets)
-
   for id, dataset in datasets.items():
     logger.info(f"Computing {mode} for {table_name}/{id}")
 
@@ -162,10 +178,6 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
         logger.info(f"  Reading {path}")
 
         data = cdawmeta.util.get_path(dataset, path.split('/'))
-
-        if table_name == 'cdaweb.dataset' and path == 'allxml':
-          # {"a": {"b": "c"}, ...} -> {"a/b": "c"}
-          data = cdawmeta.util.flatten_dicts(data)
 
         if data is None:
           if mode == 'rows':
@@ -204,29 +216,14 @@ def _table_walk(datasets, attributes, table_name, mode='attributes'):
             if table_name == 'cdaweb.variable':
               row = [dataset['id'], variable_name]
 
-          if table_name == 'spase.parameter' or table_name == 'hapi.parameter':
-            for key in variable.copy():
-              # Drop attribute if value is list
-              if table_name == 'spase.parameter' and isinstance(variable[key], list):
-                del variable[key]
-            if mode == 'attributes':
-              _add_attributes(variable, attributes[path], attribute_names, fixes, id + "/" + path, omit_attributes)
-            else:
-              _append_columns(variable, attributes[path], row, fixes, omit_attributes)
+          for key in variable.copy():
+            # Drop attribute if value is list
+            if table_name == 'spase.parameter' and isinstance(variable[key], list):
+              del variable[key]
+          if mode == 'attributes':
+            _add_attributes(variable, attributes[path], attribute_names, fixes, id + "/" + path, omit_attributes)
           else:
-            for subpath in attributes[path]:
-              if subpath in data[variable_name]:
-                variable_ = data[variable_name][subpath]
-                if mode == 'attributes':
-                  _add_attributes(variable_, attributes[path][subpath], attribute_names, fixes, f"{id}/{path}/{variable_name}/{subpath}", omit_attributes)
-                else:
-                  _append_columns(variable_, attributes[path][subpath], row, fixes, omit_attributes)
-              else:
-                if mode == 'rows':
-                  # Insert "?" for all attributes
-                  n_attribs = len(attributes[path][subpath])
-                  fill = n_attribs*"?".split()
-                  row = [*row, *fill]
+            _append_columns(variable, attributes[path], row, fixes, omit_attributes)
 
           # Add row for variable
           if mode == 'rows':
@@ -250,13 +247,8 @@ def _table_header(attributes, table_name):
     header = ['id']
 
   for path in attributes.keys():
-    if table_name == 'cdaweb.variable':
-      for subpath in attributes[path]:
-        for subattribute in attributes[path][subpath]:
-          header.append(subattribute)
-    else:
-      for attribute in attributes[path]:
-        header.append(attribute)
+    for attribute in attributes[path]:
+      header.append(attribute)
 
   return header
 

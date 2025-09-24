@@ -138,12 +138,12 @@
       "paths": {
         "master/data/CDFVariables": {
           "VarDescription": {
-            "PadValue": null,
             "RecVariance": null,
             "NumDims": null,
             "DataType": null,
             "DimVariances": null,
-            "NumElements": null
+            "NumElements": null,
+            "PadValue": null
           },
           "VarAttributes": {
             "FIELDNAM": null,
