@@ -2,7 +2,7 @@ PYTHON=~/anaconda3/bin/python
 
 #ID_SKIP=--id-skip '^PSP'
 ID_SKIP=
-NO_UPDATE=cadence
+1;95;0cNO_UPDATE=cadence
 NO_REGEN=$(NO_UPDATE)
 UPDATE=$(ID_SKIP) --write-catalog --update --update-skip $(NO_UPDATE) --max-workers 1
 REGEN=$(ID_SKIP) --write-catalog  --regen --regen-skip $(NO_REGEN) --max-workers 1
@@ -23,14 +23,19 @@ hapi-update: cdawmeta.egg-info
 diffs:
 	cd ../cdawmeta-data; git add -A
 
-	cd ../cdawmeta-data; git commit -m 'update master' -- master; #git push --force
+	- cd ../cdawmeta-data; git commit -m 'update master' -- 0SKELTABLES; #git push --force
+	cd ../cdawmeta-data; mkdir -p 0SKELTABLES/diffs
+	cd ../cdawmeta-data; git diff -U0 HEAD~1 HEAD -- 0SKELTABLES > 0SKELTABLES/diffs/diffs.$(DATE_STR).log
+
+	- cd ../cdawmeta-data; git commit -m 'update master' -- master; #git push --force
 	cd ../cdawmeta-data; mkdir -p master/diffs
 	cd ../cdawmeta-data; git diff -U0 HEAD~1 HEAD -- master > master/diffs/diffs.$(DATE_STR).log
 
-	cd ../cdawmeta-data; git commit -m 'update hapi' -- hapi; #git push --force
+	- cd ../cdawmeta-data; git commit -m 'update hapi' -- hapi; #git push --force
 	cd ../cdawmeta-data; mkdir -p hapi/diffs
 	cd ../cdawmeta-data; git diff -U0 HEAD~1 HEAD -- hapi > hapi/diffs/diffs.$(DATE_STR).log
 
+	cd ../cdawmeta-data; git add hapi/diffs 0SKELTABLES/diffs master/diffs; git commit -m 'update diffs'
 
 hapi-updatex: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE) --id-skip '^MMS|^C|^T'
@@ -90,7 +95,6 @@ rsync-to-spot10:
 rsync-to-mag:
 	rsync -avz \
 		--exclude data/hpde.io --exclude data/cdaweb.gsfc.nasa.gov \
-		--no-links \
 		--delete \
 		data weigel@mag.gmu.edu:www/git-data/cdawmeta
 
