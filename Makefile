@@ -2,7 +2,7 @@ PYTHON=~/anaconda3/bin/python
 
 #ID_SKIP=--id-skip '^PSP'
 ID_SKIP=
-1;95;0cNO_UPDATE=cadence
+NO_UPDATE=cadence
 NO_REGEN=$(NO_UPDATE)
 UPDATE=$(ID_SKIP) --write-catalog --update --update-skip $(NO_UPDATE) --max-workers 1
 REGEN=$(ID_SKIP) --write-catalog  --regen --regen-skip $(NO_REGEN) --max-workers 1
