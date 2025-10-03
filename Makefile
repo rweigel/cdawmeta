@@ -17,7 +17,9 @@ spase_auto-regen: cdawmeta.egg-info
 
 hapi-update: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE)
-	wget --mirror --no-host-directories --cut-dirs=3 --level=1 https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0SKELTABLES/
+	python table.py --regen --regen-skip cadence
+	rsync -avz data/table weigel@rweigel.dynu.net:git/hapi/cdawmeta/data/
+	cd ../cdawmeta-data; wget --mirror --no-host-directories --cut-dirs=3 --level=1 https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0SKELTABLES/
 	make diffs
 
 diffs:
