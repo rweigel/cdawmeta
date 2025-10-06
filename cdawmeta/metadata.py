@@ -483,7 +483,6 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
 
     hpde_url = f'{ResourceID.replace("spase://", "http://hpde.io/")}'
 
-    # Flattens AccessInformation so is a list of objects, each with one AccessURL.
     data = cdawmeta.restructure.spase(data, logger=logger)
     AccessInformation = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'AccessInformation'])
 

@@ -23,6 +23,8 @@
       "omit_attributes": {
         "parameters": true
       },
+      "path_type": "dict",
+      "id_name": "id",
       "paths": {
         "hapi/data": {
         }
@@ -33,6 +35,8 @@
       "description": "The content of this database is based information in <a href=\"https://cdaweb.gsfc.nasa.gov/hapi\">HAPI info responses</a>.",
       "column_definitions": {
       },
+      "path_type": "list",
+      "id_name": "id",
       "paths": {
         "hapi/data/parameters": {
           "name": null
@@ -53,6 +57,8 @@
         "Link_text": "LINK_TEXT",
         "Link_title": "LINK_TITLE"
       },
+      "path_type": "dict",
+      "id_name": "datasetID",
       "paths": {
         "allxml": {
           "@ID": null
@@ -88,9 +94,9 @@
           "Rules_of_use": null,
           "Generated_by": null,
           "Time_resolution": null,
-          "Link_text": null,
-          "Link_title": null,
-          "HTTP_Link": null,
+          "LINK_TEXT": null,
+          "LINK_TITLE": null,
+          "HTTP_LINK": null,
           "alt_logical_source": null,
           "spase_DatasetResourceID": null
         }
@@ -135,9 +141,12 @@
       "column_definitions": {
       },
       "_comment": "This table requires special handling because each variables top-level attributes that are combined.",
+      "path_type": "list",
+      "id_name": "datasetID",
       "paths": {
         "master/data/CDFVariables": {
           "VarDescription": {
+            "VariableName": null,
             "RecVariance": null,
             "NumDims": null,
             "DataType": null,
@@ -185,6 +194,8 @@
       "description": "The content of this database is based on SPASE records from <a href=\"https://hpde.io/\">hpde.io</a>, which are determined from SPASE IDs referenced by <code>spase_DatasetResourceID</code> in <a href=\"https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/\">CDF Master metadata</a>",
       "column_definitions": {
       },
+      "path_type": "dict",
+      "id_name": "DatasetID",
       "paths": {
         "spase/data/Spase": {
           "Version": null
@@ -221,6 +232,7 @@
       "description": "The content of this database is based on SPASE records from <a href='https://hpde.io/'>hpde.io</a>, which are determined from SPASE IDs referenced by <code>spase_DatasetResourceID</code> in <a href='https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/'>CDF Master metadata</a>",
       "column_definitions": {
       },
+      "path_type": "list",
       "paths": {
         "spase/data/Spase/NumericalData/Parameter": {
           "ParameterKey": null,
