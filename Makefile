@@ -28,16 +28,21 @@ diffs:
 	- cd ../cdawmeta-data; git commit -m 'update master' -- 0SKELTABLES; #git push --force
 	cd ../cdawmeta-data; mkdir -p 0SKELTABLES/diffs
 	cd ../cdawmeta-data; git diff -U0 HEAD~1 HEAD -- 0SKELTABLES > 0SKELTABLES/diffs/diffs.$(DATE_STR).log
+	cd ../cdawmeta-data; cp 0SKELTABLES/diffs/diffs.$(DATE_STR).log ../cdawmeta-data-diffs/0SKELTABLES.log
 
 	- cd ../cdawmeta-data; git commit -m 'update master' -- master; #git push --force
 	cd ../cdawmeta-data; mkdir -p master/diffs
 	cd ../cdawmeta-data; git diff -U0 HEAD~1 HEAD -- master > master/diffs/diffs.$(DATE_STR).log
+	cd ../cdawmeta-data; cp master/diffs/diffs.$(DATE_STR).log ../cdawmeta-data-diffs/master.log
 
 	- cd ../cdawmeta-data; git commit -m 'update hapi' -- hapi; #git push --force
 	cd ../cdawmeta-data; mkdir -p hapi/diffs
 	cd ../cdawmeta-data; git diff -U0 HEAD~1 HEAD -- hapi > hapi/diffs/diffs.$(DATE_STR).log
+	cd ../cdawmeta-data; cp hapi/diffs/diffs.$(DATE_STR).log ../cdawmeta-data-diffs/hapi/hapi.log
 
-	cd ../cdawmeta-data; git add hapi/diffs 0SKELTABLES/diffs master/diffs; git commit -m 'update diffs'
+	cd ../cdawmeta-data; git add hapi/diffs 0SKELTABLES/diffs master/diffs; git commit -m 'update
+ diffs'
+	cd ../cdawmeta-data-diffs; commit -a -m 'update diffs'; git push --force
 
 hapi-updatex: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE) --id-skip '^MMS|^C|^T'
