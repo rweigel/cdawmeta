@@ -2,7 +2,7 @@ import copy
 
 import cdawmeta
 
-def hapi(hapi, simplify_bins=False, logger=None):
+def hapi(hapi, simplify_bins=False, parameter_dict=True, logger=None):
 
   hapi = copy.deepcopy(hapi)
   info = copy.deepcopy(hapi['info'])

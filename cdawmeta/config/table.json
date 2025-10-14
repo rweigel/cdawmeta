@@ -4,8 +4,6 @@
   "_comment": "Attributes not in the dict under paths will be added to the",
   "_comment": "end of the list of attributes if use_all_attributes is true.",
   "_comment": "Attributes are renamed according to fixes ('given': 'new')",
-  "url": "http://mag.gmu.edu/git-data/cdawmeta/",
-  "description": "The contents of this database available in {db_links}. Additional table metadata is available in {meta_link}",
   "mongo": {
     "host": "localhost",
     "port": 27017,
@@ -17,16 +15,19 @@
     "hapi.dataset": {
       "use_all_attributes": true,
       "column_definitions": {
-        "id": "HAPI dataset ID"
+        "id": "Dataset ID",
+        "description": "Dataset description"
       },
       "description": "The content of this database is based information in <a href=\"https://cdaweb.gsfc.nasa.gov/hapi\">HAPI info responses</a>.",
       "omit_attributes": {
         "parameters": true
       },
       "path_type": "dict",
-      "id_name": "id",
       "paths": {
         "hapi/data": {
+          "id": null,
+          "title": null,
+          "description": null
         }
       }
     },
@@ -34,11 +35,19 @@
       "use_all_attributes": true,
       "description": "The content of this database is based information in <a href=\"https://cdaweb.gsfc.nasa.gov/hapi\">HAPI info responses</a>.",
       "column_definitions": {
+        "id": "Dataset ID",
+        "name": "Parameter name",
+        "description": "Parameter description",
+        "type": null,
+        "units": null,
+        "fill": null,
+        "length": null,
+        "size": null
       },
       "path_type": "list",
-      "id_name": "id",
       "paths": {
         "hapi/data/parameters": {
+          "id": null,
           "name": null
         }
       }
@@ -58,9 +67,9 @@
         "Link_title": "LINK_TITLE"
       },
       "path_type": "dict",
-      "id_name": "datasetID",
       "paths": {
         "allxml": {
+          "id": null,
           "@ID": null
         },
         "master/data/CDFFileInfo": {
@@ -105,7 +114,7 @@
     "cdaweb.variable": {
       "use_all_attributes": true,
       "fix_attributes": true,
-        "fixes": {
+      "fixes": {
                   "Bin_Location": "BIN_LOCATION",
                   "Bin_location": "BIN_LOCATION",
                   "Calib_input": "CALIB_INPUT",
@@ -129,23 +138,25 @@
                   "ScaleType": "SCALETYP",
                   "SI_conv": "SI_CONVERSION",
                   "SI_conversion": "SI_CONVERSION",
+                  "sig_digits": "SIG_DIGITS",
                   "Sig_digits": "SIG_DIGITS",
                   "station_latitude": "STATION_LATITUDE",
                   "station_longitude": "STATION_LONGITUDE",
                   "Time_Base": "TIME_BASE",
                   "Time_Scale": "TIME_SCALE",
                   "units": "UNITS",
-                  "valid_range": "VALID_RANGE"
+                  "valid_range": "VALID_RANGE",
+                  "Valid_Range": "VALID_RANGE"
       },
       "description": "The content of this database is based information in <a href=\"https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/\">cdawlib/0JSONS</a>.",
       "column_definitions": {
       },
       "_comment": "This table requires special handling because each variables top-level attributes that are combined.",
       "path_type": "list",
-      "id_name": "datasetID",
       "paths": {
         "master/data/CDFVariables": {
           "VarDescription": {
+            "datasetID": null,
             "VariableName": null,
             "RecVariance": null,
             "NumDims": null,
@@ -195,10 +206,17 @@
       "column_definitions": {
       },
       "path_type": "dict",
-      "id_name": "DatasetID",
       "paths": {
-        "spase/data/Spase": {
-          "Version": null
+        "spase/data/Spase/NumericalData": {
+          "datasetID": null,
+          "ResourceID": null,
+          "InstrumentID": null,
+          "MeasurementType": null,
+          "ObservedRegion": null,
+          "ProviderProcessingName": null,
+          "ProviderProcessingLevel": null,
+          "Caveats": null,
+          "Keyword": null
         },
         "spase/data/Spase/NumericalData/ResourceHeader": {
           "ReleaseDate": null,
@@ -215,26 +233,20 @@
         "spase/data/Spase/NumericalData/TemporalDescription": {
           "Cadence": null
         },
-        "spase/data/Spase/NumericalData": {
-          "ResourceID": null,
-          "InstrumentID": null,
-          "MeasurementType": null,
-          "ObservedRegion": null,
-          "ProviderProcessingName": null,
-          "ProviderProcessingLevel": null,
-          "Caveats": null,
-          "Keyword": null
+        "spase/data/Spase": {
+          "Version": null
         }
       }
     },
     "spase.parameter": {
       "use_all_attributes": true,
-      "description": "The content of this database is based on SPASE records from <a href='https://hpde.io/'>hpde.io</a>, which are determined from SPASE IDs referenced by <code>spase_DatasetResourceID</code> in <a href='https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/'>CDF Master metadata</a>",
+      "description": "The content of this database is based on SPASE records from <a href='https://spase-metadata.org/'>spase-metadata.org</a>, which are determined from SPASE IDs referenced by <code>spase_DatasetResourceID</code> in <a href='https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/'>CDF Master metadata</a>",
       "column_definitions": {
       },
       "path_type": "list",
       "paths": {
         "spase/data/Spase/NumericalData/Parameter": {
+          "datasetID": null,
           "ParameterKey": null,
           "Name": null,
           "Description": null,

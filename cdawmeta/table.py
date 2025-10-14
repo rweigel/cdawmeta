@@ -23,7 +23,8 @@ def table(id=None,
   del kwargs['table_name']
   del kwargs['embed_data']
 
-  table_names = list(cdawmeta.CONFIG['table']['tables'].keys())
+  table_configs = cdawmeta.CONFIG['table']['tables']
+  table_names = list(table_configs.keys())
 
   if table_name is None:
     # Create all tables
@@ -33,7 +34,6 @@ def table(id=None,
       info[table_name] = table(**kwargs)
     return info
 
-  table_config = cdawmeta.CONFIG['table']['tables'][table_name]
   if table_name is not None:
     if table_name not in table_names:
       emsg = f"table_name='{table_name}' not in {table_names} in config.json"
@@ -61,6 +61,7 @@ def table(id=None,
         if dataset is not None:
           # {"a": {"b": "c"}, ...} -> {"a/b": "c"}
           datasets[dsid]["allxml"] = utilrsw.flatten_dicts(dataset)
+          datasets[dsid]["allxml"]['datasetID'] = dsid
 
       if table_name == 'cdaweb.variable':
         variables_array = []
@@ -71,8 +72,8 @@ def table(id=None,
             if variables[vid] is None:
               continue
             variables[vid] = utilrsw.flatten_dicts(variables[vid], simplify=True)
-            # Put VariableName at the front of the dict
-            variables[vid] = {'VariableName': vid, **variables[vid]}
+            # Put VariableName and datasetID at the top of the dict
+            variables[vid] = {'datasetID': dsid, 'VariableName': vid, **variables[vid]}
             variables_array.append(variables[vid])
         datasets[dsid]['master']['data']['CDFVariables'] = variables_array
 
@@ -86,6 +87,7 @@ def table(id=None,
         # If only one parameter, make it a list of one parameter.
         parameters = [parameters]
       for i in range(0, len(parameters)):
+        parameters[i]['datasetID'] = dsid
         parameters[i] = utilrsw.flatten_dicts(parameters[i])
       datasets[dsid]['spase']['data']['Spase']['NumericalData']['Parameter'] = parameters
 
@@ -101,17 +103,20 @@ def table(id=None,
       for sub_dataset in sub_datasets:
         sdsid = sub_dataset['id']
         sub_dataset = cdawmeta.restructure.hapi(sub_dataset, simplify_bins=True)
+        sub_dataset['id'] = sdsid # Add id back in
         datasets_expanded[sdsid] = {'id': sdsid, 'hapi': {'data': sub_dataset}}
-
-        # Convert parameters object back to an array.
+        # Convert parameters object to an array.
         p = ['hapi', 'data', 'parameters']
         parameters = utilrsw.get_path(datasets_expanded[sdsid], p)
         parameters_new = []
         if parameters:
           for key in parameters:
+            parameters[key]['id'] = dsid
             parameters_new.append(parameters[key])
           datasets_expanded[sdsid]['hapi']['data']['parameters'] = parameters_new
     datasets = datasets_expanded
+
+  table_config = table_configs[table_name]
 
   logger.info(40*"-")
   logger.info(f"Creating table '{table_name}'")
@@ -124,14 +129,12 @@ def table(id=None,
   if len(body) == 0:
     raise Exception(f"No rows in {table_name} table for id='{id}'")
 
-  config = cdawmeta.CONFIG['table']
-  url = config.get("url", "")
+  data_dir = os.path.join(cdawmeta.DATA_DIR, 'table')
+  if id is not None:
+    logger.warning("Using id to create subdirectory for table files. If id is a regex, expect trouble.")
+    data_dir = os.path.join(data_dir, 'partial', id)
 
-  data_dir = cdawmeta.DATA_DIR
-  files = _files(table_name, data_dir, id=id)
-  metadata = _table_metadata(table_name, header, files, url=url)
-
-  info = _write_files(table_name, metadata, files, header, body, attribute_counts, id=id)
+  info = _write_files(table_name, table_config, data_dir, header, body, attribute_counts)
 
   if embed_data:
     info['header'] = header
@@ -172,7 +175,7 @@ def _table(datasets, table_config):
     attribute_counts = sorted(attribute_counts.items(), key=lambda i: i[0].lower())
 
   # Create table header based on attributes dict.
-  header = _table_header(attributes, table_config.get('id_name', 'id'))
+  header = _table_header(attributes, table_config.get('id_name', None))
 
   logger.info("Creating table row(s)")
   table = _table_walk(datasets, attributes, table_config, path_type, mode='rows')
@@ -225,7 +228,7 @@ def _table_walk(datasets, attributes, table_config, path_type, mode='attributes'
     if path_type == 'dict':
 
       if mode == 'rows':
-        row = [dataset['id']]
+        row = []
 
       for path in paths:
 
@@ -270,7 +273,7 @@ def _table_walk(datasets, attributes, table_config, path_type, mode='attributes'
       for variable in data:
 
         if mode == 'rows':
-          row = [dataset['id']]
+          row = []
 
         if mode == 'attributes':
           _add_attributes(variable, attributes[path], attribute_names, fixes, id + "/" + path, omit_attributes)
@@ -295,8 +298,7 @@ def _table_walk(datasets, attributes, table_config, path_type, mode='attributes'
 
 def _table_header(attributes, id_name):
 
-  header = [id_name]
-
+  header = []
   for path in attributes.keys():
     for attribute in attributes[path]:
       header.append(attribute)
@@ -341,58 +343,40 @@ def _add_attributes(data, attributes, attribute_names, fixes, path, omit_attribu
       attributes[fixes[attribute_name]] = None
 
 
-def _table_metadata(table_name, header, files, url=""):
+def _table_metadata(table_name, config, header, files):
   import datetime
+
   creationDate = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
-
-  data_dir = cdawmeta.DATA_DIR
-  path = files['csv'].replace(data_dir, "data").replace("csv", "")
-
-  meta_link = f'<a href="{url}{path}meta.json">{table_name}.meta.json</a>'
-  db_links = []
-  for ext in ["csv", "sql", "json"]:
-    href = f"{url}{path}{ext}"
-    db_link = f'<a href="{href}">{ext}</a>'
-    db_links.append(db_link)
-  db_links = " | ".join(db_links)
-
-  description = cdawmeta.CONFIG['table']['description'].format(db_links=db_links, meta_link=meta_link)
-  db_links = " | ".join(db_links)
-
-  table_config = cdawmeta.CONFIG['table']['tables'][table_name]
-  description = f"{description} {table_config['description']}"
+  columnDefinitions = config.get('column_definitions', {})
   table_metadata = {
-    "description": description,
+    "description": config.get('description', ""),
     "creationDate": creationDate,
-    "columnDefinitions": {}
+    "columnDefinitions": columnDefinitions
   }
-  column_defs = table_config['column_definitions']
+
   for column_name in header:
-    if column_name not in column_defs:
+    if column_name not in columnDefinitions:
       logger.warning(f"   Column name '{column_name}' not in column_definitions for table '{table_name}'")
-    table_metadata["columnDefinitions"][column_name] = None
+      table_metadata["columnDefinitions"][column_name] = None
 
   return table_metadata
 
-def _files(table_name, data_dir, id=None):
+def _write_files(table_name, table_config, data_dir, header, body, counts):
 
-  subdir = ''
-  if id is not None:
-    logger.warning("Using id to create subdirectory for table files. If id is a regex, expect trouble.")
-    subdir = os.path.join('partial', id)
   files = {
-    'meta': os.path.join(data_dir, 'table', subdir, f'{table_name}.meta.json'),
-    'header': os.path.join(data_dir, 'table', subdir, f'{table_name}.head.json'),
-    'body': os.path.join(data_dir, 'table', subdir, f'{table_name}.body.json'),
-    'csv': os.path.join(data_dir, 'table', subdir, f'{table_name}.csv'),
-    'sql': os.path.join(data_dir, 'table', subdir, f'{table_name}.sql'),
-    'counts': os.path.join(data_dir, 'table', subdir, f'{table_name}.attribute_counts.csv')
+    'meta': f'{table_name}.meta.json',
+    'header': f'{table_name}.head.json',
+    'body': f'{table_name}.body.json',
+    'csv': f'{table_name}.csv',
+    'sql': f'{table_name}.sql',
+    'counts': f'{table_name}.attribute_counts.csv'
   }
 
-  return files
+  metadata = _table_metadata(table_name, table_config, header, files)
 
-def _write_files(table_name, metadata, files, header, body, counts, id=id):
-
+  for key in files:
+    print(data_dir, files[key])
+    files[key] = os.path.join(data_dir, files[key])
 
   if counts is None:
     del files['counts']
