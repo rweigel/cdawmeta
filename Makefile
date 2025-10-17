@@ -9,6 +9,7 @@ REGEN=$(ID_SKIP) --write-catalog  --regen --regen-skip $(NO_REGEN) --max-workers
 
 DATE_STR=$(shell date +%Y-%m-%d)
 DIFF_STR=diff -U0 HEAD~1 HEAD -- ":(exclude)*/diffs/*"
+SKELTABLES=cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0SKELTABLES
 
 spase_auto-update: cdawmeta.egg-info
 	python metadata.py --meta-type spase_auto $(UPDATE)
@@ -20,13 +21,22 @@ hapi-update: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE)
 	python table.py --regen --regen-skip cadence
 	rsync -avz data/table weigel@rweigel.dynu.net:git/hapi/cdawmeta/data/
-	cd ../cdawmeta-data; \
-	  wget --mirror --level=1 https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0SKELTABLES/; \
-          cp cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0SKELTABLES/* 0SKTELTABLES; \
-	  rm -f 0SKELTABLES/index*
 	make diffs
 
 diffs:
+	mkdir -p data/0SKELTABLES/diffs
+	mkdir -p data/0SKELTABLES/data
+	mkdir -p data/0SKELTABLES-new/diffs
+	mkdir -p data/0SKELTABLES-new/data
+	rm -f data/0SKELTABLES-new/data/*
+	wget -N --no-if-modified-since -P data --mirror --level=1 https://$(SKELTABLES)/
+	rm -f data/$(SKELTABLES)/index*
+	cp data/$(SKELTABLES)/* data/0SKELTABLES-new/data
+	- diff -r -U0 data/0SKELTABLES/data data/0SKELTABLES-new/data > data/0SKELTABLES/diffs/diffs.$(DATE_STR).log
+	rm -rf data/0SKELTABLES/data
+	mv data/0SKELTABLES-new/data data/0SKELTABLES
+
+diffsx:
 	cd ../cdawmeta-data; git add -A
 
 	- cd ../cdawmeta-data; git commit -m 'update master' -- 0SKELTABLES;
