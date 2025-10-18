@@ -1,4 +1,5 @@
 import sys
+
 from setuptools import setup, find_packages
 
 install_requires = [
@@ -23,9 +24,15 @@ try:
 except:
   install_requires.append("utilrsw @ git+https://github.com/rweigel/utilrsw")
 
+try:
+  # Will work if utilrsw was already installed, for example via pip install -e .
+  import tableui
+except:
+  install_requires.append("utilrsw @ git+https://github.com/rweigel/table-ui")
+
 setup(
   name='cdawmeta',
-  version='0.0.2',
+  version='0.0.3',
   author='Bob Weigel',
   license='LICENSE.txt',
   packages=find_packages(),
