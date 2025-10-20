@@ -1,0 +1,4 @@
+{
+  "renderFunctions": "js/render.js",
+  "columnDropdowns": false
+}

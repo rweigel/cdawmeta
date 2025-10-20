@@ -1,0 +1,7 @@
+{
+  "renderFunctions": "js/render.js",
+  "columnDropdowns": false,
+  "columnOptions": [
+    {"name": "description", "render": {"function": "ellipsis", "args": [30]}}
+  ]
+}

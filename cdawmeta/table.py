@@ -51,49 +51,64 @@ def table(id=None,
   datasets = cdawmeta.metadata(**kwargs, meta_type=meta_type)
 
   if table_name.startswith('cdaweb'):
+    datasets_list = []
+
     for dsid in datasets.keys():
       if table_name == 'cdaweb.dataset':
-        dataset = datasets[dsid].get("allxml", None)
-        if dataset is not None:
+        allxml = datasets[dsid].get("allxml", None)
+        if allxml is not None:
           # {"a": {"b": "c"}, ...} -> {"a/b": "c"}
-          datasets[dsid]["allxml"] = utilrsw.flatten_dicts(dataset)
-          datasets[dsid]["allxml"]['datasetID'] = dsid
+          allxml = utilrsw.flatten_dicts(allxml)
+          allxml['datasetID'] = dsid
+        datasets_list.append({"allxml": allxml, 'master': datasets[dsid]['master']})
 
       if table_name == 'cdaweb.variable':
-        variables_flat = []
         path = ['master','data', 'CDFVariables']
         variables = utilrsw.get_path(datasets[dsid], path)
         if variables is not None:
           for vid in variables:
             if variables[vid] is None:
               continue
-            # Flatten CDFVariables dict
-            variables[vid] = utilrsw.flatten_dicts(variables[vid], simplify=True)
-            # Put VariableName and datasetID at the top of the dict
             variables[vid] = {
-              'datasetID': dsid,
-              'VariableName': vid,
+              "Added": {
+                'datasetID': dsid,
+                'VariableName': vid
+              },
               **variables[vid]
             }
-            variables_flat.append(variables[vid])
-        utilrsw.set_path(datasets[dsid], variables_flat, path)
+            datasets_list.append(variables[vid])
+
+    datasets = datasets_list
 
   if table_name.startswith('spase'):
+    datasets_list = []
     for dsid in datasets.keys():
-      path = ['spase', 'data', 'Spase', 'NumericalData', 'Parameter']
-      parameters = utilrsw.get_path(datasets[dsid], path)
-      if parameters is None:
-        continue
-      if isinstance(parameters, dict):
-        # If only one parameter, make it a list of one parameter.
-        parameters = [parameters]
-      for i in range(0, len(parameters)):
-        parameters[i]['datasetID'] = dsid
-        parameters[i] = utilrsw.flatten_dicts(parameters[i])
-      utilrsw.set_path(datasets[dsid], parameters, path)
+
+      if table_name == 'spase.dataset':
+        path = ['spase', 'data']
+        dataset = utilrsw.get_path(datasets[dsid], ['spase', 'data'])
+        if not dataset:
+          continue
+        dataset['Added'] = {'datasetID': dsid}
+        datasets_list.append(dataset)
+
+      if table_name == 'spase.parameter':
+        path = ['spase', 'data', 'Spase', 'NumericalData', 'Parameter']
+        parameters = utilrsw.get_path(datasets[dsid], path)
+        if parameters is None:
+          continue
+        if isinstance(parameters, dict):
+          # If only one parameter, make it a list of one parameter.
+          parameters = [parameters]
+        for i in range(0, len(parameters)):
+          parameters[i]['datasetID'] = dsid
+          parameters[i] = utilrsw.flatten_dicts(parameters[i])
+          datasets_list.append(parameters[i])
+
+    datasets = datasets_list
 
   if table_name.startswith('hapi'):
-    datasets_expanded = {}
+    datasets_list = []
     for dsid in datasets.keys():
       sub_datasets = datasets[dsid]['hapi']['data']
 
@@ -106,26 +121,18 @@ def table(id=None,
         sub_datasets = [sub_datasets]
 
       for sub_dataset in sub_datasets:
-        sdsid = sub_dataset['id']
-        sub_dataset = cdawmeta.restructure.hapi(sub_dataset, simplify_bins=True)
-        sub_dataset['id'] = sdsid # Add id back in
-        datasets_expanded[sdsid] = {
-          'id': sdsid,
-          'hapi': {
-            'data': sub_dataset
-            }
-        }
-        # Convert parameters object to an array.
-        path = ['hapi', 'data', 'parameters']
-        parameters = utilrsw.get_path(datasets_expanded[sdsid], path)
-        parameters_array = []
-        if parameters:
-          for key in parameters:
-            parameters[key]['id'] = dsid
-            parameters_array.append(parameters[key])
-          utilrsw.set_path(datasets_expanded[sdsid], parameters_array, path)
+        sub_dataset = utilrsw.flatten_dicts(sub_dataset, simplify=True)
 
-    datasets = datasets_expanded
+        if table_name == 'hapi.dataset':
+          datasets_list.append(sub_dataset)
+
+        if table_name == 'hapi.parameter':
+          if 'parameters' in sub_dataset:
+            for parameter in sub_dataset['parameters']:
+              parameter['id'] = dsid
+              datasets_list.append(parameter)
+
+    datasets = datasets_list
 
   config = configs[table_name]
 
@@ -141,8 +148,8 @@ def table(id=None,
   info = tableui.dict2sql(datasets,
                           config,
                           table_name,
-                          embed=embed_data,
                           out_dir=out_dir,
+                          embed=embed_data,
                           logger=logger)
 
   return info

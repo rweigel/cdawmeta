@@ -22,9 +22,8 @@
       "omit_attributes": {
         "parameters": true
       },
-      "path_type": "dict",
       "paths": {
-        "hapi/data": {
+        "/": {
           "id": null,
           "title": null,
           "description": null
@@ -44,9 +43,12 @@
         "length": null,
         "size": null
       },
-      "path_type": "list",
+      "omit_attributes": {
+        "centers": true,
+        "ranges": true
+      },
       "paths": {
-        "hapi/data/parameters": {
+        "/": {
           "id": null,
           "name": null
         }
@@ -66,7 +68,6 @@
         "Link_text": "LINK_TEXT",
         "Link_title": "LINK_TITLE"
       },
-      "path_type": "dict",
       "paths": {
         "allxml": {
           "datasetID": null,
@@ -152,51 +153,52 @@
       "column_definitions": {
       },
       "_comment": "This table requires special handling because each variables top-level attributes that are combined.",
-      "path_type": "list",
       "paths": {
-        "master/data/CDFVariables": {
-          "VarDescription": {
-            "datasetID": null,
-            "VariableName": null,
-            "RecVariance": null,
-            "NumDims": null,
-            "DataType": null,
-            "DimVariances": null,
-            "NumElements": null,
-            "PadValue": null
-          },
-          "VarAttributes": {
-            "FIELDNAM": null,
-            "VAR_TYPE": null,
-            "DICT_KEY": null,
-            "DEPEND_0": null,
-            "DEPEND_1": null,
-            "DEPEND_2": null,
-            "DEPEND_3": null,
-            "DELTA_PLUS_VAR": null,
-            "DELTA_MINUS_VAR": null,
-            "FORMAT": null,
-            "FORM_PTR": null,
-            "BIN_LOCATION": null,
-            "LABLAXIS": null,
-            "LABL_PTR_1": null,
-            "LABL_PTR_2": null,
-            "LABL_PTR_3": null,
-            "VAR_NOTES": null,
-            "VARIABLE_PURPOSE": null,
-            "AVG_TYPE": null,
-            "FILLVAL": null,
-            "UNITS": null,
-            "UNITS_PTR": null,
-            "SI_CONVERSION": null,
-            "COORDINATE_SYSTEM": null,
-            "VIRTUAL": null,
-            "FUNCT": null,
-            "SCALETYP": null,
-            "SCAL_PTR": null,
-            "VALID_MIN": null,
-            "VALID_MAX": null
-          }
+        "Added": {
+          "datasetID": null,
+          "VariableName": null
+        },
+        "VarDescription": {
+          "datasetID": null,
+          "VariableName": null,
+          "RecVariance": null,
+          "NumDims": null,
+          "DataType": null,
+          "DimVariances": null,
+          "NumElements": null,
+          "PadValue": null
+        },
+        "VarAttributes": {
+          "FIELDNAM": null,
+          "VAR_TYPE": null,
+          "DICT_KEY": null,
+          "DEPEND_0": null,
+          "DEPEND_1": null,
+          "DEPEND_2": null,
+          "DEPEND_3": null,
+          "DELTA_PLUS_VAR": null,
+          "DELTA_MINUS_VAR": null,
+          "FORMAT": null,
+          "FORM_PTR": null,
+          "BIN_LOCATION": null,
+          "LABLAXIS": null,
+          "LABL_PTR_1": null,
+          "LABL_PTR_2": null,
+          "LABL_PTR_3": null,
+          "VAR_NOTES": null,
+          "VARIABLE_PURPOSE": null,
+          "AVG_TYPE": null,
+          "FILLVAL": null,
+          "UNITS": null,
+          "UNITS_PTR": null,
+          "SI_CONVERSION": null,
+          "COORDINATE_SYSTEM": null,
+          "VIRTUAL": null,
+          "FUNCT": null,
+          "SCALETYP": null,
+          "SCAL_PTR": null,
+          "VALID_MIN": null,
+          "VALID_MAX": null
         }
       }
     },
@@ -205,10 +207,11 @@
       "description": "The content of this database is based on SPASE records from <a href=\"https://hpde.io/\">hpde.io</a>, which are determined from SPASE IDs referenced by <code>spase_DatasetResourceID</code> in <a href=\"https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/\">CDF Master metadata</a>",
       "column_definitions": {
       },
-      "path_type": "dict",
       "paths": {
-        "spase/data/Spase/NumericalData": {
-          "datasetID": null,
+        "Added": {
+          "datasetID": null
+        },
+        "Spase/NumericalData": {
           "ResourceID": null,
           "InstrumentID": null,
           "MeasurementType": null,
@@ -218,22 +221,22 @@
           "Caveats": null,
           "Keyword": null
         },
-        "spase/data/Spase/NumericalData/ResourceHeader": {
+        "Spase/NumericalData/ResourceHeader": {
           "ReleaseDate": null,
           "DOI": null,
           "ResourceName": null,
           "AlternateName": null,
           "Acknowledgement": null
         },
-        "spase/data/Spase/NumericalData/TemporalDescription/TimeSpan": {
+        "Spase/NumericalData/TemporalDescription": {
+          "Cadence": null
+        },
+        "Spase/NumericalData/TemporalDescription/TimeSpan": {
           "StartDate": null,
           "StopDate": null,
           "Note": null
         },
-        "spase/data/Spase/NumericalData/TemporalDescription": {
-          "Cadence": null
-        },
-        "spase/data/Spase": {
+        "Spase": {
           "Version": null
         }
       }
@@ -243,9 +246,8 @@
       "description": "The content of this database is based on SPASE records from <a href='https://spase-metadata.org/'>spase-metadata.org</a>, which are determined from SPASE IDs referenced by <code>spase_DatasetResourceID</code> in <a href='https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/'>CDF Master metadata</a>",
       "column_definitions": {
       },
-      "path_type": "list",
       "paths": {
-        "spase/data/Spase/NumericalData/Parameter": {
+        "/": {
           "datasetID": null,
           "ParameterKey": null,
           "Name": null,

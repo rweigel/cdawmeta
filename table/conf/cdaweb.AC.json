@@ -1,0 +1,16 @@
+[
+  {
+    "path": "cdaweb.dataset",
+    "sqldb": "../cdawmeta/data/table/partial/^AC/cdaweb.dataset.sql",
+    "query": "_cols_show=nonempty",
+    "config": "conf/default.json",
+    "dataTablesAdditions": "conf/cdaweb.dataset.json"
+  },
+  {
+    "path": "cdaweb.variable",
+    "sqldb": "../cdawmeta/data/table/partial/^AC/cdaweb.variable.sql",
+    "query": "_cols_show=nonempty",
+    "config": "conf/default.json",
+    "dataTablesAdditions": "conf/cdaweb.variable.json"
+  }
+]
