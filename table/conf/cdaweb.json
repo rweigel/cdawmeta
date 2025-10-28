@@ -1,44 +1,44 @@
 [
   {
-    "path": "cdaweb.dataset",
-    "sqldb": "../../data/table/cdaweb.dataset.sql",
-    "query": "_cols_show=nonempty",
-    "config": "default.json",
-    "dataTablesAdditions": "cdaweb.dataset.json"
-  },
-  {
-    "path": "cdaweb.variable",
+    "path": "variable",
     "sqldb": "../../data/table/cdaweb.variable.sql",
     "query": "_cols_show=nonempty",
     "config": "default.json",
     "dataTablesAdditions": "cdaweb.variable.json"
   },
   {
-    "path": "hapi.dataset",
-    "sqldb": "../../data/table/hapi.dataset.sql",
+    "path": "dataset",
+    "sqldb": "../../data/table/cdaweb.dataset.sql",
     "query": "_cols_show=nonempty",
     "config": "default.json",
-    "dataTablesAdditions": "hapi.dataset.json"
+    "dataTablesAdditions": "cdaweb.dataset.json"
   },
   {
-    "path": "hapi.parameter",
+    "path": "hapi/parameter",
     "sqldb": "../../data/table/hapi.parameter.sql",
     "query": "_cols_show=nonempty",
     "config": "default.json",
     "dataTablesAdditions": "hapi.parameter.json"
   },
   {
-    "path": "spase.dataset",
-    "sqldb": "../../data/table/spase.dataset.sql",
+    "path": "hapi/dataset",
+    "sqldb": "../../data/table/hapi.dataset.sql",
     "query": "_cols_show=nonempty",
     "config": "default.json",
-    "dataTablesAdditions": "spase.dataset.json"
+    "dataTablesAdditions": "hapi.dataset.json"
   },
   {
-    "path": "spase.parameter",
+    "path": "spase/parameter",
     "sqldb": "../../data/table/spase.parameter.sql",
     "query": "_cols_show=nonempty",
     "config": "default.json",
     "dataTablesAdditions": "spase.parameter.json"
+  },
+  {
+    "path": "spase/dataset",
+    "sqldb": "../../data/table/spase.dataset.sql",
+    "query": "_cols_show=nonempty",
+    "config": "default.json",
+    "dataTablesAdditions": "spase.dataset.json"
   }
 ]
