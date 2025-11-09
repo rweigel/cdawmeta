@@ -52,7 +52,7 @@ def spase_auto(metadatum, logger):
   p = ['CDFglobalAttributes', 'TEXT']
   Description = cdawmeta.util.get_path(master, p)
   if Description is not None:
-    NumericalData['ResourceHeader']['Description'] = Description
+    NumericalData['ResourceHeader']['Description'] = Description.join('\n')
     source = f"Source: Master/{'/'.join(p)}"
     NumericalData['ResourceHeader']['_Description'] = source
 

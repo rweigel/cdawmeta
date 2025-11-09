@@ -2,43 +2,150 @@
   {
     "path": "variable",
     "sqldb": "../../data/table/cdaweb.variable.sql",
-    "query": "_cols_show=nonempty",
-    "config": "default.json",
-    "dataTablesAdditions": "cdaweb.variable.json"
+    "dataTables": "default.json",
+    "dataTablesAdditions": {
+      "defaultQueryString": "_cols_show=nonempty",
+      "renderFunctions": "render.js",
+      "tableMetadata": {
+        "tableTitle": "CDAWeb Variables",
+        "description+": "This table is based on content in <a href=\"https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/\">Master CDFs<a> | <a href=\"https://github.com/rweigel/cdawmeta\" target=\"_blank\">Table generation code</a>"
+      },
+      "fixedColumns": 2,
+      "columnDropdowns": true,
+      "columnOptions": [
+        {"name": "datasetID", "render": "renderDatasetID"},
+        {"name": "VariableName"},
+        {"name": "RecVariance", "width": "5em"},
+        {"name": "NumDims", "width": "4em"},
+        {"name": "DimSizes", "width": "4em"},
+        {"name": "DataType", "width": "8em"},
+        {"name": "NumElements", "width": "5em"},
+        {"name": "FORMAT", "width": "4em"},
+        {"name": "VIRTUAL", "width": "4em"},
+        {"name": "CATDESC", "dropdown": false, "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "VAR_NOTES", "dropdown": false, "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "SCALEMIN", "visible": false},
+        {"name": "SCALEMAX", "visible": false},
+        {"name": "VALIDMIN", "visible": false},
+        {"name": "VALIDMAX", "visible": false}
+      ]
+    }
   },
   {
     "path": "dataset",
     "sqldb": "../../data/table/cdaweb.dataset.sql",
-    "query": "_cols_show=nonempty",
-    "config": "default.json",
-    "dataTablesAdditions": "cdaweb.dataset.json"
+    "dataTables": "default.json",
+    "dataTablesAdditions": {
+      "defaultQueryString": "_cols_show=nonempty",
+      "renderFunctions": "render.js",
+      "tableMetadata": {
+        "tableTitle": "CDAWeb Datasets",
+        "description+": "This table is based on content in <a href=\"https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml\">all.xml</a> and <a href=\"https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/\">Master CDFs<a> | <a href=\"https://github.com/rweigel/cdawmeta\" target=\"_blank\">Table generation code</a>"
+      },
+      "columnDropdowns": false,
+      "columnOptions": [
+        {"name": "datasetID", "render": "renderDatasetID"},
+        {"name": "TEXT", "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "MODS", "render": "ellipsis"},
+        {"name": "TEXT_supplement_1", "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "Rules_of_use", "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "REFERENCE", "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "description/@short", "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "FileVersion", "width": "5em"},
+        {"name": "Format", "width": "5em"},
+        {"name": "Majority", "width": "5em"},
+        {"name": "Encoding", "width": "5em"},
+        {"name": "Acknowledgement", "render": {"function": "ellipsis", "args": [20]}},
+        {"name": "Temporal_Coverage/@start", "width": "12em"},
+        {"name": "Temporal_Coverage/@end", "width": "12em"},
+        {"name": "Spatial_Coverage/@region", "render": {"function": "ellipsis", "args": [20]}},
+        {"name": "mastercdf/@ID", "render": "trimURL"},
+        {"name": "mastercdf/@serviceprovider_ID", "render": "trimURL"},
+        {"name": "other_info/link", "render": "renderOtherInfo"},
+        {"name": "Data_version", "width": "5em"},
+        {"name": "ADID_ref", "width": "5em"},
+        {
+          "name": "access/URL",
+          "render": {
+            "function": "renderLink",
+            "args": ["https://"]
+          }
+        },
+        {
+          "name": "spase_DatasetResourceID",
+          "render": {
+            "function": "renderURI",
+            "args": ["spase://", "http://spase-metadata.org/"]
+          }
+        },
+        {
+          "name": "Web_site",
+          "render": {
+            "function": "renderLink",
+            "args": ["^http[s]?://", ""]
+          }
+        }
+      ]
+    }
   },
   {
     "path": "hapi/parameter",
     "sqldb": "../../data/table/hapi.parameter.sql",
-    "query": "_cols_show=nonempty",
-    "config": "default.json",
-    "dataTablesAdditions": "hapi.parameter.json"
+    "dataTables": "default.json",
+    "dataTablesAdditions": 
+      {
+        "defaultQueryString": "_cols_show=nonempty",
+        "renderFunctions": "render.js",
+        "columnDropdowns": false,
+        "tableMetadata": {
+          "tableTitle": "CDAWeb HAPI Parameters",
+          "description+": "<a href=\"https://github.com/rweigel/cdawmeta\" target=\"_blank\">Table generation code</a>"
+      }
+    }
   },
   {
     "path": "hapi/dataset",
     "sqldb": "../../data/table/hapi.dataset.sql",
-    "query": "_cols_show=nonempty",
-    "config": "default.json",
-    "dataTablesAdditions": "hapi.dataset.json"
+    "dataTables": "default.json",
+    "dataTablesAdditions": {
+      "defaultQueryString": "_cols_show=nonempty",
+      "renderFunctions": "render.js",
+      "columnDropdowns": false,
+      "columnOptions": [
+        {"name": "description", "render": {"function": "ellipsis", "args": [30]}}
+      ],
+      "tableMetadata": {
+        "tableTitle": "CDAWeb HAPI Datasets",
+        "description+": "<a href=\"https://github.com/rweigel/cdawmeta\" target=\"_blank\">Table generation code</a>"
+      }
+    }
   },
   {
     "path": "spase/parameter",
     "sqldb": "../../data/table/spase.parameter.sql",
-    "query": "_cols_show=nonempty",
-    "config": "default.json",
-    "dataTablesAdditions": "spase.parameter.json"
+    "dataTables": "default.json",
+    "dataTablesAdditions": {
+      "defaultQueryString": "_cols_show=nonempty",
+      "renderFunctions": "render.js",
+      "columnDropdowns": false,
+      "tableMetadata": {
+        "tableTitle": "CDAWeb SPASE Parameters",
+        "description+": "<a href=\"https://github.com/rweigel/cdawmeta\" target=\"_blank\">Table generation code</a>"
+      }
+    }
   },
   {
     "path": "spase/dataset",
     "sqldb": "../../data/table/spase.dataset.sql",
-    "query": "_cols_show=nonempty",
-    "config": "default.json",
-    "dataTablesAdditions": "spase.dataset.json"
+    "dataTables": "default.json",
+    "dataTablesAdditions": {
+      "defaultQueryString": "_cols_show=nonempty",
+      "renderFunctions": "render.js",
+      "columnDropdowns": false,
+      "tableMetadata": {
+        "tableTitle": "CDAWeb SPASE Datasets",
+        "description+": "<a href=\"https://github.com/rweigel/cdawmeta\" target=\"_blank\">Table generation code</a>"
+      }
+    }
   }
 ]

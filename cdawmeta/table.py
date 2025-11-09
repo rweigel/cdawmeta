@@ -31,8 +31,7 @@ def table(id=None,
       info[table_name] = table(**kwargs)
     return info
 
-  logger = cdawmeta.logger('table')
-  logger.setLevel(log_level.upper())
+  logger = cdawmeta.logger('table', log_level=log_level)
 
   if table_name is not None:
     if table_name not in table_names:
@@ -60,7 +59,15 @@ def table(id=None,
           # {"a": {"b": "c"}, ...} -> {"a/b": "c"}
           allxml = utilrsw.flatten_dicts(allxml)
           allxml['datasetID'] = dsid
-        datasets_list.append({"allxml": allxml, 'master': datasets[dsid]['master']})
+
+        # Was added in restructure/master.py for convenience.
+        p = ['master', 'data', 'CDFFileInfo', 'FileURL']
+        utilrsw.rm_path(datasets[dsid], p)
+
+        datasets_list.append({
+          "allxml": allxml,
+          'master': datasets[dsid]['master']
+        })
 
       if table_name == 'cdaweb.variable':
         path = ['master','data', 'CDFVariables']
@@ -89,6 +96,7 @@ def table(id=None,
         dataset = utilrsw.get_path(datasets[dsid], ['spase', 'data'])
         if not dataset:
           continue
+
         dataset['Added'] = {'datasetID': dsid}
         datasets_list.append(dataset)
 
@@ -142,14 +150,10 @@ def table(id=None,
     wmsg += "If id is a regex, expect trouble."
     logger.warning(wmsg)
     out_dir = os.path.join(out_dir, 'partial', id)
+  config['out_dir'] = out_dir
 
   logger.info(40*"-")
   logger.info(f"Creating table '{table_name}'")
-  info = tableui.dict2sql(datasets,
-                          config,
-                          table_name,
-                          out_dir=out_dir,
-                          embed=embed_data,
-                          logger=logger)
+  info = tableui.dict2sql(datasets, config, embed=embed_data, logger=logger)
 
   return info
