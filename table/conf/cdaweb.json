@@ -45,44 +45,62 @@
       "columnDropdowns": false,
       "columnOptions": [
         {"name": "datasetID", "render": "renderDatasetID"},
-        {"name": "TEXT", "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "TEXT", "render": {"function": "ellipsis", "args": 30}},
         {"name": "MODS", "render": "ellipsis"},
-        {"name": "TEXT_supplement_1", "render": {"function": "ellipsis", "args": [30]}},
-        {"name": "Rules_of_use", "render": {"function": "ellipsis", "args": [30]}},
-        {"name": "REFERENCE", "render": {"function": "ellipsis", "args": [30]}},
-        {"name": "description/@short", "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "TEXT_supplement_1", "render": {"function": "ellipsis", "arg": 30}},
+        {"name": "Rules_of_use", "render": {"function": "ellipsis", "arg": 30}},
+        {"name": "REFERENCE", "render": {"function": "ellipsis", "arg": 30}},
+        {"name": "description/@short", "render": {"function": "ellipsis", "arg": 30}},
         {"name": "FileVersion", "width": "5em"},
         {"name": "Format", "width": "5em"},
         {"name": "Majority", "width": "5em"},
         {"name": "Encoding", "width": "5em"},
-        {"name": "Acknowledgement", "render": {"function": "ellipsis", "args": [20]}},
+        {"name": "Acknowledgement", "render": {"function": "ellipsis", "arg": 20}},
         {"name": "Temporal_Coverage/@start", "width": "12em"},
         {"name": "Temporal_Coverage/@end", "width": "12em"},
-        {"name": "Spatial_Coverage/@region", "render": {"function": "ellipsis", "args": [20]}},
-        {"name": "mastercdf/@ID", "render": "trimURL"},
-        {"name": "mastercdf/@serviceprovider_ID", "render": "trimURL"},
-        {"name": "other_info/link", "render": "renderOtherInfo"},
+        {"name": "Spatial_Coverage/@region", "render": {"function": "ellipsis", "arg": 20}},
         {"name": "Data_version", "width": "5em"},
         {"name": "ADID_ref", "width": "5em"},
+        {"name": "other_info/link", "render": "renderOtherInfo"},
+        {"name": "access/URL", "render": "trimURL"},
         {
-          "name": "access/URL",
+          "name": "mastercdf/@ID",
           "render": {
             "function": "renderLink",
-            "args": ["https://"]
+            "args": {
+              "trim": "https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS/"
+            }
+          }
+        },
+        {
+          "name": "mastercdf/@serviceprovider_ID",
+          "render": {
+            "function": "renderLink",
+            "args": {
+              "trim": "https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS/"
+            }
+          }
+        },
+        {
+          "name": "DOI",
+          "render": {
+            "function": "renderLink",
+            "args": {
+              "trim": "https://doi.org/"
+            }
           }
         },
         {
           "name": "spase_DatasetResourceID",
           "render": {
-            "function": "renderURI",
-            "args": ["spase://", "http://spase-metadata.org/"]
-          }
-        },
-        {
-          "name": "Web_site",
-          "render": {
             "function": "renderLink",
-            "args": ["^http[s]?://", ""]
+            "args": {
+              "modify": {
+                "remove": "spase://",
+                "replace": "http://spase-metadata.org/"
+              },
+              "trim": "http://spase-metadata.org/"
+            }
           }
         }
       ]
