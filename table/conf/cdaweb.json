@@ -122,7 +122,7 @@
           {"name": "description", "render": {"function": "ellipsis", "args": [30]}},
           {"name": "type"},
           {"name": "length", "width": "5em"},
-          {"name": "units", "width": "8em"},
+          {"name": "units", "width": "5em"},
           {"name": "size"},
           {"name": "bins"},
           {"name": "x_format", "width": "5em"},
