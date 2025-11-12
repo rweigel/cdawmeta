@@ -110,11 +110,26 @@
     "path": "hapi/parameter",
     "sqldb": "../../data/table/hapi.parameter.sql",
     "dataTables": "default.json",
-    "dataTablesAdditions": 
+    "dataTablesAdditions":
       {
         "defaultQueryString": "_cols_show=nonempty",
         "renderFunctions": "render.js",
-        "columnDropdowns": false,
+        "fixedColumns": 2,
+        "columnDropdowns": true,
+        "columnOptions": [
+          {"name": "datasetID", "render": "renderDatasetID"},
+          {"name": "name"},
+          {"name": "description", "render": {"function": "ellipsis", "args": [30]}},
+          {"name": "type"},
+          {"name": "length", "width": "5em"},
+          {"name": "units", "width": "8em"},
+          {"name": "size"},
+          {"name": "bins"},
+          {"name": "x_format", "width": "5em"},
+          {"name": "x_fractionDigits", "width": "5em"},
+          {"name": "x_cdf_FORMAT", "width": "5em"},
+          {"name": "x_label", "render": "splitArray"}
+        ],
         "tableMetadata": {
           "tableTitle": "CDAWeb HAPI Parameters",
           "description+": "<a href=\"https://github.com/rweigel/cdawmeta\" target=\"_blank\">Table generation code</a>"
@@ -128,8 +143,10 @@
     "dataTablesAdditions": {
       "defaultQueryString": "_cols_show=nonempty",
       "renderFunctions": "render.js",
+      "fixedColumns": 2,
       "columnDropdowns": false,
       "columnOptions": [
+        {"name": "datasetID", "render": "renderDatasetID"},
         {"name": "description", "render": {"function": "ellipsis", "args": [30]}}
       ],
       "tableMetadata": {
@@ -160,6 +177,22 @@
       "defaultQueryString": "_cols_show=nonempty",
       "renderFunctions": "render.js",
       "columnDropdowns": false,
+      "columnOptions": [
+        {"name": "datasetID", "render": "renderDatasetID"},
+        {"name": "Caveats", "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "Acknowledgement", "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "ResourceName", "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "Note", "render": {"function": "ellipsis", "args": [30]}},
+        {
+          "name": "DOI",
+          "render": {
+            "function": "renderLink",
+            "args": {
+              "trim": "https://doi.org/"
+            }
+          }
+        }
+      ],
       "tableMetadata": {
         "tableTitle": "CDAWeb SPASE Datasets",
         "description+": "<a href=\"https://github.com/rweigel/cdawmeta\" target=\"_blank\">Table generation code</a>"
