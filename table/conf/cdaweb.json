@@ -117,7 +117,7 @@
         "fixedColumns": 2,
         "columnDropdowns": true,
         "columnOptions": [
-          {"name": "datasetID", "render": "renderDatasetID"},
+          {"name": "id", "render": "renderDatasetID"},
           {"name": "name"},
           {"name": "description", "render": {"function": "ellipsis", "args": [30]}},
           {"name": "type"},
@@ -146,7 +146,7 @@
       "fixedColumns": 2,
       "columnDropdowns": false,
       "columnOptions": [
-        {"name": "datasetID", "render": "renderDatasetID"},
+        {"name": "id", "render": "renderDatasetID"},
         {"name": "description", "render": {"function": "ellipsis", "args": [30]}}
       ],
       "tableMetadata": {
@@ -163,6 +163,9 @@
       "defaultQueryString": "_cols_show=nonempty",
       "renderFunctions": "render.js",
       "columnDropdowns": false,
+      "columnOptions": [
+        {"name": "datasetID", "render": "renderDatasetID"}
+      ],
       "tableMetadata": {
         "tableTitle": "CDAWeb SPASE Parameters",
         "description+": "<a href=\"https://github.com/rweigel/cdawmeta\" target=\"_blank\">Table generation code</a>"
