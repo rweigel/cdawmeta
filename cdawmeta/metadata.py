@@ -101,7 +101,6 @@ def metadata(id=None,
   Returns a dict of metadata. Keys are dataset IDs and values are dicts of
   metadata types.
   '''
-
   logger = _logger(log_level=log_level, logger_=logger_)
 
   logger.info("Starting cdawmeta.metadata()")

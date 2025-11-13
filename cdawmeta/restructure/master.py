@@ -69,28 +69,67 @@ def master(master, master_url, logger=None):
 
     variables_r[variable_name] = variable_dict
 
-  # Why do they use lower-case G? Inconsistent with CDFVariables.
+  # Why lower-case G? Inconsistent with CDFVariables.
   globals = master[file]['CDFglobalAttributes']
   globals_r = {}
+  """
+  Globals is an array of objects with one key each. Each object contains
+  and array. For example
+  CDFglobalAttributes: [
+    { "TITLE": [ {"0": "My Title"} ] }
+    { "TEXT": [ {"0": "Line 1"}, {"0": "Line 2"} ] }
+    { "HTTP_link" : [ {"0": "http://..." }, {"2": "http://..." } ] }
+    ...
+  ]
+  For text attributes, simplify, e.g.,
+    "TITLE": [ {"0": "My Title"} ] }
+    =>
+    "TITLE": "My Title"
+  and join, e.g.,
+    "TEXT": [ {"0": "Line 1"}, {"0": "Line 2"} ]
+    =>
+  "TEXT": ["Line 1, "Line 2"]
 
-  for _global in globals:
-    gkey = list(_global.keys())
-    if len(gkey) > 1:
+  For link-related attributes (Link_text, HTTP_link, and Link_title), join into array, e.g.,
+    "HTTP_link" : [ {"0": "http://..." }, {"2": "http://..." } ]
+    =>
+    "HTTP_link" : [ "http://...", "http://..." ]
+  """
+  for attr_object in globals:
+    # E.g., attr_object = { "TITLE": [ {"0": "My Title"} ] }
+    logger.debug(attr_object)
+    attr_object_keys = list(attr_object.keys())
+    if len(attr_object_keys) > 1:
       if logger is not None:
-        msg = "Expected only one key in _global object."
+        # TODO: Determine if this is allowed, and if so, handle.
+        msg = "Expected only one key in object that is an array element of CDFglobalAttributes."
         logger.error(msg)
-    gvals = _global[gkey[0]]
-    text = []
-    for gval in gvals:
-      line = gval[list(gval.keys())[0]]
-      text.append(str(line))
+        logger.error(f"Found {attr_object}.")
+        logger.error(f"Using only first key: {attr_object_keys[0]}.")
+    attr_object_key = attr_object_keys[0]
+    attr_object_list = attr_object[attr_object_key]
+    # E.g., [ {"0": "A"}, {"1": "B"} ]
+    elements = []
+    for el in attr_object_list:
+      logger.debug(f"  {el}")
+      if len(el.keys()) > 1:
+        msg = "Expected only one key in attribute array element."
+        logger.error(msg)
+        logger.error(f"Found {el}.")
+        logger.error(f"Using only first key: {el.keys()[0]}.")
+      key = list(el.keys())[0]
+      elements.append(el[key])
 
-    globals_r[gkey[0]] = "\n".join(text)
+    if len(elements) == 1:
+      globals_r[attr_object_key] = elements[0]
+    else:
+      globals_r[attr_object_key] = elements
 
   master = {
-              'CDFFileInfo': {'File': file, 'FileURL': master_url, **fileinfo_r},
+              #'CDFFileInfo': {'File': file, 'FileURL': master_url, **fileinfo_r},
+              'CDFFileInfo': fileinfo_r,
               'CDFglobalAttributes': globals_r,
               'CDFVariables': variables_r
-            }
+  }
 
   return master

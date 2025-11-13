@@ -1,16 +1,30 @@
 [
   {
-    "path": "cdaweb.dataset",
-    "sqldb": "../cdawmeta/data/table/partial/^AC/cdaweb.dataset.sql",
-    "query": "_cols_show=nonempty",
-    "config": "conf/default.json",
-    "dataTablesAdditions": "conf/cdaweb.dataset.json"
+    "path": "dataset",
+    "sqldb": "../../data/table/partial/^AC/cdaweb.dataset.sql",
+    "config": "default.json",
+    "dataTablesAdditions": {
+    "defaultQueryString": "_cols_show=nonempty",
+      "renderFunctions": "render.js",
+      "tableMetadata": {
+        "tableTitle": "CDAWeb Variables for datasets matching '^AC'"
+      },
+      "fixedColumns": 2,
+      "columnDropdowns": false
+    }
   },
   {
-    "path": "cdaweb.variable",
-    "sqldb": "../cdawmeta/data/table/partial/^AC/cdaweb.variable.sql",
-    "query": "_cols_show=nonempty",
-    "config": "conf/default.json",
-    "dataTablesAdditions": "conf/cdaweb.variable.json"
+    "path": "variable",
+    "sqldb": "../../data/table/partial/^AC/cdaweb.variable.sql",
+    "config": "default.json",
+    "dataTablesAdditions": {
+    "defaultQueryString": "_cols_show=nonempty",
+      "renderFunctions": "render.js",
+      "tableMetadata": {
+        "tableTitle": "CDAWeb Variables for datasets matching '^AC'"
+      },
+      "fixedColumns": 3,
+      "columnDropdowns": true
+    }
   }
 ]

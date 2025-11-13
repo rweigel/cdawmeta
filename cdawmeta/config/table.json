@@ -13,6 +13,7 @@
   },
   "tables": {
     "hapi.dataset": {
+      "name": "hapi.dataset",
       "use_all_attributes": true,
       "column_definitions": {
         "id": "Dataset ID",
@@ -31,6 +32,7 @@
       }
     },
     "hapi.parameter": {
+      "name": "hapi.parameter",
       "use_all_attributes": true,
       "description": "The content of this database is based information in <a href=\"https://cdaweb.gsfc.nasa.gov/hapi\">HAPI info responses</a>.",
       "column_definitions": {
@@ -55,6 +57,7 @@
       }
     },
     "cdaweb.dataset": {
+      "name": "cdaweb.dataset",
       "use_all_attributes": true,
       "fix_attributes": true,
       "description": "The content of this database is based information in <a href=\"https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml\">all.xml</a> and <a href=\"https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/\">cdawlib/0JSONS</a>",
@@ -113,6 +116,7 @@
       }
     },
     "cdaweb.variable": {
+      "name": "cdaweb.variable",
       "use_all_attributes": true,
       "fix_attributes": true,
       "fixes": {
@@ -159,8 +163,6 @@
           "VariableName": null
         },
         "VarDescription": {
-          "datasetID": null,
-          "VariableName": null,
           "RecVariance": null,
           "NumDims": null,
           "DataType": null,
@@ -203,6 +205,7 @@
       }
     },
     "spase.dataset": {
+      "name": "spase.dataset",
       "use_all_attributes": false,
       "description": "The content of this database is based on SPASE records from <a href=\"https://hpde.io/\">hpde.io</a>, which are determined from SPASE IDs referenced by <code>spase_DatasetResourceID</code> in <a href=\"https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/\">CDF Master metadata</a>",
       "column_definitions": {
@@ -242,6 +245,7 @@
       }
     },
     "spase.parameter": {
+      "name": "spase.parameter",
       "use_all_attributes": true,
       "description": "The content of this database is based on SPASE records from <a href='https://spase-metadata.org/'>spase-metadata.org</a>, which are determined from SPASE IDs referenced by <code>spase_DatasetResourceID</code> in <a href='https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/'>CDF Master metadata</a>",
       "column_definitions": {
