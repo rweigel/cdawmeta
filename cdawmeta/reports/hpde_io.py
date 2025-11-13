@@ -40,7 +40,8 @@ def hpde_io(clargs):
       path = [*path, attribute]
 
     for dsid_spase in meta.keys():
-      ResourceID = cdawmeta.util.get_path(meta[dsid_spase], [meta_type, 'data', 'Spase', 'NumericalData', 'ResourceID'])
+      path_rid = [meta_type, 'data', 'Spase', 'NumericalData', 'ResourceID']
+      ResourceID = cdawmeta.util.get_path(meta[dsid_spase], path_rid)
       spase = cdawmeta.util.get_path(meta[dsid_spase], [meta_type, 'data'])
       if spase is None:
         #logger.error(f"No SPASE for {dsid_spase}")
@@ -49,7 +50,7 @@ def hpde_io(clargs):
 
       attributes[attribute][dsid_spase] = None
       value = cdawmeta.util.get_path(spase, path)
-
+      first = None
       if value is not None:
         if attribute != 'ObservedRegion':
           attributes[attribute][dsid_spase] = value
@@ -58,17 +59,21 @@ def hpde_io(clargs):
             value = [value]
           sc_id = dsid_spase.split('_')[0]
           if sc_id not in ObservedRegion:
+            first = dsid_spase
             ObservedRegion[sc_id] = value
             ObservedRegionIDMap[sc_id] = []
-            logger.info(f"  {dsid_spase}: Found first ObservedRegion for s/c ID = {sc_id}: {value}")
+            logger.info(f"  {dsid_spase} ({ResourceID}):")
+            logger.info(f"     Found first ObservedRegion in {first} for s/c ID = {sc_id}: {value}")
           elif sorted(ObservedRegion[sc_id]) != sorted(value):
             if not _merge_observed_regions(dsid_spase):
-              logger.info(f"  {dsid_spase}: Not merging ObservedRegion for s/c ID = {dsid_spase}")
+              logger.info(f"  {dsid_spase} ({ResourceID}):")
+              logger.info(f"    Not merging ObservedRegion for s/c ID = {dsid_spase}")
             else:
-              logger.error(f"  {dsid_spase}: ObservedRegion for this ID differs from first found value s/c ID = {sc_id}")
-              logger.error(f"    First value = {sorted(ObservedRegion[sc_id])}")
-              logger.error(f"    This value  = {sorted(value)}")
-              logger.error("    Combining values.")
+              logger.error(f"  {dsid_spase} ({ResourceID}):")
+              logger.info(f"    ObservedRegion for this ID differs from first found value s/c ID = {sc_id}")
+              logger.error(f"      First value = {sorted(ObservedRegion[sc_id])}")
+              logger.error(f"      This value  = {sorted(value)}")
+              logger.error("       Combining values.")
               ObservedRegion[sc_id] = list(set(ObservedRegion[sc_id]) | set(value))
           ObservedRegionIDMap[sc_id].append(dsid_spase)
         n_found[attribute] += 1
