@@ -65,7 +65,7 @@ renderFunctions.renderDatasetID = function (columnName, config) {
 
     if (tableName === 'cdaweb.dataset') {
       const index = columnNames.indexOf('spase_DatasetResourceID')
-      const fnameSPASE = row[index].replace('spase://', 'https://hpde.io/') + '.json'
+      const fnameSPASE = row[index].replace('spase://', 'https://spase-metadata.org/') + '.json'
       columnString += `&nbsp;<a href="${fnameSPASE}" title="SPASE">SP</a>`
     }
 
