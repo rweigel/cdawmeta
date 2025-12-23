@@ -206,8 +206,8 @@ def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601
       msg = f"Data type {epoch['VarDescription']['DataType']} is not one of {lens.keys()}"
       raise ValueError(msg)
 
-    to = cdflib.cdfepoch.parse(cdawmeta.util.pad_iso8601(start_iso)[0:lens[dataType]])
-    tf = cdflib.cdfepoch.parse(cdawmeta.util.pad_iso8601(stop_iso)[0:lens[dataType]])
+    to = cdflib.cdfepoch.parse(cdawmeta.util.time.pad_iso8601(start_iso)[0:lens[dataType]])
+    tf = cdflib.cdfepoch.parse(cdawmeta.util.time.pad_iso8601(stop_iso)[0:lens[dataType]])
     starttime = to.item()
     endtime = tf.item()
 
@@ -315,8 +315,8 @@ def files(id=id, start=None, stop=None, logger=None, cache_dir=None, update=Fals
     logger.info(f"Total of {len(files_all)} URLs for {id}")
 
   files_needed = []
-  start = cdawmeta.util.pad_iso8601(start.strip())
-  stop = cdawmeta.util.pad_iso8601(stop.strip())
+  start = cdawmeta.util.time.pad_iso8601(start.strip())
+  stop = cdawmeta.util.time.pad_iso8601(stop.strip())
   #print(start, stop)
   for file in files_all:
     #print(file['StartTime'], file['EndTime'], file['Name'].split('/')[-1])
