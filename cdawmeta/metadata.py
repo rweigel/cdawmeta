@@ -761,7 +761,7 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
   logger.info(f'Getting using requests-cache: {url}')
 
   result = {'id': id, 'url': url, 'data-file': None, 'data': None}
-  get = cdawmeta.util.get_json(url, cache_dir=cache_dir, headers=headers, timeout=timeout, diffs=diffs)
+  get = cdawmeta.util.net.get_json(url, cache_dir=cache_dir, headers=headers, timeout=timeout, diffs=diffs)
 
   if get['emsg']:
     emsg = f"{id}: {get['emsg']}"
