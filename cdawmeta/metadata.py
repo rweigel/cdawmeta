@@ -247,29 +247,29 @@ def _meta_types(meta_types_requested):
 
   logger.info(f"Requested meta_type(s): {meta_types_requested}")
 
+  if meta_types_requested is None:
+    return cdawmeta.dependencies['all']
+
   if not isinstance(meta_types_requested, list):
     meta_types_requested = [meta_types_requested]
 
-  if meta_types_requested is None:
-    meta_types = cdawmeta.dependencies['all']
-  else:
-    choices = cdawmeta.dependencies['all']
-    meta_types = []
-    for _type in meta_types_requested:
-      if _type not in choices:
-        raise ValueError(f"Error: meta_type = {_type} is not in {choices}")
-      deps = cdawmeta.dependencies[_type]
-      if deps is None:
-        if _type not in meta_types:
-          meta_types.append(_type)
-        continue
-      for dep in deps:
-        meta_types.append(dep)
+  choices = cdawmeta.dependencies['all']
+  meta_types = []
+  for _type in meta_types_requested:
+    if _type not in choices:
+      raise ValueError(f"Error: meta_type = {_type} is not in {choices}")
+    deps = cdawmeta.dependencies[_type]
+    if deps is None:
       if _type not in meta_types:
         meta_types.append(_type)
+      continue
+    for dep in deps:
+      meta_types.append(dep)
+    if _type not in meta_types:
+      meta_types.append(_type)
 
-    if 'allxml' not in meta_types:
-      meta_types = ['allxml', *meta_types]
+  if 'allxml' not in meta_types:
+    meta_types = ['allxml', *meta_types]
 
   return meta_types
 
@@ -353,8 +353,8 @@ def allxml(update=False, diffs=False, log_level='info'):
 def _allxml(update=False, diffs=False):
 
   if hasattr(_allxml, 'allxml'):
-    # Use curried result (So update only updates all.xml once per execution of main program)
-    logger.info("Using curried allxml")
+    # Use memoized result (So update only updates all.xml once per execution of main program)
+    logger.info("Using memoized allxml")
     return _allxml.allxml
 
   allxml_data = allxml(update=update, diffs=diffs)
@@ -483,10 +483,12 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
     hpde_url = f'{ResourceID.replace("spase://", "http://hpde.io/")}'
 
     data = cdawmeta.restructure.spase(data, logger=logger)
-    AccessInformation = cdawmeta.util.get_path(data, ['Spase', 'NumericalData', 'AccessInformation'])
+    p = ['Spase', 'NumericalData', 'AccessInformation']
+    AccessInformation = cdawmeta.util.get_path(data, p)
 
     if AccessInformation is None:
-      cdawmeta.error('spase_hpde_io', id, None, 'spase.hpde_io.AccessInformation', f"No AccessInformation in {file}", logger)
+      msg = f"No AccessInformation in {file}"
+      cdawmeta.error('spase_hpde_io', id, None, 'spase.hpde_io.AccessInformation', msg, logger)
       continue
 
     s = "s" if len(AccessInformation) > 1 else ""
@@ -616,7 +618,7 @@ def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
 
   if need_update:
     logger.info(f"Getting {url}")
-    info = cdawmeta.util.get_conditional(url, file=file, stream=True)
+    info = cdawmeta.util.net.get_conditional(url, file=file, stream=True)
     logger.info(f"Got {url}")
     status_code = info['response'].status_code
     if status_code == 304:
@@ -629,14 +631,16 @@ def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
           cdawmeta.exception(None, logger, exit_on_exception=exit_on_exception)
 
   if dataset is not None:
-    # If file exists, it means there should be a cache file in cdfmetafile/info/dataset.pkl
+    # If file exists, it means there should be a cache file in
+    # cdfmetafile/info/dataset.pkl
     id = dataset['id']
     error_result = {'id': id, 'url': url, 'data-file': None, 'data': None}
     pkl_file = os.path.join(out_dir, f"{id}.pkl")
     if os.path.exists(pkl_file):
       return cdawmeta.util.read(pkl_file, logger=logger)
     else:
-      causes = f"Can be caused by failed download or parse of {url} or if dataset '{id}' in {file_allxml} but not in {file}."
+      causes = f"Can be caused by failed download or parse of {url} or if "
+      causes += f"dataset '{id}' in {file_allxml} but not in {file}."
       error_result['error'] = f"File {pkl_file} not found. {causes}"
       return error_result
 
@@ -660,7 +664,8 @@ def _write_combined(metadata_, id, meta_types):
 
     data = []
     if meta_type == 'hapi':
-      data_hapi = [] # Datasets with multiple DEPEND_0s are expanded to multiple datasets
+      # Datasets with multiple DEPEND_0s are expanded to multiple datasets
+      data_hapi = [] 
       data_hapi_no_info = []
 
     for dsid in metadata_.keys():
@@ -760,8 +765,20 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
 
   logger.info(f'Getting using requests-cache: {url}')
 
-  result = {'id': id, 'url': url, 'data-file': None, 'data': None}
-  get = cdawmeta.util.net.get_json(url, cache_dir=cache_dir, headers=headers, timeout=timeout, diffs=diffs)
+  kwargs = {
+    "cache_dir": cache_dir,
+    "headers": headers,
+    "timeout": timeout,
+    "diffs": diffs
+  }
+  get = cdawmeta.util.net.get_json(url, **kwargs)
+
+  result = {
+    'id': id,
+    'url': url,
+    'data-file': None,
+    'data': None
+  }
 
   if get['emsg']:
     emsg = f"{id}: {get['emsg']}"
@@ -789,7 +806,8 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
   #logger.debug(result['request']["log"])
 
   if os.path.exists(json_file) and get['response'].from_cache:
-    logger.info(f"File {json_file} exists and response was from cache. Not re-writing it.")
+    msg = f"File {json_file} exists and response was from cache. Not re-writing it."
+    logger.info(msg)
   else:
     try:
       cdawmeta.util.write(json_file, result, logger=logger)
@@ -798,7 +816,8 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
       cdawmeta.error('metadata', id, None, 'WriteError', msg, logger)
 
   if os.path.exists(pkl_file) and get['response'].from_cache:
-    logger.info(f"File {pkl_file} exists and response was from cache. Not re-writing it.")
+    msg = f"File {pkl_file} exists and response was from cache. Not re-writing it."
+    logger.info(msg)
   else:
     try:
       cdawmeta.util.write(pkl_file, result, logger=logger)

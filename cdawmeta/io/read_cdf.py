@@ -18,7 +18,7 @@ def open_cdf(file, logger=None, cache_dir=None, use_cache=True):
     if use_cache and os.path.exists(file_out) and logger is not None:
       logger.info("use_cache = True and cached file found. Using it.")
     else:
-      info = cdawmeta.util.get_conditional(file, file_out, **kwargs)
+      info = cdawmeta.util.net.get_conditional(file, file_out, **kwargs)
       if 'emsg' in info:
         if logger is not None:
           logger.error(f"Error: {file}: {info['emsg']}")
