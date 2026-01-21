@@ -12,11 +12,12 @@ def open_cdf(file, logger=None, cache_dir=None, use_cache=True):
     # File is URL
     kwargs = {
       'logger': logger,
-      'stream': True        # Stream to file, don't return data.
+      'stream': True    # Stream to file, don't return data.
     }
     file_out = os.path.join(cache_dir, _url2file(file))
-    if use_cache and os.path.exists(file_out) and logger is not None:
-      logger.info("use_cache = True and cached file found. Using it.")
+    if use_cache and os.path.exists(file_out):
+      if logger is not None:
+        logger.info("use_cache = True and cached file found. Using it.")
     else:
       info = cdawmeta.util.net.get_conditional(file, file_out, **kwargs)
       if 'emsg' in info:
