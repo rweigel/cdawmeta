@@ -12,13 +12,14 @@ def open_cdf(file, logger=None, cache_dir=None, use_cache=True):
     # File is URL
     kwargs = {
       'logger': logger,
-      'stream': True        # Stream to file, don't return data.
+      'stream': True    # Stream to file, don't return data.
     }
     file_out = os.path.join(cache_dir, _url2file(file))
-    if use_cache and os.path.exists(file_out) and logger is not None:
-      logger.info("use_cache = True and cached file found. Using it.")
+    if use_cache and os.path.exists(file_out):
+      if logger is not None:
+        logger.info("use_cache = True and cached file found. Using it.")
     else:
-      info = cdawmeta.util.get_conditional(file, file_out, **kwargs)
+      info = cdawmeta.util.net.get_conditional(file, file_out, **kwargs)
       if 'emsg' in info:
         if logger is not None:
           logger.error(f"Error: {file}: {info['emsg']}")
@@ -206,8 +207,8 @@ def read_cdf(file, variables=None, depend_0=None, start=None, stop=None, iso8601
       msg = f"Data type {epoch['VarDescription']['DataType']} is not one of {lens.keys()}"
       raise ValueError(msg)
 
-    to = cdflib.cdfepoch.parse(cdawmeta.util.pad_iso8601(start_iso)[0:lens[dataType]])
-    tf = cdflib.cdfepoch.parse(cdawmeta.util.pad_iso8601(stop_iso)[0:lens[dataType]])
+    to = cdflib.cdfepoch.parse(cdawmeta.util.time.pad_iso8601(start_iso)[0:lens[dataType]])
+    tf = cdflib.cdfepoch.parse(cdawmeta.util.time.pad_iso8601(stop_iso)[0:lens[dataType]])
     starttime = to.item()
     endtime = tf.item()
 
@@ -315,8 +316,8 @@ def files(id=id, start=None, stop=None, logger=None, cache_dir=None, update=Fals
     logger.info(f"Total of {len(files_all)} URLs for {id}")
 
   files_needed = []
-  start = cdawmeta.util.pad_iso8601(start.strip())
-  stop = cdawmeta.util.pad_iso8601(stop.strip())
+  start = cdawmeta.util.time.pad_iso8601(start.strip())
+  stop = cdawmeta.util.time.pad_iso8601(stop.strip())
   #print(start, stop)
   for file in files_all:
     #print(file['StartTime'], file['EndTime'], file['Name'].split('/')[-1])

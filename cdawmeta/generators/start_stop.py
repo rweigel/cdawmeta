@@ -42,7 +42,7 @@ def start_stop(metadatum, logger):
   stopDate = _all_timestamp(metadatum['allxml'], 'stop')
 
   if num_files > 0:
-    if cdawmeta.util.pad_iso8601(sampleFile["StartTime"]) > cdawmeta.util.pad_iso8601(sampleFile["EndTime"]):
+    if cdawmeta.util.time.pad_iso8601(sampleFile["StartTime"]) > cdawmeta.util.time.pad_iso8601(sampleFile["EndTime"]):
       emsg = f"StartTime ({sampleFile['StartTime']}) > EndTime ({sampleFile['EndTime']}) in {FILE_LIST}['data']['FileDescription']"
       cdawmeta.error('start_stop', id, None, "CDF.SartTimeDateBeforeEndTime", emsg, logger)
 

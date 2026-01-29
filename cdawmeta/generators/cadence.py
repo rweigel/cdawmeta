@@ -392,8 +392,8 @@ def _check_start_stop(id, epoch_name, epoch_values, epoch_type, metadatum, file_
   first_timestamp = handle_nat(first_timestamp, epoch_values, "first")
   first_timestamp += "Z"
   if file_idx == 0 and epoch_type == 'data':
-    startDate_pad = cdawmeta.util.pad_iso8601(startDate)
-    first_timestamp_pad = cdawmeta.util.pad_iso8601(first_timestamp)
+    startDate_pad = cdawmeta.util.time.pad_iso8601(startDate)
+    first_timestamp_pad = cdawmeta.util.time.pad_iso8601(first_timestamp)
     if first_timestamp_pad < startDate_pad:
       emsg = f"    Start date from {startDateSource} ({startDate}) is after first non-NaT timestamp in first file: {first_timestamp} from {FILE_LIST}"
       #logger.error("cadence", id, epoch_name, "CDF.StartDateAfterFirstTimestamp", emsg, logger)
@@ -408,8 +408,8 @@ def _check_start_stop(id, epoch_name, epoch_values, epoch_type, metadatum, file_
   last_timestamp = handle_nat(last_timestamp, epoch_values, "last")
   last_timestamp += "Z"
   if file_idx == -1 and epoch_type == 'data':
-    stopDate_pad = cdawmeta.util.pad_iso8601(stopDate)
-    last_timestamp_pad = cdawmeta.util.pad_iso8601(last_timestamp)
+    stopDate_pad = cdawmeta.util.time.pad_iso8601(stopDate)
+    last_timestamp_pad = cdawmeta.util.time.pad_iso8601(last_timestamp)
     if last_timestamp_pad > stopDate_pad:
       emsg = f"    Stop date from {stopDateSource} ({stopDate}) is before last non-NaT timestamp in last file in {FILE_LIST}: {last_timestamp}"
       logger.warn(emsg)
