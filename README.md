@@ -262,6 +262,8 @@ Our initial attempt was to generate HAPI metadata with SPASE records.
 
 The primary issues that we encountered related to HAPI are the first three discussed in this section. The others were noticed in passing; many are addressed by the [`spase_auto.py`](https://github.com/rweigel/cdawmeta/blob/main/cdawmeta/generators/spase_auto.py) code that draws information from the [`cdawmeta-spase`](https://github.com/rweigel/cdawmeta-spase) repository.
 
+(Note: two versions of ISTP->SPASE exist [one used in the Javascript ISTP editor](https://git.smce.nasa.gov/spdf/skteditor/-/blob/main/ISTP_to_SPASE.txt) | [one in a recent paper](https://www.sciencedirect.com/science/article/pii/S0273117723008025))
+
 In addition, we doubt that new efforts that use CDAWeb SPASE records for search (either with or without `Parameter`-level information) will be useful given the issues described in this section.
 
 ## 4.2 Issues

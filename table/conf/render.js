@@ -58,8 +58,8 @@ renderFunctions.renderDatasetID = function (columnName, config) {
     }
 
     if (tableName === 'spase.dataset') {
-      console.log(row[1].replace('spase://', 'https://spase-group.org/'))
-      const fnameSPASE = row[1].replace('spase://', 'https://spase-group.org/') + '.json'
+      console.log(row[1].replace('spase://', 'https://spase-metadata.org/'))
+      const fnameSPASE = row[1].replace('spase://', 'https://spase-metadata.org/') + '.json'
       columnString += ` <a href="${fnameSPASE}" title="SPASE" target="_blank">SP</a>`
     }
 
