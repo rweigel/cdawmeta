@@ -180,11 +180,13 @@ def _info_head(metadatum, depend_0_name):
     logger.info("    Found DOI and using it for resourceID")
     info['resourceID'] = doi
 
+  spase_landing = cdawmeta.CONFIG['urls']['spase_landing']
+
   p = ['master_resolved', 'data', 'CDFglobalAttributes', 'spase_DatasetResourceID']
   spase_id = cdawmeta.util.get_path(metadatum, p)
   if spase_id is not None:
     logger.info("    Found spase_DatasetResourceID and using it for additionalMetadata")
-    contentURL = spase_id.replace("spase://", "https://spase-metadata.org/")
+    contentURL = spase_id.replace("spase://", spase_landing)
     contentURL += ".html"
     info['additionalMetadata'] = {'name': 'SPASE', 'contentURL': contentURL}
 
