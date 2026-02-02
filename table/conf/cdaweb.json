@@ -147,7 +147,31 @@
       "columnDropdowns": false,
       "columnOptions": [
         {"name": "id", "render": "renderDatasetID"},
-        {"name": "description", "render": {"function": "ellipsis", "args": [30]}}
+        {"name": "title", "render": {"function": "ellipsis", "args": [20]}},
+        {"name": "description", "render": {"function": "ellipsis", "args": [30]}},
+        {"name": "x_cadence_note", "render": {"function": "ellipsis", "args": [30]}},
+        {
+          "name": "resourceID",
+          "render": {
+            "function": "renderLink",
+            "args": {
+              "trim": "https://doi.org/"
+            }
+          }
+        },
+        {
+          "name": "resourceURL",
+          "render": {
+            "function": "trimURL"
+          }
+        },
+        {
+          "name": "additionalMetadata/contentURL",
+          "render": {
+            "function": "trimURL"
+          }
+        }
+
       ],
       "tableMetadata": {
         "tableTitle": "CDAWeb HAPI Datasets",

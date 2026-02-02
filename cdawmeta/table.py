@@ -28,7 +28,7 @@ def table(id=None,
     info = {}
     for table_name in table_names:
       kwargs['table_name'] = table_name
-      info[table_name] = table(**kwargs)
+      info[table_name] = table(**kwargs)[table_name]
     return info
 
   logger = cdawmeta.logger('table', log_level=log_level)
@@ -125,11 +125,21 @@ def table(id=None,
         continue
 
       if isinstance(sub_datasets, dict):
-        # If only one sub-dataset, make it a list of one sub-dataset.
+        # If only one dataset, put in a list.
         sub_datasets = [sub_datasets]
 
       for sub_dataset in sub_datasets:
+        if 'additionalMetadata' in sub_dataset['info']:
+          # Extract additionalMetadata before flattening. That is, we want
+          # 'additionalMetadata/key' to be key after flattening.
+          am = {'additionalMetadata': sub_dataset['info']['additionalMetadata']}
+          am = utilrsw.flatten_dicts(am, simplify=False)
+          del sub_dataset['info']['additionalMetadata']
+
         sub_dataset = utilrsw.flatten_dicts(sub_dataset, simplify=True)
+
+        # Re-add additionalMetadata/keys at top level.
+        sub_dataset.update(am)
 
         if table_name == 'hapi.dataset':
           datasets_list.append(sub_dataset)
@@ -156,4 +166,4 @@ def table(id=None,
   logger.info(f"Creating table '{table_name}'")
   info = tableui.dict2sql(datasets, config, embed=embed_data, logger=logger)
 
-  return info
+  return {table_name: info}

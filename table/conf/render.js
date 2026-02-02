@@ -44,12 +44,24 @@ renderFunctions.renderDatasetID = function (columnName, config) {
     columnString = `${columnString}`
     columnString += '<br><span style="font-size:0.75em">'
     columnString += ` <a href="${fnameAll}"   title="all.xml" target="_blank">A</a>`
-    columnString += ` <a href="${fnameCDF}"   title="Master CDF" target="_blank">M</a>`
-    columnString += ` <a href="${fnameJSON}"  title="Master JSON" target="_blank">J</a>`
-    columnString += ` <a href="${fnameSKT}"   title="Master Skeleton Table" target="_blank">SK</a>`
+    //columnString += ` <a href="${fnameCDF}"   title="Master CDF" target="_blank">M</a>`
+    columnString += ` <a href="${fnameJSON}"  title="Master JSON" target="_blank">M</a>`
+    //columnString += ` <a href="${fnameSKT}"   title="Master Skeleton Table" target="_blank">SK</a>`
 
     const tableName = config.dataTablesAdditions.tableMetadata.tableName
+
+    if (tableName === 'cdaweb.dataset') {
+      const index = columnNames.indexOf('spase_DatasetResourceID')
+      const fnameSPASE = row[index].replace('spase://', 'https://spase-metadata.org/') + '.json'
+      columnString += `&nbsp;<a href="${fnameSPASE}" title="SPASE">S</a>`
+      const link = '../variable/#datasetID=' + row[0]
+      columnString += ` <a href="${link}" title="Parameter table" target="_blank"><i>P</i></a>`
+    }
+
     if (tableName === 'cdaweb.variable') {
+      const link = '../dataset/#datasetID=' + row[0]
+      columnString += ` <a href="${link}" title="Dataset table" target="_blank"><i>D</i></a>`
+
       const index = columnNames.indexOf('VAR_TYPE')
       if (row[index] === 'data') {
         columnString += ` <a href="${fnameHAPI1}" title="HAPI Info" target="_blank">H<sub>1</sub></a>`
@@ -57,16 +69,29 @@ renderFunctions.renderDatasetID = function (columnName, config) {
       }
     }
 
+    if (tableName === 'hapi.dataset') {
+      const index = columnNames.indexOf('additionalMetadata/contentURL')
+      columnString += ` <a href="${row[index]}" title="SPASE" target="_blank">S</a>`
+      const link = '../parameter/#id=' + row[0]
+      columnString += ` <a href="${link}" title="Parameters table" target="_blank"><i>P</i></a>`
+    }
+
+    if (tableName === 'hapi.parameter') {
+      const link = '../dataset/#id=' + row[0]
+      columnString += ` <a href="${link}" title="Dataset table" target="_blank"><i>D</i></a>`
+    }
+
     if (tableName === 'spase.dataset') {
       console.log(row[1].replace('spase://', 'https://spase-metadata.org/'))
       const fnameSPASE = row[1].replace('spase://', 'https://spase-metadata.org/') + '.json'
-      columnString += ` <a href="${fnameSPASE}" title="SPASE" target="_blank">SP</a>`
+      columnString += ` <a href="${fnameSPASE}" title="SPASE" target="_blank">S</a>`
+      const link = '../parameter/#datasetID=' + row[0]
+      columnString += ` <a href="${link}" title="Parameters table" target="_blank"><i>P</i></a>`
     }
 
-    if (tableName === 'cdaweb.dataset') {
-      const index = columnNames.indexOf('spase_DatasetResourceID')
-      const fnameSPASE = row[index].replace('spase://', 'https://spase-metadata.org/') + '.json'
-      columnString += `&nbsp;<a href="${fnameSPASE}" title="SPASE">SP</a>`
+    if (tableName === 'spase.parameter') {
+      const link = '../dataset/#datasetID=' + row[0]
+      columnString += ` <a href="${link}" title="Dataset table" target="_blank"><i>D</i></a>`
     }
 
     columnString += '</span>'
