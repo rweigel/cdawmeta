@@ -52,7 +52,7 @@ def spase_auto(metadatum, logger):
   p = ['CDFglobalAttributes', 'TEXT']
   Description = cdawmeta.util.get_path(master, p)
   if Description is not None:
-    NumericalData['ResourceHeader']['Description'] = Description.join('\n')
+    NumericalData['ResourceHeader']['Description'] = ''.join(Description)
     source = f"Source: Master/{'/'.join(p)}"
     NumericalData['ResourceHeader']['_Description'] = source
 
@@ -69,7 +69,6 @@ def spase_auto(metadatum, logger):
   InformationURL = _InformationURL2(metadatum['id'], InformationURL, additions.get('InformationURL'))
   if InformationURL is not None:
     NumericalData['ResourceHeader']['InformationURL'] = InformationURL
-    NumericalData['ResourceHeader']['_InformationURL'] = "Source: from all.xml/other_info/link and https://github.com/rweigel/cdawmeta-spase/blob/main/InformationURL.json"
 
   if config['include_access_information']:
     NumericalData['AccessInformation'] = metadatum['AccessInformation']['data']
@@ -116,7 +115,10 @@ def spase_auto(metadatum, logger):
     NumericalData['Caveats'] = Caveats
 
   if config['include_parameters']:
-    NumericalData['Parameter'] = _Parameter(hapi, additions)
+    if hapi is None:
+      NumericalData['_Parameter'] = "No HAPI parameter information available to generate Parameter list."
+    else:
+      NumericalData['Parameter'] = _Parameter(hapi, additions)
 
 
   spase_auto_['Spase']['NumericalData'] = NumericalData
@@ -154,14 +156,14 @@ def _Contact(dsid, fromRepo):
 
   return contacts
 
-def _InformationURL2(dsid, fromMaster, fromRepo):
+def _InformationURL2(dsid, fromAllXML, fromRepo):
   # Add content in cdawmeta-spase/InformationURL.json
-  # If URL in fromMaster and fromRepo, use fromRepo
-
-  fromMasterDict = {}
-  for element in fromMaster:
-    if 'URL' in element:
-      fromMasterDict[element['URL']] = element
+  # If URL in fromAllXML and fromRepo, use fromRepo
+  fromAllXMLDict = {}
+  if fromAllXML is not None:
+    for element in fromAllXML:
+      if 'URL' in element:
+        fromAllXMLDict[element['URL']] = element
 
   import re
   for key in fromRepo:
@@ -177,14 +179,14 @@ def _InformationURL2(dsid, fromMaster, fromRepo):
           keep = True
       if keep:
         url = fromRepo[key]['InformationURL']['URL']
-        if url in fromMasterDict:
+        if url in fromAllXMLDict:
           fromRepo[key]['InformationURL']['_Note'] = "Found same URL in master and https://github.com/rweigel/cdawmeta-spase/blob/main/cdawmeta-spase/InformationURL.json; not using master for Name and Description."
-        fromMasterDict[key] = fromRepo[key]['InformationURL']
-        fromMasterDict[key]['_source'] = "https://github.com/rweigel/cdawmeta-spase/blob/main/cdawmeta-spase/InformationURL.json"
+        fromAllXMLDict[key] = fromRepo[key]['InformationURL']
+        fromAllXMLDict[key]['_source'] = "https://github.com/rweigel/cdawmeta-spase/blob/main/cdawmeta-spase/InformationURL.json"
 
   InformationURLs = []
-  for key in fromMasterDict:
-    InformationURLs.append(fromMasterDict[key])
+  for key in fromAllXMLDict:
+    InformationURLs.append(fromAllXMLDict[key])
 
   return InformationURLs
 
@@ -253,25 +255,27 @@ def _Keyword(allxml, master):
     p = [key, 'description', '@short']
     keyword = cdawmeta.util.get_path(allxml, p)
     if keyword.strip() != '':
-      _Keyword.append(f'{keyword} (from all.xml/{"/".join(p)})')
+      _Keyword.append(f'{keyword.strip()} (from all.xml/{"/".join(p)})')
 
   for key in ['Discipline', 'Source_name', 'Data_type']:
-    val = cdawmeta.util.get_path(master, ['CDFglobalAttributes', key])
-    if val is not None:
-      keyword_split = val.split('>')
-      for keyword in keyword_split:
-        keyword_split2 = keyword.split('\n')
-        for keyword2 in keyword_split2:
-          if keyword2.strip() == '':
-            continue
-          val = keyword2.strip() + " (from Master/CDFglobalAttributes/" + key + ")"
-          _Keyword = [*_Keyword, val]
-      _Keyword = list(dict.fromkeys(_Keyword))
+    values = cdawmeta.util.get_path(master, ['CDFglobalAttributes', key])
+    if values is not None:
+      if isinstance(values, str):
+        values = [values]
+      for value in values:
+        keyword_split = value.split('>')
+        for keyword in keyword_split:
+          keyword_split2 = keyword.split('\n')
+          for keyword2 in keyword_split2:
+            if keyword2.strip() == '':
+              continue
+            val = keyword2.strip() + " (from Master/CDFglobalAttributes/" + key + ")"
+            _Keyword = [*_Keyword, val]
+        _Keyword = list(dict.fromkeys(_Keyword))
 
   InstrumentID = cdawmeta.util.get_path(allxml, ['instrument', '@ID'])
   if InstrumentID is not None:
     _Keyword.append(InstrumentID + " (from all.xml/instrument/@ID)")
-
   return _Keyword
 
 def _Parameter(hapi, additions, include_cadence=False):

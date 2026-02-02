@@ -38,8 +38,8 @@ As discussed in the [SPASE](#SPASE) section, the code was extended to remedy maj
 The code reads and combines information from
 
 * [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml), which has dataset-level information for approximately 2,700 datasets;
-* The [Master CDF](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/) files (we use the JSON representation) referenced in [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml), which contain both  dataset-level metadata and variable metadata;
-* The list of URLs for CDF files associated with each dataset using the CDASR [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) endpoint; and
+* [Master CDF](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/) files (we use the JSON representation) referenced in [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml), which contain both  dataset-level metadata and variable metadata;
+* The list of URLs for CDF files associated with each dataset using the CDASR [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) endpoint (due to the amount of time use of this endpoint took, we now use [sp_phys_cdfmetafile.txt](https://cdaweb.gsfc.nasa.gov/~tkovalic/metadata/sp_phys_cdfmetafile.txt)); and
 * A CDF file referenced in the [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) response (for computing cadence and determining if the variable names in the Master CDF match those in a data CDF).
 
 The code uses [requests-cache](https://github.com/requests-cache/requests-cache/), so files are only re-downloaded if the HTTP headers indicate they are needed. When metadata are downloaded, a diff is stored if they changed.
