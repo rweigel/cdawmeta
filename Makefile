@@ -121,7 +121,10 @@ rsync-to-spot10:
 
 rsync-to-mag:
 	rsync -avz \
-		--exclude data/hpde.io --exclude data/cdaweb.gsfc.nasa.gov \
+		--exclude data/hpde.io \
+		--exclude data/cdaweb.gsfc.nasa.gov \
+		--exclude data/crontab \
+		--exclude data/CachedSession \
 		--delete \
 		data weigel@mag.gmu.edu:www/git-data/cdawmeta
 
