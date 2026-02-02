@@ -1,4 +1,12 @@
-# Usage: python table.py --help
+# Usage:
+#   python table.py --help
+#
+# To test a single dataset table with tableui server:
+#   python table.py --id AC_OR_SSC --port 9991
+# Note that any changes to table/conf/cdaweb.json will not be reflected unless
+# the server is re-started. This is due to the fact that the configuration is
+# passed as a dict instead of a filename to tableui.app(). This is needed because
+# the content of table/conf/cdaweb.json must be modified.
 
 import cdawmeta
 args = cdawmeta.cli('table.py')
