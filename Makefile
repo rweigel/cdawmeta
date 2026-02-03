@@ -119,6 +119,15 @@ rsync-to-spot10:
 		--delete \
 		data/orig_data weigel@cottagesystems.com:cdawmeta/data
 
+rsync-to-mini:
+	rsync -avz \
+		--exclude data/hpde.io \
+		--exclude data/cdaweb.gsfc.nasa.gov \
+		--exclude data/crontab \
+		--exclude data/CachedSession \
+		--delete \
+		data weigel@rweigel.dynu.net:git/hapi/cdawmeta
+
 rsync-to-mag:
 	rsync -avz \
 		--exclude data/hpde.io \
