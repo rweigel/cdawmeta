@@ -463,9 +463,12 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
   logger.info(f"Getting list of files that match '{pattern}'")
   files = glob.glob(pattern, recursive=True)
   logger.info(f"{len(files)} NumericalData SPASE records before removing Deprecated")
+  files_filtered = []
   for file in files:
-    if 'Deprecated' in file:
-      del files[files.index(file)]
+    if 'Deprecated' not in file:
+      files_filtered.append(file)
+      print(f"Removing Deprecated file: {file}")
+  files = files_filtered
   logger.info(f"{len(files)} NumericalData SPASE records after removing Deprecated")
 
   logger.info(f"Reading {len(files)} NumericalData SPASE records.")
