@@ -56,8 +56,8 @@ In addition, we have developed several tools for inspection and debugging. SQL d
    * [CDAWeb variable-level information](https://hapi-server.org/meta/cdaweb/variable/), which is based on content stored in [Master CDFs](http://mag.gmu.edu/git-data/cdawmeta/data/master)
    * `hpde.io` [SPASE dataset-level information](https://hapi-server.org/meta/cdaweb/spase/dataset/), which is based on content non-`Parameter` nodes of [SPASE records referenced in the Master CDFs](http://mag.gmu.edu/git-data/cdawmeta/data/spase)
    * `hpde.io` [SPASE parameter-level information](https://hapi-server.org/meta/cdaweb/spase/parameter/), which is based on content `Parameter` nodes of [SPASE records referenced in the Master CDFs](http://mag.gmu.edu/git-data/cdawmeta/data/spase)
-   * [HAPI dataset-level information](https://hapi-server.org/meta/hapi/dataset/), which is based on the non-`parameter` nodes in [hapi info requests](http://mag.gmu.edu/git-data/cdawmeta/data/hapi)
-   * [HAPI parameter-level information](https://hapi-server.org/meta/hapi/parameter/) (from the old and new server), which is based on the `parameter` nodes in [hapi info requests](http://mag.gmu.edu/git-data/cdawmeta/data/hapi)
+   * [HAPI dataset-level information](https://hapi-server.org/meta/cdaweb/hapi/dataset/), which is based on the non-`parameter` nodes in [hapi info requests](http://mag.gmu.edu/git-data/cdawmeta/data/hapi)
+   * [HAPI parameter-level information](https://hapi-server.org/meta/cdaweb/hapi/parameter/) (from the old and new server), which is based on the `parameter` nodes in [hapi info requests](http://mag.gmu.edu/git-data/cdawmeta/data/hapi)
 
 Also, demonstration code for placing SPASE records into a MongoDB and executing a search is available in `query.py`.
 
