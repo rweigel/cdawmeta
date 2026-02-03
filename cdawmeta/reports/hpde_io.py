@@ -80,8 +80,8 @@ def hpde_io(clargs):
 
   attributes['ObservedRegion'] = ObservedRegion
 
-  n_found['ObservedRegionIDMap'] = n_found['ObservedRegion']
-  attributes['ObservedRegionIDMap'] = ObservedRegionIDMap
+  #n_found['ObservedRegionIDMap'] = n_found['ObservedRegion']
+  #attributes['ObservedRegionIDMap'] = ObservedRegionIDMap
 
   ResourceIDs = {}
   n_parameters = 0

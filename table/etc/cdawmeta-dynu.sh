@@ -6,4 +6,3 @@ conda activate python3.10.9-cdawmeta
 pkill -f "python serve.py --port 8051"
 cd ../../../table-ui;
 python serve.py --port 8051 --config ../cdawmeta/table/conf/cdaweb.json
-

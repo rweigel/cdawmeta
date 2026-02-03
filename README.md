@@ -38,8 +38,8 @@ As discussed in the [SPASE](#SPASE) section, the code was extended to remedy maj
 The code reads and combines information from
 
 * [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml), which has dataset-level information for approximately 2,700 datasets;
-* The [Master CDF](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/) files (we use the JSON representation) referenced in [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml), which contain both  dataset-level metadata and variable metadata;
-* The list of URLs for CDF files associated with each dataset using the CDASR [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) endpoint; and
+* [Master CDF](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/) files (we use the JSON representation) referenced in [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml), which contain both  dataset-level metadata and variable metadata;
+* The list of URLs for CDF files associated with each dataset using the CDASR [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) endpoint (due to the amount of time use of this endpoint took, we now use [sp_phys_cdfmetafile.txt](https://cdaweb.gsfc.nasa.gov/~tkovalic/metadata/sp_phys_cdfmetafile.txt)); and
 * A CDF file referenced in the [orig_data](https://cdaweb.gsfc.nasa.gov/WebServices/) response (for computing cadence and determining if the variable names in the Master CDF match those in a data CDF).
 
 The code uses [requests-cache](https://github.com/requests-cache/requests-cache/), so files are only re-downloaded if the HTTP headers indicate they are needed. When metadata are downloaded, a diff is stored if they changed.
@@ -54,10 +54,10 @@ In addition, we have developed several tools for inspection and debugging. SQL d
 
    * [CDAWeb dataset-level information](https://hapi-server.org/meta/cdaweb/dataset/), which is based on content stored in [all.xml](http://mag.gmu.edu/git-data/cdawmeta/data/allxml) and [Masters CDFs](http://mag.gmu.edu/git-data/cdawmeta/data/master)
    * [CDAWeb variable-level information](https://hapi-server.org/meta/cdaweb/variable/), which is based on content stored in [Master CDFs](http://mag.gmu.edu/git-data/cdawmeta/data/master)
-   * `hpde.io` [SPASE dataset-level information](https://hapi-server.org/meta/spase/dataset/), which is based on content non-`Parameter` nodes of [SPASE records referenced in the Master CDFs](http://mag.gmu.edu/git-data/cdawmeta/data/spase)
-   * `hpde.io` [SPASE parameter-level information](https://hapi-server.org/meta/spase/parameter/), which is based on content `Parameter` nodes of [SPASE records referenced in the Master CDFs](http://mag.gmu.edu/git-data/cdawmeta/data/spase)
-   * [HAPI dataset-level information](https://hapi-server.org/meta/hapi/dataset/), which is based on the non-`parameter` nodes in [hapi info requests](http://mag.gmu.edu/git-data/cdawmeta/data/hapi)
-   * [HAPI parameter-level information](https://hapi-server.org/meta/hapi/parameter/) (from the old and new server), which is based on the `parameter` nodes in [hapi info requests](http://mag.gmu.edu/git-data/cdawmeta/data/hapi)
+   * `hpde.io` [SPASE dataset-level information](https://hapi-server.org/meta/cdaweb/spase/dataset/), which is based on content non-`Parameter` nodes of [SPASE records referenced in the Master CDFs](http://mag.gmu.edu/git-data/cdawmeta/data/spase)
+   * `hpde.io` [SPASE parameter-level information](https://hapi-server.org/meta/cdaweb/spase/parameter/), which is based on content `Parameter` nodes of [SPASE records referenced in the Master CDFs](http://mag.gmu.edu/git-data/cdawmeta/data/spase)
+   * [HAPI dataset-level information](https://hapi-server.org/meta/cdaweb/hapi/dataset/), which is based on the non-`parameter` nodes in [hapi info requests](http://mag.gmu.edu/git-data/cdawmeta/data/hapi)
+   * [HAPI parameter-level information](https://hapi-server.org/meta/cdaweb/hapi/parameter/) (from the old and new server), which is based on the `parameter` nodes in [hapi info requests](http://mag.gmu.edu/git-data/cdawmeta/data/hapi)
 
 Also, demonstration code for placing SPASE records into a MongoDB and executing a search is available in `query.py`.
 
@@ -208,7 +208,7 @@ Produces a [JSON file](http://mag.gmu.edu/git-data/cdawmeta/data/sample_links/in
 
 CDAWeb provides access to metadata used for its data services in [all.xml](https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml) and [Master CDFs](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/). Their software engineers have provided essential guidance and insight into the development of HAPI metadata.
 
-Although CDF files uploaded to or pulled into CDAWeb from instrument teams typically are roughly compliant with their [ISTP metadata guidelines](https://spdf.gsfc.nasa.gov/istp_guide/istp_guide.html), there is variability in the level of compliance. In many cases, "patches" to these CDF files are needed for the CDAWeb display and listing software to work. To address this, they create "Master CDFs". In addition, CDAWeb web service-specific metadata, such as plot rendering information used by their [IDL processing code](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/), is included. Also, "virtual" variables used by the CDAWeb plotting software are often added. For example, suppose a variable that depends on time, energy, and pitch angle is in the dataset CDFs. In that case, they may add one variable per pitch angle by defining "virtual" variables. The code needed to produce a virtual variable is defined in [IDL code](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro).
+Although CDF files uploaded to or pulled into CDAWeb from instrument teams typically are roughly compliant with their [ISTP metadata guidelines](https://spdf.gsfc.nasa.gov/istp_guide/istp_guide.html), there is variability in the level of compliance. In many cases, "patches" to these CDF files are needed for the CDAWeb display and listing software to work. To address this, they create "Master CDFs". In addition, CDAWeb web service-specific metadata, such as plot rendering information used by their [IDL processing code](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/), is included in the master CDFs. Also, "virtual" variables used by the CDAWeb plotting software are often added. For example, suppose a variable that depends on time, energy, and pitch angle is in the dataset CDFs. In that case, they may add one variable per pitch angle by defining "virtual" variables. The code needed to produce a virtual variable is defined in [IDL code](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/source/virtual_funcs.pro).
 
 The Master CDFs are posted for external use, with caveats. From [0MASTERS/00readme.txt](https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS/00readme.txt):
 
@@ -250,7 +250,7 @@ We also recommend
 * tests on Master CDFs and newly uploaded data CDFs that catch problems that will cause downstream software to fail, some of those listed in the [issue tracker](https://github.com/rweigel/cdawmeta/issues) fall in this category; a examples include issues with recently updated [PSP data CDF files](https://github.com/rweigel/cdawmeta/issues/12) and [incorrect `SI_CONVERSION` factors](https://github.com/rweigel/cdawmeta/issues/29).
 * Standards for the representation of CDF in JSON (there exists one for XML, CDFML) and as a Python dictionary. The code used in this project assumes the JSON structure of the Masters will not change and the data structures returned by `cdflib` will not change. Effort was needed to modify the data structures returned by `cdflib` to match that found in the Masters. 
 
-Early indications are that much of this is out-of-scope of the CDAWeb project. For example, CDAWeb does not control the content or quality of the files that they host and improving the metadata for use by non-CDAWeb software may not be supported. However, addressing these issues will greatly impact the quality of code and metadata downstream (e.g., HAPI, SPASE, SOSO, etc.); if it is out-of-scope, leadership should find support for addressing these perennial issues.
+Early indications are that much of this is out-of-scope of the CDAWeb project. For example, CDAWeb does not control the content or quality of the files that they host and improving the metadata for use by non-CDAWeb software may not be supported. However, addressing these issues will greatly impact the quality of code and metadata downstream (e.g., HAPI, SPASE, SOSO, etc.); if it is out-of-scope, we should find support for addressing these perennial issues.
 
 <a id="SPASE"></a>
 
@@ -260,9 +260,11 @@ Early indications are that much of this is out-of-scope of the CDAWeb project. F
 
 Our initial attempt was to generate HAPI metadata with SPASE records.
 
-The primary issues that we encountered related to HAPI are the first three discussed in this section. The others were noticed in passing; many are addressed by the [`spase_auto.py`](https://github.com/rweigel/cdawmeta/blob/main/cdawmeta/generators/spase_auto.py) code that draws information from the [`cdawmeta-spase`](https://github.com/rweigel/cdawmeta-spase) repository.
+The primary issues that we encountered related to HAPI are the first three discussed in the following section. The others were noticed in passing; many are addressed by the [`spase_auto.py`](https://github.com/rweigel/cdawmeta/blob/main/cdawmeta/generators/spase_auto.py) code that draws information from the [`cdawmeta-spase`](https://github.com/rweigel/cdawmeta-spase) repository.
 
-In addition, we doubt that new efforts that use CDAWeb SPASE records for search (either with or without `Parameter`-level information) will be useful given the issues described in this section.
+(Note: two versions of ISTP->SPASE exist [one used in the Javascript ISTP editor](https://git.smce.nasa.gov/spdf/skteditor/-/blob/main/ISTP_to_SPASE.txt) | [one in a recent paper](https://www.sciencedirect.com/science/article/pii/S0273117723008025))
+
+In addition, we doubt that new efforts that use CDAWeb SPASE records for search (either with or without `Parameter`-level information) will be useful without addressing the issues described in this section.
 
 ## 4.2 Issues
 
@@ -270,7 +272,7 @@ In addition, we doubt that new efforts that use CDAWeb SPASE records for search 
 
 Only about 40\% of CDAWeb datasets had parameter-level SPASE records when we first considered using them for HAPI metadata in 2019. Approximately five years later, there is only [~66\% coverage](https://github.com/rweigel/cdawmeta-spase/blob/main/statistics.txt) (however, as discussed below, the number that are up-to-date, correct, and without missing parameters is less).
 
-The implication is that CDAWeb `NumericalData` SPASE records cannot be used for one of the intended purposes, which is to provide a structured, correct, and complete representation of CDAWeb metadata; we needed to duplicate much of the effort that went into creating CDAWeb SPASE records in order to create a complete set of HAPI metadata.
+The implication is that CDAWeb `NumericalData` SPASE records cannot be used for one of the intended purposes, which is to provide a structured, correct, and complete representation of CDAWeb metadata; we needed to duplicate much of the effort that went into creating CDAWeb SPASE records over the past 20 years in order to create a complete set of HAPI metadata.
 
 ### 4.2.2 Updates
 
@@ -367,7 +369,7 @@ PI's writing seems to have been modified (assuming PI did not request the SPASE 
 
 > This File contains the Moments obtained from the Distribution Function of Protons after Deconvolution using the same Magnetic Field Values used to construct the Matrices. The Vector Magnetic Field and the Particle Velocity are given in Inertial RTN Coordinates. ...
 
-Our opinion is that only in rare circumstances should descriptive information not in all.xml, the Master CDF, a journal article, instrument documentation, or the PI's web page, or written by someone on the instrument team be in SPASE. Also, when content is taken from papers and web pages an put in SPASE by non-instrument team members, it should be referenced. When we were creating SPASE records as part of the Virtual Radiation Belt Observatory, I argued that the fact that I was awarded the grant did not give me the authority to write documentation for radiation belt--related instruments. Such authority requires experience with the intstrument and any non--trivial description or documentation that could not be quoted should be approved by an instrument team member.
+Our opinion is that only in rare circumstances should descriptive information not in all.xml, the Master CDF, a journal article, instrument documentation, or the PI's web page, or written by someone on the instrument team be in SPASE. Also, when content is taken from papers and web pages an put in SPASE by non-instrument team members, it should be referenced. When we were creating SPASE records as part of the Virtual Radiation Belt Observatory, I argued that the fact that I was awarded the grant did not give me the authority to write documentation for radiation belt--related instruments. Such authority requires experience with the instrument and any non--trivial description or documentation that could not be quoted should be approved by an instrument team member.
 
 ### 4.2.7 Use of Relative StopDate
 

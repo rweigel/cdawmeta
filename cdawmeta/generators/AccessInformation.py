@@ -1,6 +1,7 @@
 import cdawmeta
 
-dependencies = ['orig_data', 'hapi']
+#dependencies = ['orig_data', 'hapi']
+dependencies = ['hapi']
 
 def AccessInformation(metadatum, logger):
 
@@ -40,11 +41,13 @@ def AccessInformation(metadatum, logger):
     AccessURL['URL'] = allxml['access']['URL']
     if protocol == 'FTPS':
       AccessURL['URL'] = AccessURL['URL'].replace('https', 'ftps')
-    orig_data = metadatum['orig_data']['data']['FileDescription']
-    DataExtent = 0
-    for file in orig_data:
-      DataExtent += file['Length']
-    AccessURL['DataExtent'] = DataExtent
+
+    if 'orig_data' in metadatum:
+      orig_data = metadatum['orig_data']['data']['FileDescription']
+      DataExtent = 0
+      for file in orig_data:
+        DataExtent += file['Length']
+      AccessURL['DataExtent'] = DataExtent
 
   for key in AccessInformation:
     AccessInformation[key]['AccessURL']['ProductKey'] = dsid
@@ -82,39 +85,45 @@ def AccessInformation(metadatum, logger):
     AccessInformation['SSCWeb/HAPI/Program']['Format'] = hapi_language_formats
 
   hapi = metadatum['hapi']['data']
-  hapi_keys = []
-  time_variable_names = []
-  if isinstance(hapi, list):
-    for dsidx, dataset in enumerate(hapi):
-      time_variable_names.append(f"@{dsidx} => {dataset['info']['parameters'][0]['x_cdf_NAME']}")
-      hapi_keys.append(dataset['id'])
-      n_keys = len(hapi_keys)
-
-    x_Description = AccessInformation['CDAWeb/HAPI']['AccessURL']['x_Description']
-    x_Description = " " + x_Description.strip().format(n_keys=n_keys, time_variable_names=", ".join(time_variable_names))
-
-    Description = AccessInformation['CDAWeb/HAPI']['AccessURL']['Description']
-    Description = Description.format(n_keys=n_keys, time_variable_names=", ".join(time_variable_names))
-    Description += x_Description
-    AccessInformation['CDAWeb/HAPI']['AccessURL']['Description'] = Description
-
-    Description = AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description']
-    Description += x_Description
-    AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description'] = Description
+  if not hapi:
+    print(f"Warning: No HAPI dataset information found for {dsid}")
+    for key in list(AccessInformation.keys()):
+      if 'HAPI' in key:
+        del AccessInformation[key]
   else:
-    hapi_keys = hapi['id']
+    hapi_keys = []
+    time_variable_names = []
+    if isinstance(hapi, list):
+      for dsidx, dataset in enumerate(hapi):
+        time_variable_names.append(f"@{dsidx} => {dataset['info']['parameters'][0]['x_cdf_NAME']}")
+        hapi_keys.append(dataset['id'])
+        n_keys = len(hapi_keys)
 
-  del AccessInformation['CDAWeb/HAPI']['AccessURL']['x_Description']
+      x_Description = AccessInformation['CDAWeb/HAPI']['AccessURL']['x_Description']
+      x_Description = " " + x_Description.strip().format(n_keys=n_keys, time_variable_names=", ".join(time_variable_names))
 
-  hapi_keys_0 = hapi_keys
-  if isinstance(hapi_keys, list):
-    hapi_keys_0 = hapi_keys[0]
+      Description = AccessInformation['CDAWeb/HAPI']['AccessURL']['Description']
+      Description = Description.format(n_keys=n_keys, time_variable_names=", ".join(time_variable_names))
+      Description += x_Description
+      AccessInformation['CDAWeb/HAPI']['AccessURL']['Description'] = Description
 
-  for key in ['CDAWeb/HAPI', 'CDAWeb/HAPI/Program', 'CDAWeb/HAPI/Plot']:
-    AccessInformation[key]['AccessURL']['ProductKey'] = hapi_keys
-    AccessInformation[key]['AccessURL']['ProductKey'] = hapi_keys
-    url = AccessInformation[key]['AccessURL']['URL']
-    AccessInformation[key]['AccessURL']['URL'] = url.format(dsid=hapi_keys_0)
+      Description = AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description']
+      Description += x_Description
+      AccessInformation['CDAWeb/HAPI/Program']['AccessURL']['Description'] = Description
+    else:
+      hapi_keys = hapi['id']
+
+    del AccessInformation['CDAWeb/HAPI']['AccessURL']['x_Description']
+
+    hapi_keys_0 = hapi_keys
+    if isinstance(hapi_keys, list):
+      hapi_keys_0 = hapi_keys[0]
+
+    for key in ['CDAWeb/HAPI', 'CDAWeb/HAPI/Program', 'CDAWeb/HAPI/Plot']:
+      AccessInformation[key]['AccessURL']['ProductKey'] = hapi_keys
+      AccessInformation[key]['AccessURL']['ProductKey'] = hapi_keys
+      url = AccessInformation[key]['AccessURL']['URL']
+      AccessInformation[key]['AccessURL']['URL'] = url.format(dsid=hapi_keys_0)
 
   # Strip leading key under AccessInformation and keep only their values.
   AccessInformation = [information for information in AccessInformation.values()]

@@ -174,6 +174,21 @@ def _info_head(metadatum, depend_0_name):
       'contact': contact
   }
 
+  p = ['master_resolved', 'data', 'CDFglobalAttributes', 'DOI']
+  doi = cdawmeta.util.get_path(metadatum, p)
+  if doi is not None:
+    logger.info("    Found DOI and using it for resourceID")
+    info['resourceID'] = doi
+
+  p = ['master_resolved', 'data', 'CDFglobalAttributes', 'spase_DatasetResourceID']
+  spase_id = cdawmeta.util.get_path(metadatum, p)
+  if spase_id is not None:
+    logger.info("    Found spase_DatasetResourceID and using it for additionalMetadata")
+    spase_landing = cdawmeta.CONFIG['urls']['spase_landing']
+    contentURL = spase_id.replace("spase://", spase_landing)
+    contentURL += ".html"
+    info['additionalMetadata'] = {'name': 'SPASE', 'contentURL': contentURL}
+
   cadence_info, emsg = _cadence(id, depend_0_name, metadatum)
 
   if emsg is not None:
