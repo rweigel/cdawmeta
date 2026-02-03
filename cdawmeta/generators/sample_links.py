@@ -1,6 +1,8 @@
 import cdawmeta
 
-dependencies = ['hapi']
+file_info = 'cdfmetafile'
+#file_info = 'orig_data'
+dependencies = [file_info, 'hapi']
 
 def sample_links(metadatum, logger):
 
@@ -25,7 +27,7 @@ def sample_links(metadatum, logger):
     stop['cdasr'] = reformat_dt(last_file['EndTime'], style='cdasr')
     start['hapi'] = reformat_dt(last_file['StartTime'], style='hapi')
     stop['hapi'] = reformat_dt(last_file['EndTime'], style='hapi')
-    logger.info(f"start/stop based on last file from orig_data: {start}/{stop}")
+    logger.info(f"start/stop based on last file from {file_info}: {start}/{stop}")
     return start, stop, last_file
 
   def cadence_based_start_stop(dataset):
@@ -48,7 +50,7 @@ def sample_links(metadatum, logger):
 
   id = metadatum['id']
 
-  start, stop, last_file = file_based_start_stop(metadatum['orig_data']['data'])
+  start, stop, last_file = file_based_start_stop(metadatum[file_info]['data'])
 
   # Possibly should use master for the variable names for the CDAWeb links, 
   # but the HAPI metadata has dropped datasets with problems that would
