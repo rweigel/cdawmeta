@@ -25,7 +25,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.8 Inconsistent ObservedRegions](#428-inconsistent-observedregions)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.9 Inconsistent InformationURLs](#429-inconsistent-informationurls)<br/>
 &nbsp;&nbsp;&nbsp;[4.3 Conclusion and Recommendations](#43-conclusion-and-recommendations)<br/>
-[5 ISTP to SPASE](#5-istp-to-spase)<br/>
+[5 ISTP to SPASE](#istp-to-spase)<br/>
 
 <!-- \TOC -->
 
