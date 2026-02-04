@@ -27,7 +27,7 @@ def cli(script, defs=False):
       "_used_by_all": True,
     },
     "meta-type": {
-      "help": f"Type of metadata to generate. Default is to generate all types. May be repeated. Choices: {', '.join(meta_types)}",
+      "help": f"Comma-separated list of type of metadata to generate. Default is to generate all types. Choices: {', '.join(meta_types)}",
       "default": None,
       "type": meta_types_list,
       "_used_by": ['metadata.py']

@@ -24,7 +24,9 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.7 Use of Relative StopDate](#427-use-of-relative-stopdate)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.8 Inconsistent ObservedRegions](#428-inconsistent-observedregions)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[4.2.9 Inconsistent InformationURLs](#429-inconsistent-informationurls)<br/>
-&nbsp;&nbsp;&nbsp;[4.3 Conclusion and Recommendations](#43-conclusion-and-recommendations)
+&nbsp;&nbsp;&nbsp;[4.3 Conclusion and Recommendations](#43-conclusion-and-recommendations)<br/>
+[5 ISTP to SPASE](#5-istp-to-spase)<br/>
+
 <!-- \TOC -->
 
 # 1 About
@@ -262,8 +264,6 @@ Our initial attempt was to generate HAPI metadata with SPASE records.
 
 The primary issues that we encountered related to HAPI are the first three discussed in the following section. The others were noticed in passing; many are addressed by the [`spase_auto.py`](https://github.com/rweigel/cdawmeta/blob/main/cdawmeta/generators/spase_auto.py) code that draws information from the [`cdawmeta-spase`](https://github.com/rweigel/cdawmeta-spase) repository.
 
-(Note: two versions of ISTP->SPASE exist [one used in the Javascript ISTP editor](https://git.smce.nasa.gov/spdf/skteditor/-/blob/main/ISTP_to_SPASE.txt) | [one in a recent paper](https://www.sciencedirect.com/science/article/pii/S0273117723008025))
-
 In addition, we doubt that new efforts that use CDAWeb SPASE records for search (either with or without `Parameter`-level information) will be useful without addressing the issues described in this section.
 
 ## 4.2 Issues
@@ -414,3 +414,11 @@ We suggest that there is urgency of having correct and complete SPASE `Numerical
 CDAWeb SPASE `NumericalData` records have been under development since 2009 and yet these problems persist. At the current rate of generation, they may not be complete for another 5-10 years. We suggest a different approach is needed.
 
 We suggest that CDAWeb SPASE metadata should be created by an automated process similar to that used by `spase_auto` (which is also how HAPI metadata is generated). This code primarily requires existing CDAWeb metadata information and some additional metadata that is stored in a few version-controlled files. This information is described in the [cdawmeta-spase](https://github.com/rweigel/cdawmeta-spase) repository and the SPASE generation code that is needed in addition to the code used for creating HAPI metadata is ~500 lines (see [`spase_auto.py`](https://github.com/rweigel/cdawmeta/blob/main/cdawmeta/generators/spase_auto.py)). This approach would have prevented many of the errors and inconsistencies described above and further detailed in the [`cdawmeta-spase` README](https://github.com/rweigel/cdawmeta-spase).
+
+<a id="ISTP to SPASE"></a>
+# ISTP -> SPASE mapping notes
+
+Two versions of ISTP->SPASE exist [one used in the Javascript ISTP editor](https://git.smce.nasa.gov/spdf/skteditor/-/blob/main/ISTP_to_SPASE.txt) | [one in a recent paper](https://www.sciencedirect.com/science/article/pii/S0273117723008025)).
+
+Rebecca R. has create a [spreadsheet](https://docs.google.com/spreadsheets/d/1o3B88V5x2pJoO_Pevc8kq6Uo3v5ZafSR4GEv0-epATs/edit?gid=0#gid=0) for documenting the mappings.
+
