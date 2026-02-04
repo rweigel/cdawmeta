@@ -415,10 +415,10 @@ CDAWeb SPASE `NumericalData` records have been under development since 2009 and 
 
 We suggest that CDAWeb SPASE metadata should be created by an automated process similar to that used by `spase_auto` (which is also how HAPI metadata is generated). This code primarily requires existing CDAWeb metadata information and some additional metadata that is stored in a few version-controlled files. This information is described in the [cdawmeta-spase](https://github.com/rweigel/cdawmeta-spase) repository and the SPASE generation code that is needed in addition to the code used for creating HAPI metadata is ~500 lines (see [`spase_auto.py`](https://github.com/rweigel/cdawmeta/blob/main/cdawmeta/generators/spase_auto.py)). This approach would have prevented many of the errors and inconsistencies described above and further detailed in the [`cdawmeta-spase` README](https://github.com/rweigel/cdawmeta-spase).
 
-<a id="ISTP to SPASE"></a>
+<a id="istp-to-spase"></a>
 # ISTP -> SPASE mapping notes
 
 Two versions of ISTP->SPASE exist [one used in the Javascript ISTP editor](https://git.smce.nasa.gov/spdf/skteditor/-/blob/main/ISTP_to_SPASE.txt) | [one in a recent paper](https://www.sciencedirect.com/science/article/pii/S0273117723008025)).
 
-Rebecca R. has create a [spreadsheet](https://docs.google.com/spreadsheets/d/1o3B88V5x2pJoO_Pevc8kq6Uo3v5ZafSR4GEv0-epATs/edit?gid=0#gid=0) for documenting the mappings.
+Rebecca R. has created a [spreadsheet](https://docs.google.com/spreadsheets/d/1o3B88V5x2pJoO_Pevc8kq6Uo3v5ZafSR4GEv0-epATs/edit?gid=0#gid=0) for documenting the mappings.
 
