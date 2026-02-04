@@ -1,4 +1,4 @@
-def additions(logger):
+def additions(logger, update=True):
 
   import os
   import glob
@@ -10,7 +10,7 @@ def additions(logger):
 
   repo_path = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-spase')
 
-  if not os.path.exists(repo_path):
+  if not os.path.exists(repo_path) or update:
     import git
     repo_url = cdawmeta.CONFIG['urls']['cdawmeta-spase']
     logger.info(f"Cloning {repo_url} into {repo_path}")
