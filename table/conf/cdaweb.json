@@ -40,7 +40,7 @@
       "renderFunctions": "render.js",
       "tableMetadata": {
         "tableTitle": "CDAWeb Datasets",
-        "description+": "This table is based on content in <a href=\"https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml\">all.xml</a> and <a href=\"https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/\">Master CDFs<a> | <a href=\"https://github.com/rweigel/cdawmeta\" target=\"_blank\">Table generation code</a>"
+        "description+": "This table is based on content in <a href=\"https://spdf.gsfc.nasa.gov/pub/catalogs/all.xml\">all.xml</a> (columns before <code>FileVersion</code>) and <a href=\"https://cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0JSONS/\">Master CDFs<a> | <a href=\"https://github.com/rweigel/cdawmeta\" target=\"_blank\">Table generation code</a>"
       },
       "columnDropdowns": false,
       "columnOptions": [
