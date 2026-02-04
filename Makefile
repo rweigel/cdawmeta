@@ -18,10 +18,11 @@ spase_auto-regen: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(REGEN)
 
 hapi-update: cdawmeta.egg-info
-	python metadata.py --meta-type hapi $(UPDATE)
+	python metadata.py --meta-type hapi --meta-type spase_auto $(UPDATE)
 	python table.py --regen --regen-skip cadence
 	rsync -avz data/table weigel@rweigel.dynu.net:git/hapi/cdawmeta/data/
 	make diffs
+	make rsync-to-mag
 
 diffs:
 	mkdir -p data/0SKELTABLES/diffs
