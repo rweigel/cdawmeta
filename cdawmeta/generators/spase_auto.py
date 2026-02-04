@@ -38,16 +38,19 @@ def spase_auto(metadatum, logger):
   NumericalData['ResourceID'] = ResourceIDs.get(metadatum['id'], None)
   NumericalData['_ResourceID'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/ResourceID.json"
 
-  DOIs = additions.get('DOI')
-  NumericalData['DOI'] = DOIs.get(metadatum['id'], None)
-  NumericalData['_DOI'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/DOI.json"
-
   p = ['CDFglobalAttributes', 'Logical_source_description']
   ResourceName = cdawmeta.util.get_path(master, p)
   if ResourceName is not None:
     NumericalData['ResourceHeader']['ResourceName'] = ResourceName
     source = f'Source: Master/{"/".join(p)}'
     NumericalData['ResourceHeader']['_ResourceName'] = source
+
+  p = ['CDFglobalAttributes', 'Logical_source']
+  AlternateName = cdawmeta.util.get_path(master, p)
+  if AlternateName is not None:
+    NumericalData['ResourceHeader']['AlternateName'] = AlternateName
+    source = f'Source: Master/{"/".join(p)}'
+    NumericalData['ResourceHeader']['_AlternateName'] = source
 
   p = ['CDFglobalAttributes', 'TEXT']
   Description = cdawmeta.util.get_path(master, p)
@@ -62,6 +65,23 @@ def spase_auto(metadatum, logger):
     NumericalData['ResourceHeader']['Acknowledgement'] = Acknowledgement
     source = f"Source: Master/{'/'.join(p)}"
     NumericalData['ResourceHeader']['_Acknowledgement'] = source
+
+  p = ['CDFglobalAttributes', 'TITLE']
+  ProviderResourceName = cdawmeta.util.get_path(master, p)
+  if ProviderResourceName is not None:
+    source = f"Source: {'/'.join(p)}"
+    NumericalData['ProviderResourceName'] = ProviderResourceName
+
+  p = ['CDFglobalAttributes', 'Rules_of_use']
+  Caveats = cdawmeta.util.get_path(master, p)
+  if Caveats is not None:
+    source = "Source: Master/{'/'.join(p)}"
+    NumericalData['Caveats'] = Caveats
+    NumericalData['_Caveats'] = source
+
+  DOIs = additions.get('DOI')
+  NumericalData['DOI'] = DOIs.get(metadatum['id'], None)
+  NumericalData['_DOI'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/DOI.json"
 
   NumericalData['ResourceHeader']['_Rights'] = additions.get('Rights')
 
@@ -96,23 +116,12 @@ def spase_auto(metadatum, logger):
   NumericalData['ProcessingLevel'] = None
   NumericalData['_ProcessingLevel'] = "Processing level is not available in the master file; it should be there instead of, say, https://github.com/rweigel/cdawmeta-spase/blob/main/ProcessingLevel.json"
 
-  p = ['CDFglobalAttributes', 'TITLE']
-  ProviderResourceName = cdawmeta.util.get_path(master, p)
-  if ProviderResourceName is not None:
-    source = f"Source: {'/'.join(p)}"
-    NumericalData['ProviderResourceName'] = ProviderResourceName
-
   InstrumentIDs = additions.get('InstrumentID')
   NumericalData['InstrumentID'] = InstrumentIDs.get(metadatum['id'], None)
 
   MeasurementType = additions.get('MeasurementType')
   NumericalData['MeasurementType'] = MeasurementType.get(metadatum['id'], None)
 
-  p = ['CDFglobalAttributes', 'Rules_of_use']
-  Caveats = cdawmeta.util.get_path(master, p)
-  if Caveats is not None:
-    source = "Source: Master/{'/'.join(p)}"
-    NumericalData['Caveats'] = Caveats
 
   if config['include_parameters']:
     if hapi is None:
