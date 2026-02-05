@@ -3,6 +3,8 @@ def additions(logger, update=True):
   import os
   import glob
 
+  import git
+
   import cdawmeta
 
   if hasattr(additions, 'additions'):
@@ -10,11 +12,15 @@ def additions(logger, update=True):
 
   repo_path = os.path.join(cdawmeta.DATA_DIR, 'cdawmeta-spase')
 
-  if not os.path.exists(repo_path) or update:
-    import git
+  if not os.path.exists(repo_path):
     repo_url = cdawmeta.CONFIG['urls']['cdawmeta-spase']
     logger.info(f"Cloning {repo_url} into {repo_path}")
     git.Repo.clone_from(repo_url, repo_path, depth=1)
+
+  if update:
+    repo = git.Repo(repo_path)
+    logger.info(f"Pulling latest changes for {repo_path}")
+    repo.remotes.origin.pull()
 
   pattern = f"{repo_path}/*.json"
   files = glob.glob(pattern, recursive=True)
