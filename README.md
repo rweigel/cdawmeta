@@ -1,4 +1,4 @@
-`cdawmeta version 0.0.2`
+`cdawmeta` version `0.0.2`
 
 <!-- TOC -->
 [1 About](#1-about)<br/>
