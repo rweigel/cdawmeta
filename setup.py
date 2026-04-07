@@ -14,7 +14,6 @@ install_requires = [
     "dicttoxml"
 ]
 
-print(sys.version_info)
 if sys.version_info < (3, 9):
   sys.exit('\n\n  Python < 3.9 is not supported\n\n')
 
@@ -31,5 +30,5 @@ setup(
   install_requires=install_requires,
   long_description=open('README.md').read(),
   long_description_content_type='text/markdown',
-  description='Transform CDAWeb metadata to HAPI, SPASE, and SOSO; build tables for inspection in browser.'
+  description='Transform CDAWeb metadata to HAPI and SPASE; build tables for inspection in browser.'
 )
