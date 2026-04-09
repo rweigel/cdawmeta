@@ -3,6 +3,7 @@ renderFunctions.renderOtherInfo = function (columnName, config) {
     if (type !== 'display') {
       return columnString
     }
+    alert(columnString)
     try {
       columnString = columnString.replace(/'/g, '"')
       const parsed = JSON.parse(columnString)
