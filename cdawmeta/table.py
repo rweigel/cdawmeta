@@ -56,6 +56,19 @@ def table(id=None,
       if table_name == 'cdaweb.dataset':
         allxml = datasets[dsid].get("allxml", None)
         if allxml is not None:
+
+          # If other_info/link has the form {"@URL": ..., "@description": ...},
+          # then make it a list with one element so that other_info/link is
+          # always a list. Ideally we would have code that checks all attribute
+          # values and if it every finds a case where an attribute values is either
+          # a dict or a list of dicts, then it would convert the dict case to a
+          # list of dicts case.
+          other_info_link = utilrsw.get_path(allxml, ['other_info', 'link'])
+          if other_info_link is not None:
+            if isinstance(other_info_link, dict):
+              other_info_link = [other_info_link]
+            allxml['other_info']['link'] = other_info_link
+
           # {"a": {"b": "c"}, ...} -> {"a/b": "c"}
           allxml = utilrsw.flatten_dicts(allxml)
           allxml['datasetID'] = dsid
