@@ -25,7 +25,7 @@ if port:
   # Create app configuration for tableui app.
   # Defaults
   configs = {
-    'server': {'--host': '0.0.0.0', '--port': 5001, '--workers': 1},
+    'server': {'--host': '0.0.0.0', '--port': port, '--workers': 1},
     'app': {'config': 'conf/demo.json', 'debug': False, 'log_level': None}
   }
 
