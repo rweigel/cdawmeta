@@ -14,21 +14,11 @@ install_requires = [
     "dicttoxml"
 ]
 
-print(sys.version_info)
 if sys.version_info < (3, 9):
   sys.exit('\n\n  Python < 3.9 is not supported\n\n')
 
-try:
-  # Will work if utilrsw was already installed, for example via pip install -e .
-  import utilrsw
-except:
-  install_requires.append("utilrsw @ git+https://github.com/rweigel/utilrsw")
-
-try:
-  # Will work if tableui was already installed, for example via pip install -e .
-  import tableui
-except:
-  install_requires.append("tableui @ git+https://github.com/rweigel/table-ui")
+install_requires.append("utilrsw[net] @ git+https://github.com/rweigel/utilrsw")
+install_requires.append("tableui @ git+https://github.com/rweigel/table-ui")
 
 setup(
   name='cdawmeta',
@@ -40,5 +30,5 @@ setup(
   install_requires=install_requires,
   long_description=open('README.md').read(),
   long_description_content_type='text/markdown',
-  description='Transform CDAWeb metadata to HAPI, SPASE, and SOSO; build tables for inspection in browser.'
+  description='Transform CDAWeb metadata to HAPI and SPASE; build tables for inspection in browser.'
 )

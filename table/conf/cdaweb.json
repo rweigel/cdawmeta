@@ -61,8 +61,11 @@
         {"name": "Spatial_Coverage/@region", "render": {"function": "ellipsis", "arg": 20}},
         {"name": "Data_version", "width": "5em"},
         {"name": "ADID_ref", "width": "5em"},
-        {"name": "other_info/link", "render": "renderOtherInfo"},
+        {"name": "other_info/link", "render": "splitArray"},
         {"name": "access/URL", "render": "trimURL"},
+        {"name": "LINK_TEXT", "render": "splitArray"},
+        {"name": "LINK_TITLE", "render": "splitArray"},
+        {"name": "HTTP_LINK", "render": "splitArray"},
         {
           "name": "mastercdf/@ID",
           "render": {

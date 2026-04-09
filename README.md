@@ -1,4 +1,4 @@
-`cdawmeta version 0.0.2`
+`cdawmeta` version `0.0.2`
 
 <!-- TOC -->
 [1 About](#1-about)<br/>
@@ -65,8 +65,9 @@ See `python metadata.py -h` for more options, including the generation of metada
 
 Create and display proof-of-concept auto-generated SPASE; the output of this command can be viewed at
 [spase_auto/info/AC_OR_SSC.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/AC_OR_SSC.json) and [spase_auto/info/VOYAGER1_10S_MAG.json](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info/VOYAGER1_10S_MAG.json). See the [`cdawmeta-spase` repository](https://github.com/rweigel/cdawmeta-spase) for metadata used that is not available in Master CDFs and/or `all.xml`. (Remove `--meta-type spase_auto` to see all generated metadata types described in the next subsection.)
+
+Note that the first execution will take ~60 seconds because a large metadata file must be downloaded from CDAWeb.
 ```
-mkdir -p ./data;
 python metadata.py --id AC_OR_SSC --meta-type spase_auto
 python metadata.py --id VOYAGER1_10S_MAG --meta-type spase_auto
 ```
