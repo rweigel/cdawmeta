@@ -75,7 +75,7 @@ def spase_auto(metadatum, logger):
   p = ['CDFglobalAttributes', 'Rules_of_use']
   Caveats = cdawmeta.util.get_path(master, p)
   if Caveats is not None:
-    source = "Source: Master/{'/'.join(p)}"
+    source = f"Source: Master/{'/'.join(p)}"
     NumericalData['Caveats'] = Caveats
     NumericalData['_Caveats'] = source
 
@@ -132,6 +132,12 @@ def spase_auto(metadatum, logger):
 
   spase_auto_['Spase']['NumericalData'] = NumericalData
 
+  if config.get('strip_underscore', False):
+    # Remove keys starting with _ from output. These keys are comments used for
+    # helping understand the source of the data and for debugging.
+    # They are not valid SPASE.
+    spase_auto_ = _strip_underscore(spase_auto_)
+
   return [spase_auto_]
 
 if __name__ == '__main__':
@@ -143,6 +149,14 @@ if __name__ == '__main__':
     #meta_file = read_cdf_meta(file)
     #print(meta_file)
     #spase_auto({}, None)
+
+def _strip_underscore(d):
+  if isinstance(d, dict):
+    return {k: _strip_underscore(v) for k, v in d.items() if not k.startswith('_')}
+  elif isinstance(d, list):
+    return [_strip_underscore(i) for i in d]
+  else:
+    return d
 
 def _Contact(dsid, fromRepo):
 
