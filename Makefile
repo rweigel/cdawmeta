@@ -22,6 +22,7 @@ hapi-update: cdawmeta.egg-info
 	python table.py --regen --regen-skip cadence
 	rsync -avz data/table weigel@rweigel.dynu.net:git/hapi/cdawmeta/data/
 	make diffs
+	- python metadata.py --meta-type spase_auto $(REGEN)
 	make rsync-to-mag
 
 diffs:
