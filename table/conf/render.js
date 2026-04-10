@@ -71,8 +71,9 @@ renderFunctions.renderDatasetID = function (columnName, config) {
     }
 
     if (tableName === 'hapi.dataset') {
-      const index = columnNames.indexOf('additionalMetadata/contentURL')
-      columnString += ` <a href="${row[index]}" title="SPASE" target="_blank">S</a>`
+      //const index = columnNames.indexOf('additionalMetadata/contentURL')
+      //const fnameSPASE = row[index].replace('spase://', 'https://spase-metadata.org/') + '.json'
+      //columnString += ` <a href="${fnameSPASE}" title="SPASE" target="_blank">S</a>`
       const link = '../parameter/#id=' + row[0]
       columnString += ` <a href="${link}" title="Parameters table" target="_blank"><i>P</i></a>`
     }
