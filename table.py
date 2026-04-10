@@ -20,6 +20,7 @@ info = cdawmeta.table(**args)
 cdawmeta.util.print_dict(info, style='json')
 
 if port:
+  import os
   import utilrsw.uvicorn
 
   # Create app configuration for tableui app.
@@ -41,17 +42,25 @@ if port:
   import utilrsw
   app_config = utilrsw.read('table/conf/cdaweb.json')
 
-  # Remove entries from app configuration corresponding to tables not created
-  app_config_reduced = []
-  for entry in app_config:
-    if entry['path'] in dbs:
-      app_config_reduced.append(entry)
-      entry['sqldb'] = dbs[entry['path']]
-      entry['dataTables'] = './table/conf/default.json'
-      entry['dataTablesAdditions']['renderFunctions'] = './table/conf/render.js'
-      utilrsw.print_dict(entry, style='json')
+  if len(dbs) == len(app_config):
+    configs['app']['config'] = 'table/conf/cdaweb.json'
+  else:
+    # Remove entries from app configuration corresponding to tables not created
+    app_config_reduced = []
+    for entry in app_config:
+      if entry['path'] in dbs:
+        app_config_reduced.append(entry)
+        entry['sqldb'] = os.path.join('..', '..', dbs[entry['path']])
 
-  # Update app configuration in configs
-  configs['app']['config'] = app_config_reduced
+    config_file = 'table/conf/cdaweb-reduced.json'
+    utilrsw.write(config_file, app_config_reduced)
+
+    # Update app configuration in config
+    configs['app']['config'] = config_file
+    print(f"Using configuration {config_file}")
+
+  msg = "Note: Table web app can be started on command line if tables already exist using"
+  msg += f"\n  tableui-serve --config {config_file}"
+  print(msg)
 
   utilrsw.uvicorn.run("tableui.app", configs)

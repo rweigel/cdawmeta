@@ -177,6 +177,6 @@ def table(id=None,
 
   logger.info(40*"-")
   logger.info(f"Creating table '{table_name}'")
-  info = tableui.dict2sql(datasets, config, embed=embed_data, logger=logger)
+  info = tableui.dicts2table(datasets, config, embed=embed_data, logger=logger)
 
   return {table_name: info}
