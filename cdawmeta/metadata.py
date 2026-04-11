@@ -153,7 +153,7 @@ def metadata(id=None,
       try:
         _get_one(datasets_all[dsid], meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception)
       except:
-        cdawmeta(dsid, logger, exit_on_exception=exit_on_exception)
+        cdawmeta.exception(dsid, logger, exit_on_exception=exit_on_exception)
   else:
     def call_get_one(dsid):
       try:
