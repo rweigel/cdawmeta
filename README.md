@@ -16,7 +16,7 @@ This Python package uses [CDAWeb's](https://cdaweb.gsfc.nasa.gov) metadata to cr
 
 It was originally developed to upgrade the metadata from CDAWeb's HAPI server (the existing server only includes the minimum required metadata).
 
-As discussed in the [notes](https://github.com/rweigel/hxform/blob/main/Notes.md) document, the code was extended to remedy major issues with existing SPASE `NumericalData` metadata for CDAWeb datasets. (We abandoned our attempt to use existing SPASE records to create HAPI metadata due to these issues.)
+As discussed in the [notes](https://github.com/rweigel/cdawmeta/blob/main/Notes.md) document, the code was extended to remedy major issues with existing SPASE `NumericalData` metadata for CDAWeb datasets. (We abandoned our attempt to use existing SPASE records to create HAPI metadata due to these issues.)
 
 The code reads and combines information from
 
@@ -31,7 +31,7 @@ The output is
 
 1. HAPI metadata, which is available in [hapi/info](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info)
 
-2. Proof-of-concept SPASE records that do not have most of the major issues described in [SPASE][notes](https://github.com/rweigel/hxform/blob/main/Notes.md)) section below. (These SPASE records are available in JSON in [spase_auto/info](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info).)
+2. Proof-of-concept SPASE records that do not have most of the major issues described in [Notes](https://github.com/rweigel/hxform/blob/main/Notes.md). (These SPASE records are available in JSON in [spase_auto/info](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info).)
 
 In addition, we have developed several tools for inspection and debugging. SQL databases are available with a search interface for
 
