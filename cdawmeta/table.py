@@ -131,7 +131,11 @@ def table(id=None,
   if table_name.startswith('hapi'):
     datasets_list = []
     for dsid in datasets.keys():
-      sub_datasets = datasets[dsid]['hapi']['data']
+
+      if not 'hapi' in datasets[dsid]:
+        logger.error(f"No 'hapi' node for dataset {dsid}")
+
+      sub_datasets = utilrsw.get_path(datasets[dsid], 'hapi.data')
 
       if sub_datasets is None:
         logger.warning(f"No hapi datasets for {dsid}. Skipping.")
