@@ -10,9 +10,6 @@ def spase_auto(metadatum, logger):
   hapi = metadatum['hapi']['data']
   master = metadatum['master_resolved']['data']
 
-  import utilrsw
-  utilrsw.print_dict(master)
-  import pdb; pdb.set_trace()
   config = cdawmeta.CONFIG['spase_auto']
   logger.debug(f"Using config: {config}")
 
@@ -91,6 +88,7 @@ def spase_auto(metadatum, logger):
   NumericalData['ResourceHeader']['_Rights'] = additions.get('Rights')
 
   InformationURL = _InformationURL(allxml)
+  #import pdb; pdb.set_trace()  # --- IGNORE ---
   InformationURL = _InformationURL2(metadatum['id'], InformationURL, additions.get('InformationURL'))
   if InformationURL is not None:
     NumericalData['ResourceHeader']['InformationURL'] = InformationURL
@@ -163,6 +161,7 @@ def _strip_underscore(d):
   else:
     return d
 
+
 def _Contact(dsid, fromRepo):
 
   import re
@@ -183,6 +182,7 @@ def _Contact(dsid, fromRepo):
         contacts.extend(element['Contacts'])
 
   return contacts
+
 
 def _InformationURL2(dsid, fromAllXML, fromRepo):
   cdawmeta_spase = cdawmeta.CONFIG['spase_auto']['cdawmeta-spase']
@@ -209,7 +209,9 @@ def _InformationURL2(dsid, fromAllXML, fromRepo):
       if keep:
         url = fromRepo[key]['InformationURL']['URL']
         if url in fromAllXMLDict:
-          fromRepo[key]['InformationURL']['_Note'] = f"Found same URL in master and {cdawmeta_spase}/InformationURL.json; not using master for Name and Description."
+          msg = f"Found same URL in master and {cdawmeta_spase}/InformationURL.json; "
+          msg += "not using master for Name and Description."
+          fromRepo[key]['InformationURL']['_Note'] = msg
         fromAllXMLDict[key] = fromRepo[key]['InformationURL']
         fromAllXMLDict[key]['_source'] = f"{cdawmeta_spase}/InformationURL.json"
 
@@ -249,6 +251,7 @@ def _InformationURL(allxml):
       _InformationURL = InformationURLs
 
   return _InformationURL
+
 
 def _TemporalDescription(allxml):
 
