@@ -101,6 +101,11 @@ test-table: cdawmeta.egg-info
 test-report: cdawmeta.egg-info
 	python report.py --id AC_OR_DEF --update
 
+rsync-from-spot10:
+	rsync -avz -e 'ssh -p 890' \
+		--delete \
+		weigel@cottagesystems.com:cdawmeta/data .
+
 rsync-to-spot10:
 	rsync -avz -e 'ssh -p 890' \
 		--delete \
