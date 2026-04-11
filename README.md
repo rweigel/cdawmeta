@@ -16,7 +16,7 @@ This Python package uses [CDAWeb's](https://cdaweb.gsfc.nasa.gov) metadata to cr
 
 It was originally developed to upgrade the metadata from CDAWeb's HAPI server (the existing server only includes the minimum required metadata).
 
-As discussed in the [notes](https://github.com/rweigel/hxform/blob/main/Notes.md) document, the code was extended to remedy major issues with existing SPASE `NumericalData` metadata for CDAWeb datasets. (We abandoned our attempt to use existing SPASE records to create HAPI metadata due to these issues.)
+As discussed in the [notes](https://github.com/rweigel/cdawmeta/blob/main/Notes.md) document, the code was extended to remedy major issues with existing SPASE `NumericalData` metadata for CDAWeb datasets. (We abandoned our attempt to use existing SPASE records to create HAPI metadata due to these issues.)
 
 The code reads and combines information from
 
