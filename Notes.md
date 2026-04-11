@@ -231,5 +231,4 @@ We suggest that CDAWeb SPASE metadata should be created by an automated process 
 
 Two versions of ISTP->SPASE exist [one used in the Javascript ISTP editor](https://git.smce.nasa.gov/spdf/skteditor/-/blob/main/ISTP_to_SPASE.txt) | [one in a recent paper](https://www.sciencedirect.com/science/article/pii/S0273117723008025)).
 
-Rebecca R. has created [notes](https://docs.google.com/document/d/1hd2On4uYQAPNc0xEgZ4XHBOQ8V-x0Pkh5UNtXrkgl7Y/edit?tab=t.0#heading=h.t1lddh51itde) for documenting the mappings.
-
+Rebecca R. has created [notes](https://docs.google.com/document/d/1dpdUugKfdbL9Q4ZA-v4Vppin6QEPRkEIb2C_Mbv9c1I/edit?tab=t.0#heading=h.qqsubcu8a0o8) for documenting the mappings.
