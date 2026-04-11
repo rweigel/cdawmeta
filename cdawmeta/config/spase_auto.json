@@ -2,5 +2,6 @@
   "version": "2.6.1",
   "include_parameters": true,
   "include_access_information": true,
-  "strip_underscore": false
+  "strip_underscore": false,
+  "cdawmeta-spase": "https://github.com/rweigel/cdawmeta-spase/blob/main"
 }

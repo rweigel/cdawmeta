@@ -1,17 +1,22 @@
 import cdawmeta
 
-dependencies = ['master', 'hapi', 'AccessInformation']
+dependencies = ['master_resolved', 'hapi', 'AccessInformation']
 
 def spase_auto(metadatum, logger):
 
   additions = cdawmeta.additions(logger)
 
   allxml = metadatum['allxml']
-  master = metadatum['master']['data']
   hapi = metadatum['hapi']['data']
+  master = metadatum['master_resolved']['data']
 
+  import utilrsw
+  utilrsw.print_dict(master)
+  import pdb; pdb.set_trace()
   config = cdawmeta.CONFIG['spase_auto']
   logger.debug(f"Using config: {config}")
+
+  cdawmeta_spase = config['cdawmeta-spase']
 
   xmlns = additions["config"]["xmlns"]
   Version = additions["config"]["version"]
@@ -36,7 +41,7 @@ def spase_auto(metadatum, logger):
 
   ResourceIDs = additions.get('ResourceID', None)
   NumericalData['ResourceID'] = ResourceIDs.get(metadatum['id'], None)
-  NumericalData['_ResourceID'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/ResourceID.json"
+  NumericalData['_ResourceID'] = f"Source: {cdawmeta_spase}/ResourceID.json"
 
   p = ['CDFglobalAttributes', 'Logical_source_description']
   ResourceName = cdawmeta.util.get_path(master, p)
@@ -81,7 +86,7 @@ def spase_auto(metadatum, logger):
 
   DOIs = additions.get('DOI')
   NumericalData['DOI'] = DOIs.get(metadatum['id'], None)
-  NumericalData['_DOI'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/DOI.json"
+  NumericalData['_DOI'] = f"Source: {cdawmeta_spase}/DOI.json"
 
   NumericalData['ResourceHeader']['_Rights'] = additions.get('Rights')
 
@@ -92,12 +97,12 @@ def spase_auto(metadatum, logger):
 
   if config['include_access_information']:
     NumericalData['AccessInformation'] = metadatum['AccessInformation']['data']
-    NumericalData['_AccessInformation'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/AccessInformation.json"
+    NumericalData['_AccessInformation'] = f"Source: {cdawmeta_spase}/AccessInformation.json"
 
   Contacts = _Contact(metadatum['id'], additions.get('Contact'))
   if len(Contacts) > 0:
     NumericalData['ResourceHeader']['Contact'] = Contacts
-    NumericalData['ResourceHeader']['_Contact'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/Contact.json"
+    NumericalData['ResourceHeader']['_Contact'] = f"Source: {cdawmeta_spase}/Contact.json"
 
   NumericalData['TemporalDescription'] = _TemporalDescription(allxml)
   if isinstance(hapi, dict):
@@ -111,10 +116,10 @@ def spase_auto(metadatum, logger):
   ObservedRegions = additions.get('ObservedRegion')
   sc = metadatum['id'].split('_')[0]
   NumericalData['ObservedRegion'] = ObservedRegions.get(sc, None)
-  NumericalData['_ObservedRegion'] = "Source: https://github.com/rweigel/cdawmeta-spase/blob/main/ObservedRegion.json"
+  NumericalData['_ObservedRegion'] = f"Source: {cdawmeta_spase}/ObservedRegion.json"
 
   NumericalData['ProcessingLevel'] = None
-  NumericalData['_ProcessingLevel'] = "Processing level is not available in the master file; it should be there instead of, say, https://github.com/rweigel/cdawmeta-spase/blob/main/ProcessingLevel.json"
+  NumericalData['_ProcessingLevel'] = f"Processing level is not available in the master file; it should be there instead of, say, {cdawmeta_spase}/ProcessingLevel.json"
 
   InstrumentIDs = additions.get('InstrumentID')
   NumericalData['InstrumentID'] = InstrumentIDs.get(metadatum['id'], None)
@@ -180,6 +185,7 @@ def _Contact(dsid, fromRepo):
   return contacts
 
 def _InformationURL2(dsid, fromAllXML, fromRepo):
+  cdawmeta_spase = cdawmeta.CONFIG['spase_auto']['cdawmeta-spase']
   # Add content in cdawmeta-spase/InformationURL.json
   # If URL in fromAllXML and fromRepo, use fromRepo
   fromAllXMLDict = {}
@@ -203,9 +209,9 @@ def _InformationURL2(dsid, fromAllXML, fromRepo):
       if keep:
         url = fromRepo[key]['InformationURL']['URL']
         if url in fromAllXMLDict:
-          fromRepo[key]['InformationURL']['_Note'] = "Found same URL in master and https://github.com/rweigel/cdawmeta-spase/blob/main/cdawmeta-spase/InformationURL.json; not using master for Name and Description."
+          fromRepo[key]['InformationURL']['_Note'] = f"Found same URL in master and {cdawmeta_spase}/InformationURL.json; not using master for Name and Description."
         fromAllXMLDict[key] = fromRepo[key]['InformationURL']
-        fromAllXMLDict[key]['_source'] = "https://github.com/rweigel/cdawmeta-spase/blob/main/cdawmeta-spase/InformationURL.json"
+        fromAllXMLDict[key]['_source'] = f"{cdawmeta_spase}/InformationURL.json"
 
   InformationURLs = []
   for key in fromAllXMLDict:
