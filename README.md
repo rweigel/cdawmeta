@@ -31,7 +31,7 @@ The output is
 
 1. HAPI metadata, which is available in [hapi/info](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info)
 
-2. Proof-of-concept SPASE records that do not have most of the major issues described in [SPASE][notes](https://github.com/rweigel/hxform/blob/main/Notes.md)) section below. (These SPASE records are available in JSON in [spase_auto/info](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info).)
+2. Proof-of-concept SPASE records that do not have most of the major issues described in [Notes](https://github.com/rweigel/hxform/blob/main/Notes.md). (These SPASE records are available in JSON in [spase_auto/info](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info).)
 
 In addition, we have developed several tools for inspection and debugging. SQL databases are available with a search interface for
 
