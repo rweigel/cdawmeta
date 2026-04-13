@@ -505,14 +505,15 @@ def _Parameter2(id, master, additions, logger):
 
 
     catdesc = depend_0_attrs.get('CATDESC', None)
-    Description = f"The time index for this variable is {depend_0_name}."
+    Description = ""
     if catdesc:
-      Description = f"CATDESC: '{catdesc}'. Notes not in Master CDF: '{Description}'"
+      Description = f"CATDESC: '{catdesc}'. "
 
     Units = depend_0_attrs.get('UNITS')
     logger.info(f"      Units: {Units}")
 
-    Description += " The units are the units in CDF files. For other web services, this variable is may be represented as a time string."
+    note = "Notes not in Master CDF: 'The units are the units in CDF files. For other web services, this variable is may be represented as a time string.'"
+    Description += note
     logger.info(f"      Description: {Description}")
 
     # Not sure about Support.
@@ -542,9 +543,10 @@ def _Parameter2(id, master, additions, logger):
         'ParameterKey': var_name,
       }
 
-      catdesc = attrs.get('CATDESC', None)
-      if catdesc:
-        param['Description'] = catdesc
+      var_notes = attrs.get('VAR_NOTES', '')
+      catdesc = attrs.get('CATDESC', "")
+      note = f"The time index (the ISTP DEPEND_0 variable) for this parameter is {depend_0_name}."
+      param['Description'] = f"Master CDF CATDESC: '{catdesc}'. Master CDF VAR_NOTES: '{var_notes}'. Notes not in Master CDF: '{note}'"
 
       units = attrs.get('x_UNITS') or attrs.get('UNITS')
       if units:
