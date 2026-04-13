@@ -29,7 +29,7 @@ def hapi(metadatum, _logger):
   variables = master['CDFVariables']
   # Split variables to be under their DEPEND_0 (Keys are DEPEND_0 names), e.g.,
   # {'Epoch': {'V1': {...}, 'V2': {...}}, 'Epoch2': {'V3': {...}, 'V4': {...}}}
-  vars_split = _split_variables(id, variables)
+  vars_split = cdawmeta.split_variables(id, variables, logger, meta_type='hapi', omit_variable=_omit_variable)
 
   logger.info(id + ": subsetting and creating /info")
 
@@ -43,8 +43,8 @@ def hapi(metadatum, _logger):
   depend_0_names = []
   for depend_0_name, depend_0_variables in depend_0s:
 
-    logger.info(f"  Checking DEPEND_0: '{depend_0_name}'")
-
+    logger.info(f"  Checking DEPEND_0: '{depend_0_name}' variables")
+    logger.info(f"    {depend_0_name}")
     if _omit_dataset(id, depend_0=depend_0_name):
       msg = f"Not creating dataset for {id} with variable having DEPEND_0 = '{depend_0_name}'"
       logger.info("    " + msg)
@@ -56,18 +56,18 @@ def hapi(metadatum, _logger):
     for _, variable in depend_0_variables.items():
       VAR_TYPES.append(variable['VarAttributes']['VAR_TYPE'])
     VAR_TYPES = set(VAR_TYPES) # Unique VAR_TYPES of DEPEND_0 variables
-    msg = f"    VAR_TYPE: '{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}"
+    msg = f"      VAR_TYPE: '{DEPEND_0_VAR_TYPE}'; dependent VAR_TYPES {VAR_TYPES}"
     logger.info(msg)
 
     if DEPEND_0_VAR_TYPE == 'ignore_data':
-      msg = f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' "
+      msg = f"      Not creating dataset for DEPEND_0 = '{depend_0_name}' "
       msg += "because it has VAR_TYPE='ignore_data'."
       logger.info(msg)
       continue
 
     if 'data' not in VAR_TYPES and not _keep_dataset(id, depend_0=depend_0_name):
       # In general, Nand drops these, but not always
-      msg = f"    Not creating dataset for DEPEND_0 = '{depend_0_name}' because "
+      msg = f"      Not creating dataset for DEPEND_0 = '{depend_0_name}' because "
       msg += "none of its variables have VAR_TYPE = 'data'."
       logger.info(msg)
       continue
@@ -262,6 +262,8 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
   for name, variable in depend_0_variables.items():
 
+    logger.info(f"    {name}")
+
     VAR_TYPE, emsg, etype = cdawmeta.attrib.VAR_TYPE(dsid, name, variable, x=None)
     if etype is not None:
       # Should not happen because variable will be dropped in _split_variables
@@ -269,6 +271,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       continue
 
     if VAR_TYPE != 'data':
+      logger.info(f"      VAR_TYPE = '{VAR_TYPE}' != 'data'. Omitting.")
       continue
 
     if VAR_TYPE == 'data':
@@ -408,7 +411,7 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       if n_label_values != n_depend_values:
         differ = True
       else:
-        for x in range(n_depend_values):
+        for x in range(1, n_depend_values):
           if ptrs['LABL_PTR_VALUES'][x] != ptrs['DEPEND_VALUES'][x]:
             differ = True
             if differ and print_info:
@@ -764,36 +767,6 @@ def _order_variables(id, variables):
 
   return {k: variables[k] for k in order_wanted}
 
-def _split_variables(id, variables):
-  """
-  Create _variables_split dict. Each key is the name of the DEPEND_0
-  variable. Each value is a dict of variables that reference that DEPEND_0
-  """
-
-  depend_0_dict = {}
-
-  names = variables.keys()
-  for name in names:
-
-    variable_meta = variables[name]
-
-    if _omit_variable(id, name):
-      continue
-
-    if 'DEPEND_0' in variable_meta['VarAttributes']:
-      depend_0_name = variable_meta['VarAttributes']['DEPEND_0']
-
-      if depend_0_name not in variables:
-        emsg = f"  Dropping {id}/{name} b/c it has a DEPEND_0 ('{depend_0_name}') "
-        emsg += "that is not in dataset"
-        cdawmeta.error('hapi', id, name, "CDF.MissingDEPEND_0", emsg, logger)
-        continue
-
-      if depend_0_name not in depend_0_dict:
-        depend_0_dict[depend_0_name] = {}
-      depend_0_dict[depend_0_name][name] = variable_meta
-
-  return depend_0_dict
 
 def _keep_dataset(id, depend_0=None):
   fixes = cdawmeta.CONFIG['hapi']['fixes']
