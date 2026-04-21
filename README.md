@@ -52,9 +52,6 @@ Also, demonstration code for placing SPASE records into a MongoDB and executing 
 git clone https://github.com/rweigel/cdawmeta.git
 cd cdawmeta;
 pip install -e .
-
-# Test commands in README. (errors shown in red are encountered metadata errors).
-make test-README
 ```
 
 In the examples, use `--update` to update the input metadata (source data changes on the order of days, typically in the mornings Eastern time on weekdays).
@@ -76,6 +73,11 @@ Create and display HAPI metadata; the output of these commands can be viewed at 
 ```
 python metadata.py --id AC_OR_SSC --meta-type hapi
 python metadata.py --id VOYAGER1_10S_MAG --meta-type hapi
+```
+
+To test all of the examples in this README, use
+```
+make test-README
 ```
 
 ## 2.2 Generators
