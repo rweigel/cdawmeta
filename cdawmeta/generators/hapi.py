@@ -19,9 +19,8 @@ def hapi(metadatum, _logger):
   master = metadatum['master_resolved'].get('data', None)
 
   if master is None:
-    emsg = f"{id}: Not creating dataset for {id} b/c it has no 'data' key "
-    emsg += "(or data=None) in master_resolved"
-    cdawmeta.error('hapi', id, None, "ISTP.NoMaster", emsg, logger)
+    emsg = f"{id}: Not creating dataset for {id} b/c it has no 'data' attribute. Check the logs in master/error for details."
+    cdawmeta.error('hapi', id, None, "NoMaster", emsg, logger)
     return {"error": emsg}
 
   master = metadatum['master_resolved']['data']

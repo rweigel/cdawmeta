@@ -10,8 +10,8 @@ def master_resolved(metadatum, logger):
 
   master = metadatum['master'].get('data', None)
   if master is None:
-    msg = f"{id}: Not creating dataset for {id} b/c it has no 'data' attribute"
-    cdawmeta.error('master_resolved', id, None, "ISTP.Master.Missing", msg, logger)
+    msg = f"{id}: Not creating dataset for {id} b/c it has no 'data' attribute. Check the logs in master/error for details."
+    cdawmeta.error('master_resolved', id, None, "NoMaster", msg, logger)
     return {"error": msg}
 
   master = master.copy()
@@ -289,7 +289,7 @@ def _check_variable(id, variable_name, variables, logger):
     del variables[variable_name]
     return variable_name
 
-  DataType = variables[variable_name]['VarDescription'].get('DataType', None)
+  DataType = variable['VarDescription'].get('DataType', None)
 
   if DataType is None:
     emsg = f"{indent}  {variable_name} No DataType. {removing}"
@@ -297,11 +297,20 @@ def _check_variable(id, variable_name, variables, logger):
     del variables[variable_name]
     return variable_name
 
-  FILLVAL = variables[variable_name]['VarAttributes'].get('FILLVAL', None)
+  RecVariance = variable['VarDescription'].get('RecVariance', None)
+  if RecVariance is None:
+    emsg = f"{indent}  {variable_name} No VARY."
+    cdawmeta.error('master_resolved', id, variable_name, "CDF.RecVariance.Missing", emsg, logger)
+  if RecVariance not in ['VARY', 'NOVARY']:
+    emsg = f"{indent}  {variable_name} RecVariance = '{RecVariance}' which is not 'VARY' or 'NOVARY'."
+    cdawmeta.error('master_resolved', id, variable_name, "CDF.RecVariance.Invalid", emsg, logger)
+
+  FILLVAL = variable['VarAttributes'].get('FILLVAL', None)
   if FILLVAL is None:
-    emsg = f"{indent}{variable_name}: No FILLVAL. Not removing variable."
-    cdawmeta.error('hapi', id, variable_name, "CDF.FillValue.Missing", emsg, logger)
-    # Could use _default_fill()
+    if RecVariance == 'VARY':
+      emsg = f"{indent}{variable_name}: No FILLVAL for record varying variable. Not removing variable."
+      cdawmeta.error('hapi', id, variable_name, "CDF.FillValue.Missing", emsg, logger)
+      # Could use _default_fill()
   else:
     # TODO: Check that FILLVAL is the ISTP convention value
     if isinstance(FILLVAL, str) and FILLVAL.lower() != 'nan':

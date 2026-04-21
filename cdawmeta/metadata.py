@@ -311,7 +311,7 @@ def _datasets(allxml_data):
 
     if 'mastercdf' not in dataset_allxml:
       msg = f'{id}: No mastercdf node in all.xml'
-      cdawmeta.error('metadata', id, None, 'allxml.NoMasterCDF', msg, logger)
+      cdawmeta.error('allxml', id, None, 'allxml.NoMasterCDF', msg, logger)
       continue
 
     if isinstance(dataset_allxml['mastercdf'], list):
@@ -322,7 +322,7 @@ def _datasets(allxml_data):
 
     if '@ID' not in dataset_allxml['mastercdf']:
       msg = f"{id}: No @ID attribute in all.xml 'mastercdf' node"
-      cdawmeta.error('metadata', id, None, 'allxml.No@IDAttribute', msg, logger)
+      cdawmeta.error('allxml', id, None, 'allxml.No@IDAttribute', msg, logger)
       continue
 
     if restructure:
@@ -383,7 +383,12 @@ def _master(dataset, update=False, diffs=False):
   if 'error' in master:
     return master
 
-  master['data'] = cdawmeta.restructure.master(master['data'], url, logger=logger)
+  try:
+    master['data'] = cdawmeta.restructure.master(master['data'], url, logger=logger)
+  except Exception as e:
+    msg = f"Error restructuring master JSON for {dataset['id']} from {url}: {e}"
+    cdawmeta.error('master', dataset['id'], None, 'master.RestructureError', msg, logger)
+    master['error'] = msg
 
   return master
 
@@ -399,24 +404,24 @@ def _spase(dataset, update=True, diffs=False):
   data = master.get('data', None)
   if data is None:
     msg = f"{id}: No data in master for {master['url']}."
-    cdawmeta.error('metadata', id, None, 'master.NoData', msg, logger)
+    cdawmeta.error('spase', id, None, 'master.NoData', msg, logger)
     return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
   global_attributes = master['data'].get('CDFglobalAttributes', None)
   if global_attributes is None:
     msg = f"{id}: No CDFglobalAttributes in {master['url']}."
-    cdawmeta.error('metadata', id, None, 'master.NoCDFglobalAttributes', msg, logger)
+    cdawmeta.error('spase', id, None, 'master.NoCDFglobalAttributes', msg, logger)
     return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
   spase_id = global_attributes.get('spase_DatasetResourceID', None)
   if spase_id is None:
     msg = f"{id}: No spase_DatasetResourceID attribute in {master['url']}."
-    cdawmeta.error('metadata', id, None, 'master.NoSpaseDatasetResourceID', msg, logger)
+    cdawmeta.error('spase', id, None, 'master.NoSpaseDatasetResourceID', msg, logger)
     return {'id': id, 'error': msg, 'data-file': None, 'data': None}
   else:
     if not spase_id.startswith('spase://'):
       msg = f"{id}: spase_DatasetResourceID = '{spase_id}' does not start with 'spase://' in {master['url']}"
-      cdawmeta.error('metadata', id, None, 'master.InvalidSpaseDatasetResourceID', msg, logger)
+      cdawmeta.error('spase', id, None, 'master.InvalidSpaseDatasetResourceID', msg, logger)
       return {'id': id, 'error': msg, 'data-file': None, 'data': None}
 
     url = spase_id.replace('spase://', 'https://spase-metadata.org/') + '.json'
@@ -677,13 +682,13 @@ def _write_combined(metadata_, id, meta_types):
       if meta_type not in metadata_[dsid]:
         # Should not happen.
         msg = f"No metadatum/{meta_type} for '{dsid}'."
-        cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
+        cdawmeta.error(meta_type, dsid, None, 'UnHandledException', msg, logger)
         continue
 
       if metadata_[dsid][meta_type] is None:
         # Should not happen.
         msg = f"No metadatum/{meta_type} is None for '{dsid}'."
-        cdawmeta.error('metadata', dsid, None, 'UnHandledException', msg, logger)
+        cdawmeta.error(meta_type, dsid, None, 'UnHandledException', msg, logger)
         continue
 
       datum = metadata_[dsid][meta_type].get('data', None)
@@ -787,7 +792,7 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
     emsg = f"{id}: {get['emsg']}"
     if referrer is not None:
       emsg += f"; Referring document: {referrer}"
-    cdawmeta.error('metadata', id, None, f'{meta_type}.FetchError', emsg, logger)
+    cdawmeta.error(meta_type, id, None, f'{meta_type}.FetchError', emsg, logger)
     result['error'] = emsg
     return result
 
@@ -816,7 +821,7 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
       cdawmeta.util.write(json_file, result, logger=logger)
     except Exception as e:
       msg = f"Error writing {json_file}: {e}"
-      cdawmeta.error('metadata', id, None, 'WriteError', msg, logger)
+      cdawmeta.error(meta_type, id, None, 'WriteError', msg, logger)
 
   if os.path.exists(pkl_file) and get['response'].from_cache:
     msg = f"File {pkl_file} exists and response was from cache. Not re-writing it."
@@ -826,6 +831,6 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
       cdawmeta.util.write(pkl_file, result, logger=logger)
     except Exception as e:
       msg = f"Error writing {pkl_file}: {e}"
-      cdawmeta.error('metadata', id, None, 'WriteError', msg, logger)
+      cdawmeta.error(meta_type, id, None, 'WriteError', msg, logger)
 
   return result
