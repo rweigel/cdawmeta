@@ -92,7 +92,7 @@ def master_resolved(metadatum, logger):
     if VAR_TYPE in ['data', 'support_data']:
       if LABLAXIS is None and LABL_PTR is None:
         emsg = f"{indent}For VAR_TYPE = 'data' or 'support_data', if no LABLAXIS, LABL_PTR_i is required."
-        cdawmeta.error('master_resolved', id, variable_name, "IST.LABL_PTRMissing", emsg, logger)
+        cdawmeta.error('master_resolved', id, variable_name, "ISTP.LABL_PTR.Missing", emsg, logger)
 
     DEPEND = _DEPEND(id, variable_name, variables, variables_removed, logger)
     if DEPEND is not None:
