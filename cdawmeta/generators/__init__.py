@@ -77,10 +77,10 @@ def _expand_dependencies(all_dependencies):
 
   return dependencies
 
-files, top_level_dependencies = _get_dependencies()
+generator_files, top_level_dependencies = _get_dependencies()
 
 # Set the generator functions as global variables to allow importing.
-_set_public(files)
+_set_public(generator_files)
 
 # Each generator function may have a dependencies attribute that is a list of
 # top-level dependencies. _expand_dependencies() creates the full list of
@@ -88,4 +88,4 @@ _set_public(files)
 # dependencies.
 dependencies = _expand_dependencies(top_level_dependencies)
 
-del files, top_level_dependencies, _set_public, _get_dependencies, _expand_dependencies
+del generator_files, top_level_dependencies, _set_public, _get_dependencies, _expand_dependencies

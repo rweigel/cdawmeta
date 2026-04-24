@@ -1,12 +1,17 @@
 import cdawmeta
 
-#FILE_LIST = 'orig_data'
 FILE_LIST = 'cdfmetafile'
 dependencies = [FILE_LIST]
-
+# The above dependency can be modified to 'orig_data'
+# in the call to metadata.py/metadata() or by a command-line option.
 def start_stop(metadatum, logger):
 
   id = metadatum['id']
+
+  # Check if dependency was switched to orig_data.
+  deps = cdawmeta.generators.dependencies['start_stop']
+  if 'orig_data' in deps:
+    FILE_LIST = 'orig_data'
 
   if FILE_LIST == 'cdfmetafile':
     source = cdawmeta.CONFIG['urls']['cdfmetafile']
