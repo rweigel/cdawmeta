@@ -75,7 +75,7 @@ python metadata.py --id AC_OR_SSC --meta-type hapi
 python metadata.py --id VOYAGER1_10S_MAG --meta-type hapi
 ```
 
-To test all of the examples in this README, use
+If you have [`make`](https://www.gnu.org/software/make/) installed, you can execute all of the examples in this README using
 ```
 make test-README
 ```
