@@ -82,7 +82,7 @@ make test-README
 
 ## 2.2 Generators
 
-`cdawmeta` uses ["generator" functions](https://github.com/rweigel/cdawmeta/tree/main/cdawmeta/generators) to create parts used in high-level metadata such as HAPI and SPASE. Each generator takes inputs that include its dependencies a produce new metadata. For example `start_stop.py` uses the output of `orig_data` to determine a `sample{StartStop}Date` to include in HAPI metadata.
+`cdawmeta` uses ["generator" functions](https://github.com/rweigel/cdawmeta/tree/main/cdawmeta/generators) to create parts used in high-level metadata such as HAPI and SPASE. Each generator takes inputs that include its dependencies a produce new metadata. For example, `start_stop.py` uses the output of `orig_data` to determine a `sample{StartStop}Date` to include in HAPI metadata.
 
 ### 2.2.1 start_stop
 
@@ -104,7 +104,7 @@ Produces the following output, which can be [downloaded directly](http://mag.gmu
     "data": {
       "sampleStartDate": "1991-10-28T04:59:54.000Z",
       "sampleStopDate": "1991-11-26T19:09:30.000Z",
-      "note": "sample{Start,Stop}Date corresponds to the time range spanned by the penultimate file in the reponse from https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/VOYAGER1_10S_MAG/orig_data/19770905T141947Z,19911227T000042Z, where the start/end in this URL correponds to the start/end of the dataset."
+      "note": "sample{Start,Stop}Date corresponds to the time range spanned by the penultimate file in the response from https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/VOYAGER1_10S_MAG/orig_data/19770905T141947Z,19911227T000042Z, where the start/end in this URL corresponds to the start/end of the dataset."
     }
   }
 }
@@ -116,7 +116,7 @@ Produces the following output, which can be [downloaded directly](http://mag.gmu
 Used in HAPI and SPASE.
 
 ```
-python metadata.py --id VOYAGER1_10S_MAG --meta-type start_stop
+python metadata.py --id VOYAGER1_10S_MAG --meta-type cadence
 ```
 Produces the following output (full output can be [downloaded directly](http://mag.gmu.edu/git-data/cdawmeta/data/cadence/info/VOYAGER1_10S_MAG.json)).
 
