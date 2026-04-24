@@ -151,16 +151,30 @@ def metadata(id=None,
   not_generated = ['allxml', 'master', 'cdfmetafile', 'orig_data', 'spase', 'spase_hpde_io']
   mloggers = _meta_loggers(meta_types, not_generated, log_level='info')
 
+  args = [
+    meta_types,
+    meta_types_requested,
+    update,
+    update_skip,
+    regen,
+    regen_skip,
+    not_generated,
+    embed_data,
+    mloggers,
+    diffs,
+    exit_on_exception
+  ]
+
   if max_workers == 1 or len(dsids) == 1:
     for dsid in dsids:
       try:
-        _get_one(datasets_all[dsid], meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception)
+        _get_one(datasets_all[dsid], *args)
       except:
         cdawmeta.exception(dsid, logger, exit_on_exception=exit_on_exception)
   else:
     def call_get_one(dsid):
       try:
-        _get_one(datasets_all[dsid], meta_types, meta_types_requested, update, update_skip, regen, regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception)
+        _get_one(datasets_all[dsid], *args)
       except:
         cdawmeta.exception(dsid, logger, exit_on_exception=exit_on_exception)
       return dsid
@@ -877,6 +891,8 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
   return result
 
 def _update_dependencies(use_orig_data, meta_types_requested):
+  if not use_orig_data:
+    return
   # Change dependency from cdfmetafile to orig_data for all meta_types that
   # depend on cdfmetafile. This is hacky because it modifies the global state.
   for meta_type_ in cdawmeta.dependencies:
