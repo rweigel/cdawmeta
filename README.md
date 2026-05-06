@@ -16,7 +16,7 @@ This Python package uses [CDAWeb's](https://cdaweb.gsfc.nasa.gov) metadata to cr
 
 It was originally developed to upgrade the metadata from CDAWeb's HAPI server (the existing server only includes the minimum required metadata).
 
-As discussed in the [notes](https://github.com/rweigel/hxform/blob/main/Notes.md) document, the code was extended to remedy major issues with existing SPASE `NumericalData` metadata for CDAWeb datasets. (We abandoned our attempt to use existing SPASE records to create HAPI metadata due to these issues.)
+As discussed in the [notes](https://github.com/rweigel/cdawmeta/blob/main/Notes.md) document, the code was extended to remedy major issues with existing SPASE `NumericalData` metadata for CDAWeb datasets. (We abandoned our attempt to use existing SPASE records to create HAPI metadata due to these issues.)
 
 The code reads and combines information from
 
@@ -31,7 +31,7 @@ The output is
 
 1. HAPI metadata, which is available in [hapi/info](http://mag.gmu.edu/git-data/cdawmeta/data/hapi/info)
 
-2. Proof-of-concept SPASE records that do not have most of the major issues described in [SPASE][notes](https://github.com/rweigel/hxform/blob/main/Notes.md)) section below. (These SPASE records are available in JSON in [spase_auto/info](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info).)
+2. Proof-of-concept SPASE records that do not have most of the major issues described in [Notes](https://github.com/rweigel/hxform/blob/main/Notes.md). (These SPASE records are available in JSON in [spase_auto/info](http://mag.gmu.edu/git-data/cdawmeta/data/spase_auto/info).)
 
 In addition, we have developed several tools for inspection and debugging. SQL databases are available with a search interface for
 
@@ -52,9 +52,6 @@ Also, demonstration code for placing SPASE records into a MongoDB and executing 
 git clone https://github.com/rweigel/cdawmeta.git
 cd cdawmeta;
 pip install -e .
-
-# Test commands in README. (errors shown in red are encountered metadata errors).
-make test-README
 ```
 
 In the examples, use `--update` to update the input metadata (source data changes on the order of days, typically in the mornings Eastern time on weekdays).
@@ -78,9 +75,14 @@ python metadata.py --id AC_OR_SSC --meta-type hapi
 python metadata.py --id VOYAGER1_10S_MAG --meta-type hapi
 ```
 
+If you have [`make`](https://www.gnu.org/software/make/) installed, you can execute all of the examples in this README using
+```
+make test-README
+```
+
 ## 2.2 Generators
 
-`cdawmeta` uses ["generator" functions](https://github.com/rweigel/cdawmeta/tree/main/cdawmeta/generators) to create parts used in high-level metadata such as HAPI and SPASE. Each generator takes inputs that include its dependencies a produce new metadata. For example `start_stop.py` uses the output of `orig_data` to determine a `sample{StartStop}Date` to include in HAPI metadata.
+`cdawmeta` uses ["generator" functions](https://github.com/rweigel/cdawmeta/tree/main/cdawmeta/generators) to create parts used in high-level metadata such as HAPI and SPASE. Each generator takes inputs that include its dependencies a produce new metadata. For example, `start_stop.py` uses the output of `orig_data` to determine a `sample{StartStop}Date` to include in HAPI metadata.
 
 ### 2.2.1 start_stop
 
@@ -102,7 +104,7 @@ Produces the following output, which can be [downloaded directly](http://mag.gmu
     "data": {
       "sampleStartDate": "1991-10-28T04:59:54.000Z",
       "sampleStopDate": "1991-11-26T19:09:30.000Z",
-      "note": "sample{Start,Stop}Date corresponds to the time range spanned by the penultimate file in the reponse from https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/VOYAGER1_10S_MAG/orig_data/19770905T141947Z,19911227T000042Z, where the start/end in this URL correponds to the start/end of the dataset."
+      "note": "sample{Start,Stop}Date corresponds to the time range spanned by the penultimate file in the response from https://cdaweb.gsfc.nasa.gov/WS/cdasr/1/dataviews/sp_phys/datasets/VOYAGER1_10S_MAG/orig_data/19770905T141947Z,19911227T000042Z, where the start/end in this URL corresponds to the start/end of the dataset."
     }
   }
 }
@@ -114,7 +116,7 @@ Produces the following output, which can be [downloaded directly](http://mag.gmu
 Used in HAPI and SPASE.
 
 ```
-python metadata.py --id VOYAGER1_10S_MAG --meta-type start_stop
+python metadata.py --id VOYAGER1_10S_MAG --meta-type cadence
 ```
 Produces the following output (full output can be [downloaded directly](http://mag.gmu.edu/git-data/cdawmeta/data/cadence/info/VOYAGER1_10S_MAG.json)).
 

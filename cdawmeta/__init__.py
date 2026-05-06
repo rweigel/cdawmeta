@@ -17,6 +17,7 @@ __all__ = [
             'metadata',
             'reports',
             'restructure',
+            'split_variables',
             'table',
             'trace',
             'util'
@@ -45,5 +46,6 @@ from cdawmeta.generate import generate
 from cdawmeta.logger import logger
 from cdawmeta.metadata import ids
 from cdawmeta.metadata import metadata
+from cdawmeta.split_variables import split_variables
 
 from cdawmeta.table import table

@@ -53,8 +53,7 @@ def master(master, master_url, logger=None):
     variable_keys = list(variable.keys())
     if len(variable_keys) > 1:
       msg = "Expected only one variable key in variable object. Exiting witih code 1."
-      logger.error(msg)
-      exit(1)
+      raise Exception(msg)
 
     variable_name = variable_keys[0]
     variable_array = variable[variable_name]

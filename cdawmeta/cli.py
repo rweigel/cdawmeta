@@ -105,6 +105,12 @@ def cli(script, defs=False):
       "default": './data',
       "_used_by_all": True
     },
+    "use-orig-data": {
+      "action": "store_true",
+      "help": "Use orig_data instead of cdfmetafile for generators that need a dataset file list.",
+      "default": False,
+      "_used_by": ['metadata.py']
+    },
 
     "report-name": {
       "help": "Name of report to execute (default: all reports)",

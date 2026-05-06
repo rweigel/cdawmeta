@@ -18,7 +18,7 @@ spase_auto-regen: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(REGEN)
 
 hapi-update: cdawmeta.egg-info
-	python metadata.py --meta-type hapi --meta-type spase_auto $(UPDATE)
+	python metadata.py --meta-type hapi $(UPDATE)
 	python table.py --regen --regen-skip cadence
 	rsync -avz data/table weigel@rweigel.dynu.net:git/hapi/cdawmeta/data/
 	make diffs
@@ -101,6 +101,11 @@ test-table: cdawmeta.egg-info
 test-report: cdawmeta.egg-info
 	python report.py --id AC_OR_DEF --update
 
+rsync-from-spot10:
+	rsync -avz -e 'ssh -p 890' \
+		--delete \
+		weigel@cottagesystems.com:cdawmeta/data .
+
 rsync-to-spot10:
 	rsync -avz -e 'ssh -p 890' \
 		--delete \
@@ -134,7 +139,6 @@ rsync-to-mag:
 	rsync -avz \
 		--exclude data/hpde.io \
 		--exclude data/cdaweb.gsfc.nasa.gov \
-		--exclude data/crontab \
 		--exclude data/CachedSession \
 		--delete \
 		data weigel@mag.gmu.edu:www/git-data/cdawmeta
