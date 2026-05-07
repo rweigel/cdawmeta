@@ -440,11 +440,11 @@ def _check_data_types(id, master, depend_0_name, logger):
 
   if 'RecVariance' not in VarDescription:
     emsg = "    No RecVariance in master."
-    cdawmeta.error("cadence", id, depend_0_name, "CDF.RecVarianceNotVARYInMaster", emsg, logger)
+    cdawmeta.error("cadence", id, depend_0_name, "CDF.NoRecVarianceInMaster", emsg, logger)
     return emsg
 
   if VarDescription['RecVariance'] != 'VARY':
-    emsg = f"    RecVariance = '{VarDescription['RecVariance']}' is not 'VARY' in master."
+    emsg = f"    RecVariance = '{VarDescription['RecVariance']}' for DEPEND_0 = '{depend_0_name}' variable is not 'VARY' in master."
     cdawmeta.error("cadence", id, depend_0_name, "CDF.RecVarianceNotVARYInMaster", emsg, logger)
     return emsg
 
