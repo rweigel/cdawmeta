@@ -598,9 +598,8 @@ def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
   instead of getting this information from a web service on a per-dataset basis,
   it gets all information for all datasets from the file
   config/urls.json['cdfmetafile'], which at the time of this writing is
-  https://cdaweb.gsfc.nasa.gov/~tkovalic/metadata/sp_phys_cdfmetafile.txt.
-
-  sp_phys_cdfmetafile.txt is used instead of the /orig_data endpoint used by
+    https://spdf.gsfc.nasa.gov/pub/catalogs/cdfmetafile_for_hapi.txt
+  cdfmetafile_for_hapi.txt is used instead of the /orig_data endpoint used by
   _orig_data is the /orig_data endpoint can be very slow for datasets that
   have many files because each request requires a directory listing and checking
   the mtime and size of each file using stat() or equivalent.
@@ -670,7 +669,7 @@ def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
 
 
   url = cdawmeta.CONFIG['urls']['cdfmetafile']
-  file = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'sp_phys_cdfmetafile.txt')
+  file = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'cdfmetafile_for_hapi.txt')
   file_allxml = os.path.join(cdawmeta.DATA_DIR, 'allxml', 'all.xml')
   out_dir = os.path.join(cdawmeta.DATA_DIR, 'cdfmetafile', 'info')
 
