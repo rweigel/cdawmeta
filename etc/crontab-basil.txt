@@ -1,0 +1,1 @@
+0 10 * * * /home/hapi/hapi_meta/cdawmeta/etc/crontab-basil.sh

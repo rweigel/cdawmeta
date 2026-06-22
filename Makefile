@@ -17,6 +17,12 @@ spase_auto-update: cdawmeta.egg-info
 spase_auto-regen: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(REGEN)
 
+hapi-update-basil:
+	python metadata.py --meta-type hapi $(UPDATE)
+	- python table.py --regen --regen-skip cadence
+	- make diffs
+	- python metadata.py --meta-type spase_auto $(REGEN)
+
 hapi-update: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE)
 	python table.py --regen --regen-skip cadence
