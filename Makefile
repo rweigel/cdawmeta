@@ -22,7 +22,7 @@ spase_auto-regen: cdawmeta.egg-info
 # Assumes venv created with /usr/bin/python3.12 -m venv ~/hapi_test 
 VENVDIR=~/hapi_test
 ACTIVATE=source $(VENVDIR)/bin/activate
-CRONLOG=data/crontab/basil.$(shell date +%Y-%m-%dT%H).log
+CRONLOG=data/crontab/basil.$(shell date +%Y-%m-%dT%H:%M).log
 
 crontab-basil:
 	mkdir -p data/crontab
@@ -30,6 +30,7 @@ crontab-basil:
 
 hapi-update-basil:
 	- git pull
+	- git log --oneline -n 5
 	- $(ACTIVATE); pip install -e .
 	$(ACTIVATE); python metadata.py --meta-type hapi $(UPDATE)
 	- $(ACTIVATE); python table.py --regen --regen-skip cadence
@@ -44,6 +45,7 @@ crontab-basil-fast:
 
 hapi-update-basil-fast:
 	- git pull
+	- git log --oneline -n 5
 	- $(ACTIVATE); pip install -e .
 	$(ACTIVATE); python metadata.py --id AC_H0_MFI --meta-type hapi $(UPDATE)
 	- $(ACTIVATE); python table.py --id AC_H0_MFI --regen --regen-skip cadence
