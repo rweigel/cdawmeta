@@ -29,19 +29,19 @@ crontab-basil:
 	make hapi-update-basil >> $(CRONLOG) 2>&1
 
 hapi-update-basil:
-	git stash; git pull; pip install -e . --force-reinstall
+	- git pull
+	- $(ACTIVATE); pip install -e .
 	$(ACTIVATE); python metadata.py --meta-type hapi $(UPDATE)
 	- $(ACTIVATE); python table.py --regen --regen-skip cadence
 	- make diffs
 	- $(ACTIVATE); python metadata.py --meta-type spase_auto $(REGEN)
 
 hapi-update-basil-fast:
-	git stash; git pull; pip install -e . --force-reinstall
+	- git pull
+	- $(ACTIVATE); pip install -e .
 	$(ACTIVATE); python metadata.py --id AC_H0_MFI --meta-type hapi $(UPDATE)
 	- $(ACTIVATE); python table.py --id AC_H0_MFI --regen --regen-skip cadence
-	- make diffs
 	- $(ACTIVATE); python metadata.py --id AC_H0_MFI --meta-type spase_auto $(REGEN)
-
 ################################################################################
 
 
@@ -54,7 +54,7 @@ hapi-update: cdawmeta.egg-info
 	make rsync-to-mag
 
 cdawmeta.egg-info:
-	pip install -e . --force-reinstall
+	pip install -e .
 
 ################################################################################
 diffs:
