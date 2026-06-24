@@ -26,7 +26,7 @@ CRONLOG=data/crontab/basil.$(shell date +%Y-%m-%dT%H).log
 
 crontab-basil:
 	mkdir -p data/crontab
-	make hapi-update-basil >> $(CRONLOG) 2>&1
+	make hapi-update-basil 2>&1 | sed 's/\x1b\[[0-9;]*m//g' >> $(CRONLOG)
 
 hapi-update-basil:
 	- git pull
@@ -35,6 +35,12 @@ hapi-update-basil:
 	- $(ACTIVATE); python table.py --regen --regen-skip cadence
 	- make diffs
 	- $(ACTIVATE); python metadata.py --meta-type spase_auto $(REGEN)
+
+
+crontab-basil-fast:
+	mkdir -p data/crontab
+	# sed command strips ANSI color codes from the output
+	make hapi-update-basil-fast 2>&1 | sed 's/\x1b\[[0-9;]*m//g' >> $(CRONLOG)
 
 hapi-update-basil-fast:
 	- git pull
