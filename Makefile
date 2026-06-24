@@ -17,11 +17,33 @@ spase_auto-update: cdawmeta.egg-info
 spase_auto-regen: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(REGEN)
 
+################################################################################
+# Basil machine at cdaweb
+# Assumes venv created with /usr/bin/python3.12 -m venv ~/hapi_test 
+VENVDIR=~/hapi_test
+ACTIVATE=source $(VENVDIR)/bin/activate
+CRONLOG=data/crontab/basil.$(shell date +%Y-%m-%dT%H).log
+
+crontab-basil:
+	mkdir -p data/crontab
+	make hapi-update-basil >> $(CRONLOG) 2>&1
+
 hapi-update-basil:
-	python metadata.py --meta-type hapi $(UPDATE)
-	- python table.py --regen --regen-skip cadence
+	git stash; git pull; pip install -e . --force-reinstall
+	$(ACTIVATE); python metadata.py --meta-type hapi $(UPDATE)
+	- $(ACTIVATE); python table.py --regen --regen-skip cadence
 	- make diffs
-	- python metadata.py --meta-type spase_auto $(REGEN)
+	- $(ACTIVATE); python metadata.py --meta-type spase_auto $(REGEN)
+
+hapi-update-basil-fast:
+	git stash; git pull; pip install -e . --force-reinstall
+	$(ACTIVATE); python metadata.py --id AC_H0_MFI --meta-type hapi $(UPDATE)
+	- $(ACTIVATE); python table.py --id AC_H0_MFI --regen --regen-skip cadence
+	- make diffs
+	- $(ACTIVATE); python metadata.py --id AC_H0_MFI --meta-type spase_auto $(REGEN)
+
+################################################################################
+
 
 hapi-update: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE)
@@ -31,6 +53,10 @@ hapi-update: cdawmeta.egg-info
 	- python metadata.py --meta-type spase_auto $(REGEN)
 	make rsync-to-mag
 
+cdawmeta.egg-info:
+	pip install -e . --force-reinstall
+
+################################################################################
 diffs:
 	mkdir -p data/0SKELTABLES/diffs
 	mkdir -p data/0SKELTABLES/data
@@ -44,33 +70,6 @@ diffs:
 	rm -rf data/0SKELTABLES/data
 	mv data/0SKELTABLES-new/data data/0SKELTABLES
 
-diffsx:
-	cd ../cdawmeta-data; git add -A
-
-	- cd ../cdawmeta-data; git commit -m 'update master' -- 0SKELTABLES;
-	cd ../cdawmeta-data; \
-	  mkdir -p 0SKELTABLES/diffs; \
-	  git $(DIFF_STR) 0SKELTABLES > 0SKELTABLES/diffs/diffs.$(DATE_STR).log;
-#	  cp 0SKELTABLES/diffs/diffs.$(DATE_STR).log ../cdawmeta-data-diffs/0SKELTABLES.log;
-
-	- cd ../cdawmeta-data; git commit -m 'update master' -- master;
-	cd ../cdawmeta-data; \
-	  mkdir -p master/diffs; \
-	  git $(DIFF_STR) master > master/diffs/diffs.$(DATE_STR).log;
-#	  cp master/diffs/diffs.$(DATE_STR).log ../cdawmeta-data-diffs/master.log;
-
-	- cd ../cdawmeta-data; git commit -m 'update hapi' -- hapi;
-	cd ../cdawmeta-data; \
-	  mkdir -p hapi/diffs; \
-	  git $(DIFF_STR) hapi > hapi/diffs/diffs.$(DATE_STR).log;
-#	  cp hapi/diffs/diffs.$(DATE_STR).log ../cdawmeta-data-diffs/hapi.log
-
-	cd ../cdawmeta-data; \
-	  git add hapi/diffs 0SKELTABLES/diffs master/diffs; \
-	  git commit -m 'update diffs'
-
-#cd ../cdawmeta-data-diffs; \
-#git commit -a -m 'update diffs'; git push --force
 
 hapi-updatex: cdawmeta.egg-info
 	python metadata.py --meta-type hapi $(UPDATE) --id-skip '^MMS|^C|^T'
@@ -87,10 +86,10 @@ all-update: cdawmeta.egg-info
 
 cadence-regen: cdawmeta.egg-info
 	python metadata.py --id-skip '$(ID_SKIP)' --meta-type cadence --regen --write-catalog
+################################################################################
 
-clean:
-	-rm -rf data/*
 
+################################################################################
 test-README: cdawmeta.egg-info
 	python metadata.py --id AC_OR_SSC --meta-type hapi
 	python metadata.py --id AC_OR_SSC --meta-type hapi --update
@@ -106,7 +105,10 @@ test-table: cdawmeta.egg-info
 
 test-report: cdawmeta.egg-info
 	python report.py --id AC_OR_DEF --update
+################################################################################
 
+
+################################################################################
 rsync-from-spot10:
 	rsync -avz -e 'ssh -p 890' \
 		--delete \
@@ -151,15 +153,12 @@ rsync-to-mag:
 
 rsync-from-mag:
 	rsync -avz weigel@mag.gmu.edu:www/git-data/cdawmeta/ .
-
-cdawmeta.egg-info:
-	pip install -e .
 ################################################################################
 
 ################################################################################
-
 skterrors:
 	find data/cdaweb.gsfc.nasa.gov/pub/software/cdawlib/0MASTERS -name "*.cdf" | xargs -J{} java -cp data/skteditor-1.3.11/spdfjavaClasses.jar gsfc.spdf.istp.tools.CDFCheck {} > {}.log
+################################################################################
 
 ################################################################################
 table/table-ui:
@@ -193,12 +192,3 @@ table-serve: #cdawmeta.egg-info data/table/cdaweb.variable.sql data/table/cdaweb
 	$(PYTHON) table/table-ui/serve.py --port 8053 --sqldb data/table/spase.parameter.sql &
 	$(PYTHON) table/table-ui/serve.py --port 8054 --sqldb data/table/spase.dataset.sql
 ################################################################################
-
-# Not finished
-CENV=python3.10.9-cdawmeta-test
-conda-env:
-	- echo "$$CONDA_DEFAULT_ENV" | grep -q "^$(CENV)" && conda deactivate 2> /dev/null || true
-	- conda env list | grep -q "^$(CENV)" && conda remove --name $(CENV) --all -y 2> /dev/null || true
-	conda create --name $(CENV) pip -y
-	conda activate $(CENV)
-	conda install pip

@@ -1,1 +1,1 @@
-0 10 * * * /home/hapi/hapi_meta/cdawmeta/etc/crontab-basil.sh
+0 10 * * * cd /home/hapi//hapi_meta/cdawmeta; make hapi-update-basil
