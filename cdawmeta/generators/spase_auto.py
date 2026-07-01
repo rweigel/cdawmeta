@@ -159,10 +159,11 @@ def spase_auto(metadatum, logger):
   NumericalData['ObservedRegion'] = ObservedRegions.get(sc, None)
   NumericalData['_ObservedRegion'] = f"Source: {cdawmeta_spase}/ObservedRegion.json"
 
-  NumericalData['ProcessingLevel'] = None
-  msg = "Processing level is not available in the master file; "
-  msg += f"it should be there instead of, say, {cdawmeta_spase}/ProcessingLevel.json"
-  NumericalData['_ProcessingLevel'] = msg
+  if False:
+    NumericalData['ProcessingLevel'] = None
+    msg = "Processing level is not available in the master file; "
+    msg += f"it should be there instead of, say, {cdawmeta_spase}/ProcessingLevel.json"
+    NumericalData['_ProcessingLevel'] = msg
 
   # Add InstrumentID from InstrumentID.json in https://github.com/rweigel/cdawmeta-spase
   # InstrumentID.json contains InstrumentIDs from existing SPASE records.
@@ -594,9 +595,13 @@ def _ParameterFromMaster(id, master, additions, logger):
       note = f"The time index (the ISTP DEPEND_0 variable) for this parameter is {depend_0_name}."
       param['Description'] = f"Master CDF CATDESC: '{catdesc}'. Master CDF VAR_NOTES: '{var_notes}'. Notes not in Master CDF: '{note}'"
 
-      units = attrs.get('x_UNITS') or attrs.get('UNITS')
+      units = attrs.get('UNITS')
       if units:
         param['Units'] = units
+
+      si_conversion = attrs.get('SI_CONVERSION', None)
+      if si_conversion is not None:
+        param['UnitsConversion'] = si_conversion
 
       fillval = attrs.get('FILLVAL', None)
       if fillval is not None:
@@ -605,6 +610,32 @@ def _ParameterFromMaster(id, master, additions, logger):
       dim_sizes = desc.get('DimSizes', None)
       if dim_sizes:
         param['Structure'] = {'Size': dim_sizes}
+
+      if False:
+        # Needs work and testing
+        x_UNITS = attrs.get('x_UNITS')
+        x_LABLAXES = attrs.get('x_LABLAXIS', None)
+
+        if isinstance(dim_sizes, int):
+          dim_sizes = [dim_sizes]
+
+        a = x_LABLAXES is not None
+        b = isinstance(x_LABLAXES, list) and isinstance(x_LABLAXES[0], list)
+        c = dim_sizes is not None and len(dim_sizes) > 0
+        d = len(x_LABLAXES[0]) == dim_sizes[0]
+        if a and b and c and d:
+          elements = []
+          for idx, label in enumerate(x_LABLAXES[0]):
+            elements.append({
+              'Name': label,
+              'Index': idx
+            })
+            if x_UNITS is not None and isinstance(x_UNITS, list):
+              if len(x_UNITS[0]) == len(x_LABLAXES[0]):
+                elements[-1]['Units'] = x_UNITS[idx]
+
+          param['Structure']['Element'] = elements
+
 
       all_parameters.append(param)
 
