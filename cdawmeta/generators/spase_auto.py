@@ -6,9 +6,17 @@ def spase_auto(metadatum, logger):
 
   additions = cdawmeta.additions(logger)
 
+  # Use for start/stop
   allxml = metadatum['allxml']
-  hapi = metadatum['hapi']['data']
+
+  # master_resolved is the master file with all references resolved, and other
+  # corrections applied.
   master = metadatum['master_resolved']['data']
+
+  # HAPI metadata is used for Cadence. Ideally we use the generated cadence
+  # metadata.
+  hapi = metadatum['hapi']['data']
+
 
   config = cdawmeta.CONFIG['spase_auto']
   logger.debug(f"Using config: {config}")
@@ -40,10 +48,14 @@ def spase_auto(metadatum, logger):
   url = cdawmeta.util.get_path(metadatum, ['master', 'url']) + " (from all.xml)"
   spase_auto_['Spase']['_MasterURL'] = url
 
+  # Add ResourceID from ResourceID.json in https://github.com/rweigel/cdawmeta-spase
+  # (ResourceID.json was created using information in existing SPASE records in
+  # hpdeio repository.)
   ResourceIDs = additions.get('ResourceID', None)
   NumericalData['ResourceID'] = ResourceIDs.get(metadatum['id'], None)
   NumericalData['_ResourceID'] = f"Source: {cdawmeta_spase}/ResourceID.json"
 
+  # Get Logical_source_description from master
   p = ['CDFglobalAttributes', 'Logical_source_description']
   ResourceName = cdawmeta.util.get_path(master, p)
   if ResourceName is not None:
@@ -51,6 +63,7 @@ def spase_auto(metadatum, logger):
     source = f'Source: Master/{"/".join(p)}'
     NumericalData['ResourceHeader']['_ResourceName'] = source
 
+  # Get Logical_source from master
   p = ['CDFglobalAttributes', 'Logical_source']
   AlternateName = cdawmeta.util.get_path(master, p)
   if AlternateName is not None:
@@ -58,6 +71,7 @@ def spase_auto(metadatum, logger):
     source = f'Source: Master/{"/".join(p)}'
     NumericalData['ResourceHeader']['_AlternateName'] = source
 
+  # Get Description from master
   p = ['CDFglobalAttributes', 'TEXT']
   Description = cdawmeta.util.get_path(master, p)
   if Description is not None:
@@ -75,8 +89,16 @@ def spase_auto(metadatum, logger):
   p = ['CDFglobalAttributes', 'TITLE']
   ProviderResourceName = cdawmeta.util.get_path(master, p)
   if ProviderResourceName is not None:
-    source = f"Source: {'/'.join(p)}"
+    source = f"Source: Master/{'/'.join(p)}"
     NumericalData['ProviderResourceName'] = ProviderResourceName
+    NumericalData['_ProviderResourceName'] = source
+
+  p = ['CDFglobalAttributes', 'Data_version']
+  ProviderVersion = cdawmeta.util.get_path(master, p)
+  if ProviderVersion is not None:
+    source = f"Source: Master/{'/'.join(p)}"
+    NumericalData['ProviderVersion'] = ProviderVersion
+    NumericalData['_ProviderVersion'] = source
 
   p = ['CDFglobalAttributes', 'Rules_of_use']
   Caveats = cdawmeta.util.get_path(master, p)
@@ -85,15 +107,20 @@ def spase_auto(metadatum, logger):
     NumericalData['Caveats'] = Caveats
     NumericalData['_Caveats'] = source
 
+  # Get DOI from existing SPASE records in hpdeio repository.
   DOIs = additions.get('DOI')
   NumericalData['DOI'] = DOIs.get(metadatum['id'], None)
   NumericalData['_DOI'] = f"Source: {cdawmeta_spase}/DOI.json"
 
+  # Add Rights from Rights.json in https://github.com/rweigel/cdawmeta-spase
   NumericalData['ResourceHeader']['_Rights'] = additions.get('Rights')
 
+  # No need to extract from allxml - they are identical to what is in master.
   fromAllXML = _InformationURL_allxml(allxml)
   fromMaster = _InformationURL_master(master)
   fromHDPEIO = _InformationURL_hpdeio(metadatum['id'], additions.get('InformationURL'))
+  # Combine all InformationURL entries, prioritizing
+  # InformationURL.json > master > all.xml, and add _Note about which source(s) they came from.
   InformationURL = _InformationURL(fromAllXML, fromMaster, fromHDPEIO, logger)
   if InformationURL is not None:
     NumericalData['ResourceHeader']['InformationURL'] = InformationURL
@@ -107,15 +134,26 @@ def spase_auto(metadatum, logger):
     NumericalData['ResourceHeader']['Contact'] = Contacts
     NumericalData['ResourceHeader']['_Contact'] = f"Source: {cdawmeta_spase}/Contact.json"
 
+
   NumericalData['TemporalDescription'] = _TemporalDescription(allxml)
   if isinstance(hapi, dict):
-    # Only one DEPEND_0
-    Cadence = _Cadence(hapi['info'])
+    # Only one DEPEND_0.
+    Cadence = _Cadence(master, hapi['info'])
     if Cadence is not None:
       NumericalData['TemporalDescription'].update(Cadence)
+    else:
+      p = ['CDFglobalAttributes', 'Time_resolution']
+      Cadence = cdawmeta.util.get_path(master, p)
+      if Cadence is not None:
+        NumericalData['TemporalDescription']['Cadence'] = Cadence
+        NumericalData['TemporalDescription']['_Cadence'] = f"Source: Master/{'/'.join(p)}"
 
+  # Add keywords from all.xml and master.
   NumericalData['Keyword'] = _Keyword(allxml, master)
 
+  # Add ObservedRegion from ObservedRegion.json in https://github.com/rweigel/cdawmeta-spase
+  # ObservedRegion.json contains ObservedRegions from existing SPASE records +
+  # corrections.
   ObservedRegions = additions.get('ObservedRegion')
   sc = metadatum['id'].split('_')[0]
   NumericalData['ObservedRegion'] = ObservedRegions.get(sc, None)
@@ -126,19 +164,22 @@ def spase_auto(metadatum, logger):
   msg += f"it should be there instead of, say, {cdawmeta_spase}/ProcessingLevel.json"
   NumericalData['_ProcessingLevel'] = msg
 
+  # Add InstrumentID from InstrumentID.json in https://github.com/rweigel/cdawmeta-spase
+  # InstrumentID.json contains InstrumentIDs from existing SPASE records.
   InstrumentIDs = additions.get('InstrumentID')
   NumericalData['InstrumentID'] = InstrumentIDs.get(metadatum['id'], None)
 
+  # Add MeasurementType from MeasurementType.json in https://github.com/rweigel/cdawmeta-spase
+  # MeasurementType.json contains MeasurementTypes from existing SPASE records.
   MeasurementType = additions.get('MeasurementType')
   NumericalData['MeasurementType'] = MeasurementType.get(metadatum['id'], None)
-
 
   if config['include_parameters']:
     if hapi is None:
       NumericalData['_Parameter'] = "No HAPI parameter info available to generate Parameter list."
     else:
-      #NumericalData['Parameter'] = _Parameter(hapi, additions)
-      NumericalData['Parameter2'] = _Parameter2(metadatum['id'], master, additions, logger)
+      #NumericalData['Parameter2'] = _ParameterFromHAPI(hapi, additions)
+      NumericalData['Parameter'] = _ParameterFromMaster(metadatum['id'], master, additions, logger)
       if False:
         comparison = _compare_parameters(
           NumericalData['Parameter'], NumericalData['Parameter2'], logger
@@ -387,10 +428,15 @@ def _TemporalDescription(allxml):
   return _TemporalDescription
 
 
-def _Cadence(hapi_info):
+def _Cadence(master, hapi_info):
 
-  if hapi_info.get('cadence', None) is None:
-    return None
+
+  p = ['CDFglobalAttributes', 'Time_resolution']
+  Cadence_master = cdawmeta.util.get_path(master, p)
+  source = f"Source: Master/{'/'.join(p)}"
+
+  Cadence_hapi = hapi_info.get('cadence', None)
+  source_hapi = f"Source: HAPI info/cadence"
 
   Cadence = {
     'Cadence': hapi_info['cadence'],
@@ -434,7 +480,7 @@ def _Keyword(allxml, master):
 def _compare_parameters(params1, params2, logger):
   """Compare Parameter (hapi) and Parameter2 (master) lists by ParameterKey.
 
-  Returns a dict summarising differences, common keys, and keys unique to each.
+  Returns a dict summarizing differences, common keys, and keys unique to each.
   Also logs a summary.
   """
   if not params1 or not params2:
@@ -482,7 +528,7 @@ def _compare_parameters(params1, params2, logger):
   }
 
 
-def _Parameter2(id, master, additions, logger):
+def _ParameterFromMaster(id, master, additions, logger):
 
   master_split = cdawmeta.split_variables(id, master['CDFVariables'], logger=None, meta_type='master', omit_variable=None)
   all_parameters = []
@@ -512,7 +558,7 @@ def _Parameter2(id, master, additions, logger):
     Units = depend_0_attrs.get('UNITS')
     logger.info(f"      Units: {Units}")
 
-    note = "Notes not in Master CDF: 'The units are the units in CDF files. For other web services, this variable is may be represented as a time string.'"
+    note = "Added notes: 'The units are the units in CDF files. For other web services, this variable is may be represented as a time string.'"
     Description += note
     logger.info(f"      Description: {Description}")
 
@@ -565,13 +611,14 @@ def _Parameter2(id, master, additions, logger):
   return all_parameters if all_parameters else None
 
 
-def _Parameter(hapi, additions, include_cadence=False):
+def _ParameterFromHAPI(hapi, additions, include_cadence=False):
 
   if isinstance(hapi, list):
     # More than one DEPEND_0
     Parameter = []
     for dataset in hapi:
-      Parameter.append(_Parameter(dataset, additions, include_cadence=True))
+      # HAPI dataset split by DEPEND_0
+      Parameter.append(_ParameterFromHAPI(dataset, additions, include_cadence=True))
 
     # https://stackoverflow.com/a/45323085
     # sum() is used to flatten a list of lists
