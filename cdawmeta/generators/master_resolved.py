@@ -39,6 +39,10 @@ def master_resolved(metadatum, logger):
   _fix_attributes(metadatum, logger)
   logger.info("- End fixing of attributes in master CDF")
 
+
+  _check_depend_0_variables(id, variables, logger)
+
+
   for variable_name in variable_names.copy():
 
     logger.info(f"  {variable_name}")
@@ -94,18 +98,23 @@ def master_resolved(metadatum, logger):
         emsg = f"{indent}For VAR_TYPE = 'data' or 'support_data', if no LABLAXIS, LABL_PTR_i is required."
         cdawmeta.error('master_resolved', id, variable_name, "ISTP.LABL_PTR.Missing", emsg, logger)
 
-    DEPEND = _DEPEND(id, variable_name, variables, variables_removed, logger)
-    if DEPEND is not None:
-      variable['VarAttributes']['x_DEPEND'] = DEPEND
-      logger.info(f"{indent}x_DEPEND: {DEPEND}")
+    DEPENDS = _DEPENDS(id, variable_name, variables, variables_removed, logger)
+    if DEPENDS is not None:
+      variable['VarAttributes']['x_DEPENDS'] = DEPENDS
+      logger.info(f"{indent}x_DEPENDS: {DEPENDS}")
 
-    if DEPEND is not None and DEPEND == LABL_PTR:
-      emsg = f"{indent}DEPEND == LABL_PTR. Removing redundant DEPEND and DEPEND_{{1,2,3}}"
+    if DEPENDS is not None and DEPENDS == LABL_PTR:
+      emsg = f"{indent}DEPENDS == LABL_PTR. Removing redundant DEPENDS and DEPEND_{{1,2,3}}"
       cdawmeta.error('master_resolved', id, variable_name, "CDF.DEPENDsEqualLABL_PTR", emsg, logger)
-      del variable['VarAttributes']['x_DEPEND']
-      for i in [1, 2, 3]:
+      del variable['VarAttributes']['x_DEPENDS']
+      for i in [1, 2, 3, 4, 5]:
         # TODO: This could create a metadata variable that is not referenced.
         variable['VarAttributes'].pop(f'DEPEND_{i}', None)
+
+    REPRESENTATIONS = _REPRESENTATIONS(id, variable_name, variables, variables_removed, logger)
+    if REPRESENTATIONS is not None:
+      variable['VarAttributes']['x_REPRESENTATIONS'] = REPRESENTATIONS
+      logger.info(f"{indent}x_REPRESENTATIONS: {REPRESENTATIONS}")
 
     v = variables[variable_name]['VarAttributes'].get('VIRTUAL', None)
     if v is not None and v == 'true':
@@ -121,10 +130,31 @@ def master_resolved(metadatum, logger):
           COMPONENTS.append(c)
           logger.info(f'{indent}COMPONENT_{i}: {c}')
       if len(COMPONENTS) > 0:
-        variable['VarAttributes']['COMPONENTS'] = COMPONENTS
-        logger.info(f"{indent}COMPONENTS: {COMPONENTS}")
+        variable['VarAttributes']['x_COMPONENTS'] = COMPONENTS
+        logger.info(f"{indent}x_COMPONENTS: {COMPONENTS}")
 
   return [master]
+
+
+def _check_depend_0_variables(id, variables, logger):
+  # Split variables to be under their DEPEND_0 (Keys are DEPEND_0 names), e.g.,
+  # {'Epoch': {'V1': {...}, 'V2': {...}}, 'Epoch2': {'V3': {...}, 'V4': {...}}}
+  vars_split = cdawmeta.split_variables(id, variables, logger, meta_type='master_resolved')
+  for depend_0_name in vars_split.keys():
+    expected = ['CDF_EPOCH', 'CDF_EPOCH16', 'CDF_TIME_TT2000', 'CDF_TIME_EPOCH8']
+    VarDescription = variables[depend_0_name].get('VarDescription', None)
+    if VarDescription is None:
+      # This error will be caught later
+      continue
+    DataType = VarDescription.get('DataType', None)
+    if DataType is None:
+      # This error will be caught later
+      continue
+    if DataType not in expected:
+      emsg = f"Error: DEPEND_0 variable '{id}'/{depend_0_name} has DataType = {DataType}, which is one of {expected}."
+      etype = "ISTP.DEPEND_0.InvalidDataType"
+      cdawmeta.error('master_resolved', id, depend_0_name, etype, "    " + emsg, logger)
+
 
 def _fix_attributes(metadatum, logger):
   id = metadatum['id']
@@ -159,6 +189,7 @@ def _fix_attributes(metadatum, logger):
     DISPLAY_TYPE = _DISPLAY_TYPE(id, variable_name, variable, logger)
     if DISPLAY_TYPE is not None:
       variable['VarAttributes']['DISPLAY_TYPE'] = DISPLAY_TYPE
+
 
 def _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_name=None):
 
@@ -256,6 +287,7 @@ def _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_na
     logger.info(f"{indent}{ptr_name} values_trimmed: {values_trimmed}")
 
   return {'variable_name': ptr_var, 'values': values, 'values_trimmed': values_trimmed}
+
 
 def _check_variable(id, variable_name, variables, logger):
 
@@ -422,6 +454,7 @@ def _check_variable(id, variable_name, variables, logger):
 
   return None
 
+
 def _FUNCT(id, variable_name, variable, VIRTUAL, logger):
   FUNCT = variable['VarAttributes'].get('FUNCT', None)
   if VIRTUAL == 'false' and FUNCT is not None:
@@ -436,6 +469,7 @@ def _FUNCT(id, variable_name, variable, VIRTUAL, logger):
     FUNCT = 'alternate_view'
 
   return FUNCT
+
 
 def _VIRTUAL(id, variable_name, variable, logger):
   VIRTUAL = variable['VarAttributes'].get('VIRTUAL', None)
@@ -456,6 +490,7 @@ def _VIRTUAL(id, variable_name, variable, logger):
     variable['VarAttributes']['VIRTUAL'] = VIRTUAL
 
   return VIRTUAL
+
 
 def _DISPLAY_TYPE(dsid, variable_name, variable, logger):
 
@@ -502,7 +537,8 @@ def _DISPLAY_TYPE(dsid, variable_name, variable, logger):
 
   return display_type + display_type_attributes
 
-def _DEPEND(id, variable_name, variables, variables_removed, logger):
+
+def _DEPENDS(id, variable_name, variables, variables_removed, logger):
   depend = []
 
   found = False
@@ -519,6 +555,7 @@ def _DEPEND(id, variable_name, variables, variables_removed, logger):
     depend = None
 
   return depend
+
 
 def _LABLAXIS(id, variable, logger):
 
@@ -540,11 +577,12 @@ def _LABLAXIS(id, variable, logger):
 
   return LABLAXIS
 
+
 def _LABL_PTR(id, variable_name, variables, variables_removed, logger):
 
   labl_ptrs = []
   found = False
-  for i in [1, 2, 3]:
+  for i in [1, 2, 3, 4, 5]:
     labl_ptr_resolved = _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_name=f'LABL_PTR_{i}')
     if labl_ptr_resolved is not None:
       found = True
@@ -554,6 +592,23 @@ def _LABL_PTR(id, variable_name, variables, variables_removed, logger):
     labl_ptrs = None
 
   return labl_ptrs
+
+
+def _REPRESENTATIONS(id, variable_name, variables, variables_removed, logger):
+
+  rep_ptrs = []
+  found = False
+  for i in [1, 2, 3, 4, 5]:
+    rep_ptr_resolved = _resolve_ptr(id, variable_name, variables, variables_removed, logger, ptr_name=f'REPRESENTATION_{i}')
+    if rep_ptr_resolved is not None:
+      found = True
+      rep_ptrs.append(rep_ptr_resolved['values_trimmed'])
+
+  if not found:
+    rep_ptrs = None
+
+  return rep_ptrs
+
 
 def _UNITS(id, variable_name, variables, variables_removed, logger):
 
@@ -631,6 +686,7 @@ def _UNITS(id, variable_name, variables, variables_removed, logger):
 
   return units
 
+
 def _UNITS_VO(id, variable_name, UNITS, additions, logger):
 
   if UNITS is None:
@@ -672,6 +728,7 @@ def _UNITS_VO(id, variable_name, UNITS, additions, logger):
       logger.info(f"{indent}UNITS_VO:       '{UNITS_VO}'")
 
   return UNITS_VO
+
 
 def _default_fill(cdf_type):
 

@@ -16,6 +16,7 @@ def _logger(log_level='info', logger_=logger):
     logger = logger_
   return logger
 
+
 def ids(id=None, id_skip=None, update=False):
   '''Generate list of CDAWeb dataset IDs.
 
@@ -80,6 +81,7 @@ def ids(id=None, id_skip=None, update=False):
     return ids_reduced
 
   return _remove_skips(id_skip, ids_reduced)
+
 
 def metadata(id=None,
              id_skip=None,
@@ -199,6 +201,7 @@ def metadata(id=None,
 
   return metadata_
 
+
 def _meta_loggers(meta_types, not_generated, log_level='info'):
   mloggers = {}
   for meta_type in meta_types:
@@ -206,6 +209,7 @@ def _meta_loggers(meta_types, not_generated, log_level='info'):
       continue
     mloggers[meta_type] = cdawmeta.logger(meta_type, log_level=log_level)
   return mloggers
+
 
 def _get_one(dataset, meta_types, meta_types_requested, update, update_skip, regen,
              regen_skip, not_generated, embed_data, mloggers, diffs, exit_on_exception):
@@ -259,6 +263,7 @@ def _get_one(dataset, meta_types, meta_types_requested, update, update_skip, reg
       logger.debug(dmsg)
       del dataset[meta_type]['data']
 
+
 def _meta_types(meta_types_requested):
   """Returns list of meta_types to needed to produce meta_types_requested."""
 
@@ -290,12 +295,14 @@ def _meta_types(meta_types_requested):
 
   return meta_types
 
+
 def _step_needed(meta_type, step, update, update_skips):
   if meta_type in update_skips:
     if update:
       logger.info(f"Setting {step}=False for '{meta_type}' because it is in {step}_skip.")
     return False
   return update
+
 
 def _datasets(allxml_data):
   '''
@@ -349,6 +356,7 @@ def _datasets(allxml_data):
 
   return datasets_
 
+
 def allxml(update=False, diffs=False, log_level='info'):
 
   timeout = cdawmeta.CONFIG['metadata']['timeouts']['allxml']
@@ -367,6 +375,7 @@ def allxml(update=False, diffs=False, log_level='info'):
 
   return allxml_data
 
+
 def _allxml(update=False, diffs=False):
 
   if hasattr(_allxml, 'allxml'):
@@ -380,6 +389,7 @@ def _allxml(update=False, diffs=False):
   _allxml.allxml = allxml_data
 
   return allxml_data
+
 
 def _master(dataset, update=False, diffs=False):
 
@@ -408,6 +418,7 @@ def _master(dataset, update=False, diffs=False):
     master['error'] = msg
 
   return master
+
 
 def _spase(dataset, update=True, diffs=False):
 
@@ -448,6 +459,7 @@ def _spase(dataset, update=True, diffs=False):
 
   return spase
 
+
 def _spase_hpde_io(id=None, update=True, diffs=False):
 
   import git
@@ -465,10 +477,10 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
   if update and not up_to_date:
     repo = git.Repo(repo_path)
     origin = repo.remotes.origin
-    logger.info(f"Fetching from {repo_url} to {repo_path}")
-    origin.fetch()
-    logger.info("Merging origin/master")
-    repo.git.merge('origin/master')
+    logger.info(f"Fetching latest master from {repo_url} to {repo_path}")
+    origin.fetch('master', depth=1)
+    logger.info("Fast-forwarding to origin/master")
+    repo.git.merge('--ff-only', 'origin/master')
 
   out_dir = os.path.join(cdawmeta.DATA_DIR, 'spase_hpde_io', 'info')
 
@@ -561,8 +573,8 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
                         'data': data
                       }
                 logger.debug(f"      Writing {json_file.replace('.json', '')}.{{json,pkl}}")
-                cdawmeta.util.write(json_file, data)
-                cdawmeta.util.write(pkl_file, data)
+                cdawmeta.util.write(json_file, data, atomic=True)
+                cdawmeta.util.write(pkl_file, data, atomic=True)
 
     if ProductKeyCDAWeb is None:
       logger.debug("  x Did not find CDAWeb ProductKey in any Repository")
@@ -570,6 +582,7 @@ def _spase_hpde_io(id=None, update=True, diffs=False):
       logger.debug(f"  + Found CDAWeb ProductKey: {ProductKeyCDAWeb}")
 
   logger.info(f"Found {n_found} NumericalData SPASE for CDAWeb.")
+
 
 def _orig_data(dataset, update=True, diffs=False):
 
@@ -589,6 +602,7 @@ def _orig_data(dataset, update=True, diffs=False):
   }
 
   return _fetch(url, dataset['id'], 'orig_data', **kwargs)
+
 
 def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
 
@@ -637,8 +651,8 @@ def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
       'data': {'FileDescription': files}
     }
     logger.info(f"  Writing {output_file.replace('.json', '')}.{{json,pkl}}")
-    cdawmeta.util.write(output_file, meta)
-    cdawmeta.util.write(output_file.replace(".json", ".pkl"), meta)
+    cdawmeta.util.write(output_file, meta, atomic=True)
+    cdawmeta.util.write(output_file.replace(".json", ".pkl"), meta, atomic=True)
 
   def create_infos(out_dir, info):
     dataset_line = "DATASET>"
@@ -705,6 +719,7 @@ def _cdfmetafile(dataset, update=False, diffs=False, exit_on_exception=False):
       causes += f"dataset '{id}' in {file_allxml} but not in {file}."
       error_result['error'] = f"File {pkl_file} not found. {causes}"
       return error_result
+
 
 def _write_combined(metadata_, id, meta_types):
 
@@ -795,21 +810,22 @@ def _write_combined(metadata_, id, meta_types):
     if meta_type != 'hapi':
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'combined{qualifier}')
       logger.info(f'Writing {fname}.json')
-      cdawmeta.util.write(fname + ".json", data)
+      cdawmeta.util.write(fname + ".json", data, atomic=True)
       logger.info(f'Writing {fname}.pkl')
-      cdawmeta.util.write(fname + ".pkl", data)
+      cdawmeta.util.write(fname + ".pkl", data, atomic=True)
     else:
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog{qualifier}')
       logger.info(f'Writing {fname}.json')
-      cdawmeta.util.write(fname + ".json", data_hapi_no_info)
+      cdawmeta.util.write(fname + ".json", data_hapi_no_info, atomic=True)
       logger.info(f'Writing {fname}.pkl')
-      cdawmeta.util.write(fname + ".pkl", data_hapi_no_info)
+      cdawmeta.util.write(fname + ".pkl", data_hapi_no_info, atomic=True)
 
       fname = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f'catalog-all{qualifier}')
       logger.info(f'Writing {fname}.json')
-      cdawmeta.util.write(fname + ".json", data_hapi)
+      cdawmeta.util.write(fname + ".json", data_hapi, atomic=True)
       logger.info(f'Writing {fname}.pkl')
-      cdawmeta.util.write(fname + ".pkl", data_hapi)
+      cdawmeta.util.write(fname + ".pkl", data_hapi, atomic=True)
+
 
 def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=False, update=False):
 
@@ -872,7 +888,7 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
     logger.info(msg)
   else:
     try:
-      cdawmeta.util.write(json_file, result, logger=logger)
+      cdawmeta.util.write(json_file, result, atomic=True, logger=logger)
     except Exception as e:
       msg = f"Error writing {json_file}: {e}"
       cdawmeta.error(meta_type, id, None, 'WriteError', msg, logger)
@@ -882,12 +898,13 @@ def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=Fa
     logger.info(msg)
   else:
     try:
-      cdawmeta.util.write(pkl_file, result, logger=logger)
+      cdawmeta.util.write(pkl_file, result, atomic=True, logger=logger)
     except Exception as e:
       msg = f"Error writing {pkl_file}: {e}"
       cdawmeta.error(meta_type, id, None, 'WriteError', msg, logger)
 
   return result
+
 
 def _update_dependencies(use_orig_data, meta_types_requested):
   if not use_orig_data:
@@ -906,4 +923,3 @@ def _update_dependencies(use_orig_data, meta_types_requested):
       logger.info(msg)
       cdawmeta.dependencies[meta_type_] = \
         [d if d != 'cdfmetafile' else 'orig_data' for d in deps]
-

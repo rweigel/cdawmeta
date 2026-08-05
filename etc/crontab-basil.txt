@@ -1,4 +1,4 @@
 # Can simulate crontab execution with
-# env -i HOME=/home/hapi PATH=/usr/local/bin:/usr/bin:/bin sh -c 'cd /home/hapi/hapi_meta/cdawmeta && make crontabl-basil'
+# env -i HOME=/home/hapi PATH=/usr/local/bin:/usr/bin:/bin sh -c 'cd /home/hapi/hapi_meta/cdawmeta && make crontab-basil'
 #53 10 * * * cd /Users/rweigel/git/hapi/cdawmeta; make crontab-basil
 0 10 * * * cd /home/hapi/hapi_meta/cdawmeta; make crontab-basil

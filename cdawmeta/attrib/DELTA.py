@@ -12,4 +12,4 @@ def DELTA(dsid, name, variable):
       attrib_val = variable['VarAttributes'][attrib]
       deltas[attrib] = attrib_val
       msg =f"{attrib} = '{attrib_val}' not used"
-  return deltas, msg, "NotImplemented.DELTA"
+  return deltas, msg, "NotImplementedDELTA"
