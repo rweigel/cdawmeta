@@ -1,6 +1,8 @@
 import os
 import cdawmeta
 
+atomic = True
+
 def generate(metadatum, gen_name, logger,
              update=True, regen=False, diffs=False,
              exit_on_exception=False):
@@ -25,7 +27,7 @@ def generate(metadatum, gen_name, logger,
         logger.info("Using JSON file because pkl file not found.")
         data = cdawmeta.util.read(file_name_json, logger=logger)
         logger.info(f"Writing {file_name_pkl}")
-        cdawmeta.util.write(file_name_pkl, data)
+        cdawmeta.util.write(file_name_pkl, data, atomic=atomic)
       if isinstance(data, list) and len(data) == 1:
         data = data[0]
       return {'id': id, 'log': msg, 'data-file': file_name_json, 'data': data}
@@ -41,7 +43,7 @@ def generate(metadatum, gen_name, logger,
     datasets = gen_func(metadatum, logger)
     if isinstance(datasets, dict):
       logger.info(f"Writing {file_name_error}")
-      cdawmeta.util.write(file_name_error, datasets['error'])
+      cdawmeta.util.write(file_name_error, datasets['error'], atomic=atomic)
       return {'id': id, 'log': None, 'error': datasets['error'], 'data-file': None, 'data': None}
   except Exception as e:
     # TODO: Use cached version if it exists?
@@ -60,17 +62,17 @@ def generate(metadatum, gen_name, logger,
   # Write pkl file with all datasets associated with a CDAWeb dataset.
   # "data" will be an array of dicts if datasets is an array of dicts.
   logger.info(f"Writing {file_name_pkl}")
-  cdawmeta.util.write(file_name_pkl, datasets)
+  cdawmeta.util.write(file_name_pkl, datasets, atomic=atomic)
   # JSON file not used internally, but useful for visual debugging
   logger.info(f"Writing {file_name_json}")
-  cdawmeta.util.write(file_name_json, datasets)
+  cdawmeta.util.write(file_name_json, datasets, atomic=atomic)
 
   if gen_name == 'spase_auto':
     # spase_auto always returns one dataset
     data_xml = _to_spase_xml(datasets)
     file_name_xml = file_name_pkl.replace('.pkl', '.xml')
     logger.info(f"Writing {file_name_xml}")
-    cdawmeta.util.write(file_name_xml, data_xml)
+    cdawmeta.util.write(file_name_xml, data_xml, atomic=atomic)
 
   if single:
     return {"id": id, "data-file": file_name_json, "data": datasets}
@@ -84,8 +86,8 @@ def generate(metadatum, gen_name, logger,
 
     file_name_pkl = os.path.join(base_path, f"{sid}.pkl")
     file_name_json = os.path.join(base_path, f"{sid}.json")
-    cdawmeta.util.write(file_name_pkl, dataset, logger=logger)
-    cdawmeta.util.write(file_name_json, dataset, logger=logger)
+    cdawmeta.util.write(file_name_pkl, dataset, atomic=atomic, logger=logger)
+    cdawmeta.util.write(file_name_json, dataset, atomic=atomic, logger=logger)
 
     data_files.append(file_name_json)
 

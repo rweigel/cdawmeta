@@ -1,6 +1,6 @@
 import cdawmeta
 
-dependencies = ['master_resolved', 'hapi', 'AccessInformation']
+dependencies = ['master_resolved', 'cadence', 'hapi', 'AccessInformation']
 
 def spase_auto(metadatum, logger):
 
@@ -17,6 +17,7 @@ def spase_auto(metadatum, logger):
   # metadata.
   hapi = metadatum['hapi']['data']
 
+  cadence = metadatum['cadence']['data']
 
   config = cdawmeta.CONFIG['spase_auto']
   logger.debug(f"Using config: {config}")
@@ -136,17 +137,9 @@ def spase_auto(metadatum, logger):
 
 
   NumericalData['TemporalDescription'] = _TemporalDescription(allxml)
-  if isinstance(hapi, dict):
-    # Only one DEPEND_0.
-    Cadence = _Cadence(master, hapi['info'])
-    if Cadence is not None:
-      NumericalData['TemporalDescription'].update(Cadence)
-    else:
-      p = ['CDFglobalAttributes', 'Time_resolution']
-      Cadence = cdawmeta.util.get_path(master, p)
-      if Cadence is not None:
-        NumericalData['TemporalDescription']['Cadence'] = Cadence
-        NumericalData['TemporalDescription']['_Cadence'] = f"Source: Master/{'/'.join(p)}"
+
+  Cadence = _Cadence(master, cadence)
+
 
   # Add keywords from all.xml and master.
   NumericalData['Keyword'] = _Keyword(allxml, master)
@@ -429,22 +422,25 @@ def _TemporalDescription(allxml):
   return _TemporalDescription
 
 
-def _Cadence(master, hapi_info):
+def _Cadence(master, cadence):
 
+  Cadence = None
+  _Cadence = ''
+
+  depend_0s = list(cadence.keys()) if cadence else None
+  first_depend_0 = depend_0s[0] if depend_0s else None
+  if first_depend_0 is not None:
+    if len(cadence[first_depend_0]) > 0:
+      Cadence = cadence[first_depend_0][0].get('duration_iso8601', None)
+      _Cadence = cadence[first_depend_0][0].get('note', '')
 
   p = ['CDFglobalAttributes', 'Time_resolution']
-  Cadence_master = cdawmeta.util.get_path(master, p)
-  source = f"Source: Master/{'/'.join(p)}"
+  Time_resolution = cdawmeta.util.get_path(master, p)
+  if Time_resolution is not None:
+    _Cadence += f" Time_resolution: {Time_resolution} (from Master/{'/'.join(p)})"
+    _Cadence = _Cadence.strip()
 
-  Cadence_hapi = hapi_info.get('cadence', None)
-  source_hapi = f"Source: HAPI info/cadence"
-
-  Cadence = {
-    'Cadence': hapi_info['cadence'],
-    '_Cadence': hapi_info['x_cadence_note']
-  }
-
-  return Cadence
+  return Cadence, _Cadence
 
 
 def _Keyword(allxml, master):

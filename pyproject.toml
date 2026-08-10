@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cdawmeta"
+version = "0.0.3"
+description = "Transform CDAWeb metadata to HAPI and SPASE; build tables for inspection in browser."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE.txt" }
+authors = [
+  { name = "Bob Weigel", email = "rweigel@gmu.edu" },
+]
+dependencies = [
+  "cdflib",
+  "GitPython",
+  "timedelta_isoformat",
+  "dicttoxml",
+  "utilrsw[net] @ git+https://github.com/rweigel/utilrsw@main",
+  "tableui @ git+https://github.com/rweigel/table-ui@main",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cdawmeta*"]
+exclude = ["data*", "etc*", "notes*", "table*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+cdawmeta = ["**/*.json", "**/*.md"]

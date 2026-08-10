@@ -46,7 +46,7 @@ def hapi(metadatum, _logger):
     logger.info(f"    {depend_0_name}")
     if _omit_dataset(id, depend_0=depend_0_name):
       msg = f"Not creating dataset for {id} with variable having DEPEND_0 = '{depend_0_name}'"
-      logger.info("    " + msg)
+      logger.info("      " + msg)
       continue
 
     DEPEND_0_VAR_TYPE = variables[depend_0_name]['VarAttributes']['VAR_TYPE']
@@ -95,7 +95,7 @@ def hapi(metadatum, _logger):
       else:
         what = "sub-dataset"
       msg = f"Due to last error, omitting {what} with DEPEND_0 = {depend_0_name}"
-      logger.info("    " + msg)
+      logger.info("      " + msg)
       continue
 
     depend_0_names.append(depend_0_name)
@@ -223,16 +223,19 @@ def _info_head(metadatum, depend_0_name):
 def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid, print_info=False):
 
   depend_0_variable = all_variables[depend_0_name]
-
   DEPEND_0_DataType = depend_0_variable['VarDescription']['DataType']
-  DEPEND_0_length = _cdftimelen(DEPEND_0_DataType)
 
-  if DEPEND_0_length is None:
-    emsg = f"Error: DEPEND_0 variable '{dsid}'/{depend_0_name} has unhandled "
-    emsg += f"type: '{DEPEND_0_DataType}'. Dropping variables associated with it"
-    etype = "HAPI.NotImplementedDataType"
-    cdawmeta.error('hapi', dsid, depend_0_name, etype, "    " + emsg, logger)
+  # This error is also logged in master_resolved.py.
+  expected = ['CDF_EPOCH', 'CDF_EPOCH16', 'CDF_TIME_TT2000']
+  if DEPEND_0_DataType not in expected:
+    emsg = f"Error: DEPEND_0 variable '{dsid}'/{depend_0_name} has DataType = "
+    emsg += f"{DEPEND_0_DataType}, which is not one of {expected}. "
+    emsg += "Dropping variables associated with it."
+    etype = "ISTP.DEPEND_0.InvalidDataType"
+    cdawmeta.error('hapi', dsid, depend_0_name, etype, "      " + emsg, logger)
     return None
+
+  DEPEND_0_length = _cdftimelen(DEPEND_0_DataType)
 
   if print_info:
     logger.info(f"    {depend_0_name} (variable associated with HAPI Time parameter)")
@@ -302,9 +305,9 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
 
     type_ = _to_hapi_type(variable['VarDescription']['DataType'])
     if type_ is None and print_info:
-      emsg = f"      Variable '{name}' has unhandled DataType: "
+      emsg = f"    Variable '{name}' has unhandled DataType: "
       emsg += f"{variable['VarDescription']['DataType']}. Dropping variable."
-      cdawmeta.error('hapi', dsid, name, "HAPI.NotImplemented", emsg, logger)
+      cdawmeta.error('hapi', dsid, name, "HAPI.NotImplementedDataType", emsg, logger)
       continue
 
     hapi_note = ""
@@ -313,10 +316,17 @@ def _variables2parameters(depend_0_name, depend_0_variables, all_variables, dsid
       hapi_note = "Note: CDF_UINT4 data was converted to HAPI double."
 
     if variable['VarDescription']['DataType'] == 'CDF_INT8':
-      emsg = f"Variable '{name}' has unhandled DataType: "
-      emsg += f"{variable['VarDescription']['DataType']} that cannot be mapped"
-      emsg += "to HAPI 32-bit signed integer type or HAPI double. Dropping variable."
-      cdawmeta.error('hapi', dsid, name, "HAPI.NotImplemented", emsg, logger)
+      # TODO: Check
+      # variable['VarAttributes']['VALIDMIN']
+      # variable['VarAttributes']['VALIDMAX']
+      # variable['VarAttributes']['FILLVAL']
+      # to see if values fit in 32-bit signed integer range. Will need to 
+      # signal to server that this conversion is needed when serving data. Will
+      # also need to add note in parameter description about this conversion.
+      emsg = f"      Variable '{name}' has unhandled DataType: "
+      emsg += f"{variable['VarDescription']['DataType']} that cannot be mapped "
+      emsg += "to a HAPI 32-bit signed integer type or HAPI double. Dropping variable."
+      cdawmeta.error('hapi', dsid, name, "HAPI.NotImplementedDataType", emsg, logger)
       continue
 
     FILLVAL = None
@@ -593,7 +603,7 @@ def _add_virtual_metadata(name, variable, parameter, print_info=False):
 
   parameter["x_cdf_VIRTUAL"] = virtual
   parameter["x_cdf_FUNCT"] = variable['VarAttributes']['FUNCT']
-  parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['COMPONENTS']
+  parameter["x_cdf_COMPONENTS"] = variable['VarAttributes']['x_COMPONENTS']
   if cdawmeta.CONFIG['hapi']['virtual_note']:
     parameter['description'] = parameter['description'].strip()
     desc = ". This variable is a 'virtual' variable that is computed using "
@@ -888,6 +898,7 @@ def _cdftimelen(cdf_type):
 
   # Based on table at https://spdf.gsfc.nasa.gov/istp_guide/vattributes.html
   # Could also get from PadValue or FILLVAL, but they are not always present (!).
+  # CDF_TIME_EPOCH8 is not handled, but no CDF Masters have it.
   if cdf_type == 'CDF_EPOCH':
     return len('0000-01-01:00:00:00.000Z')
   if cdf_type == 'CDF_TIME_TT2000':
@@ -901,11 +912,22 @@ def _to_hapi_type(cdf_type):
 
   # Table 2.8 of https://spdf.gsfc.nasa.gov/pub/software/cdf/doc/cdf380/cdf380ug.pdf
   known_types = ['CDF_BYTE',
-                 'CDF_INT1', 'CDF_UINT1', 'CDF_INT2', 'CDF_UINT2', 'CDF_INT4',  'CDF_UINT4',
+                 'CDF_INT1',
+                 'CDF_UINT1',
+                 'CDF_INT2',
+                 'CDF_UINT2',
+                 'CDF_INT4',
+                 'CDF_UINT4',
                  'CDF_INT8',
-                 'CDF_REAL4', 'CDF_FLOAT', 'CDF_REAL8', 'CDF_DOUBLE',
-                 'CDF_EPOCH', 'CDF_EPOCH16', 'CDF_TIME_TT2000',
-                 'CDF_CHAR', 'CDF_UCHAR'
+                 'CDF_REAL4',
+                 'CDF_FLOAT',
+                 'CDF_REAL8',
+                 'CDF_DOUBLE',
+                 'CDF_EPOCH',
+                 'CDF_EPOCH16',
+                 'CDF_TIME_TT2000',
+                 'CDF_CHAR',
+                 'CDF_UCHAR'
                 ]
   if cdf_type not in known_types:
     return None
