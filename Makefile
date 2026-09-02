@@ -23,15 +23,14 @@ spase_auto-regen: cdawmeta.egg-info
 VENVDIR=~/hapi_test
 ACTIVATE=source $(VENVDIR)/bin/activate
 CRONLOG=data/crontab/basil.$(shell date +%Y-%m-%dT%H:%M).log
-LOG_RETENTION_MTIME=+29 # 29 days
-
-prune-logs:
-	find data/crontab -type f \( -name '*.log' -o -name '*.log.gz' \) -mtime $(LOG_RETENTION_MTIME) -delete
 
 crontab-basil:
 	mkdir -p data/crontab
-	gzip --fast data/crontab/*.log
-	make prune-logs
+	- rm -f data/cdfmetafile/*.tmp
+	- gzip --fast data/crontab/*.log
+	- find data/crontab -type f \( -name '*.log' -o -name '*.log.gz' \) -mtime $(+29) -delete
+	- gzip --fast data/0SKELTABLES/diffs/*.log
+	- find data/0SKELTABLES/diffs -type f \( -name '*.log' -o -name '*.log.gz' \) -mtime $(+365) -delete
 	make hapi-update-basil 2>&1 | sed 's/\x1b\[[0-9;]*m//g' >> $(CRONLOG)
 
 hapi-update-basil:
