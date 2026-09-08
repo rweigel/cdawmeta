@@ -829,6 +829,11 @@ def _write_combined(metadata_, id, meta_types):
 
 def _fetch(url, id, meta_type, referrer=None, headers=None, timeout=20, diffs=False, update=False):
 
+  headers = {
+    'User-Agent': 'cdawmeta/1.0 (https://github.com/hapi-server/cdawmeta)',
+    **(headers or {})
+  }
+
   cache_dir = os.path.join(cdawmeta.DATA_DIR, 'CachedSession', meta_type)
   subdir = '' if meta_type == 'allxml' else 'info'
   json_file = os.path.join(cdawmeta.DATA_DIR, meta_type, subdir, f"{id}.json")
